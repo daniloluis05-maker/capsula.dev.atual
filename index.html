@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cápsula Dev VERSÃO ATUAL 2.0
-
-</title>
+<title>Cápsula de Desenvolvimento | Matrizes de Alta Performance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -869,21 +867,38 @@
 </div>
 
 <script>
-  // ── SUPABASE ─────────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════
+  // SUPABASE — inicialização segura
+  // CDN do jsdelivr expõe o objeto global como 'supabase' (sem window.)
+  // ═══════════════════════════════════════════════════════════════
   const SUPABASE_URL = 'https://dfnmofzbpdmnvlyowtmp.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbm1vZnpicGRtbnZseW93dG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NjQ4MzIsImV4cCI6MjA5MTE0MDgzMn0.KXcRmhpPFwpQGXkYIVjXPJvMh5w1KpIlZiwyIEUBrvU';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  // ─────────────────────────────────────────────────────────────────
 
-  // ── TABS ──────────────────────────────────────────────────────────
+  // Guard: garante que o SDK carregou antes de criar o cliente
+  var _supabaseClient = null;
+  function getSupabase() {
+    if (!_supabaseClient) {
+      if (typeof supabase === 'undefined' || typeof supabase.createClient !== 'function') {
+        throw new Error('SDK do Supabase não carregou. Verifique sua conexão.');
+      }
+      _supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+    return _supabaseClient;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // TABS
+  // ═══════════════════════════════════════════════════════════════
   function switchTab(tab, btn) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
     btn.classList.add('active');
     document.getElementById('tab-' + tab).classList.add('active');
   }
 
-  // ── MODAL ─────────────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════
+  // MODAL
+  // ═══════════════════════════════════════════════════════════════
   function openModal() {
     document.getElementById('modal').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -892,10 +907,13 @@
   function closeModal() {
     document.getElementById('modal').classList.remove('open');
     document.body.style.overflow = '';
-    setTimeout(() => {
-      document.getElementById('form-content').style.display = 'block';
-      document.getElementById('success-msg').style.display = 'none';
-      document.getElementById('cadastro-form').reset();
+    setTimeout(function() {
+      var fc = document.getElementById('form-content');
+      var sm = document.getElementById('success-msg');
+      var form = document.getElementById('cadastro-form');
+      if (fc) fc.style.display = 'block';
+      if (sm) sm.style.display = 'none';
+      if (form) form.reset();
       showError('');
     }, 300);
   }
@@ -908,9 +926,12 @@
     if (e.key === 'Escape') closeModal();
   });
 
-  // ── HELPERS ───────────────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════
+  // HELPERS UI
+  // ═══════════════════════════════════════════════════════════════
   function showError(msg) {
-    const el = document.getElementById('form-error');
+    var el = document.getElementById('form-error');
+    if (!el) return;
     if (msg) {
       el.textContent = msg;
       el.style.display = 'block';
@@ -921,74 +942,92 @@
   }
 
   function setLoading(loading) {
-    const btn = document.getElementById('submit-btn');
+    var btn = document.getElementById('submit-btn');
+    if (!btn) return;
     btn.disabled = loading;
     btn.textContent = loading ? 'Salvando...' : 'Solicitar Acesso →';
     btn.style.opacity = loading ? '0.65' : '';
+    btn.style.cursor  = loading ? 'not-allowed' : '';
   }
 
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  // ── SUBMIT ────────────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('cadastro-form');
-    if (!form) return;
-
-    form.addEventListener('submit', async function (e) {
+  // ═══════════════════════════════════════════════════════════════
+  // SUBMIT — vinculado diretamente ao form (sem DOMContentLoaded)
+  // O script está no fim do <body>: o DOM já existe aqui.
+  // ═══════════════════════════════════════════════════════════════
+  var cadastroForm = document.getElementById('cadastro-form');
+  if (cadastroForm) {
+    cadastroForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       showError('');
 
-      const nome    = document.getElementById('nome').value.trim();
-      const email   = document.getElementById('email').value.trim();
-      const objetivo = document.getElementById('objetivo').value;
+      var nome     = document.getElementById('nome').value.trim();
+      var email    = document.getElementById('email').value.trim();
+      var objetivo = document.getElementById('objetivo').value;
 
       // Validação client-side
-      if (!nome)           return showError('Por favor, informe seu nome.');
-      if (!email)          return showError('Por favor, informe seu e-mail.');
-      if (!isValidEmail(email)) return showError('Informe um e-mail válido.');
-      if (!objetivo)       return showError('Selecione seu objetivo principal.');
+      if (!nome)                 return showError('Por favor, informe seu nome.');
+      if (!email)                return showError('Por favor, informe seu e-mail.');
+      if (!isValidEmail(email))  return showError('Informe um e-mail válido.');
+      if (!objetivo)             return showError('Selecione seu objetivo principal.');
 
       setLoading(true);
 
       try {
-        const { error } = await supabase
+        var db = getSupabase();
+        var result = await db
           .from('leads')
-          .insert([{ nome, email, objetivo, criado_em: new Date().toISOString() }]);
+          .insert([{
+            nome:       nome,
+            email:      email,
+            objetivo:   objetivo,
+            criado_em:  new Date().toISOString()
+          }]);
+
+        var error = result.error;
 
         if (error) {
-          // Código 23505 = violação de unique (e-mail duplicado)
+          console.error('[Supabase] Erro:', error.code, error.message);
           if (error.code === '23505') {
             showError('Este e-mail já está cadastrado. Verifique sua caixa de entrada!');
+          } else if (error.code === '42P01') {
+            showError('Tabela não encontrada. Configure a tabela "leads" no Supabase.');
+          } else if (error.message && error.message.toLowerCase().includes('jwt')) {
+            showError('Chave de API inválida. Contate o suporte.');
           } else {
-            console.error('Supabase error:', error);
-            showError('Não foi possível salvar. Tente novamente em instantes.');
+            showError('Não foi possível salvar. Tente novamente em instantes. (' + error.code + ')');
           }
           return;
         }
 
-        // Sucesso
-        document.getElementById('form-content').style.display = 'none';
-        document.getElementById('success-msg').style.display = 'block';
+        // ── Sucesso ───────────────────────────────────────────────
+        var formContent = document.getElementById('form-content');
+        var successMsg  = document.getElementById('success-msg');
+        if (formContent) formContent.style.display = 'none';
+        if (successMsg)  successMsg.style.display  = 'block';
 
       } catch (err) {
-        console.error('Unexpected error:', err);
-        showError('Erro inesperado. Verifique sua conexão e tente novamente.');
+        console.error('[Cadastro] Erro inesperado:', err);
+        showError(err.message || 'Erro inesperado. Verifique sua conexão e tente novamente.');
       } finally {
         setLoading(false);
       }
     });
-  });
+  }
 
-  // ── INTERSECTION OBSERVER (animações) ────────────────────────────────
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.style.opacity = '1';
+  // ═══════════════════════════════════════════════════════════════
+  // INTERSECTION OBSERVER — animações de entrada
+  // ═══════════════════════════════════════════════════════════════
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) entry.target.style.opacity = '1';
     });
   }, { threshold: 0.1 });
 
-  document.querySelectorAll('.matrix-card, .step, .eixo-card, .plano-card').forEach(el => {
+  document.querySelectorAll('.matrix-card, .step, .eixo-card, .plano-card').forEach(function(el) {
     el.style.opacity = '0';
     el.style.transition = 'opacity 0.5s ease';
     observer.observe(el);
