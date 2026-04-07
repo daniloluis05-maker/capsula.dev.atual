@@ -579,6 +579,20 @@
   .success-msg .check-big { font-size: 2.5rem; margin-bottom: 0.75rem; display: block; }
   .success-msg h3 { font-family: var(--serif); font-size: 1.4rem; margin-bottom: 0.4rem; }
   .success-msg p { color: var(--muted); font-size: 0.9rem; }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  @media (max-width: 480px) {
+    .form-row { grid-template-columns: 1fr; }
+  }
+  .input-hint {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--muted2);
+    margin-top: 0.3rem;
+  }
 
   /* ANIMAÇÃO DE ENTRADA — fallback seguro via classe CSS */
   /* Conteúdo é visível por padrão; JS adiciona .js-animate para animar */
@@ -911,13 +925,24 @@
           <label for="website">Deixe este campo em branco</label>
           <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
         </div>
-        <div class="form-group">
-          <label for="nome">Seu nome</label>
-          <input type="text" id="nome" name="nome" placeholder="Como prefere ser chamado(a)?" required autocomplete="name" />
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nome">Nome completo</label>
+            <input type="text" id="nome" name="nome" placeholder="Seu nome" required autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label for="apelido">Apelido <span style="color:var(--muted2); font-weight:400;">(opcional)</span></label>
+            <input type="text" id="apelido" name="apelido" placeholder="Como te chamam?" autocomplete="nickname" maxlength="30" />
+            <span class="input-hint">Exibido no seu perfil</span>
+          </div>
         </div>
         <div class="form-group">
           <label for="email">E-mail</label>
           <input type="email" id="email" name="email" placeholder="seu@email.com" required autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="senha">Senha</label>
+          <input type="password" id="senha" name="senha" placeholder="Mínimo 8 caracteres" required autocomplete="new-password" minlength="8" />
         </div>
         <div class="form-group">
           <label for="objetivo">Seu objetivo principal</label>
@@ -930,15 +955,16 @@
           </select>
         </div>
         <div id="form-error" role="alert" style="display:none; background:rgba(244,132,95,0.12); border:1px solid rgba(244,132,95,0.35); color:#F4845F; font-size:0.82rem; padding:0.65rem 1rem; border-radius:8px; margin-bottom:0.75rem;"></div>
-        <button type="submit" class="form-submit" id="submit-btn">Solicitar Acesso →</button>
+        <button type="submit" class="form-submit" id="submit-btn">Criar conta →</button>
         <p style="text-align:center; font-size:0.78rem; color: var(--muted2); margin-top: 1rem;">Ao criar sua conta, você concorda com os Termos de Uso e Política de Privacidade.</p>
       </form>
     </div>
     <div class="success-msg" id="success-msg" role="status">
       <span class="check-big" aria-hidden="true">✓</span>
-      <h3>Quase lá! Confirme seu e-mail</h3>
-      <p id="success-desc">Enviamos um link de confirmação para <strong id="success-email"></strong>. Clique no link para ativar sua conta.</p>
-      <p style="font-size:0.8rem; color: var(--muted2); margin-top: 0.75rem;">Não encontrou? Verifique a pasta de spam ou lixo eletrônico.</p>
+      <h3>Conta criada com sucesso!</h3>
+      <p id="success-desc">Bem-vindo(a), <strong id="success-nome"></strong>! Sua conta está pronta para uso.</p>
+      <p style="font-size:0.8rem; color: var(--muted2); margin-top: 0.75rem;">Você já pode acessar todas as matrizes disponíveis no seu plano.</p>
+      <a href="#" class="btn-primary" style="display:inline-block; margin-top:1.5rem; padding:0.75rem 2rem;" onclick="closeModal(); return false;">Começar agora →</a>
     </div>
   </div>
 </div>
@@ -1063,7 +1089,7 @@
     var btn = document.getElementById('submit-btn');
     if (!btn) return;
     btn.disabled = loading;
-    btn.textContent = loading ? 'Salvando...' : 'Solicitar Acesso →';
+    btn.textContent = loading ? 'Criando conta...' : 'Criar conta →';
     btn.style.opacity = loading ? '0.65' : '';
     btn.style.cursor  = loading ? 'not-allowed' : '';
   }
@@ -1093,13 +1119,17 @@
       }
 
       var nome     = document.getElementById('nome').value.trim();
+      var apelido  = document.getElementById('apelido').value.trim();
       var email    = document.getElementById('email').value.trim();
+      var senha    = document.getElementById('senha').value;
       var objetivo = document.getElementById('objetivo').value;
 
       // Validação client-side
       if (!nome)                 return showError('Por favor, informe seu nome.');
       if (!email)                return showError('Por favor, informe seu e-mail.');
       if (!isValidEmail(email))  return showError('Informe um e-mail válido.');
+      if (!senha)                return showError('Por favor, crie uma senha.');
+      if (senha.length < 8)      return showError('A senha deve ter pelo menos 8 caracteres.');
       if (!objetivo)             return showError('Selecione seu objetivo principal.');
 
       setLoading(true);
@@ -1107,14 +1137,15 @@
       try {
         var db = getSupabase();
 
-        // ── 1. Cadastro via Supabase Auth (envia e-mail de confirmação automaticamente) ──
+        // ── 1. Cadastro via Supabase Auth com senha real ──────────
+        // emailRedirectTo omitido — sem confirmação por e-mail
         var authResult = await db.auth.signUp({
           email: email,
-          password: crypto.randomUUID(), // senha temporária aleatória — usuário vai definir via email
+          password: senha,
           options: {
-            emailRedirectTo: window.location.origin + '/confirm.html',
             data: {
               nome:     nome,
+              apelido:  apelido || nome.split(' ')[0],
               objetivo: objetivo
             }
           }
@@ -1124,9 +1155,11 @@
           console.error('[Auth] Erro:', authResult.error.code, authResult.error.message);
           var msg = authResult.error.message || '';
           if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already been registered')) {
-            showError('Este e-mail já está cadastrado. Verifique sua caixa de entrada ou redefina sua senha.');
+            showError('Este e-mail já está cadastrado. Tente fazer login ou redefina sua senha.');
           } else if (msg.toLowerCase().includes('invalid email')) {
             showError('Informe um e-mail válido.');
+          } else if (msg.toLowerCase().includes('password')) {
+            showError('Senha inválida. Use pelo menos 8 caracteres.');
           } else {
             showError('Não foi possível criar sua conta. Tente novamente. (' + (authResult.error.code || msg) + ')');
           }
@@ -1134,11 +1167,11 @@
         }
 
         // ── 2. Salva dados complementares na tabela leads (best-effort) ──
-        // Mesmo que falhe, o cadastro Auth já foi criado e o e-mail enviado
         try {
           await db.from('leads').upsert([{
             email:      email,
             nome:       nome,
+            apelido:    apelido || nome.split(' ')[0],
             objetivo:   objetivo,
             criado_em:  new Date().toISOString()
           }], { onConflict: 'email', ignoreDuplicates: true });
@@ -1147,9 +1180,10 @@
           console.warn('[leads] Aviso ao salvar lead:', leadErr);
         }
 
-        // ── 3. Exibe tela de sucesso com o email do usuário ───────
-        var emailEl = document.getElementById('success-email');
-        if (emailEl) emailEl.textContent = email;
+        // ── 3. Exibe tela de sucesso com o nome/apelido do usuário ──
+        var nomeExibido = apelido || nome.split(' ')[0];
+        var nomeEl = document.getElementById('success-nome');
+        if (nomeEl) nomeEl.textContent = nomeExibido;
 
         var formContent = document.getElementById('form-content');
         var successMsg  = document.getElementById('success-msg');
