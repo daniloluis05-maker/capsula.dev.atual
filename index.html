@@ -936,8 +936,9 @@
     </div>
     <div class="success-msg" id="success-msg" role="status">
       <span class="check-big" aria-hidden="true">✓</span>
-      <h3>Conta criada com sucesso!</h3>
-      <p>Em breve você receberá um e-mail de boas-vindas com o acesso à sua Cápsula de Desenvolvimento.</p>
+      <h3>Quase lá! Confirme seu e-mail</h3>
+      <p id="success-desc">Enviamos um link de confirmação para <strong id="success-email"></strong>. Clique no link para ativar sua conta.</p>
+      <p style="font-size:0.8rem; color: var(--muted2); margin-top: 0.75rem;">Não encontrou? Verifique a pasta de spam ou lixo eletrônico.</p>
     </div>
   </div>
 </div>
@@ -1105,32 +1106,51 @@
 
       try {
         var db = getSupabase();
-        var result = await db
-          .from('leads')
-          .insert([{
-            nome:       nome,
-            email:      email,
-            objetivo:   objetivo,
-            criado_em:  new Date().toISOString()
-          }]);
 
-        var error = result.error;
+        // ── 1. Cadastro via Supabase Auth (envia e-mail de confirmação automaticamente) ──
+        var authResult = await db.auth.signUp({
+          email: email,
+          password: crypto.randomUUID(), // senha temporária aleatória — usuário vai definir via email
+          options: {
+            emailRedirectTo: window.location.origin + '/confirm.html',
+            data: {
+              nome:     nome,
+              objetivo: objetivo
+            }
+          }
+        });
 
-        if (error) {
-          console.error('[Supabase] Erro:', error.code, error.message);
-          if (error.code === '23505') {
-            showError('Este e-mail já está cadastrado. Verifique sua caixa de entrada!');
-          } else if (error.code === '42P01') {
-            showError('Tabela não encontrada. Configure a tabela "leads" no Supabase.');
-          } else if (error.message && error.message.toLowerCase().includes('jwt')) {
-            showError('Chave de API inválida. Contate o suporte.');
+        if (authResult.error) {
+          console.error('[Auth] Erro:', authResult.error.code, authResult.error.message);
+          var msg = authResult.error.message || '';
+          if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already been registered')) {
+            showError('Este e-mail já está cadastrado. Verifique sua caixa de entrada ou redefina sua senha.');
+          } else if (msg.toLowerCase().includes('invalid email')) {
+            showError('Informe um e-mail válido.');
           } else {
-            showError('Não foi possível salvar. Tente novamente em instantes. (' + error.code + ')');
+            showError('Não foi possível criar sua conta. Tente novamente. (' + (authResult.error.code || msg) + ')');
           }
           return;
         }
 
-        // ── Sucesso ───────────────────────────────────────────────
+        // ── 2. Salva dados complementares na tabela leads (best-effort) ──
+        // Mesmo que falhe, o cadastro Auth já foi criado e o e-mail enviado
+        try {
+          await db.from('leads').upsert([{
+            email:      email,
+            nome:       nome,
+            objetivo:   objetivo,
+            criado_em:  new Date().toISOString()
+          }], { onConflict: 'email', ignoreDuplicates: true });
+        } catch (leadErr) {
+          // Silencioso — não impede o fluxo principal
+          console.warn('[leads] Aviso ao salvar lead:', leadErr);
+        }
+
+        // ── 3. Exibe tela de sucesso com o email do usuário ───────
+        var emailEl = document.getElementById('success-email');
+        if (emailEl) emailEl.textContent = email;
+
         var formContent = document.getElementById('form-content');
         var successMsg  = document.getElementById('success-msg');
         if (formContent) formContent.style.display = 'none';
