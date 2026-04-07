@@ -3,8 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cápsula de Desenvolvimento | Atualizado 2.0</title>
+<title>Cápsula de Desenvolvimento | Matrizes de Autoconhecimento e Performance</title>
+
+<!-- SEO -->
+<meta name="description" content="Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes. DISC, SOAR, Ikigai, SWOT, RACI e muito mais. Comece gratuitamente.">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cápsula de Desenvolvimento">
+<meta property="og:description" content="Descubra seu potencial. Expanda sua equipe. Matrizes de autoconhecimento e performance coletiva.">
+<meta property="og:url" content="https://seudominio.com.br">
+<meta property="og:image" content="https://seudominio.com.br/og-image.png">
+<meta property="og:locale" content="pt_BR">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cápsula de Desenvolvimento">
+<meta name="twitter:description" content="Descubra seu potencial. Expanda sua equipe.">
+<meta name="twitter:image" content="https://seudominio.com.br/og-image.png">
+
+<!-- Favicon (substitua pelo seu arquivo real) -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💊</text></svg>">
+
+<!-- Fontes: preload da folha de estilos + carregamento com swap -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -556,25 +580,72 @@
   .success-msg h3 { font-family: var(--serif); font-size: 1.4rem; margin-bottom: 0.4rem; }
   .success-msg p { color: var(--muted); font-size: 0.9rem; }
 
+  /* ANIMAÇÃO DE ENTRADA — fallback seguro via classe CSS */
+  /* Conteúdo é visível por padrão; JS adiciona .js-animate para animar */
+  .js-animate {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
   @media (max-width: 768px) {
     nav { padding: 1rem 5%; }
-    .nav-links { display: none; }
+    .nav-links {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(10,10,15,0.98);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      z-index: 99;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a { font-size: 1.25rem; }
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0.25rem;
+      z-index: 101;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    .hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .nav-cta { display: none; }
     .eixos-grid { grid-template-columns: 1fr; }
     .steps::before { display: none; }
     .hero h1 { font-size: 2.5rem; }
+  }
+  @media (min-width: 769px) {
+    .hamburger { display: none; }
   }
 </style>
 </head>
 <body>
 
 <!-- NAVEGAÇÃO -->
-<nav>
+<nav aria-label="Navegação principal">
   <a href="#" class="nav-logo">Cápsula<span>.</span>Dev</a>
-  <ul class="nav-links">
+  <ul class="nav-links" id="nav-links" role="list">
     <li><a href="#matrizes">Matrizes</a></li>
     <li><a href="#como-funciona">Como funciona</a></li>
     <li><a href="#planos">Planos</a></li>
   </ul>
+  <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav-links">
+    <span></span><span></span><span></span>
+  </button>
   <a href="#" class="nav-cta" onclick="openModal()">Começar agora</a>
 </nav>
 
@@ -824,17 +895,22 @@
 <!-- FOOTER -->
 <footer>
   <a href="#" class="footer-logo">Cápsula<span>.</span>Dev</a>
-  <p>© 2025 Cápsula de Desenvolvimento. Todos os direitos reservados.</p>
+  <p>© <span id="ano-atual">2025</span> Cápsula de Desenvolvimento. Todos os direitos reservados.</p>
 </footer>
 
 <!-- MODAL DE CADASTRO -->
-<div class="modal-overlay" id="modal" onclick="closeModalOnOverlay(event)">
+<div class="modal-overlay" id="modal" onclick="closeModalOnOverlay(event)" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal()">×</button>
+    <button class="modal-close" onclick="closeModal()" aria-label="Fechar modal">×</button>
     <div id="form-content">
-      <h2>Criar sua conta</h2>
+      <h2 id="modal-title">Criar sua conta</h2>
       <p>Comece gratuitamente. Sem cartão de crédito.</p>
       <form id="cadastro-form" novalidate>
+        <!-- Honeypot anti-bot: invisível para humanos, preenchido por bots -->
+        <div style="position:absolute; left:-9999px; opacity:0; pointer-events:none;" aria-hidden="true">
+          <label for="website">Deixe este campo em branco</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
         <div class="form-group">
           <label for="nome">Seu nome</label>
           <input type="text" id="nome" name="nome" placeholder="Como prefere ser chamado(a)?" required autocomplete="name" />
@@ -853,13 +929,13 @@
             <option value="outro">Outro</option>
           </select>
         </div>
-        <div id="form-error" style="display:none; background:rgba(244,132,95,0.12); border:1px solid rgba(244,132,95,0.35); color:#F4845F; font-size:0.82rem; padding:0.65rem 1rem; border-radius:8px; margin-bottom:0.75rem;"></div>
+        <div id="form-error" role="alert" style="display:none; background:rgba(244,132,95,0.12); border:1px solid rgba(244,132,95,0.35); color:#F4845F; font-size:0.82rem; padding:0.65rem 1rem; border-radius:8px; margin-bottom:0.75rem;"></div>
         <button type="submit" class="form-submit" id="submit-btn">Solicitar Acesso →</button>
         <p style="text-align:center; font-size:0.78rem; color: var(--muted2); margin-top: 1rem;">Ao criar sua conta, você concorda com os Termos de Uso e Política de Privacidade.</p>
       </form>
     </div>
-    <div class="success-msg" id="success-msg">
-      <span class="check-big">✓</span>
+    <div class="success-msg" id="success-msg" role="status">
+      <span class="check-big" aria-hidden="true">✓</span>
       <h3>Conta criada com sucesso!</h3>
       <p>Em breve você receberá um e-mail de boas-vindas com o acesso à sua Cápsula de Desenvolvimento.</p>
     </div>
@@ -869,7 +945,8 @@
 <script>
   // ═══════════════════════════════════════════════════════════════
   // SUPABASE — inicialização segura
-  // CDN do jsdelivr expõe o objeto global como 'supabase' (sem window.)
+  // ATENÇÃO: A chave anon abaixo é pública por design, mas você DEVE
+  // configurar RLS (Row Level Security) no Supabase para proteger seus dados.
   // ═══════════════════════════════════════════════════════════════
   const SUPABASE_URL = 'https://dfnmofzbpdmnvlyowtmp.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbm1vZnpicGRtbnZseW93dG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NjQ4MzIsImV4cCI6MjA5MTE0MDgzMn0.KXcRmhpPFwpQGXkYIVjXPJvMh5w1KpIlZiwyIEUBrvU';
@@ -887,12 +964,47 @@
   }
 
   // ═══════════════════════════════════════════════════════════════
+  // ANO DINÂMICO NO FOOTER
+  // ═══════════════════════════════════════════════════════════════
+  var anoEl = document.getElementById('ano-atual');
+  if (anoEl) anoEl.textContent = new Date().getFullYear();
+
+  // ═══════════════════════════════════════════════════════════════
+  // HAMBURGER MENU (mobile)
+  // ═══════════════════════════════════════════════════════════════
+  var hamburger = document.getElementById('hamburger');
+  var navLinks  = document.getElementById('nav-links');
+
+  if (hamburger && navLinks) {
+    hamburger.addEventListener('click', function() {
+      var isOpen = navLinks.classList.toggle('open');
+      hamburger.classList.toggle('active', isOpen);
+      hamburger.setAttribute('aria-expanded', isOpen);
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+    });
+
+    // Fecha menu ao clicar em qualquer link
+    navLinks.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', function() {
+        navLinks.classList.remove('open');
+        hamburger.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      });
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════
   // TABS
   // ═══════════════════════════════════════════════════════════════
   function switchTab(tab, btn) {
-    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-btn').forEach(function(b) {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
     document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
     btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
     document.getElementById('tab-' + tab).classList.add('active');
   }
 
@@ -902,6 +1014,11 @@
   function openModal() {
     document.getElementById('modal').classList.add('open');
     document.body.style.overflow = 'hidden';
+    // Move foco para o primeiro campo — acessibilidade
+    setTimeout(function() {
+      var nomeInput = document.getElementById('nome');
+      if (nomeInput) nomeInput.focus();
+    }, 50);
   }
 
   function closeModal() {
@@ -955,14 +1072,24 @@
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // SUBMIT — vinculado diretamente ao form (sem DOMContentLoaded)
-  // O script está no fim do <body>: o DOM já existe aqui.
+  // SUBMIT — com proteção honeypot anti-bot
   // ═══════════════════════════════════════════════════════════════
   var cadastroForm = document.getElementById('cadastro-form');
   if (cadastroForm) {
     cadastroForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       showError('');
+
+      // Verificação honeypot: se o campo oculto foi preenchido, é bot
+      var honeypot = document.getElementById('website');
+      if (honeypot && honeypot.value !== '') {
+        // Simula sucesso para não revelar detecção ao bot
+        var fc2 = document.getElementById('form-content');
+        var sm2 = document.getElementById('success-msg');
+        if (fc2) fc2.style.display = 'none';
+        if (sm2) sm2.style.display = 'block';
+        return;
+      }
 
       var nome     = document.getElementById('nome').value.trim();
       var email    = document.getElementById('email').value.trim();
@@ -1019,17 +1146,21 @@
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // INTERSECTION OBSERVER — animações de entrada
+  // INTERSECTION OBSERVER — animações de entrada com fallback seguro
+  // O estado inicial é controlado por classe CSS, não por JS inline,
+  // garantindo que o conteúdo seja visível mesmo sem JavaScript.
   // ═══════════════════════════════════════════════════════════════
   var observer = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
-      if (entry.isIntersecting) entry.target.style.opacity = '1';
+      if (entry.isIntersecting) {
+        entry.target.classList.remove('js-animate');
+        observer.unobserve(entry.target); // para de observar após animar
+      }
     });
   }, { threshold: 0.1 });
 
   document.querySelectorAll('.matrix-card, .step, .eixo-card, .plano-card').forEach(function(el) {
-    el.style.opacity = '0';
-    el.style.transition = 'opacity 0.5s ease';
+    el.classList.add('js-animate');
     observer.observe(el);
   });
 </script>
