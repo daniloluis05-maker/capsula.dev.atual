@@ -6,6 +6,7 @@
 <title>Cápsula de Desenvolvimento | Matrizes de Alta Performance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -833,26 +834,29 @@
     <div id="form-content">
       <h2>Criar sua conta</h2>
       <p>Comece gratuitamente. Sem cartão de crédito.</p>
-      <div class="form-group">
-        <label>Seu nome</label>
-        <input type="text" id="nome" placeholder="Como prefere ser chamado(a)?" />
-      </div>
-      <div class="form-group">
-        <label>E-mail</label>
-        <input type="email" id="email" placeholder="seu@email.com" />
-      </div>
-      <div class="form-group">
-        <label>Seu objetivo principal</label>
-        <select id="objetivo">
-          <option value="">Selecione...</option>
-          <option value="individual">Autoconhecimento e carreira</option>
-          <option value="lider">Desenvolver minha equipe</option>
-          <option value="empresa">Gestão de múltiplas equipes</option>
-          <option value="outro">Outro</option>
-        </select>
-      </div>
-      <button class="form-submit" onclick="submitForm()">Criar conta grátis →</button>
-      <p style="text-align:center; font-size:0.78rem; color: var(--muted2); margin-top: 1rem;">Ao criar sua conta, você concorda com os Termos de Uso e Política de Privacidade.</p>
+      <form id="cadastro-form" novalidate>
+        <div class="form-group">
+          <label for="nome">Seu nome</label>
+          <input type="text" id="nome" name="nome" placeholder="Como prefere ser chamado(a)?" required autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" placeholder="seu@email.com" required autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="objetivo">Seu objetivo principal</label>
+          <select id="objetivo" name="objetivo" required>
+            <option value="">Selecione...</option>
+            <option value="individual">Autoconhecimento e carreira</option>
+            <option value="lider">Desenvolver minha equipe</option>
+            <option value="empresa">Gestão de múltiplas equipes</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+        <div id="form-error" style="display:none; background:rgba(244,132,95,0.12); border:1px solid rgba(244,132,95,0.35); color:#F4845F; font-size:0.82rem; padding:0.65rem 1rem; border-radius:8px; margin-bottom:0.75rem;"></div>
+        <button type="submit" class="form-submit" id="submit-btn">Solicitar Acesso →</button>
+        <p style="text-align:center; font-size:0.78rem; color: var(--muted2); margin-top: 1rem;">Ao criar sua conta, você concorda com os Termos de Uso e Política de Privacidade.</p>
+      </form>
     </div>
     <div class="success-msg" id="success-msg">
       <span class="check-big">✓</span>
@@ -863,6 +867,13 @@
 </div>
 
 <script>
+  // ── SUPABASE ─────────────────────────────────────────────────────
+  const SUPABASE_URL = 'https://dfnmofzbpdmnvlyowtmp.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbm1vZnpicGRtbnZseW93dG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NjQ4MzIsImV4cCI6MjA5MTE0MDgzMn0.KXcRmhpPFwpQGXkYIVjXPJvMh5w1KpIlZiwyIEUBrvU';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  // ─────────────────────────────────────────────────────────────────
+
+  // ── TABS ──────────────────────────────────────────────────────────
   function switchTab(tab, btn) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -870,6 +881,7 @@
     document.getElementById('tab-' + tab).classList.add('active');
   }
 
+  // ── MODAL ─────────────────────────────────────────────────────────
   function openModal() {
     document.getElementById('modal').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -881,6 +893,8 @@
     setTimeout(() => {
       document.getElementById('form-content').style.display = 'block';
       document.getElementById('success-msg').style.display = 'none';
+      document.getElementById('cadastro-form').reset();
+      showError('');
     }, 300);
   }
 
@@ -888,26 +902,84 @@
     if (e.target === document.getElementById('modal')) closeModal();
   }
 
-  function submitForm() {
-    const nome = document.getElementById('nome').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const objetivo = document.getElementById('objetivo').value;
-    if (!nome || !email || !objetivo) {
-      alert('Por favor, preencha todos os campos.');
-      return;
-    }
-    if (!email.includes('@')) {
-      alert('Insira um e-mail válido.');
-      return;
-    }
-    document.getElementById('form-content').style.display = 'none';
-    document.getElementById('success-msg').style.display = 'block';
-  }
-
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeModal();
   });
 
+  // ── HELPERS ───────────────────────────────────────────────────────
+  function showError(msg) {
+    const el = document.getElementById('form-error');
+    if (msg) {
+      el.textContent = msg;
+      el.style.display = 'block';
+    } else {
+      el.style.display = 'none';
+      el.textContent = '';
+    }
+  }
+
+  function setLoading(loading) {
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = loading;
+    btn.textContent = loading ? 'Salvando...' : 'Solicitar Acesso →';
+    btn.style.opacity = loading ? '0.65' : '';
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  // ── SUBMIT ────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('cadastro-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      showError('');
+
+      const nome    = document.getElementById('nome').value.trim();
+      const email   = document.getElementById('email').value.trim();
+      const objetivo = document.getElementById('objetivo').value;
+
+      // Validação client-side
+      if (!nome)           return showError('Por favor, informe seu nome.');
+      if (!email)          return showError('Por favor, informe seu e-mail.');
+      if (!isValidEmail(email)) return showError('Informe um e-mail válido.');
+      if (!objetivo)       return showError('Selecione seu objetivo principal.');
+
+      setLoading(true);
+
+      try {
+        const { error } = await supabase
+          .from('leads')
+          .insert([{ nome, email, objetivo, criado_em: new Date().toISOString() }]);
+
+        if (error) {
+          // Código 23505 = violação de unique (e-mail duplicado)
+          if (error.code === '23505') {
+            showError('Este e-mail já está cadastrado. Verifique sua caixa de entrada!');
+          } else {
+            console.error('Supabase error:', error);
+            showError('Não foi possível salvar. Tente novamente em instantes.');
+          }
+          return;
+        }
+
+        // Sucesso
+        document.getElementById('form-content').style.display = 'none';
+        document.getElementById('success-msg').style.display = 'block';
+
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        showError('Erro inesperado. Verifique sua conexão e tente novamente.');
+      } finally {
+        setLoading(false);
+      }
+    });
+  });
+
+  // ── INTERSECTION OBSERVER (animações) ────────────────────────────────
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) e.target.style.opacity = '1';
