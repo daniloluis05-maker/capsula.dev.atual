@@ -4,537 +4,1408 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Perfil DISC | Cápsula de Desenvolvimento</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💊</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<!-- Supabase JS (Auth + DB) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --bg:#07080C;--bg2:#0D0F16;--surface:#121520;--surface2:#181C28;
-  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
-  --D:#E8603A;--I:#6C5FE6;--S:#2EC4A0;--C:#1BA8D4;
-  --accent:#6C5FE6;--text:#E8E6F0;--muted:#6B6980;--muted2:#353448;
-  --mono:'Space Mono',monospace;--sans:'Outfit',system-ui,sans-serif;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #060608;
+  --bg2:     #0C0C14;
+  --surface: rgba(255,255,255,0.04);
+  --border:  rgba(255,255,255,0.08);
+  --text:    #F0EEF8;
+  --muted:   #7A788E;
+  --muted2:  #3E3C52;
+  --D: #FF6B35;
+  --I: #7C6FF7;
+  --S: #4FFFB0;
+  --C: #00E5FF;
+  --serif: 'Syne', sans-serif;
+  --sans:  'DM Sans', sans-serif;
 }
-html{scroll-behavior:smooth;}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(108,95,230,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(108,95,230,0.04) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
-.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
-.orb-1{width:500px;height:500px;background:#6C5FE6;opacity:0.07;top:-150px;left:-100px;animation:d1 14s ease-in-out infinite alternate;}
-.orb-2{width:300px;height:300px;background:#E8603A;opacity:0.05;bottom:-80px;right:-80px;animation:d2 17s ease-in-out infinite alternate;}
-@keyframes d1{from{transform:translate(0,0)}to{transform:translate(30px,40px)}}
-@keyframes d2{from{transform:translate(0,0)}to{transform:translate(-20px,-30px)}}
 
-/* PAGES */
-.page{display:none;position:relative;z-index:1;}
-.page.active{display:flex;flex-direction:column;min-height:100vh;}
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-/* ══ INTRO ══ */
-.intro-page{align-items:center;justify-content:center;text-align:center;padding:5rem 2rem;}
-.intro-tag{display:inline-flex;align-items:center;gap:0.45rem;font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--D);border:1px solid rgba(232,96,58,0.3);padding:0.3rem 0.8rem;border-radius:3px;margin-bottom:2.5rem;animation:fadeUp 0.6s ease both;}
-.intro-tag-dot{width:5px;height:5px;border-radius:50%;background:var(--D);animation:blink 2s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
-.intro-page h1{font-family:var(--sans);font-size:clamp(2.4rem,6vw,4.5rem);font-weight:800;line-height:1.06;letter-spacing:-0.035em;max-width:680px;margin:0 auto 1.25rem;animation:fadeUp 0.6s 0.1s ease both;}
-.intro-page h1 .accent{color:var(--D);}
-.intro-page h1 .dim{color:var(--muted);font-weight:300;}
-.intro-sub{color:var(--muted);font-size:0.95rem;max-width:460px;margin:0 auto 3rem;line-height:1.8;animation:fadeUp 0.6s 0.2s ease both;}
-.disc-pills{display:flex;gap:0.65rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;animation:fadeUp 0.6s 0.3s ease both;}
-.disc-pill{display:flex;align-items:center;gap:0.5rem;background:var(--surface);border:1px solid var(--border2);border-radius:5px;padding:0.4rem 0.85rem;font-family:var(--mono);font-size:0.65rem;letter-spacing:0.05em;}
-.d-dot{width:6px;height:6px;border-radius:50%;}
-.intro-meta{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:3rem;animation:fadeUp 0.6s 0.35s ease both;}
-.meta-item{padding:1.1rem 1.5rem;text-align:center;border-right:1px solid var(--border);background:var(--surface);}
-.meta-item:last-child{border-right:none;}
-.meta-val{font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--text);display:block;}
-.meta-label{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.15rem;}
-.btn-start{display:inline-flex;align-items:center;gap:0.5rem;background:var(--D);color:#fff;border:none;padding:0.85rem 2.2rem;border-radius:7px;font-size:0.92rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all 0.2s;letter-spacing:-0.01em;animation:fadeUp 0.6s 0.4s ease both;}
-.btn-start:hover{opacity:0.87;transform:translateY(-2px);}
-.intro-note{margin-top:1.25rem;font-family:var(--mono);font-size:0.6rem;color:var(--muted2);animation:fadeUp 0.6s 0.5s ease both;}
+/* ── GRID BG ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(124,111,247,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,111,247,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none; z-index: 0;
+}
 
-/* ══ QUIZ NAV ══ */
-.quiz-nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
-.quiz-logo{font-family:var(--sans);font-size:0.9rem;font-weight:700;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:0.4rem;}
-.quiz-logo-mark{width:22px;height:22px;background:var(--accent);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#fff;}
-.quiz-logo span{color:var(--D);}
-.quiz-prog-wrap{flex:1;max-width:360px;margin:0 1.5rem;}
-.quiz-prog-track{height:3px;background:var(--surface2);border-radius:100px;overflow:hidden;}
-.quiz-prog-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--D),var(--I));transition:width 0.5s cubic-bezier(0.34,1.56,0.64,1);}
-.quiz-counter{font-family:var(--mono);font-size:0.6rem;color:var(--muted);text-align:center;margin-top:0.3rem;}
-.btn-back{background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.45rem 0.9rem;border-radius:5px;font-size:0.75rem;font-weight:500;cursor:pointer;font-family:var(--sans);transition:all 0.15s;}
-.btn-back:hover{border-color:var(--D);color:var(--text);}
+/* ── ORB ── */
+.orb {
+  position: fixed; border-radius: 50%;
+  filter: blur(90px); pointer-events: none; z-index: 0; opacity: 0.12;
+}
+.orb-1 { width:500px;height:500px;background:#7C6FF7;top:-200px;left:-100px;animation:drift1 14s ease-in-out infinite alternate;}
+.orb-2 { width:300px;height:300px;background:#FF6B35;bottom:-80px;right:-60px;animation:drift2 17s ease-in-out infinite alternate;}
+@keyframes drift1{from{transform:translate(0,0)}to{transform:translate(40px,50px)}}
+@keyframes drift2{from{transform:translate(0,0)}to{transform:translate(-30px,-40px)}}
 
-/* ══ QUIZ BODY ══ */
-.quiz-body{flex:1;display:flex;align-items:center;justify-content:center;padding:4rem 5%;min-height:calc(100vh - 70px);}
-.question-card{max-width:640px;width:100%;text-align:center;animation:qIn 0.35s ease both;}
-@keyframes qIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.q-dim-tag{display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.28rem 0.75rem;border-radius:3px;margin-bottom:1.5rem;border:1px solid;}
-.q-dot{width:5px;height:5px;border-radius:50%;}
-.question-text{font-family:var(--sans);font-size:clamp(1.35rem,3.5vw,1.9rem);font-weight:700;line-height:1.25;letter-spacing:-0.02em;margin-bottom:3.5rem;color:var(--text);}
-.scale-labels{display:flex;justify-content:space-between;margin-bottom:1.1rem;font-family:var(--mono);font-size:0.6rem;color:var(--muted);letter-spacing:0.05em;}
-.scale-btns{display:flex;gap:0.65rem;justify-content:center;align-items:center;}
-.scale-btn{border:1.5px solid var(--border2);background:transparent;border-radius:50%;cursor:pointer;transition:all 0.18s;position:relative;flex-shrink:0;}
-.scale-btn[data-val="1"]{width:38px;height:38px;}
-.scale-btn[data-val="2"]{width:46px;height:46px;}
-.scale-btn[data-val="3"]{width:52px;height:52px;}
-.scale-btn[data-val="4"]{width:46px;height:46px;}
-.scale-btn[data-val="5"]{width:38px;height:38px;}
-.scale-btn::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:var(--muted2);transition:all 0.18s;}
-.scale-btn:hover{border-color:var(--qc,var(--D));background:rgba(232,96,58,0.06);}
-.scale-btn:hover::after{background:var(--qc,var(--D));}
-.scale-btn.selected{border-color:var(--qc,var(--D));background:rgba(232,96,58,0.1);}
-.scale-btn.selected::after{background:var(--qc,var(--D));box-shadow:0 0 8px var(--qc,var(--D));width:45%;height:45%;}
-.scale-hint{font-family:var(--mono);font-size:0.62rem;color:var(--muted2);margin-top:0.85rem;min-height:1em;transition:all 0.2s;}
-.quiz-actions{margin-top:2.25rem;}
-.btn-next{display:inline-flex;align-items:center;gap:0.4rem;background:var(--D);color:#fff;border:none;padding:0.75rem 1.75rem;border-radius:7px;font-size:0.88rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all 0.2s;opacity:0.3;pointer-events:none;}
-.btn-next.ready{opacity:1;pointer-events:all;}
-.btn-next.ready:hover{opacity:0.87;transform:translateY(-1px);}
+/* ── PAGES ── */
+.page { display: none; position: relative; z-index: 1; }
+.page.active { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ══════════════════════════════════════
+   INTRO PAGE
+══════════════════════════════════════ */
+.intro-page {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.intro-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(255,107,53,0.1);
+  border: 1px solid rgba(255,107,53,0.25);
+  color: var(--D);
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 0.4rem 1rem; border-radius: 100px;
+  margin-bottom: 2.5rem;
+  animation: fadeUp 0.6s ease both;
+}
+
+.intro-page h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  max-width: 700px;
+  margin: 0 auto 1.5rem;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.intro-page h1 em { font-style: italic; color: var(--D); }
+
+.intro-sub {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 520px;
+  margin: 0 auto 3rem;
+  line-height: 1.7;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+
+.disc-preview {
+  display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 3rem;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.disc-pill {
+  display: flex; align-items: center; gap: 0.6rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.82rem; font-weight: 600;
+}
+.disc-pill .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.intro-meta {
+  display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 3rem;
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+.meta-item { text-align: center; }
+.meta-num {
+  font-family: var(--serif);
+  font-size: 1.5rem; font-weight: 800; color: var(--text);
+  display: block;
+}
+.meta-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+.btn-start {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  background: var(--D);
+  color: #fff; border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 10px;
+  font-size: 1rem; font-weight: 700;
+  font-family: var(--serif);
+  cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 0 30px rgba(255,107,53,0.3);
+  animation: fadeUp 0.6s 0.5s ease both;
+  letter-spacing: -0.01em;
+}
+.btn-start:hover { box-shadow: 0 0 50px rgba(255,107,53,0.5); transform: translateY(-2px); }
+
+.intro-note {
+  margin-top: 1.5rem;
+  font-size: 0.78rem; color: var(--muted2);
+  animation: fadeUp 0.6s 0.6s ease both;
+}
+
+/* ══════════════════════════════════════
+   QUIZ PAGE
+══════════════════════════════════════ */
+.quiz-page {
+  flex-direction: column;
+  padding: 0;
+}
+
+/* TOP NAV */
+.quiz-nav {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 5%;
+  background: rgba(6,6,8,0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.quiz-logo {
+  font-family: var(--serif);
+  font-size: 1rem; font-weight: 800;
+  color: var(--text); text-decoration: none;
+}
+.quiz-logo span { color: var(--D); }
+
+.quiz-progress-wrap { flex: 1; max-width: 400px; margin: 0 2rem; }
+.quiz-progress-track {
+  height: 4px; background: var(--surface);
+  border-radius: 100px; overflow: hidden;
+}
+.quiz-progress-fill {
+  height: 100%; border-radius: 100px;
+  background: linear-gradient(90deg, var(--D), var(--I));
+  transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 0 10px rgba(255,107,53,0.5);
+}
+.quiz-counter {
+  font-size: 0.75rem; color: var(--muted);
+  text-align: center; margin-top: 0.35rem;
+  font-weight: 500;
+}
+
+.btn-back {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--muted); padding: 0.5rem 1rem;
+  border-radius: 8px; font-size: 0.8rem; font-weight: 500;
+  cursor: pointer; font-family: var(--sans);
+  transition: all 0.2s;
+}
+.btn-back:hover { border-color: var(--D); color: var(--text); }
+
+/* QUESTION AREA */
+.quiz-body {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  padding: 4rem 5%;
+  min-height: calc(100vh - 80px);
+}
+
+.question-card {
+  max-width: 680px; width: 100%;
+  text-align: center;
+  animation: questionIn 0.4s ease both;
+}
+@keyframes questionIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.q-category {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--q-color, var(--D));
+  margin-bottom: 1.5rem;
+  background: rgba(255,107,53,0.08);
+  border: 1px solid rgba(255,107,53,0.2);
+  padding: 0.3rem 0.8rem; border-radius: 100px;
+}
+.q-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 6px currentColor; }
+
+.question-text {
+  font-family: var(--serif);
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin-bottom: 3.5rem;
+  color: var(--text);
+}
+
+/* SCALE */
+.scale-wrap { margin-bottom: 2rem; }
+
+.scale-labels {
+  display: flex; justify-content: space-between;
+  margin-bottom: 1.25rem;
+  font-size: 0.75rem; color: var(--muted); font-weight: 500;
+}
+
+.scale-buttons {
+  display: flex; gap: 0.75rem; justify-content: center; align-items: center;
+}
+
+.scale-btn {
+  border: 2px solid var(--border);
+  background: transparent;
+  border-radius: 50%; cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  flex-shrink: 0;
+}
+/* Tamanhos crescentes — espelho */
+.scale-btn[data-val="1"] { width: 40px; height: 40px; }
+.scale-btn[data-val="2"] { width: 48px; height: 48px; }
+.scale-btn[data-val="3"] { width: 54px; height: 54px; }
+.scale-btn[data-val="4"] { width: 48px; height: 48px; }
+.scale-btn[data-val="5"] { width: 40px; height: 40px; }
+
+.scale-btn::after {
+  content: '';
+  position: absolute; inset: 50%; transform: translate(-50%,-50%);
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--muted2);
+  transition: all 0.2s;
+}
+
+.scale-btn:hover {
+  border-color: var(--q-color, var(--D));
+  background: rgba(255,107,53,0.06);
+  transform: scale(1.08);
+}
+.scale-btn:hover::after { background: var(--q-color, var(--D)); }
+
+.scale-btn.selected {
+  border-color: var(--q-color, var(--D));
+  background: rgba(255,107,53,0.12);
+  box-shadow: 0 0 20px rgba(255,107,53,0.25);
+}
+.scale-btn.selected::after {
+  background: var(--q-color, var(--D));
+  box-shadow: 0 0 10px var(--q-color, var(--D));
+  inset: unset; width: 50%; height: 50%;
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+}
+
+.scale-hint {
+  font-size: 0.75rem; color: var(--muted2);
+  margin-top: 1rem;
+  min-height: 1.2em;
+  transition: all 0.2s;
+}
+
+/* NAV BUTTONS */
+.quiz-actions {
+  display: flex; gap: 1rem; justify-content: center; margin-top: 2.5rem;
+}
+.btn-next {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--q-color, var(--D));
+  color: #fff; border: none;
+  padding: 0.85rem 2rem; border-radius: 10px;
+  font-size: 0.95rem; font-weight: 700;
+  font-family: var(--serif);
+  cursor: pointer; transition: all 0.25s;
+  box-shadow: 0 0 20px rgba(255,107,53,0.25);
+  opacity: 0.35; pointer-events: none;
+}
+.btn-next.ready { opacity: 1; pointer-events: all; }
+.btn-next.ready:hover { box-shadow: 0 0 35px rgba(255,107,53,0.45); transform: translateY(-1px); }
 
 /* SECTION TRANSITION */
-.sec-transition{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.75rem;text-align:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
-.sec-transition.show{opacity:1;pointer-events:all;}
-.t-icon{font-size:2.5rem;}
-.t-tag{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);}
-.t-label{font-family:var(--sans);font-size:1.4rem;font-weight:700;letter-spacing:-0.02em;}
-.t-sub{font-size:0.82rem;color:var(--muted);}
+.section-transition {
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s;
+  flex-direction: column; gap: 1rem; text-align: center;
+}
+.section-transition.show { opacity: 1; pointer-events: all; }
+.transition-icon { font-size: 3rem; }
+.transition-label {
+  font-family: var(--serif);
+  font-size: 1.5rem; font-weight: 800;
+  color: var(--text);
+}
+.transition-sub { font-size: 0.875rem; color: var(--muted); }
 
-/* ══ RESULT ══ */
-.result-page{align-items:center;padding:5rem 5%;flex-direction:column;}
-.result-tag{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;animation:fadeUp 0.5s ease both;}
-.result-title{font-family:var(--sans);font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;letter-spacing:-0.03em;text-align:center;margin-bottom:0.4rem;animation:fadeUp 0.5s 0.1s ease both;}
-.result-arch{font-size:0.9rem;color:var(--muted);text-align:center;margin-bottom:2.5rem;animation:fadeUp 0.5s 0.15s ease both;}
-.result-arch strong{color:var(--text);}
+/* ══════════════════════════════════════
+   RESULT PAGE
+══════════════════════════════════════ */
+.result-page {
+  align-items: center;
+  padding: 5rem 5%;
+  flex-direction: column;
+}
+
+.result-eyebrow {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 0.75rem;
+  animation: fadeUp 0.5s ease both;
+}
+
+.result-title {
+  font-family: var(--serif);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 800; letter-spacing: -0.03em;
+  text-align: center; margin-bottom: 0.5rem;
+  animation: fadeUp 0.5s 0.1s ease both;
+}
+
+.result-archetype {
+  font-size: 1rem; color: var(--muted);
+  text-align: center; margin-bottom: 3rem;
+  animation: fadeUp 0.5s 0.15s ease both;
+}
+.result-archetype strong { color: var(--text); }
 
 /* DNA CARD */
-.dna-card{width:100%;max-width:620px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:2rem;margin-bottom:2rem;position:relative;overflow:hidden;animation:fadeUp 0.5s 0.2s ease both;}
-.dna-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--result-grad,linear-gradient(90deg,var(--D),var(--I)));}
-.dna-card-tag{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1.5rem;display:block;}
-.dna-layout{display:grid;grid-template-columns:200px 1fr;gap:2rem;align-items:center;}
-.radar-wrap{display:flex;justify-content:center;}
-.bars-col{display:flex;flex-direction:column;gap:0.85rem;}
-.bar-row{display:flex;align-items:center;gap:0.75rem;}
-.bar-letter{font-family:var(--mono);font-size:0.82rem;font-weight:700;width:16px;text-align:center;}
-.bar-track{flex:1;height:5px;background:rgba(255,255,255,0.05);border-radius:100px;overflow:hidden;}
-.bar-fill{height:100%;border-radius:100px;transition:width 1.2s cubic-bezier(0.34,1.56,0.64,1) 0.3s;}
-.bar-pct{font-family:var(--mono);font-size:0.68rem;width:36px;text-align:right;color:var(--muted);}
-.traits-wrap{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);}
-.trait-tag{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.06em;text-transform:uppercase;padding:0.22rem 0.65rem;border-radius:3px;border:1px solid;color:var(--tc);border-color:var(--tc);}
+.dna-card {
+  width: 100%; max-width: 600px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+  position: relative; overflow: hidden;
+  animation: fadeUp 0.5s 0.2s ease both;
+}
+.dna-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--result-gradient, linear-gradient(90deg, var(--D), var(--I)));
+}
+.dna-card-label {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 1.75rem;
+}
 
-/* PROFILE GRID */
-.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;width:100%;max-width:620px;margin-bottom:1.75rem;animation:fadeUp 0.5s 0.3s ease both;}
-.profile-block{background:var(--surface);padding:1.25rem 1.5rem;}
-.profile-block h4{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;}
-.profile-block p{font-size:0.8rem;color:var(--text);line-height:1.65;}
+/* RADAR SVG */
+.radar-wrap {
+  display: flex; justify-content: center;
+  margin-bottom: 2rem;
+}
+
+/* BARS */
+.disc-bars { display: flex; flex-direction: column; gap: 1rem; }
+.bar-row { display: flex; align-items: center; gap: 1rem; }
+.bar-letter {
+  font-family: var(--serif);
+  font-size: 1rem; font-weight: 800; width: 20px; text-align: center;
+}
+.bar-track {
+  flex: 1; height: 8px; background: rgba(255,255,255,0.06);
+  border-radius: 100px; overflow: hidden;
+}
+.bar-fill {
+  height: 100%; border-radius: 100px;
+  transition: width 1.2s cubic-bezier(0.34,1.56,0.64,1) 0.3s;
+}
+.bar-pct {
+  font-size: 0.82rem; font-weight: 600; width: 40px; text-align: right;
+  color: var(--muted);
+}
+
+/* TRAITS */
+.traits-wrap {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;
+  margin-top: 1.5rem;
+}
+.trait-tag {
+  font-size: 0.75rem; font-weight: 600;
+  padding: 0.3rem 0.8rem; border-radius: 100px;
+  border: 1px solid var(--tag-color);
+  color: var(--tag-color);
+  background: rgba(255,255,255,0.03);
+}
+
+/* PROFILE BLOCKS */
+.profile-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1rem; width: 100%; max-width: 600px;
+  margin-bottom: 2rem;
+  animation: fadeUp 0.5s 0.3s ease both;
+}
+.profile-block {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 1.5rem;
+}
+.profile-block h4 {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+.profile-block p { font-size: 0.875rem; color: var(--text); line-height: 1.6; }
+.profile-block ul { padding-left: 1rem; }
+.profile-block li { font-size: 0.875rem; color: var(--muted); line-height: 1.8; }
 
 /* ACTIONS */
-.result-actions{display:flex;gap:0.65rem;flex-wrap:wrap;justify-content:center;animation:fadeUp 0.5s 0.4s ease both;}
-.btn-dash{background:var(--I);color:#fff;border:none;padding:0.8rem 1.75rem;border-radius:7px;font-size:0.88rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:opacity 0.2s;}
-.btn-dash:hover{opacity:0.87;}
-.btn-pdf{background:var(--surface);color:var(--text);border:1px solid var(--border2);padding:0.8rem 1.75rem;border-radius:7px;font-size:0.88rem;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all 0.2s;}
-.btn-pdf:hover{border-color:var(--I);color:var(--I);}
-.btn-share{background:transparent;color:var(--muted);border:1px solid var(--border);padding:0.8rem 1.25rem;border-radius:7px;font-size:0.82rem;font-weight:500;font-family:var(--sans);cursor:pointer;transition:all 0.2s;}
-.btn-share:hover{border-color:var(--border2);color:var(--text);}
+.result-actions {
+  display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+  animation: fadeUp 0.5s 0.4s ease both;
+}
+.btn-dashboard {
+  background: var(--I); color: #fff; border: none;
+  padding: 0.9rem 2rem; border-radius: 10px;
+  font-size: 0.95rem; font-weight: 700;
+  font-family: var(--serif); cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 0 20px rgba(124,111,247,0.3);
+}
+.btn-dashboard:hover { box-shadow: 0 0 35px rgba(124,111,247,0.5); transform: translateY(-1px); }
 
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.btn-share {
+  background: transparent; color: var(--text);
+  border: 1px solid var(--border);
+  padding: 0.9rem 2rem; border-radius: 10px;
+  font-size: 0.95rem; font-weight: 600;
+  font-family: var(--sans); cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-share:hover { border-color: var(--I); color: var(--I); }
 
-/* PRINT/PDF */
-@media print{
-  body{background:#fff;color:#111;}
-  .quiz-nav,.result-actions,.orb,body::before{display:none!important;}
-  .dna-card,.profile-block{border-color:#ddd;background:#f9f9f9;}
-  .result-tag,.dna-card-tag,.profile-block h4{color:#555;}
-  .profile-block p,.result-arch{color:#333;}
-  .bar-track{background:#eee;}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════
+   MOBILE BOTTOM NAV
+══════════════════════════════════════ */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(6,6,8,0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));
+}
+.mobile-bottom-nav ul {
+  display: flex; list-style: none;
+  justify-content: space-around; align-items: center;
+  margin: 0; padding: 0;
+}
+.mobile-bottom-nav li a, .mobile-bottom-nav li button {
+  display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
+  color: var(--muted); text-decoration: none;
+  font-size: 0.6rem; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 0.4rem 1rem;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--sans);
+  transition: color 0.2s;
+}
+.mobile-bottom-nav li a:hover, .mobile-bottom-nav li button:hover { color: var(--text); }
+.mobile-bottom-nav li a.active { color: var(--I); }
+.mobile-bottom-nav .nav-icon { font-size: 1.2rem; line-height: 1; }
+
+@media (max-width: 1024px) {
+  .mobile-bottom-nav { display: block; }
+  /* Garante que o conteúdo não fique atrás do bottom nav */
+  .page.active { padding-bottom: 70px; }
+  .quiz-body { padding-bottom: 5rem; }
+  .result-page { padding-bottom: 6rem; }
+  /* Profile grid vira 1 coluna em telas pequenas */
+  .profile-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .intro-page { padding: 3rem 1.5rem 2rem; }
+  .disc-preview { gap: 0.5rem; }
+  .disc-pill { font-size: 0.75rem; padding: 0.4rem 0.8rem; }
+  .intro-meta { gap: 1.5rem; }
+  .quiz-progress-wrap { max-width: 180px; margin: 0 0.75rem; }
+  .dna-card { padding: 1.5rem; }
 }
 </style>
 </head>
 <body>
+
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 
-<!-- ══ INTRO ══ -->
-<div class="page active" id="page-intro">
-  <div class="intro-page">
-    <div class="intro-tag"><span class="intro-tag-dot"></span>DNA Comportamental</div>
-    <h1>Perfil <span class="accent">DISC</span><br><span class="dim">em dados precisos.</span></h1>
-    <p class="intro-sub">24 afirmações. 8 minutos. Resultado imediato com card DNA, gráfico radar e relatório PDF.</p>
-    <div class="disc-pills">
-      <div class="disc-pill"><span class="d-dot" style="background:var(--D)"></span><span style="color:var(--D)">D</span> Dominância</div>
-      <div class="disc-pill"><span class="d-dot" style="background:var(--I)"></span><span style="color:var(--I)">I</span> Influência</div>
-      <div class="disc-pill"><span class="d-dot" style="background:var(--S)"></span><span style="color:var(--S)">S</span> Estabilidade</div>
-      <div class="disc-pill"><span class="d-dot" style="background:var(--C)"></span><span style="color:var(--C)">C</span> Conformidade</div>
+<!-- ══════════════════════════════════════
+     ONBOARDING WIZARD (primeiro acesso)
+══════════════════════════════════════ -->
+<div class="onboarding-overlay" id="onboarding-overlay">
+  <div class="onboarding-modal">
+    <!-- Step 1 -->
+    <div class="onboarding-step active" id="ob-step-1">
+      <div class="ob-icon">💊</div>
+      <h2>Bem-vindo à<br><em>Cápsula de Desenvolvimento</em></h2>
+      <p>Uma plataforma de autoconhecimento com 8 matrizes comportamentais. Cada avaliação revela um lado diferente de quem você é.</p>
+      <div class="ob-dots">
+        <span class="ob-dot active"></span>
+        <span class="ob-dot"></span>
+        <span class="ob-dot"></span>
+      </div>
+      <button class="ob-btn-next" onclick="obNext(2)">Continuar →</button>
     </div>
-    <div class="intro-meta">
-      <div class="meta-item"><span class="meta-val">24</span><span class="meta-label">Afirmações</span></div>
-      <div class="meta-item"><span class="meta-val">~8</span><span class="meta-label">Minutos</span></div>
-      <div class="meta-item"><span class="meta-val">4</span><span class="meta-label">Dimensões</span></div>
+    <!-- Step 2 -->
+    <div class="onboarding-step" id="ob-step-2">
+      <div class="ob-icon">🧬</div>
+      <h2>Comece pelo<br><em>Perfil DISC</em></h2>
+      <p>O DISC é a porta de entrada ideal. Em ~8 minutos, você descobre como age sob pressão, como decide e como se comunica.</p>
+      <div class="ob-meta">
+        <div class="ob-meta-item"><span>24</span><small>Afirmações</small></div>
+        <div class="ob-meta-item"><span>~8min</span><small>Duração</small></div>
+        <div class="ob-meta-item"><span>4</span><small>Dimensões</small></div>
+      </div>
+      <div class="ob-dots">
+        <span class="ob-dot"></span>
+        <span class="ob-dot active"></span>
+        <span class="ob-dot"></span>
+      </div>
+      <button class="ob-btn-next" onclick="obNext(3)">Próximo →</button>
     </div>
-    <button class="btn-start" onclick="startQuiz()">Iniciar avaliação →</button>
-    <p class="intro-note">// sem certo ou errado · responda com sinceridade</p>
+    <!-- Step 3 -->
+    <div class="onboarding-step" id="ob-step-3">
+      <div class="ob-icon">📊</div>
+      <h2>Seu progresso<br><em>fica salvo</em></h2>
+      <p>Ao concluir, seu resultado é salvo no seu perfil. Você pode retomar de onde parou e comparar evolução ao longo do tempo.</p>
+      <div class="ob-dots">
+        <span class="ob-dot"></span>
+        <span class="ob-dot"></span>
+        <span class="ob-dot active"></span>
+      </div>
+      <button class="ob-btn-start" onclick="obFinish()">Começar minha jornada →</button>
+    </div>
   </div>
 </div>
 
-<!-- ══ QUIZ ══ -->
+<!-- ══════════════════════════════════════
+     PAGE 1: INTRO
+══════════════════════════════════════ -->
+<div class="page active" id="page-intro">
+  <div class="intro-page">
+
+    <div class="intro-badge">🧬 DNA Comportamental</div>
+
+    <h1>Descubra seu<br><em>Perfil DISC</em></h1>
+
+    <p class="intro-sub">
+      24 afirmações. 8 minutos. Resultado imediato.<br>
+      Descubra como você se comporta, decide e se comunica — e use isso a seu favor.
+    </p>
+
+    <div class="disc-preview">
+      <div class="disc-pill">
+        <span class="dot" style="color:var(--D)"></span>
+        <span style="color:var(--D)">D</span> Dominância
+      </div>
+      <div class="disc-pill">
+        <span class="dot" style="color:var(--I)"></span>
+        <span style="color:var(--I)">I</span> Influência
+      </div>
+      <div class="disc-pill">
+        <span class="dot" style="color:var(--S)"></span>
+        <span style="color:var(--S)">S</span> Estabilidade
+      </div>
+      <div class="disc-pill">
+        <span class="dot" style="color:var(--C)"></span>
+        <span style="color:var(--C)">C</span> Conformidade
+      </div>
+    </div>
+
+    <div class="intro-meta">
+      <div class="meta-item">
+        <span class="meta-num">24</span>
+        <span class="meta-label">Afirmações</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-num">~8</span>
+        <span class="meta-label">Minutos</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-num">4</span>
+        <span class="meta-label">Dimensões</span>
+      </div>
+    </div>
+
+    <button class="btn-start" onclick="startQuiz()">
+      Iniciar avaliação →
+    </button>
+
+    <p class="intro-note">Sem certo ou errado. Responda com sinceridade e espontaneidade.</p>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 2: QUIZ
+══════════════════════════════════════ -->
 <div class="page" id="page-quiz">
+
   <nav class="quiz-nav">
-    <a href="disc.html" class="quiz-logo"><div class="quiz-logo-mark">C</div>Cápsula<span>.</span>Dev</a>
-    <div class="quiz-prog-wrap">
-      <div class="quiz-prog-track"><div class="quiz-prog-fill" id="prog-fill" style="width:0%"></div></div>
-      <div class="quiz-counter" id="q-counter">1 / 24</div>
+    <a href="disc.html" class="quiz-logo">Cápsula<span>.</span>Dev</a>
+    <div class="quiz-progress-wrap">
+      <div class="quiz-progress-track">
+        <div class="quiz-progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <div class="quiz-counter" id="q-counter">1 de 24</div>
     </div>
     <button class="btn-back" onclick="goBack()">← Voltar</button>
   </nav>
+
   <div class="quiz-body">
-    <div class="question-card" id="question-card"></div>
+    <div class="question-card" id="question-card">
+      <!-- injetado por JS -->
+    </div>
   </div>
+
 </div>
 
-<!-- TRANSITION -->
-<div class="sec-transition" id="sec-transition">
-  <div class="t-icon" id="t-icon"></div>
-  <div class="t-tag" id="t-tag"></div>
-  <div class="t-label" id="t-label"></div>
-  <div class="t-sub" id="t-sub"></div>
+<!-- TRANSITION OVERLAY -->
+<div class="section-transition" id="section-transition">
+  <div class="transition-icon" id="t-icon">🎯</div>
+  <div class="transition-label" id="t-label">Dimensão: Influência</div>
+  <div class="transition-sub" id="t-sub">Como você se conecta e energiza as pessoas</div>
 </div>
 
-<!-- ══ RESULT ══ -->
+<!-- ══════════════════════════════════════
+     PAGE 3: RESULTADO
+══════════════════════════════════════ -->
 <div class="page" id="page-result">
   <div class="result-page">
-    <div class="result-tag">// dna comportamental · resultado</div>
+
+    <div class="result-eyebrow">Seu DNA Comportamental</div>
     <div class="result-title" id="result-title">—</div>
-    <div class="result-arch" id="result-arch">—</div>
+    <div class="result-archetype" id="result-archetype">—</div>
 
     <div class="dna-card" id="dna-card">
-      <span class="dna-card-tag">MAPEAMENTO_DE_DIMENSÕES</span>
-      <div class="dna-layout">
-        <div class="radar-wrap"><svg id="radar-svg" width="180" height="180" viewBox="0 0 180 180"></svg></div>
-        <div class="bars-col" id="disc-bars"></div>
-      </div>
+      <div class="dna-card-label">📊 Mapa de Dimensões</div>
+
+      <div class="disc-bars" id="disc-bars"></div>
+
       <div class="traits-wrap" id="traits-wrap"></div>
     </div>
 
-    <div class="profile-grid" id="profile-grid"></div>
+    <div class="profile-grid" id="profile-grid">
+      <!-- injetado por JS -->
+    </div>
 
     <div class="result-actions">
-      <button class="btn-dash" onclick="window.location.href='dashboard.html'">→ Ver Dashboard</button>
-      <button class="btn-pdf" onclick="generatePDF()">↓ Baixar PDF</button>
-      <button class="btn-share" onclick="shareResult()">↗ Compartilhar</button>
+      <button class="btn-dashboard" onclick="window.location.href='dashboard.html'">
+        Ver meu Dashboard →
+      </button>
+      <button class="btn-share" onclick="shareResult()">
+        📤 Compartilhar resultado
+      </button>
     </div>
+
   </div>
 </div>
 
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+  <ul>
+    <li>
+      <a href="dashboard.html" class="nav-icon-link">
+        <span class="nav-icon">🏠</span>
+        <span>Início</span>
+      </a>
+    </li>
+    <li>
+      <a href="disc.html" class="nav-icon-link active">
+        <span class="nav-icon">🧬</span>
+        <span>DISC</span>
+      </a>
+    </li>
+    <li>
+      <a href="dashboard.html#matrizes" class="nav-icon-link">
+        <span class="nav-icon">📊</span>
+        <span>Matrizes</span>
+      </a>
+    </li>
+    <li>
+      <a href="dashboard.html#perfil" class="nav-icon-link">
+        <span class="nav-icon">👤</span>
+        <span>Perfil</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
 <script>
-// ══ QUESTÕES ══
-const QUESTIONS=[
-  {dim:'D',text:'Em situações de pressão, prefiro ser quem toma as decisões finais.',color:'var(--D)',hex:'#E8603A',label:'Dominância'},
-  {dim:'D',text:'Obstáculos me energizam — quanto maior o desafio, mais motivado(a) fico.',color:'var(--D)',hex:'#E8603A',label:'Dominância'},
-  {dim:'D',text:'Prefiro agir rápido e corrigir depois a esperar todas as informações.',color:'var(--D)',hex:'#E8603A',label:'Dominância'},
-  {dim:'D',text:'Não tenho dificuldade em confrontar pessoas quando discordo de algo.',color:'var(--D)',hex:'#E8603A',label:'Dominância'},
-  {dim:'D',text:'Resultados e metas concretas importam mais para mim do que o processo.',color:'var(--D)',hex:'#E8603A',label:'Dominância'},
-  {dim:'D',text:'Prefiro liderar projetos do que participar apenas como membro da equipe.',color:'var(--D)',hex:'#E8603A',label:'Dominância'},
-  {dim:'I',text:'Ambientes sociais me energizam — quanto mais gente, melhor me sinto.',color:'var(--I)',hex:'#6C5FE6',label:'Influência'},
-  {dim:'I',text:'Tenho facilidade para convencer e entusiasmar as pessoas com minhas ideias.',color:'var(--I)',hex:'#6C5FE6',label:'Influência'},
-  {dim:'I',text:'Costumo ser o ponto de conexão do grupo — as pessoas me procuram para conversar.',color:'var(--I)',hex:'#6C5FE6',label:'Influência'},
-  {dim:'I',text:'Me sinto confortável falando em público ou apresentando ideias para grupos.',color:'var(--I)',hex:'#6C5FE6',label:'Influência'},
-  {dim:'I',text:'Prefiro criar o clima positivo do time a ficar focado apenas nas tarefas.',color:'var(--I)',hex:'#6C5FE6',label:'Influência'},
-  {dim:'I',text:'Fico desconfortável quando o ambiente é tenso ou silencioso por muito tempo.',color:'var(--I)',hex:'#6C5FE6',label:'Influência'},
-  {dim:'S',text:'Prefiro rotinas e processos claros a ambientes de constante mudança.',color:'var(--S)',hex:'#2EC4A0',label:'Estabilidade'},
-  {dim:'S',text:'A harmonia do grupo vale mais para mim do que vencer um debate.',color:'var(--S)',hex:'#2EC4A0',label:'Estabilidade'},
-  {dim:'S',text:'As pessoas me descrevem como alguém calmo(a) e confiável.',color:'var(--S)',hex:'#2EC4A0',label:'Estabilidade'},
-  {dim:'S',text:'Quando começo algo, tenho forte tendência a levar até o fim.',color:'var(--S)',hex:'#2EC4A0',label:'Estabilidade'},
-  {dim:'S',text:'Mudanças inesperadas me tiram do eixo — prefiro planejar com antecedência.',color:'var(--S)',hex:'#2EC4A0',label:'Estabilidade'},
-  {dim:'S',text:'Escuto os outros com atenção antes de dar minha opinião.',color:'var(--S)',hex:'#2EC4A0',label:'Estabilidade'},
-  {dim:'C',text:'Antes de agir, reúno o máximo de informações e analiso os dados disponíveis.',color:'var(--C)',hex:'#1BA8D4',label:'Conformidade'},
-  {dim:'C',text:'Erros e imprecisões me incomodam — gosto de entregar trabalhos impecáveis.',color:'var(--C)',hex:'#1BA8D4',label:'Conformidade'},
-  {dim:'C',text:'Sigo regras e procedimentos com rigor, mesmo quando poderiam ser ignorados.',color:'var(--C)',hex:'#1BA8D4',label:'Conformidade'},
-  {dim:'C',text:'Tenho dificuldade em tomar decisões importantes sem dados suficientes.',color:'var(--C)',hex:'#1BA8D4',label:'Conformidade'},
-  {dim:'C',text:'Questiono ideias e propostas antes de aceitar — preciso entender o porquê.',color:'var(--C)',hex:'#1BA8D4',label:'Conformidade'},
-  {dim:'C',text:'Prefiro qualidade a velocidade — faço menos, mas faço direito.',color:'var(--C)',hex:'#1BA8D4',label:'Conformidade'},
+// ══════════════════════════════════════
+// BANCO DE QUESTÕES
+// 6 por dimensão (D, I, S, C) = 24 total
+// score: dimensão que a pergunta mede
+// reverse: se true, 5 pontos = baixa pontuação nessa dim
+// ══════════════════════════════════════
+const QUESTIONS = [
+  // ── DOMINÂNCIA (D) ──
+  {
+    dim: 'D', section: 'D',
+    text: 'Em situações de pressão, prefiro ser quem toma as decisões finais.',
+    color: 'var(--D)', colorHex: '#FF6B35', label: 'Dominância',
+  },
+  {
+    dim: 'D', section: 'D',
+    text: 'Obstáculos me energizam — quanto maior o desafio, mais motivado(a) fico.',
+    color: 'var(--D)', colorHex: '#FF6B35', label: 'Dominância',
+  },
+  {
+    dim: 'D', section: 'D',
+    text: 'Prefiro agir rápido e corrigir depois a ficar esperando todas as informações.',
+    color: 'var(--D)', colorHex: '#FF6B35', label: 'Dominância',
+  },
+  {
+    dim: 'D', section: 'D',
+    text: 'Não tenho dificuldade em confrontar pessoas quando discordo de algo.',
+    color: 'var(--D)', colorHex: '#FF6B35', label: 'Dominância',
+  },
+  {
+    dim: 'D', section: 'D',
+    text: 'Resultados e metas concretas importam mais para mim do que o processo.',
+    color: 'var(--D)', colorHex: '#FF6B35', label: 'Dominância',
+  },
+  {
+    dim: 'D', section: 'D',
+    text: 'Prefiro liderar projetos do que participar como membro de uma equipe.',
+    color: 'var(--D)', colorHex: '#FF6B35', label: 'Dominância',
+  },
+
+  // ── INFLUÊNCIA (I) ──
+  {
+    dim: 'I', section: 'I',
+    text: 'Ambientes sociais me energizam — quanto mais gente, melhor me sinto.',
+    color: 'var(--I)', colorHex: '#7C6FF7', label: 'Influência',
+  },
+  {
+    dim: 'I', section: 'I',
+    text: 'Tenho facilidade para convencer e entusiasmar as pessoas com minhas ideias.',
+    color: 'var(--I)', colorHex: '#7C6FF7', label: 'Influência',
+  },
+  {
+    dim: 'I', section: 'I',
+    text: 'Costumo ser o ponto de conexão do meu grupo — as pessoas me procuram para conversar.',
+    color: 'var(--I)', colorHex: '#7C6FF7', label: 'Influência',
+  },
+  {
+    dim: 'I', section: 'I',
+    text: 'Sinto-me confortável em falar em público ou apresentar ideias para grupos.',
+    color: 'var(--I)', colorHex: '#7C6FF7', label: 'Influência',
+  },
+  {
+    dim: 'I', section: 'I',
+    text: 'Prefiro criar o clima positivo do time a ficar focado(a) apenas nas tarefas.',
+    color: 'var(--I)', colorHex: '#7C6FF7', label: 'Influência',
+  },
+  {
+    dim: 'I', section: 'I',
+    text: 'Fico desconfortável quando o ambiente é tenso ou silencioso por muito tempo.',
+    color: 'var(--I)', colorHex: '#7C6FF7', label: 'Influência',
+  },
+
+  // ── ESTABILIDADE (S) ──
+  {
+    dim: 'S', section: 'S',
+    text: 'Prefiro rotinas e processos claros a ambientes de constante mudança.',
+    color: 'var(--S)', colorHex: '#4FFFB0', label: 'Estabilidade',
+  },
+  {
+    dim: 'S', section: 'S',
+    text: 'Para mim, a harmonia e o bem-estar do grupo valem mais do que vencer um debate.',
+    color: 'var(--S)', colorHex: '#4FFFB0', label: 'Estabilidade',
+  },
+  {
+    dim: 'S', section: 'S',
+    text: 'As pessoas ao meu redor me descrevem como alguém calmo(a) e confiável.',
+    color: 'var(--S)', colorHex: '#4FFFB0', label: 'Estabilidade',
+  },
+  {
+    dim: 'S', section: 'S',
+    text: 'Quando começo algo, tenho forte tendência a levar até o fim, mesmo que demore.',
+    color: 'var(--S)', colorHex: '#4FFFB0', label: 'Estabilidade',
+  },
+  {
+    dim: 'S', section: 'S',
+    text: 'Mudanças inesperadas me tiram do eixo — prefiro planejar com antecedência.',
+    color: 'var(--S)', colorHex: '#4FFFB0', label: 'Estabilidade',
+  },
+  {
+    dim: 'S', section: 'S',
+    text: 'Sou o tipo de pessoa que escuta os outros com atenção antes de dar minha opinião.',
+    color: 'var(--S)', colorHex: '#4FFFB0', label: 'Estabilidade',
+  },
+
+  // ── CONFORMIDADE (C) ──
+  {
+    dim: 'C', section: 'C',
+    text: 'Antes de agir, prefiro reunir o máximo de informações e analisar os dados disponíveis.',
+    color: 'var(--C)', colorHex: '#00E5FF', label: 'Conformidade',
+  },
+  {
+    dim: 'C', section: 'C',
+    text: 'Erros e imprecisões me incomodam — gosto de entregar trabalhos impecáveis.',
+    color: 'var(--C)', colorHex: '#00E5FF', label: 'Conformidade',
+  },
+  {
+    dim: 'C', section: 'C',
+    text: 'Sigo regras e procedimentos com rigor, mesmo quando poderiam ser ignorados.',
+    color: 'var(--C)', colorHex: '#00E5FF', label: 'Conformidade',
+  },
+  {
+    dim: 'C', section: 'C',
+    text: 'Tenho dificuldade em tomar decisões importantes sem dados suficientes.',
+    color: 'var(--C)', colorHex: '#00E5FF', label: 'Conformidade',
+  },
+  {
+    dim: 'C', section: 'C',
+    text: 'Costumo questionar ideias e propostas antes de aceitar — preciso entender o porquê.',
+    color: 'var(--C)', colorHex: '#00E5FF', label: 'Conformidade',
+  },
+  {
+    dim: 'C', section: 'C',
+    text: 'Prefiro qualidade a velocidade — faço menos, mas faço direito.',
+    color: 'var(--C)', colorHex: '#00E5FF', label: 'Conformidade',
+  },
 ];
 
-const TRANSITIONS={
-  I:{icon:'⬡',tag:'DIMENSÃO_02',label:'Influência',sub:'Como você conecta e energiza pessoas'},
-  S:{icon:'◎',tag:'DIMENSÃO_03',label:'Estabilidade',sub:'Como você mantém harmonia e constância'},
-  C:{icon:'◈',tag:'DIMENSÃO_04',label:'Conformidade',sub:'Como você processa informação e mantém padrões'},
+const SECTION_TRANSITIONS = {
+  I: { icon: '🌟', label: 'Dimensão: Influência', sub: 'Como você se conecta e energiza as pessoas' },
+  S: { icon: '🌊', label: 'Dimensão: Estabilidade', sub: 'Como você mantém harmonia e constância' },
+  C: { icon: '🔬', label: 'Dimensão: Conformidade', sub: 'Como você processa informação e mantém padrões' },
 };
 
-const HINTS=['Não me descreve de jeito nenhum','Me descreve muito pouco','Neutro — tanto faz','Me descreve bem','Me descreve perfeitamente'];
+const SCALE_HINTS = [
+  'Não me descreve de jeito nenhum',
+  'Me descreve muito pouco',
+  'Neutro — tanto faz',
+  'Me descreve bem',
+  'Me descreve perfeitamente',
+];
 
-const PROFILES={
-  D:{title:'O Executor',code:'Dominância',hex:'#E8603A',cssVar:'var(--D)',grad:'linear-gradient(90deg,#E8603A,#6C5FE6)',
-    arch:'Perfil <strong>Dominante</strong> — orientado a resultados e liderança direta',
-    traits:['Decidido','Competitivo','Direto','Corajoso','Independente','Focado em metas'],
-    strengths:'Toma decisões rápidas, não tem medo de conflito, é natural em posições de liderança. Enfrenta desafios de frente e persiste até alcançar resultados.',
-    challenges:'Pode parecer impaciente ou insensível. Tende a atropelar processos em prol da velocidade. Precisa desenvolver escuta ativa.',
-    environment:'Ambientes dinâmicos com autonomia e metas claras. Detesta burocracia e reuniões improdutivas.',
-    communication:'Direto ao ponto. Seja objetivo e mostre resultados concretos.',
+// ══════════════════════════════════════
+// PERFIS DISC — descrições e traits
+// ══════════════════════════════════════
+const PROFILES = {
+  D: {
+    title: 'O Executor',
+    code: 'Dominância',
+    color: '#FF6B35',
+    gradient: 'linear-gradient(90deg, #FF6B35, #FF3CAC)',
+    archetype: 'Perfil <strong>Dominante</strong> — orientado a resultados e liderança direta',
+    traits: ['Decidido', 'Competitivo', 'Direto', 'Corajoso', 'Independente', 'Orientado a metas'],
+    strengths: 'Toma decisões rápidas, não tem medo de conflito, é natural em posições de liderança. Enfrenta desafios de frente e persiste até alcançar resultados.',
+    challenges: 'Pode parecer impaciente ou insensível. Tende a atropelar processos e pessoas em prol da velocidade. Precisa desenvolver escuta ativa.',
+    environment: 'Ambientes dinâmicos, com autonomia e metas claras. Detesta burocracia e reuniões improdutivas.',
+    communication: 'Direto ao ponto. Vá sem rodeios, seja objetivo e mostre resultados concretos.',
   },
-  I:{title:'O Catalisador',code:'Influência',hex:'#6C5FE6',cssVar:'var(--I)',grad:'linear-gradient(90deg,#6C5FE6,#1BA8D4)',
-    arch:'Perfil <strong>Influente</strong> — conectado, entusiasmado e persuasivo',
-    traits:['Comunicativo','Entusiasmado','Persuasivo','Criativo','Otimista','Social'],
-    strengths:'Inspira e motiva os outros naturalmente. Cria conexões rapidamente, tem facilidade para vender ideias e construir relacionamentos duradouros.',
-    challenges:'Pode ser desorganizado e impulsivo. Tende a evitar conversas difíceis e conflitos importantes.',
-    environment:'Ambientes colaborativos e criativos com liberdade de expressão e reconhecimento constante.',
-    communication:'Use entusiasmo e conte histórias. Fale sobre impacto nas pessoas, não apenas nos números.',
+  I: {
+    title: 'O Catalisador',
+    code: 'Influência',
+    color: '#7C6FF7',
+    gradient: 'linear-gradient(90deg, #7C6FF7, #00E5FF)',
+    archetype: 'Perfil <strong>Influente</strong> — conectado, entusiasmado e persuasivo',
+    traits: ['Comunicativo', 'Entusiasmado', 'Persuasivo', 'Criativo', 'Otimista', 'Social'],
+    strengths: 'Inspira e motiva os outros naturalmente. Cria conexões rapidamente, tem facilidade para vender ideias e construir relacionamentos.',
+    challenges: 'Pode ser desorganizado, impulsivo e prometer mais do que entrega. Tende a evitar conversas difíceis e conflitos.',
+    environment: 'Ambientes colaborativos, criativos e com liberdade de expressão. Precisa de reconhecimento e interação constante.',
+    communication: 'Use entusiasmo, conte histórias. Fale sobre impacto nas pessoas, não apenas nos números.',
   },
-  S:{title:'O Guardião',code:'Estabilidade',hex:'#2EC4A0',cssVar:'var(--S)',grad:'linear-gradient(90deg,#2EC4A0,#1BA8D4)',
-    arch:'Perfil <strong>Estável</strong> — confiável, paciente e orientado ao grupo',
-    traits:['Leal','Paciente','Confiável','Empático','Consistente','Colaborativo'],
-    strengths:'É o pilar da equipe. Mantém a calma sob pressão, é leal e cumpre o que promete. Excelente mediador e ouvinte ativo.',
-    challenges:'Dificuldade com mudanças rápidas e resistência excessiva a inovações. Tende a evitar conflitos ao custo do próprio bem-estar.',
-    environment:'Ambientes estáveis com clareza de expectativas, bom relacionamento e sentido de pertencimento.',
-    communication:'Seja gentil e paciente. Explique o impacto nas pessoas, não apenas na tarefa.',
+  S: {
+    title: 'O Guardião',
+    code: 'Estabilidade',
+    color: '#4FFFB0',
+    gradient: 'linear-gradient(90deg, #4FFFB0, #00E5FF)',
+    archetype: 'Perfil <strong>Estável</strong> — confiável, paciente e orientado ao grupo',
+    traits: ['Leal', 'Paciente', 'Confiável', 'Empático', 'Consistente', 'Colaborativo'],
+    strengths: 'É o pilar da equipe. Mantém a calma sob pressão, é leal e cumpre o que promete. Excelente mediador e ouvinte.',
+    challenges: 'Tem dificuldade com mudanças rápidas e pode ser excessivamente resistente a inovações. Tende a evitar conflitos ao custo de seu próprio bem-estar.',
+    environment: 'Ambientes estáveis, com clareza de expectativas, bom relacionamento e sentido de pertencimento.',
+    communication: 'Seja gentil e paciente. Explique o impacto nas pessoas, não apenas na tarefa. Dê tempo para processar.',
   },
-  C:{title:'O Analista',code:'Conformidade',hex:'#1BA8D4',cssVar:'var(--C)',grad:'linear-gradient(90deg,#1BA8D4,#6C5FE6)',
-    arch:'Perfil <strong>Conformista</strong> — analítico, preciso e orientado à qualidade',
-    traits:['Analítico','Preciso','Lógico','Organizado','Criterioso','Detalhista'],
-    strengths:'Entrega trabalhos de alta qualidade, identifica erros que outros ignoram, fundamenta decisões em dados e processos.',
-    challenges:'Pode travar por excesso de análise (paralisia por análise). Tende ao perfeccionismo e pode parecer frio ou distante.',
-    environment:'Ambientes com processos claros, autonomia para aprofundar e padrões de qualidade bem definidos.',
-    communication:'Use dados, lógica e evidências. Seja preciso e estruturado. Evite generalizações.',
+  C: {
+    title: 'O Analista',
+    code: 'Conformidade',
+    color: '#00E5FF',
+    gradient: 'linear-gradient(90deg, #00E5FF, #7C6FF7)',
+    archetype: 'Perfil <strong>Conformista</strong> — analítico, preciso e orientado à qualidade',
+    traits: ['Analítico', 'Preciso', 'Lógico', 'Organizado', 'Criterioso', 'Detalhista'],
+    strengths: 'Entrega trabalhos de alta qualidade, identifica erros que outros ignoram, fundamenta decisões em dados. Excelente em planejamento e processos.',
+    challenges: 'Pode travar por excesso de análise (paralisia por análise). Tende a ser perfeccionista ao ponto de perder prazos e pode parecer frio ou distante.',
+    environment: 'Ambientes com processos claros, autonomia para aprofundar e padrões de qualidade bem definidos.',
+    communication: 'Use dados, lógica e evidências. Seja preciso e estruturado. Evite generalizações.',
   },
 };
 
-// ══ STATE ══
-let currentQ=0,answers=new Array(24).fill(null),scores={D:0,I:0,S:0,C:0};
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let currentQ   = 0;
+let answers    = new Array(QUESTIONS.length).fill(null);
+let scores     = { D: 0, I: 0, S: 0, C: 0 };
 
-function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
-function startQuiz(){currentQ=0;answers=new Array(24).fill(null);showPage('page-quiz');renderQ(0);}
-function goBack(){if(currentQ===0)showPage('page-intro');else{currentQ--;renderQ(currentQ);}}
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
 
-function renderQ(idx){
-  const q=QUESTIONS[idx];
-  const pct=Math.round((idx/24)*100);
-  document.getElementById('prog-fill').style.width=pct+'%';
-  document.getElementById('q-counter').textContent=(idx+1)+' / 24';
-  const card=document.getElementById('question-card');
-  card.style.animation='none';card.offsetHeight;card.style.animation='';
-  const sel=answers[idx];
-  card.innerHTML=`
-    <div class="q-dim-tag" style="color:${q.hex};border-color:${q.hex}40;background:${q.hex}10;--qc:${q.color}">
-      <span class="q-dot" style="background:${q.hex}"></span>${q.label}
+function startQuiz() {
+  currentQ = 0;
+  answers  = new Array(QUESTIONS.length).fill(null);
+  showPage('page-quiz');
+  renderQuestion(0);
+}
+
+function goBack() {
+  if (currentQ === 0) {
+    showPage('page-intro');
+  } else {
+    currentQ--;
+    renderQuestion(currentQ);
+  }
+}
+
+// ══════════════════════════════════════
+// RENDER QUESTION
+// ══════════════════════════════════════
+function renderQuestion(idx) {
+  const q   = QUESTIONS[idx];
+  const pct = Math.round((idx / QUESTIONS.length) * 100);
+
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('q-counter').textContent = `${idx + 1} de ${QUESTIONS.length}`;
+
+  const card = document.getElementById('question-card');
+  card.style.animation = 'none';
+  card.offsetHeight; // reflow
+  card.style.animation = '';
+
+  const selected = answers[idx];
+
+  card.innerHTML = `
+    <div class="q-category" style="--q-color:${q.color}; background:${q.colorHex}18; border-color:${q.colorHex}40;">
+      <span class="q-dot" style="background:${q.color};box-shadow:0 0 6px ${q.color}"></span>
+      ${q.label}
     </div>
     <div class="question-text">${q.text}</div>
-    <div class="scale-labels"><span>Não me descreve</span><span>Me descreve muito</span></div>
-    <div class="scale-btns" style="--qc:${q.hex}">
-      ${[1,2,3,4,5].map(v=>`<button class="scale-btn ${sel===v?'selected':''}" data-val="${v}" style="--qc:${q.hex}" onclick="selectAnswer(${idx},${v})" title="${HINTS[v-1]}"></button>`).join('')}
+    <div class="scale-wrap">
+      <div class="scale-labels">
+        <span>Não me descreve</span>
+        <span>Me descreve muito</span>
+      </div>
+      <div class="scale-buttons" style="--q-color:${q.color}">
+        ${[1,2,3,4,5].map(v => `
+          <button
+            class="scale-btn ${selected === v ? 'selected' : ''}"
+            data-val="${v}"
+            style="--q-color:${q.color}"
+            onclick="selectAnswer(${idx}, ${v})"
+            title="${SCALE_HINTS[v-1]}"
+          ></button>
+        `).join('')}
+      </div>
+      <div class="scale-hint" id="scale-hint">
+        ${selected ? SCALE_HINTS[selected - 1] : 'Selecione uma opção para continuar'}
+      </div>
     </div>
-    <div class="scale-hint" id="scale-hint">${sel?HINTS[sel-1]:'// selecione para continuar'}</div>
     <div class="quiz-actions">
-      <button class="btn-next ${sel!==null?'ready':''}" style="background:${q.hex}" id="btn-next" onclick="nextQ()">
-        ${idx===23?'Ver resultado →':'Próxima →'}
+      <button
+        class="btn-next ${selected !== null ? 'ready' : ''}"
+        style="background:${q.color}; box-shadow:0 0 20px ${q.colorHex}40"
+        id="btn-next"
+        onclick="nextQuestion()"
+      >
+        ${idx === QUESTIONS.length - 1 ? 'Ver meu resultado →' : 'Próxima →'}
       </button>
     </div>
   `;
 }
 
-function selectAnswer(idx,val){
-  answers[idx]=val;
-  document.querySelectorAll('.scale-btn').forEach(b=>b.classList.remove('selected'));
+// ══════════════════════════════════════
+// SELECT ANSWER
+// ══════════════════════════════════════
+function selectAnswer(idx, val) {
+  answers[idx] = val;
+
+  // Update visual
+  document.querySelectorAll('.scale-btn').forEach(btn => btn.classList.remove('selected'));
   document.querySelector(`.scale-btn[data-val="${val}"]`).classList.add('selected');
-  document.getElementById('scale-hint').textContent=HINTS[val-1];
-  const btn=document.getElementById('btn-next');
-  if(btn)btn.classList.add('ready');
-  clearTimeout(window._auto);
-  window._auto=setTimeout(()=>nextQ(),650);
+  document.getElementById('scale-hint').textContent = SCALE_HINTS[val - 1];
+
+  // Enable next
+  const btn = document.getElementById('btn-next');
+  if (btn) btn.classList.add('ready');
+
+  // Auto-advance after 600ms
+  clearTimeout(window._autoAdvance);
+  window._autoAdvance = setTimeout(() => nextQuestion(), 650);
 }
 
-function nextQ(){
-  if(answers[currentQ]===null)return;
-  const curr=QUESTIONS[currentQ].dim;
-  const next=currentQ+1<24?QUESTIONS[currentQ+1].dim:null;
+// ══════════════════════════════════════
+// NEXT QUESTION
+// ══════════════════════════════════════
+function nextQuestion() {
+  if (answers[currentQ] === null) return;
+
+  // Check se muda de seção — mostrar transição
+  const currSection = QUESTIONS[currentQ].section;
+  const nextSection = currentQ + 1 < QUESTIONS.length ? QUESTIONS[currentQ + 1].section : null;
+
   currentQ++;
-  if(currentQ>=24){calcResults();return;}
-  if(next&&next!==curr&&TRANSITIONS[next]){showTransition(next,()=>renderQ(currentQ));}
-  else renderQ(currentQ);
+
+  if (currentQ >= QUESTIONS.length) {
+    calculateResults();
+    return;
+  }
+
+  if (nextSection && nextSection !== currSection && SECTION_TRANSITIONS[nextSection]) {
+    showSectionTransition(nextSection, () => renderQuestion(currentQ));
+  } else {
+    renderQuestion(currentQ);
+  }
 }
 
-function showTransition(dim,cb){
-  const t=TRANSITIONS[dim],el=document.getElementById('sec-transition');
-  document.getElementById('t-icon').textContent=t.icon;
-  document.getElementById('t-tag').textContent=t.tag;
-  document.getElementById('t-label').textContent=t.label;
-  document.getElementById('t-sub').textContent=t.sub;
+// ══════════════════════════════════════
+// SECTION TRANSITION
+// ══════════════════════════════════════
+function showSectionTransition(section, callback) {
+  const t = SECTION_TRANSITIONS[section];
+  const el = document.getElementById('section-transition');
+  document.getElementById('t-icon').textContent  = t.icon;
+  document.getElementById('t-label').textContent = t.label;
+  document.getElementById('t-sub').textContent   = t.sub;
   el.classList.add('show');
-  setTimeout(()=>{el.classList.remove('show');cb();},1700);
+  setTimeout(() => {
+    el.classList.remove('show');
+    callback();
+  }, 1800);
 }
 
-function calcResults(){
-  scores={D:0,I:0,S:0,C:0};
-  QUESTIONS.forEach((q,i)=>{scores[q.dim]+=(answers[i]||3);});
-  const max=6*5;
-  Object.keys(scores).forEach(k=>{scores[k]=Math.round((scores[k]/max)*100);});
+// ══════════════════════════════════════
+// CALCULATE RESULTS
+// ══════════════════════════════════════
+function calculateResults() {
+  scores = { D: 0, I: 0, S: 0, C: 0 };
+
+  QUESTIONS.forEach((q, i) => {
+    const val = answers[i] || 3;
+    scores[q.dim] += val;
+  });
+
+  // Normaliza para 0-100
+  const maxPossible = 6 * 5; // 6 perguntas * 5 pontos max
+  Object.keys(scores).forEach(k => {
+    scores[k] = Math.round((scores[k] / maxPossible) * 100);
+  });
+
   showResult();
 }
 
-// ══ RADAR SVG ══
-function buildRadar(scoreObj){
-  const cx=90,cy=90,R=72;
-  const dims=['D','I','S','C'];
-  const colors={'D':'#E8603A','I':'#6C5FE6','S':'#2EC4A0','C':'#1BA8D4'};
-  const angles=dims.map((_,i)=>(i/dims.length)*2*Math.PI-Math.PI/2);
-  // Grid rings
-  let svg='';
-  [0.25,0.5,0.75,1].forEach(r=>{
-    const pts=angles.map(a=>`${cx+R*r*Math.cos(a)},${cy+R*r*Math.sin(a)}`).join(' ');
-    svg+=`<polygon points="${pts}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
-  });
-  // Axis lines
-  angles.forEach((a,i)=>{
-    svg+=`<line x1="${cx}" y1="${cy}" x2="${cx+R*Math.cos(a)}" y2="${cy+R*Math.sin(a)}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
-  });
-  // Data polygon
-  const dataPoints=dims.map((d,i)=>{
-    const r=(scoreObj[d]||0)/100;
-    return `${cx+R*r*Math.cos(angles[i])},${cy+R*r*Math.sin(angles[i])}`;
-  });
-  const dominant=dims.reduce((a,b)=>scoreObj[a]>scoreObj[b]?a:b);
-  svg+=`<polygon points="${dataPoints.join(' ')}" fill="${colors[dominant]}22" stroke="${colors[dominant]}" stroke-width="1.5" stroke-linejoin="round"/>`;
-  // Dots
-  dims.forEach((d,i)=>{
-    const r=(scoreObj[d]||0)/100;
-    const px=cx+R*r*Math.cos(angles[i]);
-    const py=cy+R*r*Math.sin(angles[i]);
-    svg+=`<circle cx="${px}" cy="${py}" r="4" fill="${colors[d]}" stroke="${colors[d]}44" stroke-width="3"/>`;
-  });
-  // Labels
-  dims.forEach((d,i)=>{
-    const px=cx+(R+16)*Math.cos(angles[i]);
-    const py=cy+(R+16)*Math.sin(angles[i]);
-    svg+=`<text x="${px}" y="${py}" text-anchor="middle" dominant-baseline="middle" font-family="Space Mono,monospace" font-size="10" font-weight="700" fill="${colors[d]}">${d}</text>`;
-  });
-  return svg;
-}
-
-function showResult(){
+// ══════════════════════════════════════
+// SHOW RESULT
+// ══════════════════════════════════════
+async function showResult() {
   showPage('page-result');
-  const dominant=Object.keys(scores).reduce((a,b)=>scores[a]>scores[b]?a:b);
-  const p=PROFILES[dominant];
 
-  document.getElementById('result-title').textContent=p.title;
-  document.getElementById('result-arch').innerHTML=p.arch;
-  document.getElementById('dna-card').style.setProperty('--result-grad',p.grad);
+  // Dominant dim
+  const dominant = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+  const profile  = PROFILES[dominant];
 
-  // Radar
-  document.getElementById('radar-svg').innerHTML=buildRadar(scores);
+  // Title
+  document.getElementById('result-title').textContent    = profile.title;
+  document.getElementById('result-archetype').innerHTML  = profile.archetype;
 
-  // Bars
-  const order=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
-  document.getElementById('disc-bars').innerHTML=order.map(([dim,pct])=>`
+  // Card gradient
+  document.getElementById('dna-card').style.setProperty('--result-gradient', profile.gradient);
+
+  // BARS
+  const barsEl = document.getElementById('disc-bars');
+  const order  = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+  barsEl.innerHTML = order.map(([dim, pct]) => `
     <div class="bar-row">
-      <span class="bar-letter" style="color:${PROFILES[dim].hex}">${dim}</span>
-      <div class="bar-track"><div class="bar-fill" style="width:0%;background:${PROFILES[dim].hex}" data-pct="${pct}"></div></div>
+      <span class="bar-letter" style="color:${PROFILES[dim].color}">${dim}</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:0%; background:${PROFILES[dim].color}; box-shadow:0 0 8px ${PROFILES[dim].color};" data-pct="${pct}"></div>
+      </div>
       <span class="bar-pct">${pct}%</span>
     </div>
   `).join('');
-  setTimeout(()=>{document.querySelectorAll('.bar-fill').forEach(el=>el.style.width=el.dataset.pct+'%');},100);
 
-  // Traits
-  document.getElementById('traits-wrap').innerHTML=p.traits.map(t=>`<span class="trait-tag" style="--tc:${p.hex}">${t}</span>`).join('');
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }, 100);
 
-  // Profile blocks
-  document.getElementById('profile-grid').innerHTML=`
-    <div class="profile-block"><h4>// pontos fortes</h4><p>${p.strengths}</p></div>
-    <div class="profile-block"><h4>// pontos de atenção</h4><p>${p.challenges}</p></div>
-    <div class="profile-block"><h4>// ambiente ideal</h4><p>${p.environment}</p></div>
-    <div class="profile-block"><h4>// como se comunicar</h4><p>${p.communication}</p></div>
+  // TRAITS
+  const traitsEl = document.getElementById('traits-wrap');
+  traitsEl.innerHTML = profile.traits.map(t => `
+    <span class="trait-tag" style="--tag-color:${profile.color}">${t}</span>
+  `).join('');
+
+  // PROFILE BLOCKS
+  document.getElementById('profile-grid').innerHTML = `
+    <div class="profile-block">
+      <h4>💪 Pontos Fortes</h4>
+      <p>${profile.strengths}</p>
+    </div>
+    <div class="profile-block">
+      <h4>⚡ Pontos de Atenção</h4>
+      <p>${profile.challenges}</p>
+    </div>
+    <div class="profile-block">
+      <h4>🏗️ Ambiente Ideal</h4>
+      <p>${profile.environment}</p>
+    </div>
+    <div class="profile-block">
+      <h4>💬 Como se Comunicar</h4>
+      <p>${profile.communication}</p>
+    </div>
   `;
 
-  // Salva na sessão
-  const u=JSON.parse(sessionStorage.getItem('capsula_user')||'{}');
-  u.disc={dominant,scores,completedAt:new Date().toISOString()};
-  sessionStorage.setItem('capsula_user',JSON.stringify(u));
+  // ── PERSISTÊNCIA: salva no Supabase (se autenticado) ──
+  await saveResultToSupabase({ dominant, scores });
+
+  // Fallback local para leitura imediata pelo dashboard
+  const userData = JSON.parse(localStorage.getItem('capsula_user') || '{}');
+  userData.disc = { dominant, scores, completedAt: new Date().toISOString() };
+  localStorage.setItem('capsula_user', JSON.stringify(userData));
 }
 
-// ══ PDF ══
-function generatePDF(){
-  const dominant=Object.keys(scores).reduce((a,b)=>scores[a]>scores[b]?a:b);
-  const p=PROFILES[dominant];
-  const user=JSON.parse(sessionStorage.getItem('capsula_user')||'{}');
-  const nome=user.nome||'Usuário';
-  const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
-  const w=window.open('','_blank');
-  const radarSVG=buildRadar(scores);
-  const order=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
-  const barsHTML=order.map(([dim,pct])=>`
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-      <span style="font-family:monospace;font-size:13px;font-weight:700;width:14px;color:${PROFILES[dim].hex}">${dim}</span>
-      <div style="flex:1;height:6px;background:#eee;border-radius:100px;overflow:hidden;">
-        <div style="width:${pct}%;height:100%;background:${PROFILES[dim].hex};border-radius:100px;"></div>
-      </div>
-      <span style="font-family:monospace;font-size:12px;color:#666;width:34px;text-align:right">${pct}%</span>
-    </div>
-  `).join('');
-  const traitsHTML=p.traits.map(t=>`<span style="font-family:monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;border:1px solid ${p.hex};color:${p.hex};padding:3px 8px;border-radius:3px;display:inline-block;margin:2px;">${t}</span>`).join('');
-  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Relatório DISC — ${nome}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Outfit',sans-serif;background:#fff;color:#111;padding:48px;max-width:800px;margin:0 auto;}
-    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;padding-bottom:24px;border-bottom:2px solid #111;}
-    .brand{font-size:13px;font-weight:700;letter-spacing:-0.01em;}
-    .brand span{color:${p.hex};}
-    .date{font-family:monospace;font-size:11px;color:#888;letter-spacing:0.06em;}
-    .hero{margin-bottom:36px;}
-    .tag{font-family:monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#888;margin-bottom:8px;}
-    .name{font-size:13px;font-weight:500;color:#888;margin-bottom:4px;}
-    .profile-title{font-size:42px;font-weight:800;letter-spacing:-0.04em;line-height:1;margin-bottom:6px;}
-    .arch{font-size:14px;color:#555;}
-    .grid{display:grid;grid-template-columns:200px 1fr;gap:32px;margin-bottom:32px;align-items:start;}
-    .grid-block h3{font-family:monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:14px;}
-    .block{background:#f7f7f7;border:1px solid #e5e5e5;border-radius:8px;padding:18px;margin-bottom:12px;}
-    .block h4{font-family:monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#888;margin-bottom:8px;}
-    .block p{font-size:13px;color:#333;line-height:1.65;}
-    .blocks{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-    .footer{margin-top:40px;padding-top:20px;border-top:1px solid #eee;display:flex;justify-content:space-between;}
-    .footer p{font-family:monospace;font-size:10px;color:#bbb;letter-spacing:0.05em;}
-    @media print{body{padding:32px;}@page{margin:1cm;}}
-  </style></head><body>
-  <div class="header">
-    <div class="brand">Cápsula<span>.</span>Dev — Engenharia Comportamental</div>
-    <div class="date">EMITIDO_EM · ${data.toUpperCase()}</div>
-  </div>
-  <div class="hero">
-    <div class="tag">// relatório · perfil disc</div>
-    <div class="name">${nome}</div>
-    <div class="profile-title" style="color:${p.hex}">${p.title}</div>
-    <div class="arch">${p.arch.replace(/<[^>]*>/g,'')}</div>
-  </div>
-  <div class="grid">
-    <div>
-      <div class="grid-block">
-        <h3>RADAR_DISC</h3>
-        <svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">${radarSVG.replace(/rgba\(255,255,255,0\.\d+\)/g,'rgba(0,0,0,0.1)')}</svg>
-      </div>
-    </div>
-    <div>
-      <div class="grid-block">
-        <h3>DIMENSÕES</h3>
-        ${barsHTML}
-        <div style="margin-top:16px;">${traitsHTML}</div>
-      </div>
-    </div>
-  </div>
-  <div class="blocks">
-    <div class="block"><h4>// pontos fortes</h4><p>${p.strengths}</p></div>
-    <div class="block"><h4>// pontos de atenção</h4><p>${p.challenges}</p></div>
-    <div class="block"><h4>// ambiente ideal</h4><p>${p.environment}</p></div>
-    <div class="block"><h4>// como se comunicar</h4><p>${p.communication}</p></div>
-  </div>
-  <div class="footer">
-    <p>// cápsula de desenvolvimento · capsuladedesenvolvimento.com.br</p>
-    <p>CONFIDENCIAL · USO PESSOAL</p>
-  </div>
-  <script>window.onload=function(){window.print();}<\/script>
-  </body></html>`);
-  w.document.close();
+// ══════════════════════════════════════
+// SUPABASE AUTH + PERSISTÊNCIA
+// ══════════════════════════════════════
+const SUPABASE_URL = 'https://SEU_PROJECT.supabase.co';
+const SUPABASE_KEY = 'SUA_ANON_KEY';
+
+// Inicializa cliente Supabase (carregado via CDN no <head>)
+// <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+let _supabase = null;
+function getSupabase() {
+  if (_supabase) return _supabase;
+  if (typeof window.supabase !== 'undefined') {
+    _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
+  return _supabase;
 }
 
-function shareResult(){
-  const dominant=Object.keys(scores).reduce((a,b)=>scores[a]>scores[b]?a:b);
-  const p=PROFILES[dominant];
-  const text=`Meu perfil DISC na Cápsula de Desenvolvimento: ${p.title} (${p.code} — ${scores[dominant]}%) · capsuladedesenvolvimento.com.br`;
-  if(navigator.share){navigator.share({title:'Meu Perfil DISC',text});}
-  else{navigator.clipboard.writeText(text).then(()=>alert('Resultado copiado!'));}
+// Retorna sessão atual (null se não logado)
+async function getSession() {
+  const sb = getSupabase();
+  if (!sb) return null;
+  const { data: { session } } = await sb.auth.getSession();
+  return session;
+}
+
+// Login com magic link
+async function loginWithMagicLink(email) {
+  const sb = getSupabase();
+  if (!sb) return { error: 'Supabase não configurado' };
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.href }
+  });
+  return { error };
+}
+
+// Login com OAuth (Google/GitHub)
+async function loginWithOAuth(provider = 'google') {
+  const sb = getSupabase();
+  if (!sb) return;
+  await sb.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo: window.location.href }
+  });
+}
+
+// Salva resultado na tabela `avaliations`
+// Schema esperado:
+//   avaliations(id, user_id, matrix, dominant, scores jsonb, completed_at timestamptz)
+async function saveResultToSupabase({ dominant, scores }) {
+  try {
+    const sb = getSupabase();
+    if (!sb) return;
+
+    const session = await getSession();
+    if (!session) {
+      // Sem sessão: salva apenas local (já feito acima)
+      console.warn('[Cápsula] Usuário não autenticado — resultado salvo apenas localmente.');
+      return;
+    }
+
+    const { error } = await sb.from('avaliations').upsert({
+      user_id: session.user.id,
+      matrix: 'disc',
+      dominant,
+      scores,
+      completed_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,matrix' });
+
+    if (error) console.error('[Cápsula] Erro ao salvar resultado:', error.message);
+    else console.info('[Cápsula] Resultado DISC salvo no Supabase ✓');
+
+  } catch (err) {
+    console.error('[Cápsula] saveResultToSupabase falhou:', err);
+  }
+}
+
+// Verifica autenticação ao carregar e escuta mudanças de sessão
+(async () => {
+  const sb = getSupabase();
+  if (!sb) return;
+
+  // Listener de auth: atualiza UI se necessário
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN') {
+      console.info('[Cápsula] Sessão iniciada:', session.user.email);
+    }
+    if (event === 'SIGNED_OUT') {
+      localStorage.removeItem('capsula_user');
+    }
+  });
+})();
+
+// ══════════════════════════════════════
+// ONBOARDING WIZARD
+// ══════════════════════════════════════
+const OB_KEY = 'capsula_onboarding_done';
+
+function obInit() {
+  const done = localStorage.getItem(OB_KEY);
+  if (!done) {
+    document.getElementById('onboarding-overlay').classList.add('show');
+  }
+}
+
+function obNext(step) {
+  document.querySelectorAll('.onboarding-step').forEach(s => s.classList.remove('active'));
+  document.getElementById(`ob-step-${step}`).classList.add('active');
+}
+
+function obFinish() {
+  localStorage.setItem(OB_KEY, '1');
+  document.getElementById('onboarding-overlay').classList.remove('show');
+}
+
+// Inicia onboarding ao carregar a página
+document.addEventListener('DOMContentLoaded', obInit);
+
+// ══════════════════════════════════════
+// SHARE
+// ══════════════════════════════════════
+function shareResult() {
+  const dominant = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+  const profile  = PROFILES[dominant];
+  const text     = `Meu perfil DISC na Cápsula de Desenvolvimento: ${profile.title} (${profile.code} ${scores[dominant]}%) — Descubra o seu em capsuladedesenvolvimento.com.br`;
+  if (navigator.share) {
+    navigator.share({ title: 'Meu Perfil DISC', text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => alert('Resultado copiado! Cole onde quiser.'));
+  }
 }
 </script>
+
+<style>
+/* ══════════════════════════════════════
+   ONBOARDING OVERLAY
+══════════════════════════════════════ */
+.onboarding-overlay {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(6,6,8,0.92);
+  backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s;
+}
+.onboarding-overlay.show { opacity: 1; pointer-events: all; }
+
+.onboarding-modal {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 3rem 2.5rem 2.5rem;
+  max-width: 420px; width: 100%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,111,247,0.1);
+}
+
+.onboarding-step { display: none; flex-direction: column; align-items: center; }
+.onboarding-step.active { display: flex; animation: fadeUp 0.4s ease both; }
+
+.ob-icon {
+  font-size: 3rem; margin-bottom: 1.5rem;
+  filter: drop-shadow(0 0 20px rgba(124,111,247,0.4));
+}
+
+.onboarding-modal h2 {
+  font-family: var(--serif);
+  font-size: 1.75rem; font-weight: 800;
+  letter-spacing: -0.03em; line-height: 1.15;
+  margin-bottom: 1rem;
+}
+.onboarding-modal h2 em { font-style: italic; color: var(--I); }
+.onboarding-modal p {
+  color: var(--muted); font-size: 0.9rem; line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.ob-meta {
+  display: flex; gap: 1.5rem; justify-content: center;
+  margin-bottom: 2rem;
+}
+.ob-meta-item {
+  display: flex; flex-direction: column; align-items: center;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 0.75rem 1.25rem;
+}
+.ob-meta-item span {
+  font-family: var(--serif); font-size: 1.4rem; font-weight: 800;
+  color: var(--I);
+}
+.ob-meta-item small { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: 0.2rem; }
+
+.ob-dots { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1.75rem; }
+.ob-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border); transition: all 0.3s;
+}
+.ob-dot.active { background: var(--I); width: 24px; border-radius: 100px; box-shadow: 0 0 8px var(--I); }
+
+.ob-btn-next, .ob-btn-start {
+  width: 100%; padding: 0.9rem;
+  border: none; border-radius: 12px;
+  font-family: var(--serif); font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: all 0.25s;
+}
+.ob-btn-next {
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--border);
+}
+.ob-btn-next:hover { border-color: var(--I); color: var(--I); }
+
+.ob-btn-start {
+  background: var(--I); color: #fff;
+  box-shadow: 0 0 30px rgba(124,111,247,0.35);
+}
+.ob-btn-start:hover { box-shadow: 0 0 50px rgba(124,111,247,0.55); transform: translateY(-1px); }
+</style>
 </body>
 </html>
