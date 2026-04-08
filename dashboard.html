@@ -4,897 +4,387 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard | Cápsula de Desenvolvimento</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💊</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#07080C;--bg2:#0D0F16;--surface:#121520;--surface2:#181C28;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --D:#E8603A;--I:#6C5FE6;--S:#2EC4A0;--C:#1BA8D4;
+  --accent:#6C5FE6;--text:#E8E6F0;--muted:#6B6980;--muted2:#353448;
+  --mono:'Space Mono',monospace;--sans:'Outfit',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(108,95,230,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,95,230,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+.orb-1{width:500px;height:500px;background:#6C5FE6;opacity:0.06;top:-150px;left:-100px;}
+.orb-2{width:300px;height:300px;background:#E8603A;opacity:0.04;bottom:-80px;right:-80px;}
 
-:root {
-  --bg:        #060608;
-  --bg2:       #0C0C12;
-  --surface:   rgba(255,255,255,0.035);
-  --surface2:  rgba(255,255,255,0.06);
-  --border:    rgba(255,255,255,0.07);
-  --border-glow: rgba(124,111,247,0.4);
-  --neon-purple: #7C6FF7;
-  --neon-cyan:   #00E5FF;
-  --neon-orange: #FF6B35;
-  --neon-green:  #4FFFB0;
-  --neon-pink:   #FF3CAC;
-  --text:      #F0EEF8;
-  --muted:     #7A788E;
-  --muted2:    #3E3C52;
-  --serif: 'Syne', sans-serif;
-  --sans:  'Space Grotesk', sans-serif;
-}
+/* SHELL */
+.shell{position:relative;z-index:1;display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
 
-html { scroll-behavior: smooth; }
+/* SIDEBAR */
+.sidebar{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:1.75rem 1.25rem;border-right:1px solid var(--border);background:rgba(7,8,12,0.8);backdrop-filter:blur(20px);}
+.logo{font-family:var(--sans);font-size:0.95rem;font-weight:700;color:var(--text);text-decoration:none;letter-spacing:-0.01em;display:flex;align-items:center;gap:0.5rem;margin-bottom:2.5rem;}
+.logo-mark{width:26px;height:26px;background:var(--accent);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:800;color:#fff;}
+.logo span{color:var(--accent);}
+.nav-section{margin-bottom:1.75rem;}
+.nav-label{font-family:var(--mono);font-size:0.55rem;font-weight:400;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted2);padding:0 0.65rem;margin-bottom:0.4rem;display:block;}
+.nav-item{display:flex;align-items:center;gap:0.65rem;padding:0.55rem 0.65rem;border-radius:6px;color:var(--muted);text-decoration:none;font-size:0.82rem;font-weight:500;cursor:pointer;border:none;background:transparent;width:100%;transition:all 0.15s;font-family:var(--sans);}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:rgba(108,95,230,0.12);color:var(--accent);border:1px solid rgba(108,95,230,0.18);}
+.nav-icon{font-size:0.85rem;width:18px;text-align:center;}
+.sidebar-footer{margin-top:auto;padding-top:1.25rem;border-top:1px solid var(--border);}
+.user-pill{display:flex;align-items:center;gap:0.65rem;padding:0.65rem;border-radius:8px;background:var(--surface);border:1px solid var(--border);}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--I),var(--C));display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;flex-shrink:0;}
+.user-name{font-size:0.78rem;font-weight:600;color:var(--text);}
+.user-plan{font-family:var(--mono);font-size:0.58rem;color:var(--S);margin-top:0.1rem;}
 
-body {
-  font-family: var(--sans);
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+/* MAIN */
+.main{padding:2.25rem 2.5rem;overflow-y:auto;}
 
-/* ── GRID BACKGROUND ── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(124,111,247,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(124,111,247,0.03) 1px, transparent 1px);
-  background-size: 48px 48px;
-  pointer-events: none;
-  z-index: 0;
-}
+/* TOPBAR */
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2.25rem;}
+.topbar-tag{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.3rem;display:block;}
+.topbar h1{font-size:1.6rem;font-weight:700;letter-spacing:-0.025em;}
+.topbar h1 span{color:var(--accent);}
+.topbar-date{font-size:0.75rem;color:var(--muted);margin-top:0.2rem;font-family:var(--mono);}
+.topbar-actions{display:flex;gap:0.65rem;align-items:center;}
+.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:0.5rem 1rem;border-radius:5px;font-size:0.78rem;font-weight:500;cursor:pointer;font-family:var(--sans);transition:all 0.15s;}
+.btn-ghost:hover{border-color:var(--accent);color:var(--text);}
+.btn-accent{background:var(--accent);border:none;color:#fff;padding:0.5rem 1.1rem;border-radius:5px;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:var(--sans);transition:opacity 0.15s;}
+.btn-accent:hover{opacity:0.85;}
 
-/* ── AMBIENT ORBS ── */
-.orb {
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.18;
-}
-.orb-1 { width: 500px; height: 500px; background: var(--neon-purple); top: -150px; left: -100px; animation: drift1 12s ease-in-out infinite alternate; }
-.orb-2 { width: 350px; height: 350px; background: var(--neon-cyan);   bottom: -100px; right: -80px; animation: drift2 15s ease-in-out infinite alternate; }
-.orb-3 { width: 250px; height: 250px; background: var(--neon-orange); top: 40%; left: 50%; animation: drift3 18s ease-in-out infinite alternate; }
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:2.25rem;}
+.stat-card{background:var(--surface);padding:1.25rem 1.5rem;position:relative;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--stat-color,var(--accent));}
+.stat-tag{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;display:block;}
+.stat-val{font-size:1.75rem;font-weight:800;letter-spacing:-0.03em;line-height:1;}
+.stat-sub{font-size:0.7rem;color:var(--muted);margin-top:0.25rem;font-family:var(--mono);}
 
-@keyframes drift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(40px,60px) scale(1.1); } }
-@keyframes drift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-30px,-50px) scale(1.15); } }
-@keyframes drift3 { from { transform: translate(-50%,-50%) scale(1); } to { transform: translate(-45%,-55%) scale(0.9); } }
+/* SECTION HEAD */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.sec-head h2{font-size:0.88rem;font-weight:700;letter-spacing:-0.01em;}
+.sec-head span{font-family:var(--mono);font-size:0.6rem;color:var(--muted);}
+.sec-tag{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:0.75rem;display:block;}
 
-/* ── LAYOUT ── */
-.shell {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  min-height: 100vh;
-}
+/* MATRIX CARDS */
+.matrices-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:2.25rem;}
+.matrix-card{background:var(--surface);padding:1.5rem;cursor:pointer;position:relative;transition:background 0.15s;animation:fadeUp 0.4s ease both;}
+.matrix-card:hover{background:var(--surface2);}
+.matrix-card::after{content:'';position:absolute;top:0;left:0;bottom:0;width:2px;background:var(--card-accent,var(--accent));opacity:0;transition:opacity 0.15s;}
+.matrix-card:hover::after{opacity:1;}
+.matrix-card.locked{opacity:0.45;cursor:not-allowed;}
+.matrix-card.locked:hover{background:var(--surface);}
+.matrix-card.locked:hover::after{opacity:0;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.matrix-card:nth-child(1){animation-delay:0.05s}
+.matrix-card:nth-child(2){animation-delay:0.1s}
+.matrix-card:nth-child(3){animation-delay:0.15s}
+.matrix-card:nth-child(4){animation-delay:0.2s}
+.matrix-card:nth-child(5){animation-delay:0.25s}
+.card-glyph{font-size:1.25rem;margin-bottom:0.85rem;display:block;}
+.lock-badge{position:absolute;top:1rem;right:1rem;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.08em;background:var(--surface2);border:1px solid var(--border2);color:var(--muted2);padding:0.15rem 0.45rem;border-radius:3px;}
+.card-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted2);margin-bottom:0.4rem;display:block;}
+.matrix-card h3{font-size:0.9rem;font-weight:700;margin-bottom:0.25rem;letter-spacing:-0.01em;}
+.matrix-card p{font-size:0.76rem;color:var(--muted);line-height:1.55;margin-bottom:0.85rem;}
+.card-foot{display:flex;align-items:center;justify-content:space-between;padding-top:0.75rem;border-top:1px solid var(--border);}
+.card-status{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.06em;color:var(--muted);}
+.card-status.done{color:var(--S);}
+.card-status.locked{color:var(--muted2);}
+.card-arrow{font-size:0.75rem;color:var(--muted);transition:color 0.15s;}
+.matrix-card:hover .card-arrow{color:var(--accent);}
 
-/* ── SIDEBAR ── */
-.sidebar {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding: 2rem 1.5rem;
-  border-right: 1px solid var(--border);
-  background: rgba(6,6,8,0.7);
-  backdrop-filter: blur(20px);
-}
+/* BOTTOM GRID */
+.bottom-grid{display:grid;grid-template-columns:1fr 300px;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:2rem;}
+.activity-panel{background:var(--surface);padding:1.5rem;}
+.progress-panel{background:var(--surface2);padding:1.5rem;}
+.panel-tag{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1.1rem;display:block;}
 
-.logo {
-  font-family: var(--serif);
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: var(--text);
-  text-decoration: none;
-  letter-spacing: -0.02em;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 2.5rem;
-}
-.logo-dot { color: var(--neon-purple); }
-.logo-icon {
-  width: 32px; height: 32px;
-  background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1rem;
-}
+/* ACTIVITY */
+.activity-empty{text-align:center;padding:2rem 1rem;color:var(--muted);}
+.activity-empty .e-icon{font-size:1.75rem;margin-bottom:0.5rem;display:block;opacity:0.4;}
+.activity-empty p{font-size:0.78rem;line-height:1.65;}
 
-.nav-section { margin-bottom: 2rem; }
-.nav-label {
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--muted2);
-  padding: 0 0.75rem;
-  margin-bottom: 0.5rem;
-}
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.65rem 0.75rem;
-  border-radius: 10px;
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  width: 100%;
-  transition: all 0.2s;
-  font-family: var(--sans);
-}
-.nav-item:hover { background: var(--surface2); color: var(--text); }
-.nav-item.active {
-  background: rgba(124,111,247,0.15);
-  color: var(--neon-purple);
-  border: 1px solid rgba(124,111,247,0.2);
-}
-.nav-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+/* PROGRESS */
+.progress-item{margin-bottom:1rem;}
+.progress-item:last-child{margin-bottom:0;}
+.prog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;}
+.prog-head span{font-size:0.78rem;font-weight:600;}
+.prog-head em{font-family:var(--mono);font-size:0.65rem;color:var(--muted);font-style:normal;}
+.prog-track{height:3px;background:rgba(255,255,255,0.05);border-radius:100px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:100px;transition:width 1s ease;}
 
-.sidebar-footer {
-  margin-top: auto;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border);
-}
-.user-pill {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  border-radius: 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-}
-.user-avatar {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.875rem;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.user-name { font-size: 0.82rem; font-weight: 600; color: var(--text); }
-.user-plan { font-size: 0.72rem; color: var(--neon-green); }
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--surface2);border:1px solid var(--S);border-radius:8px;padding:0.9rem 1.25rem;display:flex;align-items:center;gap:0.65rem;font-size:0.82rem;z-index:999;transform:translateY(80px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);backdrop-filter:blur(20px);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast strong{display:block;font-size:0.85rem;}
+.toast span{color:var(--muted);font-size:0.75rem;}
 
-/* ── MAIN ── */
-.main {
-  padding: 2.5rem 3rem;
-  overflow-y: auto;
-}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--muted2);border-radius:100px;}
 
-/* ── TOPBAR ── */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2.5rem;
-}
-.topbar-left h1 {
-  font-family: var(--serif);
-  font-size: 1.75rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-.topbar-left p { color: var(--muted); font-size: 0.875rem; margin-top: 0.2rem; }
-.topbar-right { display: flex; gap: 0.75rem; align-items: center; }
-
-.btn-ghost {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--muted);
-  padding: 0.55rem 1.1rem;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: var(--sans);
-  transition: all 0.2s;
-}
-.btn-ghost:hover { border-color: var(--neon-purple); color: var(--text); }
-
-.btn-neon {
-  background: linear-gradient(135deg, var(--neon-purple), #5B52C8);
-  border: none;
-  color: #fff;
-  padding: 0.55rem 1.25rem;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: var(--sans);
-  transition: all 0.2s;
-  box-shadow: 0 0 20px rgba(124,111,247,0.3);
-}
-.btn-neon:hover { box-shadow: 0 0 30px rgba(124,111,247,0.5); transform: translateY(-1px); }
-
-/* ── STATS ROW ── */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin-bottom: 2.5rem;
-}
-.stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 1.25rem 1.5rem;
-  position: relative;
-  overflow: hidden;
-  transition: border-color 0.2s;
-}
-.stat-card:hover { border-color: var(--border-glow); }
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--stat-color, var(--neon-purple));
-  opacity: 0.8;
-}
-.stat-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
-.stat-value { font-family: var(--serif); font-size: 2rem; font-weight: 800; color: var(--text); line-height: 1; }
-.stat-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; }
-.stat-icon { position: absolute; right: 1.25rem; top: 50%; transform: translateY(-50%); font-size: 1.75rem; opacity: 0.15; }
-
-/* ── SECTION TITLE ── */
-.section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.25rem;
-}
-.section-head h2 {
-  font-family: var(--serif);
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-.section-head a {
-  font-size: 0.78rem;
-  color: var(--neon-purple);
-  text-decoration: none;
-  font-weight: 500;
-}
-.section-head a:hover { text-decoration: underline; }
-
-/* ── MATRIX CARDS GRID ── */
-.matrices-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2.5rem;
-}
-
-.matrix-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 1.5rem;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s;
-  animation: fadeUp 0.5s ease both;
-}
-.matrix-card:nth-child(1) { animation-delay: 0.05s; }
-.matrix-card:nth-child(2) { animation-delay: 0.10s; }
-.matrix-card:nth-child(3) { animation-delay: 0.15s; }
-.matrix-card:nth-child(4) { animation-delay: 0.20s; }
-.matrix-card:nth-child(5) { animation-delay: 0.25s; }
-.matrix-card:nth-child(6) { animation-delay: 0.30s; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.matrix-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 80% 20%, var(--card-glow, rgba(124,111,247,0.08)), transparent 60%);
-  pointer-events: none;
-}
-.matrix-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--card-accent, var(--neon-purple)), transparent);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.matrix-card:hover {
-  border-color: var(--card-accent, var(--neon-purple));
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 0 1px var(--card-accent, var(--neon-purple)), inset 0 0 20px rgba(124,111,247,0.05);
-}
-.matrix-card:hover::after { opacity: 1; }
-
-.card-glyph {
-  width: 48px; height: 48px;
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.4rem;
-  margin-bottom: 1.1rem;
-  background: var(--card-bg, rgba(124,111,247,0.12));
-  border: 1px solid var(--card-accent, rgba(124,111,247,0.25));
-  position: relative;
-}
-.card-glyph::after {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  border-radius: 14px;
-  background: var(--card-accent, var(--neon-purple));
-  opacity: 0;
-  filter: blur(8px);
-  transition: opacity 0.3s;
-  z-index: -1;
-}
-.matrix-card:hover .card-glyph::after { opacity: 0.3; }
-
-.card-tag {
-  display: inline-block;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 0.2rem 0.6rem;
-  border-radius: 100px;
-  background: var(--card-bg, rgba(124,111,247,0.12));
-  color: var(--card-accent, var(--neon-purple));
-  border: 1px solid var(--card-accent, rgba(124,111,247,0.25));
-  margin-bottom: 0.6rem;
-}
-.matrix-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.35rem; letter-spacing: -0.01em; }
-.matrix-card p { font-size: 0.8rem; color: var(--muted); line-height: 1.55; margin-bottom: 1.1rem; }
-
-.card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--border);
-}
-.card-status { font-size: 0.72rem; color: var(--muted); }
-.card-status.done { color: var(--neon-green); }
-.card-status.locked { color: var(--muted2); }
-.card-arrow {
-  width: 28px; height: 28px;
-  border-radius: 8px;
-  background: var(--card-bg, rgba(124,111,247,0.1));
-  border: 1px solid var(--card-accent, rgba(124,111,247,0.2));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.8rem;
-  color: var(--card-accent, var(--neon-purple));
-  transition: all 0.2s;
-}
-.matrix-card:hover .card-arrow { background: var(--card-accent, var(--neon-purple)); color: #fff; }
-
-/* ── LOCKED STATE ── */
-.matrix-card.locked {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.matrix-card.locked:hover {
-  transform: none;
-  border-color: var(--border);
-  box-shadow: none;
-}
-.lock-badge {
-  position: absolute;
-  top: 1rem; right: 1rem;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid var(--border);
-  color: var(--muted2);
-  padding: 0.2rem 0.55rem;
-  border-radius: 100px;
-}
-
-/* ── BOTTOM GRID ── */
-.bottom-grid {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-/* ── RECENT ACTIVITY ── */
-.activity-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 1.5rem;
-}
-.activity-list { display: flex; flex-direction: column; gap: 0; }
-.activity-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.9rem 0;
-  border-bottom: 1px solid var(--border);
-}
-.activity-item:last-child { border-bottom: none; padding-bottom: 0; }
-.activity-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--dot-color, var(--neon-purple));
-  flex-shrink: 0;
-  box-shadow: 0 0 8px var(--dot-color, var(--neon-purple));
-}
-.activity-text { flex: 1; }
-.activity-text strong { font-size: 0.85rem; font-weight: 600; display: block; }
-.activity-text span { font-size: 0.75rem; color: var(--muted); }
-.activity-time { font-size: 0.72rem; color: var(--muted2); white-space: nowrap; }
-
-/* ── PROGRESS PANEL ── */
-.progress-panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 1.5rem;
-}
-.progress-panel h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 1.25rem; }
-.progress-item { margin-bottom: 1.1rem; }
-.progress-item:last-child { margin-bottom: 0; }
-.progress-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; }
-.progress-head span { font-size: 0.8rem; font-weight: 500; }
-.progress-head em { font-size: 0.75rem; color: var(--muted); font-style: normal; }
-.progress-bar {
-  height: 5px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 100px;
-  overflow: hidden;
-}
-.progress-fill {
-  height: 100%;
-  border-radius: 100px;
-  background: var(--fill-color, var(--neon-purple));
-  box-shadow: 0 0 8px var(--fill-color, var(--neon-purple));
-  transition: width 1s ease;
-}
-
-/* ── EMPTY STATE ── */
-.empty-state {
-  text-align: center;
-  padding: 3rem 2rem;
-  color: var(--muted);
-}
-.empty-state .emoji { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
-.empty-state p { font-size: 0.875rem; }
-
-/* ── NOTIFICATION TOAST ── */
-.toast {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  background: rgba(12,12,18,0.95);
-  border: 1px solid var(--neon-green);
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.875rem;
-  box-shadow: 0 0 30px rgba(79,255,176,0.15);
-  z-index: 999;
-  transform: translateY(100px);
-  opacity: 0;
-  transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
-  backdrop-filter: blur(20px);
-}
-.toast.show { transform: translateY(0); opacity: 1; }
-.toast-icon { font-size: 1.2rem; }
-.toast strong { display: block; color: var(--text); font-weight: 600; }
-.toast span { color: var(--muted); font-size: 0.78rem; }
-
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--muted2); border-radius: 100px; }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 1024px) {
-  .shell { grid-template-columns: 1fr; }
-  .sidebar { display: none; }
-  .main { padding: 1.5rem; }
-  .stats-row { grid-template-columns: repeat(2, 1fr); }
-  .bottom-grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 600px) {
-  .stats-row { grid-template-columns: 1fr 1fr; }
-  .matrices-grid { grid-template-columns: 1fr; }
-}
+@media(max-width:1024px){.shell{grid-template-columns:1fr;}.sidebar{display:none;}.main{padding:1.5rem;}.stats-row{grid-template-columns:repeat(2,1fr);}.bottom-grid{grid-template-columns:1fr;}}
+@media(max-width:600px){.stats-row{grid-template-columns:1fr 1fr;}.matrices-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
-<div class="orb orb-3"></div>
 
 <div class="shell">
-
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <a href="index.html" class="logo">
-      <div class="logo-icon">💊</div>
-      Cápsula<span class="logo-dot">.</span>Dev
+      <div class="logo-mark">C</div>
+      Cápsula<span>.</span>Dev
     </a>
-
     <nav>
       <div class="nav-section">
-        <div class="nav-label">Principal</div>
-        <a class="nav-item active" href="dashboard.html">
-          <span class="icon">⬡</span> Dashboard
-        </a>
-        <a class="nav-item" href="#">
-          <span class="icon">◈</span> Minhas Matrizes
-        </a>
-        <a class="nav-item" href="#">
-          <span class="icon">◎</span> Resultados
-        </a>
-        <a class="nav-item" href="#">
-          <span class="icon">⬕</span> Histórico
-        </a>
+        <span class="nav-label">// principal</span>
+        <a class="nav-item active" href="dashboard.html"><span class="nav-icon">⬡</span>Dashboard</a>
+        <a class="nav-item" href="#"><span class="nav-icon">◈</span>Minhas Matrizes</a>
+        <a class="nav-item" href="#"><span class="nav-icon">◎</span>Resultados</a>
+        <a class="nav-item" href="#"><span class="nav-icon">⬕</span>Histórico</a>
       </div>
-
       <div class="nav-section">
-        <div class="nav-label">Equipe</div>
-        <a class="nav-item" href="#">
-          <span class="icon">⬡</span> Minha Equipe
-        </a>
-        <a class="nav-item" href="#">
-          <span class="icon">◈</span> Relatórios
-        </a>
+        <span class="nav-label">// equipe</span>
+        <a class="nav-item" href="#"><span class="nav-icon">⬡</span>Minha Equipe</a>
+        <a class="nav-item" href="#"><span class="nav-icon">◈</span>Relatórios</a>
       </div>
-
       <div class="nav-section">
-        <div class="nav-label">Conta</div>
-        <a class="nav-item" href="#">
-          <span class="icon">◇</span> Configurações
-        </a>
-        <button class="nav-item" onclick="logout()">
-          <span class="icon">↩</span> Sair
-        </button>
+        <span class="nav-label">// conta</span>
+        <a class="nav-item" href="#"><span class="nav-icon">◇</span>Configurações</a>
+        <button class="nav-item" onclick="logout()"><span class="nav-icon">↩</span>Sair</button>
       </div>
     </nav>
-
     <div class="sidebar-footer">
       <div class="user-pill">
         <div class="user-avatar" id="sb-avatar">—</div>
         <div>
           <div class="user-name" id="sb-nome">Carregando...</div>
-          <div class="user-plan">● Plano Gratuito</div>
+          <div class="user-plan">// plano gratuito</div>
         </div>
       </div>
     </div>
   </aside>
 
-  <!-- MAIN -->
   <main class="main">
-
-    <!-- TOPBAR -->
     <div class="topbar">
-      <div class="topbar-left">
-        <h1>Olá, <span id="greeting-nome" style="color:var(--neon-purple)">—</span> 👋</h1>
-        <p id="greeting-date">Carregando...</p>
+      <div>
+        <span class="topbar-tag">// dashboard</span>
+        <h1>Olá, <span id="greeting-nome">—</span></h1>
+        <div class="topbar-date" id="greeting-date">—</div>
       </div>
-      <div class="topbar-right">
-        <button class="btn-ghost">📥 Exportar</button>
-        <button class="btn-neon" onclick="openNewMatrix()">+ Nova Matriz</button>
+      <div class="topbar-actions">
+        <button class="btn-ghost">↓ Exportar</button>
+        <button class="btn-accent">+ Nova Matriz</button>
       </div>
     </div>
 
-    <!-- STATS -->
     <div class="stats-row">
-      <div class="stat-card" style="--stat-color: var(--neon-purple)">
-        <div class="stat-label">Matrizes feitas</div>
-        <div class="stat-value">0</div>
-        <div class="stat-sub">de 2 disponíveis</div>
-        <div class="stat-icon">◈</div>
+      <div class="stat-card" style="--stat-color:var(--I)">
+        <span class="stat-tag">MATRIZES_FEITAS</span>
+        <div class="stat-val">0</div>
+        <div class="stat-sub">// de 2 disponíveis</div>
       </div>
-      <div class="stat-card" style="--stat-color: var(--neon-cyan)">
-        <div class="stat-label">Insights gerados</div>
-        <div class="stat-value">0</div>
-        <div class="stat-sub">— comece agora</div>
-        <div class="stat-icon">⬡</div>
+      <div class="stat-card" style="--stat-color:var(--C)">
+        <span class="stat-tag">INSIGHTS</span>
+        <div class="stat-val">0</div>
+        <div class="stat-sub">// comece agora</div>
       </div>
-      <div class="stat-card" style="--stat-color: var(--neon-green)">
-        <div class="stat-label">Dias ativos</div>
-        <div class="stat-value">1</div>
-        <div class="stat-sub">membro desde hoje</div>
-        <div class="stat-icon">◎</div>
+      <div class="stat-card" style="--stat-color:var(--S)">
+        <span class="stat-tag">DIAS_ATIVO</span>
+        <div class="stat-val">1</div>
+        <div class="stat-sub">// membro desde hoje</div>
       </div>
-      <div class="stat-card" style="--stat-color: var(--neon-orange)">
-        <div class="stat-label">Plano atual</div>
-        <div class="stat-value" style="font-size:1.2rem; padding-top:0.4rem">Gratuito</div>
-        <div class="stat-sub" style="color:var(--neon-orange); cursor:pointer" onclick="alert('Em breve!')">→ Fazer upgrade</div>
-        <div class="stat-icon">◇</div>
+      <div class="stat-card" style="--stat-color:var(--D)">
+        <span class="stat-tag">PLANO</span>
+        <div class="stat-val" style="font-size:1.1rem;padding-top:0.3rem">Gratuito</div>
+        <div class="stat-sub" style="color:var(--D);cursor:pointer" onclick="alert('Em breve!')">// upgrade →</div>
       </div>
     </div>
 
-    <!-- MATRIZES INDIVIDUAIS -->
-    <div class="section-head">
-      <h2>Eixo Individual — <span style="color:var(--muted); font-weight:400">Autoconhecimento</span></h2>
-      <a href="#">Ver todas →</a>
+    <span class="sec-tag">// eixo individual — autoconhecimento</span>
+    <div class="sec-head" style="margin-bottom:1rem;">
+      <h2>Matrizes Individuais</h2>
+      <span>2 disponíveis no plano gratuito</span>
     </div>
 
     <div class="matrices-grid">
-
-      <!-- DISC -->
-      <div class="matrix-card" style="--card-accent: #FF6B35; --card-bg: rgba(255,107,53,0.1); --card-glow: rgba(255,107,53,0.08);" onclick="window.location.href='disc.html'" role="button">
-        <div class="card-glyph" style="--card-accent: #FF6B35; --card-bg: rgba(255,107,53,0.12);">🎯</div>
-        <div class="card-tag">Individual</div>
+      <div class="matrix-card" style="--card-accent:var(--D)" onclick="window.location.href='disc.html'">
+        <span class="card-glyph">🎯</span>
+        <span class="card-label">// personalidade</span>
         <h3>Perfil DISC</h3>
-        <p>Mapeie seu comportamento dominante: Dominância, Influência, Estabilidade ou Conformidade.</p>
-        <div class="card-footer">
+        <p>Dominância, Influência, Estabilidade e Conformidade. Seu DNA comportamental em dados.</p>
+        <div class="card-foot">
           <span class="card-status">Não iniciado</span>
-          <div class="card-arrow">→</div>
+          <span class="card-arrow">→</span>
         </div>
       </div>
-
-      <!-- SOAR -->
-      <div class="matrix-card" style="--card-accent: #00E5FF; --card-bg: rgba(0,229,255,0.08); --card-glow: rgba(0,229,255,0.06);">
-        <div class="card-glyph" style="--card-accent: #00E5FF; --card-bg: rgba(0,229,255,0.1);">🧭</div>
-        <div class="card-tag">Individual</div>
+      <div class="matrix-card" style="--card-accent:var(--I)">
+        <span class="card-glyph">🧭</span>
+        <span class="card-label">// estratégia</span>
         <h3>Análise SOAR</h3>
-        <p>Forças, Oportunidades, Aspirações e Resultados. Sua estratégia de longo prazo.</p>
-        <div class="card-footer">
+        <p>Forças, Oportunidades, Aspirações e Resultados. Visão estratégica pessoal de longo prazo.</p>
+        <div class="card-foot">
           <span class="card-status">Não iniciado</span>
-          <div class="card-arrow">→</div>
+          <span class="card-arrow">→</span>
         </div>
       </div>
-
-      <!-- IKIGAI -->
-      <div class="matrix-card locked" style="--card-accent: #FF3CAC; --card-bg: rgba(255,60,172,0.08); --card-glow: rgba(255,60,172,0.06);">
-        <div class="lock-badge">🔒 Pro</div>
-        <div class="card-glyph" style="--card-accent: #FF3CAC; --card-bg: rgba(255,60,172,0.1);">🌸</div>
-        <div class="card-tag">Individual</div>
+      <div class="matrix-card locked" style="--card-accent:var(--D)">
+        <span class="lock-badge">PRO</span>
+        <span class="card-glyph">🌸</span>
+        <span class="card-label">// propósito</span>
         <h3>Ikigai</h3>
-        <p>Descubra a intersecção entre o que você ama, é bom, o mundo precisa e o que te paga.</p>
-        <div class="card-footer">
-          <span class="card-status locked">🔒 Disponível no Pro</span>
-          <div class="card-arrow">🔒</div>
+        <p>A intersecção entre o que você ama, é bom, o mundo precisa e o que te paga.</p>
+        <div class="card-foot">
+          <span class="card-status locked">// plano pro</span>
+          <span class="card-arrow">🔒</span>
         </div>
       </div>
-
-      <!-- ÂNCORAS -->
-      <div class="matrix-card locked" style="--card-accent: #4FFFB0; --card-bg: rgba(79,255,176,0.08); --card-glow: rgba(79,255,176,0.06);">
-        <div class="lock-badge">🔒 Pro</div>
-        <div class="card-glyph" style="--card-accent: #4FFFB0; --card-bg: rgba(79,255,176,0.1);">⚓</div>
-        <div class="card-tag">Individual</div>
+      <div class="matrix-card locked" style="--card-accent:var(--S)">
+        <span class="lock-badge">PRO</span>
+        <span class="card-glyph">⚓</span>
+        <span class="card-label">// carreira</span>
         <h3>Âncoras de Carreira</h3>
-        <p>O que você não abre mão na vida profissional? Segurança, autonomia ou criatividade?</p>
-        <div class="card-footer">
-          <span class="card-status locked">🔒 Disponível no Pro</span>
-          <div class="card-arrow">🔒</div>
+        <p>O que você não abre mão profissionalmente. Clareza sobre seu núcleo de carreira.</p>
+        <div class="card-foot">
+          <span class="card-status locked">// plano pro</span>
+          <span class="card-arrow">🔒</span>
         </div>
       </div>
-
-      <!-- JOHARI -->
-      <div class="matrix-card locked" style="--card-accent: #A855F7; --card-bg: rgba(168,85,247,0.08); --card-glow: rgba(168,85,247,0.06);">
-        <div class="lock-badge">🔒 Pro</div>
-        <div class="card-glyph" style="--card-accent: #A855F7; --card-bg: rgba(168,85,247,0.1);">🪟</div>
-        <div class="card-tag">Individual</div>
+      <div class="matrix-card locked" style="--card-accent:var(--C)">
+        <span class="lock-badge">PRO</span>
+        <span class="card-glyph">🪟</span>
+        <span class="card-label">// autopercepção</span>
         <h3>Janela de Johari</h3>
-        <p>Autopercepção vs. percepção dos outros. Feedback estruturado para crescimento real.</p>
-        <div class="card-footer">
-          <span class="card-status locked">🔒 Disponível no Pro</span>
-          <div class="card-arrow">🔒</div>
+        <p>Autopercepção vs. percepção dos outros. Essencial para líderes e equipes.</p>
+        <div class="card-foot">
+          <span class="card-status locked">// plano pro</span>
+          <span class="card-arrow">🔒</span>
         </div>
       </div>
-
     </div>
 
-    <!-- MATRIZES EQUIPE -->
-    <div class="section-head">
-      <h2>Eixo de Equipe — <span style="color:var(--muted); font-weight:400">Performance Coletiva</span></h2>
-      <a href="#">Ver todas →</a>
+    <span class="sec-tag">// eixo de equipe — performance coletiva</span>
+    <div class="sec-head" style="margin-bottom:1rem;">
+      <h2>Matrizes de Equipe</h2>
+      <span>disponíveis no plano empresa</span>
     </div>
 
-    <div class="matrices-grid" style="margin-bottom: 2.5rem;">
-
-      <!-- 5W2H -->
-      <div class="matrix-card locked" style="--card-accent: #00E5FF; --card-bg: rgba(0,229,255,0.08); --card-glow: rgba(0,229,255,0.06);">
-        <div class="lock-badge">🔒 Empresa</div>
-        <div class="card-glyph" style="--card-accent: #00E5FF; --card-bg: rgba(0,229,255,0.1);">📋</div>
-        <div class="card-tag">Equipe</div>
+    <div class="matrices-grid" style="margin-bottom:2.25rem;">
+      <div class="matrix-card locked" style="--card-accent:var(--C)">
+        <span class="lock-badge">EMPRESA</span>
+        <span class="card-glyph">📋</span>
+        <span class="card-label">// planejamento</span>
         <h3>5W2H</h3>
-        <p>Planejamento estruturado: O quê, Por quê, Onde, Quando, Quem, Como e Quanto.</p>
-        <div class="card-footer">
-          <span class="card-status locked">🔒 Plano Empresa</span>
-          <div class="card-arrow">🔒</div>
-        </div>
+        <p>Plano de ação estruturado com acompanhamento visual de progresso.</p>
+        <div class="card-foot"><span class="card-status locked">// plano empresa</span><span class="card-arrow">🔒</span></div>
       </div>
-
-      <!-- RACI -->
-      <div class="matrix-card locked" style="--card-accent: #FF6B35; --card-bg: rgba(255,107,53,0.08); --card-glow: rgba(255,107,53,0.06);">
-        <div class="lock-badge">🔒 Empresa</div>
-        <div class="card-glyph" style="--card-accent: #FF6B35; --card-bg: rgba(255,107,53,0.1);">👥</div>
-        <div class="card-tag">Equipe</div>
+      <div class="matrix-card locked" style="--card-accent:var(--D)">
+        <span class="lock-badge">EMPRESA</span>
+        <span class="card-glyph">👥</span>
+        <span class="card-label">// papéis</span>
         <h3>Matriz RACI</h3>
-        <p>Responsável, Autoridade, Consultado, Informado. Papéis claros, menos conflito.</p>
-        <div class="card-footer">
-          <span class="card-status locked">🔒 Plano Empresa</span>
-          <div class="card-arrow">🔒</div>
-        </div>
+        <p>Responsável, Autoridade, Consultado e Informado. Papéis claros, menos conflito.</p>
+        <div class="card-foot"><span class="card-status locked">// plano empresa</span><span class="card-arrow">🔒</span></div>
       </div>
-
-      <!-- SWOT EQUIPE -->
-      <div class="matrix-card locked" style="--card-accent: #4FFFB0; --card-bg: rgba(79,255,176,0.08); --card-glow: rgba(79,255,176,0.06);">
-        <div class="lock-badge">🔒 Empresa</div>
-        <div class="card-glyph" style="--card-accent: #4FFFB0; --card-bg: rgba(79,255,176,0.1);">📊</div>
-        <div class="card-tag">Equipe</div>
+      <div class="matrix-card locked" style="--card-accent:var(--S)">
+        <span class="lock-badge">EMPRESA</span>
+        <span class="card-glyph">📊</span>
+        <span class="card-label">// estratégia</span>
         <h3>SWOT de Equipe</h3>
-        <p>Análise estratégica coletiva: Forças, Fraquezas, Oportunidades e Ameaças do grupo.</p>
-        <div class="card-footer">
-          <span class="card-status locked">🔒 Plano Empresa</span>
-          <div class="card-arrow">🔒</div>
-        </div>
+        <p>Análise estratégica coletiva. Forças, Fraquezas, Oportunidades e Ameaças do grupo.</p>
+        <div class="card-foot"><span class="card-status locked">// plano empresa</span><span class="card-arrow">🔒</span></div>
       </div>
-
     </div>
 
-    <!-- BOTTOM GRID -->
     <div class="bottom-grid">
-
-      <!-- ATIVIDADE RECENTE -->
-      <div class="activity-card">
-        <div class="section-head" style="margin-bottom:1rem">
-          <h2 style="font-size:0.9rem">Atividade Recente</h2>
-        </div>
-        <div class="activity-list" id="activity-list">
-          <div class="empty-state">
-            <span class="emoji">🌱</span>
-            <p>Nenhuma atividade ainda.<br>Complete sua primeira matriz para começar.</p>
-          </div>
+      <div class="activity-panel">
+        <span class="panel-tag">ATIVIDADE_RECENTE</span>
+        <div class="activity-empty">
+          <span class="e-icon">◎</span>
+          <p>Nenhuma atividade ainda.<br>Complete sua primeira matriz para começar.</p>
         </div>
       </div>
-
-      <!-- PROGRESSO -->
       <div class="progress-panel">
-        <h3>Progresso do Perfil</h3>
+        <span class="panel-tag">PROGRESSO_DO_PERFIL</span>
         <div class="progress-item">
-          <div class="progress-head">
-            <span>Cadastro</span>
-            <em>100%</em>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width:100%; --fill-color: var(--neon-green)"></div>
-          </div>
+          <div class="prog-head"><span>Cadastro</span><em>100%</em></div>
+          <div class="prog-track"><div class="prog-fill" style="width:100%;background:var(--S);"></div></div>
         </div>
         <div class="progress-item">
-          <div class="progress-head">
-            <span>DISC</span>
-            <em>0%</em>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width:0%; --fill-color: #FF6B35"></div>
-          </div>
+          <div class="prog-head"><span>DISC</span><em>0%</em></div>
+          <div class="prog-track"><div class="prog-fill" style="width:0%;background:var(--D);"></div></div>
         </div>
         <div class="progress-item">
-          <div class="progress-head">
-            <span>SOAR</span>
-            <em>0%</em>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width:0%; --fill-color: #00E5FF"></div>
-          </div>
+          <div class="prog-head"><span>SOAR</span><em>0%</em></div>
+          <div class="prog-track"><div class="prog-fill" style="width:0%;background:var(--I);"></div></div>
         </div>
         <div class="progress-item">
-          <div class="progress-head">
-            <span>Perfil completo</span>
-            <em>10%</em>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width:10%; --fill-color: var(--neon-purple)"></div>
-          </div>
+          <div class="prog-head"><span>Perfil completo</span><em>10%</em></div>
+          <div class="prog-track"><div class="prog-fill" style="width:10%;background:var(--accent);"></div></div>
         </div>
       </div>
-
     </div>
-
   </main>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast">
-  <span class="toast-icon">✅</span>
-  <div>
-    <strong id="toast-title">Bem-vindo!</strong>
-    <span id="toast-sub">Sua conta foi criada com sucesso.</span>
-  </div>
+  <span style="font-size:1rem;color:var(--S)">✓</span>
+  <div><strong id="toast-title">Bem-vindo(a)!</strong><span id="toast-sub">Conta criada com sucesso.</span></div>
 </div>
 
 <script>
-  const SUPABASE_URL = 'https://dfnmofzbpdmnvlyowtmp.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbm1vZnpicGRtbnZseW93dG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NjQ4MzIsImV4cCI6MjA5MTE0MDgzMn0.KXcRmhpPFwpQGXkYIVjXPJvMh5w1KpIlZiwyIEUBrvU';
-  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_URL='https://dfnmofzbpdmnvlyowtmp.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbm1vZnpicGRtbnZseW93dG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NjQ4MzIsImV4cCI6MjA5MTE0MDgzMn0.KXcRmhpPFwpQGXkYIVjXPJvMh5w1KpIlZiwyIEUBrvU';
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-  // ── DATA / SAUDAÇÃO ──
-  function initDate() {
-    const now = new Date();
-    const hora = now.getHours();
-    const saudacao = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
-    const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
-    const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-    const str = `${saudacao} · ${dias[now.getDay()]}, ${now.getDate()} de ${meses[now.getMonth()]}`;
-    document.getElementById('greeting-date').textContent = str;
+function initDate(){
+  const now=new Date(),h=now.getHours();
+  const s=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
+  const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  document.getElementById('greeting-date').textContent=`${s} · ${dias[now.getDay()]}, ${now.getDate()} ${meses[now.getMonth()]}`;
+}
+
+async function loadUser(){
+  const cached=sessionStorage.getItem('capsula_user');
+  if(cached){
+    const u=JSON.parse(cached);
+    applyUser(u.nome,u.apelido);
+    showToast(u.apelido||u.nome.split(' ')[0]);
+    return;
   }
+  const{data,error}=await db.from('leads').select('*').order('criado_em',{ascending:false}).limit(1);
+  if(!error&&data&&data.length>0)applyUser(data[0].nome,data[0].apelido);
+  else applyUser('Usuário','');
+}
 
-  // ── CARREGA DADOS DO USUÁRIO VIA SESSÃO ──
-  async function loadUser() {
-    // Tenta pegar o lead pelo sessionStorage (gravado no cadastro)
-    const cached = sessionStorage.getItem('capsula_user');
-    if (cached) {
-      const user = JSON.parse(cached);
-      applyUser(user.nome, user.apelido);
-      showWelcomeToast(user.apelido || user.nome.split(' ')[0]);
-      return;
-    }
+function applyUser(nome,apelido){
+  const ex=apelido||nome.split(' ')[0];
+  document.getElementById('greeting-nome').textContent=ex;
+  document.getElementById('sb-nome').textContent=nome;
+  document.getElementById('sb-avatar').textContent=ex.charAt(0).toUpperCase();
+}
 
-    // Fallback: pega o último lead inserido (para testes)
-    const { data, error } = await db.from('leads').select('*').order('criado_em', { ascending: false }).limit(1);
-    if (!error && data && data.length > 0) {
-      applyUser(data[0].nome, data[0].apelido);
-    } else {
-      applyUser('Usuário', '');
-    }
-  }
+function showToast(nome){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-title').textContent=`Bem-vindo(a), ${nome}!`;
+  document.getElementById('toast-sub').textContent='Escolha uma matriz para começar.';
+  setTimeout(()=>t.classList.add('show'),600);
+  setTimeout(()=>t.classList.remove('show'),5000);
+}
 
-  function applyUser(nome, apelido) {
-    const exibido = apelido || nome.split(' ')[0];
-    const inicial = exibido.charAt(0).toUpperCase();
-    document.getElementById('greeting-nome').textContent = exibido;
-    document.getElementById('sb-nome').textContent = nome;
-    document.getElementById('sb-avatar').textContent = inicial;
-  }
+function logout(){sessionStorage.removeItem('capsula_user');window.location.href='index.html';}
 
-  function showWelcomeToast(nome) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toast-title').textContent = `Bem-vindo(a), ${nome}!`;
-    document.getElementById('toast-sub').textContent = 'Sua conta foi criada com sucesso. Escolha uma matriz para começar.';
-    setTimeout(() => toast.classList.add('show'), 500);
-    setTimeout(() => toast.classList.remove('show'), 5000);
-  }
-
-  function openNewMatrix() {
-    alert('Selecione uma das matrizes disponíveis no painel para começar!');
-  }
-
-  function logout() {
-    sessionStorage.removeItem('capsula_user');
-    window.location.href = 'index.html';
-  }
-
-  // ── INIT ──
-  initDate();
-  loadUser();
+initDate();loadUser();
 </script>
 </body>
 </html>
