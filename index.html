@@ -917,8 +917,8 @@
   <div class="modal">
     <button class="modal-close" onclick="closeModal()" aria-label="Fechar modal">×</button>
     <div id="form-content">
-      <h2 id="modal-title">Criar sua conta</h2>
-      <p>Comece gratuitamente. Sem cartão de crédito.</p>
+      <h2 id="modal-title">Garantir meu acesso</h2>
+      <p>Cadastro rápido. Sem e-mail, sem senha, sem cartão.</p>
       <form id="cadastro-form" novalidate>
         <!-- Honeypot anti-bot: invisível para humanos, preenchido por bots -->
         <div style="position:absolute; left:-9999px; opacity:0; pointer-events:none;" aria-hidden="true">
@@ -937,12 +937,9 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="email">E-mail</label>
-          <input type="email" id="email" name="email" placeholder="seu@email.com" required autocomplete="email" />
-        </div>
-        <div class="form-group">
-          <label for="senha">Senha</label>
-          <input type="password" id="senha" name="senha" placeholder="Mínimo 8 caracteres" required autocomplete="new-password" minlength="8" />
+          <label for="whatsapp">WhatsApp <span style="color:var(--muted2); font-weight:400;">(opcional)</span></label>
+          <input type="tel" id="whatsapp" name="whatsapp" placeholder="(11) 99999-9999" autocomplete="tel" maxlength="20" />
+          <span class="input-hint">Para novidades e suporte</span>
         </div>
         <div class="form-group">
           <label for="objetivo">Seu objetivo principal</label>
@@ -955,8 +952,8 @@
           </select>
         </div>
         <div id="form-error" role="alert" style="display:none; background:rgba(244,132,95,0.12); border:1px solid rgba(244,132,95,0.35); color:#F4845F; font-size:0.82rem; padding:0.65rem 1rem; border-radius:8px; margin-bottom:0.75rem;"></div>
-        <button type="submit" class="form-submit" id="submit-btn">Criar conta →</button>
-        <p style="text-align:center; font-size:0.78rem; color: var(--muted2); margin-top: 1rem;">Ao criar sua conta, você concorda com os Termos de Uso e Política de Privacidade.</p>
+        <button type="submit" class="form-submit" id="submit-btn">Cadastrar agora →</button>
+        <p style="text-align:center; font-size:0.78rem; color: var(--muted2); margin-top: 1rem;">Gratuito e sem cartão de crédito. Seus dados são protegidos.</p>
       </form>
     </div>
     <div class="success-msg" id="success-msg" role="status">
@@ -1089,17 +1086,13 @@
     var btn = document.getElementById('submit-btn');
     if (!btn) return;
     btn.disabled = loading;
-    btn.textContent = loading ? 'Criando conta...' : 'Criar conta →';
+    btn.textContent = loading ? 'Cadastrando...' : 'Cadastrar agora →';
     btn.style.opacity = loading ? '0.65' : '';
     btn.style.cursor  = loading ? 'not-allowed' : '';
   }
 
-  function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
   // ═══════════════════════════════════════════════════════════════
-  // SUBMIT — com proteção honeypot anti-bot
+  // SUBMIT — cadastro direto na tabela, sem autenticação por e-mail
   // ═══════════════════════════════════════════════════════════════
   var cadastroForm = document.getElementById('cadastro-form');
   if (cadastroForm) {
@@ -1110,7 +1103,6 @@
       // Verificação honeypot: se o campo oculto foi preenchido, é bot
       var honeypot = document.getElementById('website');
       if (honeypot && honeypot.value !== '') {
-        // Simula sucesso para não revelar detecção ao bot
         var fc2 = document.getElementById('form-content');
         var sm2 = document.getElementById('success-msg');
         if (fc2) fc2.style.display = 'none';
@@ -1120,67 +1112,34 @@
 
       var nome     = document.getElementById('nome').value.trim();
       var apelido  = document.getElementById('apelido').value.trim();
-      var email    = document.getElementById('email').value.trim();
-      var senha    = document.getElementById('senha').value;
+      var whatsapp = document.getElementById('whatsapp').value.trim();
       var objetivo = document.getElementById('objetivo').value;
 
       // Validação client-side
-      if (!nome)                 return showError('Por favor, informe seu nome.');
-      if (!email)                return showError('Por favor, informe seu e-mail.');
-      if (!isValidEmail(email))  return showError('Informe um e-mail válido.');
-      if (!senha)                return showError('Por favor, crie uma senha.');
-      if (senha.length < 8)      return showError('A senha deve ter pelo menos 8 caracteres.');
-      if (!objetivo)             return showError('Selecione seu objetivo principal.');
+      if (!nome)     return showError('Por favor, informe seu nome.');
+      if (!objetivo) return showError('Selecione seu objetivo principal.');
 
       setLoading(true);
 
       try {
         var db = getSupabase();
 
-        // ── 1. Cadastro via Supabase Auth com senha real ──────────
-        // emailRedirectTo omitido — sem confirmação por e-mail
-        var authResult = await db.auth.signUp({
-          email: email,
-          password: senha,
-          options: {
-            data: {
-              nome:     nome,
-              apelido:  apelido || nome.split(' ')[0],
-              objetivo: objetivo
-            }
-          }
-        });
+        // ── Salva direto na tabela leads — sem auth, sem e-mail ──
+        var { error } = await db.from('leads').insert([{
+          nome:       nome,
+          apelido:    apelido || nome.split(' ')[0],
+          whatsapp:   whatsapp || null,
+          objetivo:   objetivo,
+          criado_em:  new Date().toISOString()
+        }]);
 
-        if (authResult.error) {
-          console.error('[Auth] Erro:', authResult.error.code, authResult.error.message);
-          var msg = authResult.error.message || '';
-          if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already been registered')) {
-            showError('Este e-mail já está cadastrado. Tente fazer login ou redefina sua senha.');
-          } else if (msg.toLowerCase().includes('invalid email')) {
-            showError('Informe um e-mail válido.');
-          } else if (msg.toLowerCase().includes('password')) {
-            showError('Senha inválida. Use pelo menos 8 caracteres.');
-          } else {
-            showError('Não foi possível criar sua conta. Tente novamente. (' + (authResult.error.code || msg) + ')');
-          }
+        if (error) {
+          console.error('[leads] Erro ao cadastrar:', error.code, error.message);
+          showError('Não foi possível concluir o cadastro. Tente novamente. (' + (error.code || error.message) + ')');
           return;
         }
 
-        // ── 2. Salva dados complementares na tabela leads (best-effort) ──
-        try {
-          await db.from('leads').upsert([{
-            email:      email,
-            nome:       nome,
-            apelido:    apelido || nome.split(' ')[0],
-            objetivo:   objetivo,
-            criado_em:  new Date().toISOString()
-          }], { onConflict: 'email', ignoreDuplicates: true });
-        } catch (leadErr) {
-          // Silencioso — não impede o fluxo principal
-          console.warn('[leads] Aviso ao salvar lead:', leadErr);
-        }
-
-        // ── 3. Exibe tela de sucesso com o nome/apelido do usuário ──
+        // ── Exibe tela de sucesso imediatamente ──
         var nomeExibido = apelido || nome.split(' ')[0];
         var nomeEl = document.getElementById('success-nome');
         if (nomeEl) nomeEl.textContent = nomeExibido;
