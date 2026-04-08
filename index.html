@@ -1139,13 +1139,21 @@
           return;
         }
 
-        // ── Exibe tela de sucesso imediatamente ──
-        var nomeExibido = apelido || nome.split(' ')[0];
-        var nomeEl = document.getElementById('success-nome');
-        if (nomeEl) nomeEl.textContent = nomeExibido;
+        // ── Salva na sessão e redireciona para o dashboard ──
+        sessionStorage.setItem('capsula_user', JSON.stringify({
+          nome:     nome,
+          apelido:  apelido || nome.split(' ')[0],
+          objetivo: objetivo
+        }));
+
+        setTimeout(function() {
+          window.location.href = 'dashboard.html';
+        }, 800);
 
         var formContent = document.getElementById('form-content');
         var successMsg  = document.getElementById('success-msg');
+        var nomeEl = document.getElementById('success-nome');
+        if (nomeEl) nomeEl.textContent = apelido || nome.split(' ')[0];
         if (formContent) formContent.style.display = 'none';
         if (successMsg)  successMsg.style.display  = 'block';
 
