@@ -560,7 +560,7 @@ function renderQuadrant(idx) {
     </div>
   `;
 
-  // Attach char-count listeners
+  // Attach char-count listeners + autosave por campo
   q.questions.forEach(question => {
     const el = document.getElementById(`q-${question.id}`);
     if (el) {
@@ -568,6 +568,11 @@ function renderQuadrant(idx) {
         const cc = document.getElementById(`cc-${question.id}`);
         if (cc) cc.textContent = `${el.value.length}/400`;
         onInputChange();
+        // Autosave otimista: persiste sem aguardar "próximo quadrante"
+        const qKey = QUADRANTS[currentQ].key;
+        if (!answers[qKey]) answers[qKey] = {};
+        answers[qKey][question.id] = el.value.trim();
+        autosaveDraft();
       });
     }
   });
@@ -621,6 +626,7 @@ function showResult() {
   const gridHTML = QUADRANTS.map(q => {
     const qAnswers = answers[q.key] || {};
     const filled   = Object.values(qAnswers).filter(v => v && v.length > 0);
+    const pctQ     = Math.round((filled.length / q.questions.length) * 100);
     const answersHTML = filled.length > 0
       ? filled.map(v => `
           <div class="soar-answer-item">
@@ -634,10 +640,11 @@ function showResult() {
       <div class="soar-quadrant">
         <div class="soar-q-head">
           <div class="soar-q-icon" style="background:${q.color}">${q.icon}</div>
-          <div>
+          <div style="flex:1;">
             <span class="soar-q-label">${q.label}</span>
             <div class="soar-q-name">${q.name}</div>
           </div>
+          <div style="font-family:var(--mono);font-size:0.62rem;color:${q.color};font-weight:700;">${pctQ}%</div>
         </div>
         <div class="soar-answers">${answersHTML}</div>
       </div>
@@ -646,11 +653,17 @@ function showResult() {
 
   document.getElementById('soar-result-grid').innerHTML = gridHTML;
 
-  // Build insights
+  // Score total
   const totalFilled = QUADRANTS.reduce((acc, q) => {
     return acc + Object.values(answers[q.key] || {}).filter(v => v && v.length > 0).length;
   }, 0);
   const completionPct = Math.round((totalFilled / 16) * 100);
+
+  // Atualiza subtítulo com score
+  const subEl = document.querySelector('#page-result .result-sub');
+  if (subEl) {
+    subEl.innerHTML = `Seus quatro quadrantes mapeados · <span style="color:var(--accent);font-family:var(--mono);font-weight:700;">${completionPct}% completo</span> · Use como guia para decisões de carreira e vida.`;
+  }
 
   const insights = generateInsights();
 
@@ -671,49 +684,160 @@ function showResult() {
   userData.soar  = { answers, completionPct, completedAt: new Date().toISOString() };
   localStorage.setItem('capsula_user', JSON.stringify(userData));
   localStorage.removeItem('capsula_soar_draft');
+
+  // Save to Supabase
+  saveSOARToSupabase({ answers, completionPct });
 }
 
 // ══════════════════════════════════════
-// GENERATE INSIGHTS
+// SUPABASE — salva resultado SOAR
+// ══════════════════════════════════════
+async function saveSOARToSupabase({ answers, completionPct }) {
+  const SUPABASE_URL = 'https://nkyyuujigwvvugnbqwrm.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5reXl1dWppZ3d2dnVnbmJxd3JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMzE0NzIsImV4cCI6MjA1OTYwNzQ3Mn0.0rU5sBXHBHiGBzxZGVFQ0Y8DJDJ9MH6tWXLg-EiVYvc';
+
+  const userData = JSON.parse(
+    localStorage.getItem('capsula_user') ||
+    sessionStorage.getItem('capsula_user') ||
+    'null'
+  );
+
+  if (!userData || !userData.id) {
+    console.warn('[Cápsula] Usuário não autenticado — resultado SOAR salvo apenas localmente.');
+    return;
+  }
+
+  try {
+    const payload = {
+      user_id:        userData.id,
+      matrix:         'soar',
+      answers:        answers,
+      completion_pct: completionPct,
+      completed_at:   new Date().toISOString()
+    };
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/soar_analyses`, {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'apikey':        SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Prefer':        'resolution=merge-duplicates'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.warn('[Cápsula] Erro ao salvar SOAR no Supabase:', err);
+    } else {
+      console.log('[Cápsula] Análise SOAR salva no Supabase com sucesso.');
+    }
+  } catch (err) {
+    console.warn('[Cápsula] Falha na conexão com Supabase:', err);
+  }
+
+// ══════════════════════════════════════
+// GENERATE INSIGHTS — dinâmico por conteúdo
 // ══════════════════════════════════════
 function generateInsights() {
-  const s = Object.values(answers.S || {}).filter(v => v).join(' ');
-  const o = Object.values(answers.O || {}).filter(v => v).join(' ');
-  const a = Object.values(answers.A || {}).filter(v => v).join(' ');
-  const r = Object.values(answers.R || {}).filter(v => v).join(' ');
+  // Coleta respostas por quadrante
+  const sArr = Object.values(answers.S || {}).filter(v => v && v.trim());
+  const oArr = Object.values(answers.O || {}).filter(v => v && v.trim());
+  const aArr = Object.values(answers.A || {}).filter(v => v && v.trim());
+  const rArr = Object.values(answers.R || {}).filter(v => v && v.trim());
+
+  const s = sArr.join(' ').toLowerCase();
+  const o = oArr.join(' ').toLowerCase();
+  const a = aArr.join(' ').toLowerCase();
+  const r = rArr.join(' ').toLowerCase();
+
+  // ── Scores de completude ──────────────────────────────────
+  const scores = { S: sArr.length, O: oArr.length, A: aArr.length, R: rArr.length };
+  const totalFilled = Object.values(scores).reduce((acc, v) => acc + v, 0);
+  const completionPct = Math.round((totalFilled / 16) * 100);
+
+  // ── Detecção de padrões por keywords ─────────────────────
+  const isLider      = /lider|gestão|equipe|time|mentor|influênci|influenci/.test(s + a);
+  const isEmpreend   = /empresa|negócio|negocio|empreend|startup|product|produto|cliente/.test(a + r);
+  const isTecnico    = /técni|tecni|código|codigo|software|dados|data|ia|inteligência/.test(s + o);
+  const isRelacional = /pessoas|relacion|rede|network|comunid|conect/.test(s + o + a);
+  const temMeta12m   = rArr.length > 0;
+  const temObstáculo = r.includes('obstáculo') || r.includes('obstaculo') || r.includes('dificuldade') || r.includes('superar') || r.includes('desafio');
+
+  // ── Quadrante mais fraco e mais forte ────────────────────
+  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const maisForte = sorted[0][0];
+  const maisFraco = sorted[sorted.length - 1][0];
+  const labelMap  = { S: 'Forças', O: 'Oportunidades', A: 'Aspirações', R: 'Resultados' };
 
   const insights = [];
 
+  // ── Insight 1: S + A (Alavancagem) ───────────────────────
   if (s && a) {
-    insights.push({
-      label: 'Alavancagem (S + A)',
-      text: 'Suas forças são o combustível para suas aspirações. Use o que você já sabe fazer bem como ponto de partida para o que deseja conquistar.'
-    });
+    let text = 'Suas forças são o combustível direto para suas aspirações. ';
+    if (isLider)    text += 'O perfil de liderança que você deseja construir tem base sólida nas competências que já demonstra hoje.';
+    else if (isEmpreend) text += 'Sua combinação de habilidades práticas com visão empreendedora é um ativo raro — o caminho é explorar essa intersecção.';
+    else if (isTecnico)  text += 'Expertise técnica aliada a aspirações claras cria um diferencial de mercado forte. O próximo passo é tornar esse diferencial visível.';
+    else                 text += 'Use o que você já sabe fazer bem como ponto de partida concreto para o que deseja conquistar.';
+    insights.push({ label: '⚡ Alavancagem · S + A', text });
   }
+
+  // ── Insight 2: O + R (Plano de Ação) ─────────────────────
   if (o && r) {
-    insights.push({
-      label: 'Plano de Ação (O + R)',
-      text: 'As oportunidades identificadas se conectam diretamente aos resultados que você quer. Priorize as que têm maior alinhamento com suas metas de curto prazo.'
-    });
+    let text = '';
+    if (temMeta12m && temObstáculo) {
+      text = 'Você mapeou metas concretas E já antecipou obstáculos — isso é raro e estratégico. Foque em converter as oportunidades identificadas em ações semanais com prazo definido.';
+    } else if (temMeta12m) {
+      text = 'Suas metas de 12 meses são claras. O próximo passo é cruzá-las com as oportunidades que você mapeou e definir qual delas tem o maior retorno sobre seu tempo agora.';
+    } else {
+      text = 'As oportunidades que você identificou se conectam diretamente aos resultados que quer. Priorize as que têm maior alinhamento com sua janela de tempo atual.';
+    }
+    insights.push({ label: '🎯 Plano de Ação · O + R', text });
   }
+
+  // ── Insight 3: S + O (Vantagem Competitiva) ──────────────
   if (s && o) {
-    insights.push({
-      label: 'Vantagem Competitiva (S + O)',
-      text: 'A combinação das suas forças únicas com as oportunidades do mercado define onde você tem maior potencial de diferenciação.'
-    });
+    let text = '';
+    if (isRelacional) {
+      text = 'Sua capacidade relacional somada às oportunidades de mercado cria um ativo de rede poderoso. Relacionamentos estratégicos são sua maior alavanca de diferenciação.';
+    } else if (isTecnico) {
+      text = 'A combinação de competência técnica com consciência das oportunidades do seu mercado define onde você tem maior potencial de impacto. Aposte nessa intersecção.';
+    } else {
+      text = 'A combinação das suas forças únicas com as lacunas que você enxerga no mercado define sua zona de maior potencial. É aí que vale concentrar energia.';
+    }
+    insights.push({ label: '🔑 Vantagem Competitiva · S + O', text });
   }
+
+  // ── Insight 4: A + R (Visão de Futuro) ───────────────────
   if (a && r) {
+    let text = '';
+    if (isEmpreend) {
+      text = 'Sua visão empreendedora está bem definida e suas metas são concretas. Defina o primeiro marco de 90 dias — é a peça que falta para transformar visão em movimento real.';
+    } else {
+      text = 'Suas aspirações de longo prazo e seus resultados esperados estão mapeados. O próximo passo é definir os marcos trimestrais que ligam onde você está a onde quer chegar.';
+    }
+    insights.push({ label: '🔭 Visão de Futuro · A + R', text });
+  }
+
+  // ── Insight 5: completude / quadrante fraco ──────────────
+  if (completionPct < 75 && maisFraco !== maisForte) {
     insights.push({
-      label: 'Visão de Futuro (A + R)',
-      text: 'Suas aspirações de longo prazo e seus resultados esperados estão mapeados. O próximo passo é definir os marcos que ligam onde você está a onde quer chegar.'
+      label: `📍 Atenção · Quadrante ${maisFraco}`,
+      text: `O quadrante de ${labelMap[maisFraco]} está pouco preenchido. Respostas mais completas nessa dimensão gerarão insights cruzados mais precisos. Vale revisitar.`
+    });
+  } else if (completionPct === 100) {
+    insights.push({
+      label: '✅ Análise Completa',
+      text: 'Você respondeu todos os 16 campos. Com a análise completa, os cruzamentos entre quadrantes são mais precisos. Revise periodicamente — seus valores e prioridades evoluem.'
     });
   }
 
-  // Always have at least 2 insights
+  // Fallback mínimo
   if (insights.length < 2) {
     insights.push({
-      label: 'Próximo Passo',
-      text: 'Com sua análise SOAR concluída, revise seus quadrantes regularmente. O autoconhecimento estratégico é mais valioso quando revisitado e atualizado.'
+      label: '📌 Próximo Passo',
+      text: 'Com sua análise SOAR concluída, revise os quadrantes regularmente. O autoconhecimento estratégico é mais valioso quando revisitado e atualizado a cada ciclo de vida.'
     });
   }
 
