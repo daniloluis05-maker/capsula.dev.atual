@@ -821,30 +821,50 @@ body{font-family:Arial,Helvetica,sans-serif;background:#07080C;color:#E8E6F0;-we
 }
 
 function _imprimirPDF(html) {
-  var old = document.getElementById('_capsula_pdf_frame');
-  if (old) old.remove();
-  var iframe = document.createElement('iframe');
-  iframe.id = '_capsula_pdf_frame';
-  iframe.setAttribute('style','position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;border:none;');
-  document.body.appendChild(iframe);
-  var doc = iframe.contentDocument || iframe.contentWindow.document;
-  doc.open();
-  doc.write(html);
-  doc.close();
-  iframe.onload = function() {
-    setTimeout(function() {
+  // Exibe feedback visual imediato
+  var btn = document.querySelector('.btn-share[onclick*="generatePDF"]');
+  var btnOriginal = btn ? btn.innerHTML : null;
+  if (btn) { btn.innerHTML = '⏳ Gerando PDF...'; btn.disabled = true; }
+
+  // Usa Blob URL + aba nova — método mais confiável para print em browsers modernos
+  // (doc.write() em iframe hidden não dispara onload de forma confiável no Chrome 90+/Firefox/Safari)
+  var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  var blobURL = URL.createObjectURL(blob);
+
+  var printWin = window.open(blobURL, '_blank');
+
+  if (!printWin) {
+    // Popup bloqueado — fallback: download do HTML
+    if (btn) { btn.innerHTML = btnOriginal; btn.disabled = false; }
+    var a = document.createElement('a');
+    a.href = blobURL;
+    a.download = 'analise-soar.html';
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(blobURL); }, 5000);
+    return;
+  }
+
+  // Aguarda a página carregar na nova aba antes de disparar o print
+  printWin.addEventListener('load', function () {
+    setTimeout(function () {
       try {
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
-      } catch(err) {
-        var blob = new Blob([html], {type:'text/html;charset=utf-8'});
-        var url  = URL.createObjectURL(blob);
-        var a    = document.createElement('a');
-        a.href = url; a.download = 'analise-soar.html'; a.click();
-        setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+        printWin.focus();
+        printWin.print();
+        // Restaura botão após o print ser acionado
+        printWin.addEventListener('afterprint', function () {
+          printWin.close();
+          URL.revokeObjectURL(blobURL);
+        });
+      } catch (err) {
+        // Fallback caso print falhe: mantém aba aberta para o usuário usar Ctrl+P
+        console.warn('Capsula PDF: print() falhou, use Ctrl+P na aba aberta.', err);
       }
-    }, 700);
-  };
+      if (btn) { btn.innerHTML = btnOriginal; btn.disabled = false; }
+    }, 600);
+  });
+
+  // Limpeza de segurança após 60s
+  setTimeout(function () { URL.revokeObjectURL(blobURL); }, 60000);
 }
 
 // ══════════════════════════════════════
