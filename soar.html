@@ -777,69 +777,74 @@ function generatePDF() {
     </div>
   `).join('');
 
-  const w = window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
-  <meta charset="UTF-8">
-  <title>Análise SOAR — ${nome} | Cápsula.Dev</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Outfit',sans-serif;background:#07080C;color:#E8E6F0;min-height:100vh;${gridBg}}
-    .page{width:794px;min-height:1123px;margin:0 auto;padding:48px;}
-    @media print{
-      body{background:#07080C!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-      @page{margin:0;size:A4;}
-      .page{width:100%;padding:32px;}
-    }
-  </style>
-</head>
-<body>
-<div class="page">
+  // ── Monta HTML e imprime via iframe (sem popup) ──────────────
+  const pdfHTML = `<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8"><title>Análise SOAR — ${nome} | Cápsula.Dev</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial,Helvetica,sans-serif;background:#07080C;color:#E8E6F0;-webkit-print-color-adjust:exact;print-color-adjust:exact;background-image:linear-gradient(rgba(108,95,230,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(108,95,230,0.06) 1px,transparent 1px);background-size:40px 40px;}
+.page{width:100%;padding:44px;}
+@media print{body{background:#07080C!important;}@page{size:A4;margin:0;}.page{padding:28px;}}
+</style></head><body><div class="page">
 
-  <!-- HEADER -->
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,0.08);">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <div style="width:26px;height:26px;background:#6C5FE6;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;">C</div>
-      <div style="font-size:13px;font-weight:700;letter-spacing:-0.01em;">Cápsula<span style="color:#6C5FE6;">.</span>Dev</div>
-    </div>
-    <div style="text-align:right;">
-      <div style="font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#2EC4A0;margin-bottom:3px;">// análise soar · relatório</div>
-      <div style="font-family:monospace;font-size:10px;color:#6B6980;">EMITIDO EM ${data.toUpperCase()}</div>
-    </div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.08);">
+  <div style="font-size:13px;font-weight:700;color:#E8E6F0;">Cápsula<span style="color:#6C5FE6;">.</span>Dev — Engenharia Comportamental</div>
+  <div style="text-align:right;">
+    <div style="font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#2EC4A0;margin-bottom:2px;">// análise soar · relatório</div>
+    <div style="font-size:10px;color:#6B6980;">Emitido em ${data}</div>
   </div>
-
-  <!-- HERO -->
-  <div style="background:#0D0F16;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:26px 30px;margin-bottom:20px;position:relative;overflow:hidden;">
-    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#6C5FE6,#2EC4A0);"></div>
-    <div style="font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#6B6980;margin-bottom:5px;">// mapa estratégico pessoal · ${nome.toUpperCase()}</div>
-    <div style="font-size:36px;font-weight:800;letter-spacing:-0.04em;line-height:1;color:#6C5FE6;margin-bottom:6px;">Análise SOAR</div>
-    <div style="font-size:13px;color:#aaa;">Forças · Oportunidades · Aspirações · Resultados</div>
-  </div>
-
-  <!-- QUADRANTES 2x2 -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-    ${quadrantsHTML}
-  </div>
-
-  <!-- SÍNTESE ESTRATÉGICA -->
-  <div style="background:#0D0F16;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;">
-    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#6C5FE6,#2EC4A0);"></div>
-    <div style="font-family:monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;margin-bottom:14px;">SÍNTESE_ESTRATÉGICA</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      ${insightsHTML}
-    </div>
-  </div>
-
-  <!-- FOOTER -->
-  <div style="margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;">
-    <div style="font-family:monospace;font-size:9px;color:#353448;letter-spacing:0.06em;">// CÁPSULA DE DESENVOLVIMENTO · ENGENHARIA COMPORTAMENTAL · CONFIDENCIAL</div>
-    <div style="font-size:11px;font-weight:700;color:#353448;">Cápsula<span style="color:#6C5FE6;">.</span>Dev</div>
-  </div>
-
 </div>
-<script>window.onload=function(){setTimeout(function(){window.print();},400);}<\/script>
-</body></html>`);
-  w.document.close();
+
+<div style="background:#0D0F16;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:22px 26px;margin-bottom:16px;border-top:3px solid #6C5FE6;">
+  <div style="font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;margin-bottom:4px;">// mapa estratégico pessoal · ${nome.toUpperCase()}</div>
+  <div style="font-size:34px;font-weight:800;letter-spacing:-0.03em;line-height:1;color:#6C5FE6;margin-bottom:5px;">Análise SOAR</div>
+  <div style="font-size:12px;color:#aaa;">Forças · Oportunidades · Aspirações · Resultados</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+  ${quadrantsHTML}
+</div>
+
+<div style="background:#0D0F16;border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:18px;margin-bottom:14px;border-top:2px solid #2EC4A0;">
+  <div style="font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;margin-bottom:12px;">SÍNTESE ESTRATÉGICA</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">${insightsHTML}</div>
+</div>
+
+<div style="padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;">
+  <div style="font-size:9px;color:#353448;letter-spacing:0.05em;">// CÁPSULA DE DESENVOLVIMENTO · CONFIDENCIAL · USO PESSOAL</div>
+  <div style="font-size:9px;color:#353448;">capsuladedesenvolvimento.com.br</div>
+</div>
+
+</div></body></html>`;
+
+  _imprimirPDF(pdfHTML);
+}
+
+function _imprimirPDF(html) {
+  var old = document.getElementById('_capsula_pdf_frame');
+  if (old) old.remove();
+  var iframe = document.createElement('iframe');
+  iframe.id = '_capsula_pdf_frame';
+  iframe.setAttribute('style','position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;border:none;');
+  document.body.appendChild(iframe);
+  var doc = iframe.contentDocument || iframe.contentWindow.document;
+  doc.open();
+  doc.write(html);
+  doc.close();
+  iframe.onload = function() {
+    setTimeout(function() {
+      try {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      } catch(err) {
+        var blob = new Blob([html], {type:'text/html;charset=utf-8'});
+        var url  = URL.createObjectURL(blob);
+        var a    = document.createElement('a');
+        a.href = url; a.download = 'analise-soar.html'; a.click();
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+      }
+    }, 700);
+  };
 }
 
 // ══════════════════════════════════════
