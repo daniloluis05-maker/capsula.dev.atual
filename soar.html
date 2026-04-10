@@ -389,7 +389,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
     <div class="result-actions">
       <a href="dashboard.html" class="btn-dashboard">Ver meu Dashboard →</a>
-      <button class="btn-share" onclick="shareResult()">↑ Compartilhar resultado</button>
+      <button class="btn-share" onclick="generatePDF()" style="background:var(--surface);border:1px solid var(--border2);color:var(--text);">↓ Baixar PDF</button>
+      <button class="btn-share" onclick="shareResult()">↗ Compartilhar resultado</button>
       <button class="btn-redo" onclick="resetForm()">↺ Refazer análise</button>
     </div>
   </div>
@@ -708,6 +709,120 @@ function generateInsights() {
   }
 
   return insights.slice(0, 4);
+}
+
+// ══════════════════════════════════════
+// GENERATE PDF — SOAR Blueprint
+// ══════════════════════════════════════
+function generatePDF() {
+  const user = JSON.parse(localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || '{}');
+  const nome = user.nome || user.apelido || 'Profissional';
+  const data = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
+
+  const COLORS = { S:'#6C5FE6', O:'#2EC4A0', A:'#E8603A', R:'#1BA8D4' };
+
+  const gridBg = `
+    background-image: linear-gradient(rgba(108,95,230,0.07) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(108,95,230,0.07) 1px, transparent 1px);
+    background-size: 40px 40px;
+  `;
+
+  const quadrantsHTML = QUADRANTS.map(q => {
+    const filled = Object.values(answers[q.key]||{}).filter(v=>v&&v.trim().length>0);
+    const itemsHTML = filled.length > 0
+      ? filled.map(v=>`
+          <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;">
+            <span style="width:5px;height:5px;border-radius:50%;background:${q.color};margin-top:6px;flex-shrink:0;display:block;box-shadow:0 0 6px ${q.color}"></span>
+            <span style="font-size:11.5px;color:#C0BECE;line-height:1.6;">${v}</span>
+          </div>
+        `).join('')
+      : `<span style="font-family:monospace;font-size:10px;color:#353448;">// não respondido</span>`;
+    return `
+      <div style="background:#0D0F16;border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:18px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;bottom:0;width:3px;background:${q.color};"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);">
+          <div style="width:28px;height:28px;border-radius:5px;background:${q.color};display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;">${q.icon}</div>
+          <div>
+            <div style="font-family:monospace;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;">${q.label}</div>
+            <div style="font-size:13px;font-weight:700;letter-spacing:-0.01em;">${q.name}</div>
+          </div>
+        </div>
+        ${itemsHTML}
+      </div>
+    `;
+  }).join('');
+
+  const insights = generateInsights();
+  const insightsHTML = insights.map(ins=>`
+    <div style="background:#0D0F16;border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:14px 16px;">
+      <div style="font-family:monospace;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;margin-bottom:6px;">${ins.label}</div>
+      <div style="font-size:11.5px;color:#C0BECE;line-height:1.6;">${ins.text}</div>
+    </div>
+  `).join('');
+
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8">
+  <title>Análise SOAR — ${nome} | Cápsula.Dev</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Outfit',sans-serif;background:#07080C;color:#E8E6F0;min-height:100vh;${gridBg}}
+    .page{width:794px;min-height:1123px;margin:0 auto;padding:48px;}
+    @media print{
+      body{background:#07080C!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+      @page{margin:0;size:A4;}
+      .page{width:100%;padding:32px;}
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,0.08);">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div style="width:26px;height:26px;background:#6C5FE6;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;">C</div>
+      <div style="font-size:13px;font-weight:700;letter-spacing:-0.01em;">Cápsula<span style="color:#6C5FE6;">.</span>Dev</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#2EC4A0;margin-bottom:3px;">// análise soar · relatório</div>
+      <div style="font-family:monospace;font-size:10px;color:#6B6980;">EMITIDO EM ${data.toUpperCase()}</div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div style="background:#0D0F16;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:26px 30px;margin-bottom:20px;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#6C5FE6,#2EC4A0);"></div>
+    <div style="font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#6B6980;margin-bottom:5px;">// mapa estratégico pessoal · ${nome.toUpperCase()}</div>
+    <div style="font-size:36px;font-weight:800;letter-spacing:-0.04em;line-height:1;color:#6C5FE6;margin-bottom:6px;">Análise SOAR</div>
+    <div style="font-size:13px;color:#aaa;">Forças · Oportunidades · Aspirações · Resultados</div>
+  </div>
+
+  <!-- QUADRANTES 2x2 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+    ${quadrantsHTML}
+  </div>
+
+  <!-- SÍNTESE ESTRATÉGICA -->
+  <div style="background:#0D0F16;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#6C5FE6,#2EC4A0);"></div>
+    <div style="font-family:monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;margin-bottom:14px;">SÍNTESE_ESTRATÉGICA</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      ${insightsHTML}
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:monospace;font-size:9px;color:#353448;letter-spacing:0.06em;">// CÁPSULA DE DESENVOLVIMENTO · ENGENHARIA COMPORTAMENTAL · CONFIDENCIAL</div>
+    <div style="font-size:11px;font-weight:700;color:#353448;">Cápsula<span style="color:#6C5FE6;">.</span>Dev</div>
+  </div>
+
+</div>
+<script>window.onload=function(){setTimeout(function(){window.print();},400);}<\/script>
+</body></html>`);
+  w.document.close();
 }
 
 // ══════════════════════════════════════
