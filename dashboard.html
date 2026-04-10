@@ -515,8 +515,16 @@ function setProgress(pctId,fillId,value){
   if(f)setTimeout(()=>f.style.width=value+'%',100);
 }
 
+// ── UTILITÁRIO: nome de exibição ──────────────────────────────
+function getNomeExibido(userData) {
+  if (!userData) return 'Usuário';
+  if (userData.apelido && userData.apelido.trim()) return userData.apelido.trim();
+  if (userData.nome && userData.nome.trim()) return userData.nome.trim();
+  return 'Usuário';
+}
+
 function applyUser(nome,apelido){
-  const ex=apelido||nome.split(' ')[0];
+  const ex=getNomeExibido({nome,apelido});
   document.getElementById('greeting-nome').textContent=ex;
   document.getElementById('sb-nome').textContent=nome;
   document.getElementById('sb-avatar').textContent=ex.charAt(0).toUpperCase();const mob=document.getElementById('mob-avatar');if(mob)mob.textContent=ex.charAt(0).toUpperCase();

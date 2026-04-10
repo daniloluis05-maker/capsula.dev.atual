@@ -473,6 +473,7 @@ const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 var _db=null;
 function getDB(){if(!_db){if(typeof supabase==='undefined')throw new Error('SDK não carregou.');_db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);}return _db;}
 function gerarUUID(){return([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16));}
+function getNomeExibido(u){if(!u)return'Usuário';if(u.apelido&&u.apelido.trim())return u.apelido.trim();if(u.nome&&u.nome.trim())return u.nome.trim();return'Usuário';}
 document.getElementById('ano-atual').textContent=new Date().getFullYear();
 var hamburger=document.getElementById('hamburger'),navLinks=document.getElementById('nav-links');
 if(hamburger&&navLinks){
@@ -550,7 +551,7 @@ function renderUsuarios(){
     return;
   }
   lista.innerHTML=perfis.map(function(u,i){
-    var ini=(u.apelido||u.nome||'?').charAt(0).toUpperCase();
+    var nome_ex=getNomeExibido(u);var ini=nome_ex.charAt(0).toUpperCase();
     var obj={individual:'Autoconhecimento',lider:'Líder',empresa:'Empresa',outro:'Outro'}[u.objetivo]||'';
     var disc=u.disc?'DISC ✓':'';
     var soar=u.soar?'SOAR ✓':'';
@@ -558,7 +559,7 @@ function renderUsuarios(){
     return '<div class="usuario-card" onclick="entrarComPerfil('+i+')" role="button" tabindex="0">'+
       '<div class="usuario-avatar">'+ini+'</div>'+
       '<div class="usuario-info">'+
-        '<div class="usuario-nome">'+(u.apelido||u.nome.split(' ')[0])+'</div>'+
+        '<div class="usuario-nome">'+nome_ex+'</div>'+
         '<div class="usuario-meta">'+obj+(obj?' · ':'')+badges+'</div>'+
       '</div>'+
       '<span style="color:var(--muted);font-size:0.8rem;">→</span>'+
@@ -601,7 +602,7 @@ if(form){form.addEventListener('submit',async function(e){
   if(!nome)return showError('Por favor, informe seu nome.');
   if(!objetivo)return showError('Selecione seu objetivo principal.');
   // Calcula nome exibido antes de qualquer operação async
-  var nomeExibido=apelido||nome.split(' ')[0];
+  var nomeExibido=getNomeExibido({nome:nome,apelido:apelido});
   setLoading(true);
   try{
     var db=getDB();

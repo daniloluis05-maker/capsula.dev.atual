@@ -723,9 +723,17 @@ function generateInsights() {
 // ══════════════════════════════════════
 // GENERATE PDF — SOAR Blueprint
 // ══════════════════════════════════════
+// ── UTILITÁRIO: nome de exibição ──────────────────────────────
+function getNomeExibido(userData) {
+  if (!userData) return 'Usuário';
+  if (userData.apelido && userData.apelido.trim()) return userData.apelido.trim();
+  if (userData.nome && userData.nome.trim()) return userData.nome.trim();
+  return 'Usuário';
+}
+
 function generatePDF() {
-  const user = JSON.parse(localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || '{}');
-  const nome = user.nome || user.apelido || 'Profissional';
+  const user = JSON.parse(localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || 'null') || {};
+  const nome = getNomeExibido(user);
   const data = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
 
   const COLORS = { S:'#6C5FE6', O:'#2EC4A0', A:'#E8603A', R:'#1BA8D4' };
@@ -866,7 +874,7 @@ function initPage() {
   }
 
   // Exibe nome do usuário na intro
-  const nome = userData.apelido || userData.nome.split(' ')[0];
+  const nome = getNomeExibido(userData);
   const greeting = document.getElementById('soar-greeting');
   if (greeting) {
     greeting.style.display = 'block';

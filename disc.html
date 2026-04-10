@@ -1221,10 +1221,19 @@ async function showResult() {
 // SUPABASE AUTH + PERSISTÊNCIA
 // ══════════════════════════════════════
 const SUPABASE_URL = 'https://dfnmofzbpdmnvlyowtmp.supabase.co';
+
+// ── UTILITÁRIO: nome de exibição ──────────────────────────────
+// Regra: apelido → primeiro nome → nome completo (nunca vazio)
+function getNomeExibido(userData) {
+  if (!userData) return 'Usuário';
+  if (userData.apelido && userData.apelido.trim()) return userData.apelido.trim();
+  if (userData.nome && userData.nome.trim()) return userData.nome.trim();
+  return 'Usuário';
+}
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbm1vZnpicGRtbnZseW93dG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NjQ4MzIsImV4cCI6MjA5MTE0MDgzMn0.KXcRmhpPFwpQGXkYIVjXPJvMh5w1KpIlZiwyIEUBrvU';
 
 // Inicializa cliente Supabase (carregado via CDN no <head>)
-// <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+// SDK carregado via CDN no <head> da página
 let _supabase = null;
 function getSupabase() {
   if (_supabase) return _supabase;
@@ -1353,7 +1362,7 @@ function initPage() {
   }
 
   // Exibe nome na intro
-  const nome = userData.apelido || userData.nome.split(' ')[0];
+  const nome = getNomeExibido(userData);
   const greeting = document.getElementById('disc-greeting');
   if (greeting) {
     greeting.style.display = 'block';
@@ -1373,8 +1382,8 @@ document.addEventListener('DOMContentLoaded', initPage);
 function generatePDF() {
   const dominant = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
   const profile  = PROFILES[dominant];
-  const user     = JSON.parse(localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || '{}');
-  const nome     = user.nome || user.apelido || 'Profissional';
+  const user     = JSON.parse(localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || 'null') || {};
+  const nome     = getNomeExibido(user);
   const data     = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
   const order    = Object.entries(scores).sort((a,b) => b[1]-a[1]);
 
