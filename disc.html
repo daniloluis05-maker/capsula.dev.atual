@@ -4,28 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Perfil DISC | Cápsula de Desenvolvimento</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💊</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <!-- Supabase JS (Auth + DB) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:      #060608;
-  --bg2:     #0C0C14;
-  --surface: rgba(255,255,255,0.04);
-  --border:  rgba(255,255,255,0.08);
-  --text:    #F0EEF8;
-  --muted:   #7A788E;
-  --muted2:  #3E3C52;
-  --D: #FF6B35;
-  --I: #7C6FF7;
-  --S: #4FFFB0;
-  --C: #00E5FF;
-  --serif: 'Syne', sans-serif;
-  --sans:  'DM Sans', sans-serif;
+  --bg:#07080C; --bg2:#0D0F16; --surface:#121520; --surface2:#181C28;
+  --border:rgba(255,255,255,0.06); --border2:rgba(255,255,255,0.11);
+  --D:#E8603A; --I:#6C5FE6; --S:#2EC4A0; --C:#1BA8D4;
+  --accent:#6C5FE6; --text:#E8E6F0; --muted:#6B6980; --muted2:#353448;
+  --mono:'Space Mono',monospace; --sans:'Outfit',system-ui,sans-serif;
 }
 
 html { scroll-behavior: smooth; }
@@ -74,9 +66,9 @@ body::before {
 
 .intro-badge {
   display: inline-flex; align-items: center; gap: 0.5rem;
-  background: rgba(255,107,53,0.1);
-  border: 1px solid rgba(255,107,53,0.25);
-  color: var(--D);
+  background: rgba(108,95,230,0.1);
+  border: 1px solid rgba(108,95,230,0.25);
+  color: var(--accent);
   font-size: 0.72rem; font-weight: 700;
   letter-spacing: 0.12em; text-transform: uppercase;
   padding: 0.4rem 1rem; border-radius: 100px;
@@ -85,7 +77,7 @@ body::before {
 }
 
 .intro-page h1 {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: 800;
   line-height: 1.05;
@@ -94,7 +86,7 @@ body::before {
   margin: 0 auto 1.5rem;
   animation: fadeUp 0.6s 0.1s ease both;
 }
-.intro-page h1 em { font-style: italic; color: var(--D); }
+.intro-page h1 em { font-style: normal; color: var(--accent); }
 
 .intro-sub {
   color: var(--muted);
@@ -130,7 +122,7 @@ body::before {
 }
 .meta-item { text-align: center; }
 .meta-num {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 1.5rem; font-weight: 800; color: var(--text);
   display: block;
 }
@@ -138,19 +130,19 @@ body::before {
 
 .btn-start {
   display: inline-flex; align-items: center; gap: 0.6rem;
-  background: var(--D);
+  background: var(--accent);
   color: #fff; border: none;
   padding: 1rem 2.5rem;
-  border-radius: 10px;
-  font-size: 1rem; font-weight: 700;
-  font-family: var(--serif);
+  border-radius: 7px;
+  font-size: 0.95rem; font-weight: 700;
+  font-family: var(--sans);
   cursor: pointer;
   transition: all 0.25s;
-  box-shadow: 0 0 30px rgba(255,107,53,0.3);
+  box-shadow: 0 0 30px rgba(108,95,230,0.35);
   animation: fadeUp 0.6s 0.5s ease both;
   letter-spacing: -0.01em;
 }
-.btn-start:hover { box-shadow: 0 0 50px rgba(255,107,53,0.5); transform: translateY(-2px); }
+.btn-start:hover { box-shadow: 0 0 50px rgba(108,95,230,0.55); transform: translateY(-2px); opacity: 0.9; }
 
 .intro-note {
   margin-top: 1.5rem;
@@ -176,37 +168,38 @@ body::before {
   border-bottom: 1px solid var(--border);
 }
 .quiz-logo {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 1rem; font-weight: 800;
   color: var(--text); text-decoration: none;
 }
-.quiz-logo span { color: var(--D); }
+.quiz-logo span { color: var(--accent); }
 
 .quiz-progress-wrap { flex: 1; max-width: 400px; margin: 0 2rem; }
 .quiz-progress-track {
-  height: 4px; background: var(--surface);
+  height: 3px; background: var(--border);
   border-radius: 100px; overflow: hidden;
 }
 .quiz-progress-fill {
   height: 100%; border-radius: 100px;
-  background: linear-gradient(90deg, var(--D), var(--I));
+  background: linear-gradient(90deg, var(--accent), var(--C));
   transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1);
-  box-shadow: 0 0 10px rgba(255,107,53,0.5);
+  box-shadow: 0 0 10px rgba(108,95,230,0.5);
 }
 .quiz-counter {
-  font-size: 0.75rem; color: var(--muted);
-  text-align: center; margin-top: 0.35rem;
-  font-weight: 500;
+  font-family: var(--mono);
+  font-size: 0.62rem; color: var(--muted);
+  text-align: center; margin-top: 0.5rem;
+  letter-spacing: 0.08em;
 }
 
 .btn-back {
-  background: transparent; border: 1px solid var(--border);
+  background: transparent; border: 1px solid var(--border2);
   color: var(--muted); padding: 0.5rem 1rem;
-  border-radius: 8px; font-size: 0.8rem; font-weight: 500;
-  cursor: pointer; font-family: var(--sans);
+  border-radius: 6px; font-size: 0.78rem; font-weight: 500;
+  cursor: pointer; font-family: var(--mono); letter-spacing: 0.04em;
   transition: all 0.2s;
 }
-.btn-back:hover { border-color: var(--D); color: var(--text); }
+.btn-back:hover { border-color: var(--accent); color: var(--text); }
 
 /* QUESTION AREA */
 .quiz-body {
@@ -228,17 +221,18 @@ body::before {
 
 .q-category {
   display: inline-flex; align-items: center; gap: 0.4rem;
-  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+  font-family: var(--mono);
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--q-color, var(--D));
   margin-bottom: 1.5rem;
-  background: rgba(255,107,53,0.08);
-  border: 1px solid rgba(255,107,53,0.2);
-  padding: 0.3rem 0.8rem; border-radius: 100px;
+  background: rgba(108,95,230,0.06);
+  border: 1px solid rgba(108,95,230,0.18);
+  padding: 0.3rem 0.85rem; border-radius: 4px;
 }
 .q-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 6px currentColor; }
 
 .question-text {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: clamp(1.4rem, 3.5vw, 2rem);
   font-weight: 700;
   line-height: 1.25;
@@ -333,17 +327,17 @@ body::before {
 }
 .btn-next {
   display: inline-flex; align-items: center; gap: 0.5rem;
-  background: var(--q-color, var(--D));
+  background: var(--q-color, var(--accent));
   color: #fff; border: none;
-  padding: 0.85rem 2rem; border-radius: 10px;
-  font-size: 0.95rem; font-weight: 700;
-  font-family: var(--serif);
+  padding: 0.85rem 2rem; border-radius: 7px;
+  font-size: 0.9rem; font-weight: 700;
+  font-family: var(--sans);
   cursor: pointer; transition: all 0.25s;
-  box-shadow: 0 0 20px rgba(255,107,53,0.25);
+  box-shadow: 0 0 20px rgba(108,95,230,0.25);
   opacity: 0.35; pointer-events: none;
 }
 .btn-next.ready { opacity: 1; pointer-events: all; }
-.btn-next.ready:hover { box-shadow: 0 0 35px rgba(255,107,53,0.45); transform: translateY(-1px); }
+.btn-next.ready:hover { box-shadow: 0 0 35px rgba(108,95,230,0.45); transform: translateY(-1px); }
 
 /* SECTION TRANSITION */
 .section-transition {
@@ -357,7 +351,7 @@ body::before {
 .section-transition.show { opacity: 1; pointer-events: all; }
 .transition-icon { font-size: 3rem; }
 .transition-label {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 1.5rem; font-weight: 800;
   color: var(--text);
 }
@@ -380,7 +374,7 @@ body::before {
 }
 
 .result-title {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 800; letter-spacing: -0.03em;
   text-align: center; margin-bottom: 0.5rem;
@@ -397,21 +391,22 @@ body::before {
 /* DNA CARD */
 .dna-card {
   width: 100%; max-width: 600px;
-  background: rgba(255,255,255,0.03);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 2.5rem;
-  margin-bottom: 2.5rem;
+  border-radius: 10px;
+  padding: 2rem;
+  margin-bottom: 2rem;
   position: relative; overflow: hidden;
   animation: fadeUp 0.5s 0.2s ease both;
 }
 .dna-card::before {
   content: '';
   position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: var(--result-gradient, linear-gradient(90deg, var(--D), var(--I)));
+  background: var(--result-gradient, linear-gradient(90deg, var(--accent), var(--C)));
 }
 .dna-card-label {
-  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+  font-family: var(--mono);
+  font-size: 0.6rem; font-weight: 400; letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--muted);
   margin-bottom: 1.75rem;
 }
@@ -426,7 +421,7 @@ body::before {
 .disc-bars { display: flex; flex-direction: column; gap: 1rem; }
 .bar-row { display: flex; align-items: center; gap: 1rem; }
 .bar-letter {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 1rem; font-weight: 800; width: 20px; text-align: center;
 }
 .bar-track {
@@ -458,22 +453,25 @@ body::before {
 /* PROFILE BLOCKS */
 .profile-grid {
   display: grid; grid-template-columns: 1fr 1fr;
-  gap: 1rem; width: 100%; max-width: 600px;
+  gap: 1px; width: 100%; max-width: 600px;
   margin-bottom: 2rem;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
   animation: fadeUp 0.5s 0.3s ease both;
 }
 .profile-block {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 16px; padding: 1.5rem;
+  background: var(--surface); padding: 1.5rem;
 }
 .profile-block h4 {
-  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+  font-family: var(--mono);
+  font-size: 0.58rem; font-weight: 400; letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--muted);
   margin-bottom: 0.75rem;
 }
-.profile-block p { font-size: 0.875rem; color: var(--text); line-height: 1.6; }
+.profile-block p { font-size: 0.82rem; color: var(--text); line-height: 1.65; }
 .profile-block ul { padding-left: 1rem; }
-.profile-block li { font-size: 0.875rem; color: var(--muted); line-height: 1.8; }
+.profile-block li { font-size: 0.82rem; color: var(--muted); line-height: 1.8; }
 
 /* ACTIONS */
 .result-actions {
@@ -481,24 +479,25 @@ body::before {
   animation: fadeUp 0.5s 0.4s ease both;
 }
 .btn-dashboard {
-  background: var(--I); color: #fff; border: none;
-  padding: 0.9rem 2rem; border-radius: 10px;
-  font-size: 0.95rem; font-weight: 700;
-  font-family: var(--serif); cursor: pointer;
+  background: var(--accent); color: #fff; border: none;
+  padding: 0.85rem 2rem; border-radius: 7px;
+  font-size: 0.9rem; font-weight: 700;
+  font-family: var(--sans); cursor: pointer;
   transition: all 0.25s;
-  box-shadow: 0 0 20px rgba(124,111,247,0.3);
+  box-shadow: 0 0 20px rgba(108,95,230,0.3);
+  text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;
 }
-.btn-dashboard:hover { box-shadow: 0 0 35px rgba(124,111,247,0.5); transform: translateY(-1px); }
+.btn-dashboard:hover { box-shadow: 0 0 35px rgba(108,95,230,0.5); transform: translateY(-1px); opacity: 0.9; }
 
 .btn-share {
   background: transparent; color: var(--text);
-  border: 1px solid var(--border);
-  padding: 0.9rem 2rem; border-radius: 10px;
-  font-size: 0.95rem; font-weight: 600;
+  border: 1px solid var(--border2);
+  padding: 0.85rem 2rem; border-radius: 7px;
+  font-size: 0.9rem; font-weight: 600;
   font-family: var(--sans); cursor: pointer;
   transition: all 0.2s;
 }
-.btn-share:hover { border-color: var(--I); color: var(--I); }
+.btn-share:hover { border-color: var(--accent); color: var(--accent); }
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
@@ -531,7 +530,7 @@ body::before {
   transition: color 0.2s;
 }
 .mobile-bottom-nav li a:hover, .mobile-bottom-nav li button:hover { color: var(--text); }
-.mobile-bottom-nav li a.active { color: var(--I); }
+.mobile-bottom-nav li a.active { color: var(--accent); }
 .mobile-bottom-nav .nav-icon { font-size: 1.2rem; line-height: 1; }
 
 @media (max-width: 1024px) {
@@ -566,7 +565,7 @@ body::before {
   <div class="onboarding-modal">
     <!-- Step 1 -->
     <div class="onboarding-step active" id="ob-step-1">
-      <div class="ob-icon">💊</div>
+      <div class="ob-icon">⬡</div>
       <h2>Bem-vindo à<br><em>Cápsula de Desenvolvimento</em></h2>
       <p>Uma plataforma de autoconhecimento com 8 matrizes comportamentais. Cada avaliação revela um lado diferente de quem você é.</p>
       <div class="ob-dots">
@@ -775,128 +774,128 @@ const QUESTIONS = [
   {
     dim: 'D', section: 'D',
     text: 'Em situações de pressão, prefiro ser quem toma as decisões finais.',
-    color: 'var(--D)', colorHex: '#FF6B35', label: 'Dominância',
+    color: 'var(--D)', colorHex: '#E8603A', label: 'Dominância',
   },
   {
     dim: 'D', section: 'D',
     text: 'Obstáculos me energizam — quanto maior o desafio, mais motivado(a) fico.',
-    color: 'var(--D)', colorHex: '#FF6B35', label: 'Dominância',
+    color: 'var(--D)', colorHex: '#E8603A', label: 'Dominância',
   },
   {
     dim: 'D', section: 'D',
     text: 'Prefiro agir rápido e corrigir depois a ficar esperando todas as informações.',
-    color: 'var(--D)', colorHex: '#FF6B35', label: 'Dominância',
+    color: 'var(--D)', colorHex: '#E8603A', label: 'Dominância',
   },
   {
     dim: 'D', section: 'D',
     text: 'Não tenho dificuldade em confrontar pessoas quando discordo de algo.',
-    color: 'var(--D)', colorHex: '#FF6B35', label: 'Dominância',
+    color: 'var(--D)', colorHex: '#E8603A', label: 'Dominância',
   },
   {
     dim: 'D', section: 'D',
     text: 'Resultados e metas concretas importam mais para mim do que o processo.',
-    color: 'var(--D)', colorHex: '#FF6B35', label: 'Dominância',
+    color: 'var(--D)', colorHex: '#E8603A', label: 'Dominância',
   },
   {
     dim: 'D', section: 'D',
     text: 'Prefiro liderar projetos do que participar como membro de uma equipe.',
-    color: 'var(--D)', colorHex: '#FF6B35', label: 'Dominância',
+    color: 'var(--D)', colorHex: '#E8603A', label: 'Dominância',
   },
 
   // ── INFLUÊNCIA (I) ──
   {
     dim: 'I', section: 'I',
     text: 'Ambientes sociais me energizam — quanto mais gente, melhor me sinto.',
-    color: 'var(--I)', colorHex: '#7C6FF7', label: 'Influência',
+    color: 'var(--I)', colorHex: '#6C5FE6', label: 'Influência',
   },
   {
     dim: 'I', section: 'I',
     text: 'Tenho facilidade para convencer e entusiasmar as pessoas com minhas ideias.',
-    color: 'var(--I)', colorHex: '#7C6FF7', label: 'Influência',
+    color: 'var(--I)', colorHex: '#6C5FE6', label: 'Influência',
   },
   {
     dim: 'I', section: 'I',
     text: 'Costumo ser o ponto de conexão do meu grupo — as pessoas me procuram para conversar.',
-    color: 'var(--I)', colorHex: '#7C6FF7', label: 'Influência',
+    color: 'var(--I)', colorHex: '#6C5FE6', label: 'Influência',
   },
   {
     dim: 'I', section: 'I',
     text: 'Sinto-me confortável em falar em público ou apresentar ideias para grupos.',
-    color: 'var(--I)', colorHex: '#7C6FF7', label: 'Influência',
+    color: 'var(--I)', colorHex: '#6C5FE6', label: 'Influência',
   },
   {
     dim: 'I', section: 'I',
     text: 'Prefiro criar o clima positivo do time a ficar focado(a) apenas nas tarefas.',
-    color: 'var(--I)', colorHex: '#7C6FF7', label: 'Influência',
+    color: 'var(--I)', colorHex: '#6C5FE6', label: 'Influência',
   },
   {
     dim: 'I', section: 'I',
     text: 'Fico desconfortável quando o ambiente é tenso ou silencioso por muito tempo.',
-    color: 'var(--I)', colorHex: '#7C6FF7', label: 'Influência',
+    color: 'var(--I)', colorHex: '#6C5FE6', label: 'Influência',
   },
 
   // ── ESTABILIDADE (S) ──
   {
     dim: 'S', section: 'S',
     text: 'Prefiro rotinas e processos claros a ambientes de constante mudança.',
-    color: 'var(--S)', colorHex: '#4FFFB0', label: 'Estabilidade',
+    color: 'var(--S)', colorHex: '#2EC4A0', label: 'Estabilidade',
   },
   {
     dim: 'S', section: 'S',
     text: 'Para mim, a harmonia e o bem-estar do grupo valem mais do que vencer um debate.',
-    color: 'var(--S)', colorHex: '#4FFFB0', label: 'Estabilidade',
+    color: 'var(--S)', colorHex: '#2EC4A0', label: 'Estabilidade',
   },
   {
     dim: 'S', section: 'S',
     text: 'As pessoas ao meu redor me descrevem como alguém calmo(a) e confiável.',
-    color: 'var(--S)', colorHex: '#4FFFB0', label: 'Estabilidade',
+    color: 'var(--S)', colorHex: '#2EC4A0', label: 'Estabilidade',
   },
   {
     dim: 'S', section: 'S',
     text: 'Quando começo algo, tenho forte tendência a levar até o fim, mesmo que demore.',
-    color: 'var(--S)', colorHex: '#4FFFB0', label: 'Estabilidade',
+    color: 'var(--S)', colorHex: '#2EC4A0', label: 'Estabilidade',
   },
   {
     dim: 'S', section: 'S',
     text: 'Mudanças inesperadas me tiram do eixo — prefiro planejar com antecedência.',
-    color: 'var(--S)', colorHex: '#4FFFB0', label: 'Estabilidade',
+    color: 'var(--S)', colorHex: '#2EC4A0', label: 'Estabilidade',
   },
   {
     dim: 'S', section: 'S',
     text: 'Sou o tipo de pessoa que escuta os outros com atenção antes de dar minha opinião.',
-    color: 'var(--S)', colorHex: '#4FFFB0', label: 'Estabilidade',
+    color: 'var(--S)', colorHex: '#2EC4A0', label: 'Estabilidade',
   },
 
   // ── CONFORMIDADE (C) ──
   {
     dim: 'C', section: 'C',
     text: 'Antes de agir, prefiro reunir o máximo de informações e analisar os dados disponíveis.',
-    color: 'var(--C)', colorHex: '#00E5FF', label: 'Conformidade',
+    color: 'var(--C)', colorHex: '#1BA8D4', label: 'Conformidade',
   },
   {
     dim: 'C', section: 'C',
     text: 'Erros e imprecisões me incomodam — gosto de entregar trabalhos impecáveis.',
-    color: 'var(--C)', colorHex: '#00E5FF', label: 'Conformidade',
+    color: 'var(--C)', colorHex: '#1BA8D4', label: 'Conformidade',
   },
   {
     dim: 'C', section: 'C',
     text: 'Sigo regras e procedimentos com rigor, mesmo quando poderiam ser ignorados.',
-    color: 'var(--C)', colorHex: '#00E5FF', label: 'Conformidade',
+    color: 'var(--C)', colorHex: '#1BA8D4', label: 'Conformidade',
   },
   {
     dim: 'C', section: 'C',
     text: 'Tenho dificuldade em tomar decisões importantes sem dados suficientes.',
-    color: 'var(--C)', colorHex: '#00E5FF', label: 'Conformidade',
+    color: 'var(--C)', colorHex: '#1BA8D4', label: 'Conformidade',
   },
   {
     dim: 'C', section: 'C',
     text: 'Costumo questionar ideias e propostas antes de aceitar — preciso entender o porquê.',
-    color: 'var(--C)', colorHex: '#00E5FF', label: 'Conformidade',
+    color: 'var(--C)', colorHex: '#1BA8D4', label: 'Conformidade',
   },
   {
     dim: 'C', section: 'C',
     text: 'Prefiro qualidade a velocidade — faço menos, mas faço direito.',
-    color: 'var(--C)', colorHex: '#00E5FF', label: 'Conformidade',
+    color: 'var(--C)', colorHex: '#1BA8D4', label: 'Conformidade',
   },
 ];
 
@@ -921,8 +920,8 @@ const PROFILES = {
   D: {
     title: 'O Executor',
     code: 'Dominância',
-    color: '#FF6B35',
-    gradient: 'linear-gradient(90deg, #FF6B35, #FF3CAC)',
+    color: '#E8603A',
+    gradient: 'linear-gradient(90deg, #E8603A, #6C5FE6)',
     archetype: 'Perfil <strong>Dominante</strong> — orientado a resultados e liderança direta',
     traits: ['Decidido', 'Competitivo', 'Direto', 'Corajoso', 'Independente', 'Orientado a metas'],
     strengths: 'Toma decisões rápidas, não tem medo de conflito, é natural em posições de liderança. Enfrenta desafios de frente e persiste até alcançar resultados.',
@@ -933,8 +932,8 @@ const PROFILES = {
   I: {
     title: 'O Catalisador',
     code: 'Influência',
-    color: '#7C6FF7',
-    gradient: 'linear-gradient(90deg, #7C6FF7, #00E5FF)',
+    color: '#6C5FE6',
+    gradient: 'linear-gradient(90deg, #6C5FE6, #1BA8D4)',
     archetype: 'Perfil <strong>Influente</strong> — conectado, entusiasmado e persuasivo',
     traits: ['Comunicativo', 'Entusiasmado', 'Persuasivo', 'Criativo', 'Otimista', 'Social'],
     strengths: 'Inspira e motiva os outros naturalmente. Cria conexões rapidamente, tem facilidade para vender ideias e construir relacionamentos.',
@@ -945,8 +944,8 @@ const PROFILES = {
   S: {
     title: 'O Guardião',
     code: 'Estabilidade',
-    color: '#4FFFB0',
-    gradient: 'linear-gradient(90deg, #4FFFB0, #00E5FF)',
+    color: '#2EC4A0',
+    gradient: 'linear-gradient(90deg, #2EC4A0, #1BA8D4)',
     archetype: 'Perfil <strong>Estável</strong> — confiável, paciente e orientado ao grupo',
     traits: ['Leal', 'Paciente', 'Confiável', 'Empático', 'Consistente', 'Colaborativo'],
     strengths: 'É o pilar da equipe. Mantém a calma sob pressão, é leal e cumpre o que promete. Excelente mediador e ouvinte.',
@@ -957,8 +956,8 @@ const PROFILES = {
   C: {
     title: 'O Analista',
     code: 'Conformidade',
-    color: '#00E5FF',
-    gradient: 'linear-gradient(90deg, #00E5FF, #7C6FF7)',
+    color: '#1BA8D4',
+    gradient: 'linear-gradient(90deg, #1BA8D4, #6C5FE6)',
     archetype: 'Perfil <strong>Conformista</strong> — analítico, preciso e orientado à qualidade',
     traits: ['Analítico', 'Preciso', 'Lógico', 'Organizado', 'Criterioso', 'Detalhista'],
     strengths: 'Entrega trabalhos de alta qualidade, identifica erros que outros ignoram, fundamenta decisões em dados. Excelente em planejamento e processos.',
@@ -1357,75 +1356,75 @@ function shareResult() {
 .onboarding-overlay.show { opacity: 1; pointer-events: all; }
 
 .onboarding-modal {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 3rem 2.5rem 2.5rem;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 2.5rem;
   max-width: 420px; width: 100%;
   text-align: center;
   position: relative;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,111,247,0.1);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(108,95,230,0.12);
 }
 
 .onboarding-step { display: none; flex-direction: column; align-items: center; }
 .onboarding-step.active { display: flex; animation: fadeUp 0.4s ease both; }
 
 .ob-icon {
-  font-size: 3rem; margin-bottom: 1.5rem;
-  filter: drop-shadow(0 0 20px rgba(124,111,247,0.4));
+  font-size: 2.5rem; margin-bottom: 1.25rem;
+  filter: drop-shadow(0 0 20px rgba(108,95,230,0.4));
 }
 
 .onboarding-modal h2 {
-  font-family: var(--serif);
-  font-size: 1.75rem; font-weight: 800;
-  letter-spacing: -0.03em; line-height: 1.15;
-  margin-bottom: 1rem;
+  font-family: var(--sans);
+  font-size: 1.5rem; font-weight: 800;
+  letter-spacing: -0.025em; line-height: 1.15;
+  margin-bottom: 0.85rem;
 }
-.onboarding-modal h2 em { font-style: italic; color: var(--I); }
+.onboarding-modal h2 em { font-style: normal; color: var(--accent); }
 .onboarding-modal p {
-  color: var(--muted); font-size: 0.9rem; line-height: 1.7;
-  margin-bottom: 2rem;
+  color: var(--muted); font-size: 0.85rem; line-height: 1.7;
+  margin-bottom: 1.75rem;
 }
 
 .ob-meta {
-  display: flex; gap: 1.5rem; justify-content: center;
-  margin-bottom: 2rem;
+  display: flex; gap: 1rem; justify-content: center;
+  margin-bottom: 1.75rem;
 }
 .ob-meta-item {
   display: flex; flex-direction: column; align-items: center;
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 0.75rem 1.25rem;
+  border-radius: 8px; padding: 0.65rem 1rem;
 }
 .ob-meta-item span {
-  font-family: var(--serif); font-size: 1.4rem; font-weight: 800;
-  color: var(--I);
+  font-family: var(--mono); font-size: 1.2rem; font-weight: 700;
+  color: var(--accent);
 }
-.ob-meta-item small { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: 0.2rem; }
+.ob-meta-item small { font-family: var(--mono); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: 0.2rem; }
 
-.ob-dots { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1.75rem; }
+.ob-dots { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem; }
 .ob-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--border); transition: all 0.3s;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--muted2); transition: all 0.3s;
 }
-.ob-dot.active { background: var(--I); width: 24px; border-radius: 100px; box-shadow: 0 0 8px var(--I); }
+.ob-dot.active { background: var(--accent); width: 20px; border-radius: 100px; box-shadow: 0 0 8px var(--accent); }
 
 .ob-btn-next, .ob-btn-start {
-  width: 100%; padding: 0.9rem;
-  border: none; border-radius: 12px;
-  font-family: var(--serif); font-size: 1rem; font-weight: 700;
+  width: 100%; padding: 0.8rem;
+  border: none; border-radius: 7px;
+  font-family: var(--sans); font-size: 0.88rem; font-weight: 700;
   cursor: pointer; transition: all 0.25s;
 }
 .ob-btn-next {
   background: var(--surface); color: var(--text);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border2);
 }
-.ob-btn-next:hover { border-color: var(--I); color: var(--I); }
+.ob-btn-next:hover { border-color: var(--accent); color: var(--accent); }
 
 .ob-btn-start {
-  background: var(--I); color: #fff;
-  box-shadow: 0 0 30px rgba(124,111,247,0.35);
+  background: var(--accent); color: #fff;
+  box-shadow: 0 0 30px rgba(108,95,230,0.35);
 }
-.ob-btn-start:hover { box-shadow: 0 0 50px rgba(124,111,247,0.55); transform: translateY(-1px); }
+.ob-btn-start:hover { box-shadow: 0 0 50px rgba(108,95,230,0.55); transform: translateY(-1px); opacity: 0.9; }
 </style>
 </body>
 </html>
