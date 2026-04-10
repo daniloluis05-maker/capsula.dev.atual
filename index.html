@@ -6,6 +6,15 @@
 <title>Cápsula de Desenvolvimento | Engenharia Comportamental</title>
 <meta name="description" content="Plataforma de engenharia comportamental. Transforme autoconhecimento em dados técnicos de alta performance.">
 <meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://capsula.dev/">
+<meta property="og:title" content="Cápsula de Desenvolvimento | Engenharia Comportamental">
+<meta property="og:description" content="Matrizes de autoconhecimento e performance coletiva. Transforme seu DNA comportamental em dados de alta performance.">
+<meta property="og:image" content="https://capsula.dev/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cápsula de Desenvolvimento | Engenharia Comportamental">
+<meta name="twitter:description" content="Matrizes de autoconhecimento e performance coletiva. Transforme seu DNA comportamental em dados de alta performance.">
+<link rel="canonical" href="https://capsula.dev/">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -414,6 +423,7 @@ const SUPABASE_URL='https://dfnmofzbpdmnvlyowtmp.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbm1vZnpicGRtbnZseW93dG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NjQ4MzIsImV4cCI6MjA5MTE0MDgzMn0.KXcRmhpPFwpQGXkYIVjXPJvMh5w1KpIlZiwyIEUBrvU';
 var _db=null;
 function getDB(){if(!_db){if(typeof supabase==='undefined')throw new Error('SDK não carregou.');_db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);}return _db;}
+function gerarUUID(){return([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16));}
 document.getElementById('ano-atual').textContent=new Date().getFullYear();
 var hamburger=document.getElementById('hamburger'),navLinks=document.getElementById('nav-links');
 if(hamburger&&navLinks){
@@ -450,7 +460,9 @@ if(form){form.addEventListener('submit',async function(e){
     if(error){showError('Erro ao cadastrar. Tente novamente. ('+(error.code||error.message)+')');return;}
     var nomeExibido=apelido||nome.split(' ')[0];
     document.getElementById('success-nome').textContent=nomeExibido;
-    sessionStorage.setItem('capsula_user',JSON.stringify({nome,apelido:nomeExibido,objetivo}));
+    var _userData={uid:gerarUUID(),nome,apelido:nomeExibido,objetivo,criado_em:new Date().toISOString()};
+    sessionStorage.setItem('capsula_user',JSON.stringify(_userData));
+    localStorage.setItem('capsula_user',JSON.stringify(_userData));
     document.getElementById('form-content').style.display='none';
     document.getElementById('success-msg').style.display='block';
     setTimeout(()=>{window.location.href='dashboard.html';},1200);

@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard | Cápsula de Desenvolvimento</title>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://capsula.dev/dashboard.html">
+<meta property="og:title" content="Dashboard | Cápsula de Desenvolvimento">
+<meta property="og:description" content="Seu painel de engenharia comportamental. Acompanhe seu progresso e acesse suas matrizes.">
+<link rel="canonical" href="https://capsula.dev/dashboard.html">
+<meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -129,13 +135,36 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--muted2);border-radius:100px;}
 
-@media(max-width:1024px){.shell{grid-template-columns:1fr;}.sidebar{display:none;}.main{padding:1.5rem;}.stats-row{grid-template-columns:repeat(2,1fr);}.bottom-grid{grid-template-columns:1fr;}}
+
+/* MOBILE NAV BAR */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(7,8,12,0.95);border-top:1px solid var(--border);backdrop-filter:blur(20px);padding:0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));}
+.mobile-nav-items{display:flex;justify-content:space-around;align-items:center;}
+.mobile-nav-item{display:flex;flex-direction:column;align-items:center;gap:0.2rem;padding:0.4rem 0.75rem;border-radius:8px;color:var(--muted);text-decoration:none;font-size:0.6rem;font-family:var(--mono);letter-spacing:0.06em;border:none;background:transparent;cursor:pointer;transition:color 0.15s;min-width:60px;}
+.mobile-nav-item:hover,.mobile-nav-item.active{color:var(--accent);}
+.mobile-nav-icon{font-size:1.1rem;line-height:1;}
+.mobile-topbar{display:none;position:sticky;top:0;z-index:50;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0.9rem 1.5rem;align-items:center;justify-content:space-between;}
+.mobile-topbar-logo{font-size:0.9rem;font-weight:700;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:0.4rem;}
+.mobile-topbar-logo .logo-mark{width:22px;height:22px;background:var(--accent);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#fff;}
+.mobile-topbar-logo span{color:var(--accent);}
+.mobile-user{display:flex;align-items:center;gap:0.5rem;}
+.mobile-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--I),var(--C));display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;}
+@media(max-width:1024px){.shell{grid-template-columns:1fr;}.sidebar{display:none;}.mobile-nav{display:block;}.mobile-topbar{display:flex;}.main{padding:1.25rem 1.25rem 6rem;}.stats-row{grid-template-columns:repeat(2,1fr);}.bottom-grid{grid-template-columns:1fr;}}
 @media(max-width:600px){.stats-row{grid-template-columns:1fr 1fr;}.matrices-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
+
+<header class="mobile-topbar">
+  <a href="index.html" class="mobile-topbar-logo">
+    <div class="logo-mark">C</div>
+    Cápsula<span>.</span>Dev
+  </a>
+  <div class="mobile-user">
+    <div class="mobile-avatar" id="mob-avatar">—</div>
+  </div>
+</header>
 
 <div class="shell">
   <aside class="sidebar">
@@ -189,18 +218,18 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     <div class="stats-row">
       <div class="stat-card" style="--stat-color:var(--I)">
         <span class="stat-tag">Matrizes Concluídas</span>
-        <div class="stat-val">0</div>
+        <div class="stat-val" id="stat-matrizes">0</div>
         <div class="stat-sub">de 2 disponíveis</div>
       </div>
       <div class="stat-card" style="--stat-color:var(--C)">
         <span class="stat-tag">Insights Gerados</span>
-        <div class="stat-val">0</div>
-        <div class="stat-sub">inicie uma avaliação</div>
+        <div class="stat-val" id="stat-insights">0</div>
+        <div class="stat-sub" id="stat-insights-sub">inicie uma avaliação</div>
       </div>
       <div class="stat-card" style="--stat-color:var(--S)">
         <span class="stat-tag">Dias Ativo</span>
-        <div class="stat-val">1</div>
-        <div class="stat-sub">membro desde hoje</div>
+        <div class="stat-val" id="stat-dias">1</div>
+        <div class="stat-sub" id="stat-dias-sub">membro desde hoje</div>
       </div>
       <div class="stat-card" style="--stat-color:var(--D)">
         <span class="stat-tag">Plano Atual</span>
@@ -226,7 +255,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <h3>Perfil DISC</h3>
         <p>Dominância, Influência, Estabilidade e Conformidade. Mapeie seu DNA comportamental em dados precisos.</p>
         <div class="card-foot">
-          <span class="card-status">Não iniciado</span>
+          <span class="card-status" id="disc-status">Não iniciado</span>
           <span class="card-arrow">→</span>
         </div>
       </div>
@@ -239,7 +268,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <h3>Análise SOAR</h3>
         <p>Forças, Oportunidades, Aspirações e Resultados. Construa sua visão estratégica de longo prazo.</p>
         <div class="card-foot">
-          <span class="card-status">Não iniciado</span>
+          <span class="card-status" id="soar-status">Não iniciado</span>
           <span class="card-arrow">→</span>
         </div>
       </div>
@@ -333,9 +362,11 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     <div class="bottom-grid">
       <div class="activity-panel">
         <span class="panel-label">Atividade Recente</span>
-        <div class="activity-empty">
-          <span class="e-icon">◎</span>
-          <p>Nenhuma atividade registrada ainda.<br>Complete sua primeira matriz para começar.</p>
+        <div id="activity-list">
+          <div class="activity-empty">
+            <span class="e-icon">◎</span>
+            <p>Nenhuma atividade registrada ainda.<br>Complete sua primeira matriz para começar.</p>
+          </div>
         </div>
       </div>
       <div class="progress-panel">
@@ -345,21 +376,42 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <div class="prog-track"><div class="prog-fill" style="width:100%;background:var(--S);"></div></div>
         </div>
         <div class="progress-item">
-          <div class="prog-head"><span>DISC</span><span class="prog-pct">0%</span></div>
-          <div class="prog-track"><div class="prog-fill" style="width:0%;background:var(--D);"></div></div>
+          <div class="prog-head"><span>DISC</span><span class="prog-pct" id="disc-pct">0%</span></div>
+          <div class="prog-track"><div class="prog-fill" id="disc-fill" style="width:0%;background:var(--D);"></div></div>
         </div>
         <div class="progress-item">
-          <div class="prog-head"><span>SOAR</span><span class="prog-pct">0%</span></div>
-          <div class="prog-track"><div class="prog-fill" style="width:0%;background:var(--I);"></div></div>
+          <div class="prog-head"><span>SOAR</span><span class="prog-pct" id="soar-pct">0%</span></div>
+          <div class="prog-track"><div class="prog-fill" id="soar-fill" style="width:0%;background:var(--I);"></div></div>
         </div>
         <div class="progress-item">
-          <div class="prog-head"><span>Perfil completo</span><span class="prog-pct">10%</span></div>
-          <div class="prog-track"><div class="prog-fill" style="width:10%;background:var(--accent);"></div></div>
+          <div class="prog-head"><span>Perfil completo</span><span class="prog-pct" id="total-pct">10%</span></div>
+          <div class="prog-track"><div class="prog-fill" id="total-fill" style="width:10%;background:var(--accent);"></div></div>
         </div>
       </div>
     </div>
   </main>
 </div>
+<nav class="mobile-nav" aria-label="Navegação mobile">
+  <div class="mobile-nav-items">
+    <a href="dashboard.html" class="mobile-nav-item active">
+      <span class="mobile-nav-icon">⬡</span>
+      <span>Dashboard</span>
+    </a>
+    <a href="disc.html" class="mobile-nav-item">
+      <span class="mobile-nav-icon">🎯</span>
+      <span>DISC</span>
+    </a>
+    <a href="soar.html" class="mobile-nav-item">
+      <span class="mobile-nav-icon">🧭</span>
+      <span>SOAR</span>
+    </a>
+    <button class="mobile-nav-item" onclick="logout()">
+      <span class="mobile-nav-icon">↩</span>
+      <span>Sair</span>
+    </button>
+  </div>
+</nav>
+
 
 <div class="toast" id="toast">
   <div class="toast-check">✓</div>
@@ -382,35 +434,103 @@ function initDate(){
   document.getElementById('greeting-date').textContent=`${s} · ${dias[now.getDay()]}, ${now.getDate()} de ${meses[now.getMonth()]}`;
 }
 
-async function loadUser(){
-  const cached=sessionStorage.getItem('capsula_user');
-  if(cached){
-    const u=JSON.parse(cached);
-    applyUser(u.nome,u.apelido);
-    showToast(u.apelido||u.nome.split(' ')[0]);
+function loadUser(){
+  // Lê sempre do localStorage (fonte primária de progresso)
+  // sessionStorage apenas sinaliza sessão nova (recém-cadastrado)
+  const lsRaw = localStorage.getItem('capsula_user');
+  const ssRaw = sessionStorage.getItem('capsula_user');
+  const isNew = !!ssRaw && !lsRaw; // novo usuário que ainda não fechou a aba
+
+  const raw = lsRaw || ssRaw;
+
+  if (!raw) {
+    // Sem dados locais: redireciona para cadastro
+    // (nunca expõe dados de outro usuário via Supabase)
+    window.location.href = 'index.html';
     return;
   }
-  const{data,error}=await db.from('leads').select('*').order('criado_em',{ascending:false}).limit(1);
-  if(!error&&data&&data.length>0)applyUser(data[0].nome,data[0].apelido);
-  else applyUser('Usuário','');
+
+  // Sincroniza sessionStorage → localStorage se necessário
+  if (ssRaw && !lsRaw) {
+    localStorage.setItem('capsula_user', ssRaw);
+  }
+
+  const u = JSON.parse(raw);
+  applyUser(u.nome, u.apelido);
+
+  if (isNew) showToast(u.apelido || u.nome.split(' ')[0]);
+
+  // Carrega estado completo das matrizes do localStorage
+  loadMatrixState(JSON.parse(localStorage.getItem('capsula_user') || '{}'));
+
+  // Calcula dias ativo com base em criado_em (salvo no cadastro)
+  if (u.criado_em) {
+    const criado = new Date(u.criado_em);
+    const dias = Math.max(1, Math.ceil((Date.now() - criado.getTime()) / (1000*60*60*24)));
+    document.getElementById('stat-dias').textContent = dias;
+    document.getElementById('stat-dias-sub').textContent = dias === 1 ? 'membro desde hoje' : 'dias na plataforma';
+  }
+}
+
+function loadMatrixState(userData){
+  const discDone=!!(userData.disc&&userData.disc.completedAt);
+  const soarData=userData.soar;
+  const soarPct=soarData?Math.round(soarData.completionPct||0):0;
+  const soarDone=soarPct>=80;
+  const total=discDone&&soarDone?2:discDone||soarDone?1:0;
+  document.getElementById('stat-matrizes').textContent=total;
+  const insights=discDone?(soarDone?2:1):0;
+  document.getElementById('stat-insights').textContent=insights;
+  if(insights>0)document.getElementById('stat-insights-sub').textContent=insights===1?'1 relatório disponível':'2 relatórios disponíveis';
+  if(discDone){const el=document.getElementById('disc-status');if(el){el.textContent='Concluído ✓';el.classList.add('done');}}
+  if(soarDone){const el=document.getElementById('soar-status');if(el){el.textContent='Concluído ✓';el.classList.add('done');}}
+  else if(soarPct>0){const el=document.getElementById('soar-status');if(el){el.textContent='Em andamento · '+soarPct+'%';}}
+  const discP=discDone?100:0;
+  const totalP=Math.min(Math.round(10+(discP*0.45)+(soarPct*0.45)),100);
+  setProgress('disc-pct','disc-fill',discP);
+  setProgress('soar-pct','soar-fill',soarPct);
+  setProgress('total-pct','total-fill',totalP);
+  const activities=[];
+  if(discDone)activities.push({icon:'🎯',label:'Perfil DISC concluído',date:userData.disc.completedAt,color:'var(--D)'});
+  if(soarDone)activities.push({icon:'🧭',label:'Análise SOAR concluída',date:userData.soar.completedAt,color:'var(--I)'});
+  else if(soarPct>0)activities.push({icon:'🧭',label:'SOAR em andamento ('+soarPct+'%)',date:userData.soar.completedAt||new Date().toISOString(),color:'var(--I)'});
+  if(activities.length>0){
+    const list=document.getElementById('activity-list');
+    list.innerHTML=activities.map(a=>{
+      const d=new Date(a.date);
+      const lbl=d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
+      return '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0;border-bottom:1px solid var(--border);">'+
+        '<span style="font-size:1rem;width:28px;text-align:center;">'+a.icon+'</span>'+
+        '<div style="flex:1;"><div style="font-size:0.8rem;font-weight:600;">'+a.label+'</div>'+
+        '<div style="font-size:0.65rem;color:var(--muted);font-family:var(--mono);margin-top:0.1rem;">'+lbl+'</div></div>'+
+        '<span style="width:6px;height:6px;border-radius:50%;background:'+a.color+';flex-shrink:0;"></span></div>';
+    }).join('');
+  }
+}
+
+function setProgress(pctId,fillId,value){
+  const p=document.getElementById(pctId);
+  const f=document.getElementById(fillId);
+  if(p)p.textContent=value+'%';
+  if(f)setTimeout(()=>f.style.width=value+'%',100);
 }
 
 function applyUser(nome,apelido){
   const ex=apelido||nome.split(' ')[0];
   document.getElementById('greeting-nome').textContent=ex;
   document.getElementById('sb-nome').textContent=nome;
-  document.getElementById('sb-avatar').textContent=ex.charAt(0).toUpperCase();
+  document.getElementById('sb-avatar').textContent=ex.charAt(0).toUpperCase();const mob=document.getElementById('mob-avatar');if(mob)mob.textContent=ex.charAt(0).toUpperCase();
 }
 
 function showToast(nome){
   const t=document.getElementById('toast');
-  document.getElementById('toast-title').textContent=`Bem-vindo(a), ${nome}!`;
+  document.getElementById('toast-title').textContent='Bem-vindo(a), '+nome+'!';
   document.getElementById('toast-sub').textContent='Escolha uma matriz para começar.';
   setTimeout(()=>t.classList.add('show'),600);
   setTimeout(()=>t.classList.remove('show'),5000);
 }
 
-function logout(){sessionStorage.removeItem('capsula_user');window.location.href='index.html';}
+function logout(){sessionStorage.removeItem('capsula_user');localStorage.removeItem('capsula_user');window.location.href='index.html';}
 
 initDate();loadUser();
 </script>

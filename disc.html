@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Perfil DISC | Cápsula de Desenvolvimento</title>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://capsula.dev/disc.html">
+<meta property="og:title" content="Perfil DISC | Cápsula de Desenvolvimento">
+<meta property="og:description" content="Descubra seu perfil comportamental DISC. Dominância, Influência, Estabilidade e Conformidade em dados precisos.">
+<link rel="canonical" href="https://capsula.dev/disc.html">
+<meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -617,6 +623,7 @@ body::before {
 
     <div class="intro-badge">🧬 DNA Comportamental</div>
 
+    <p class="intro-greeting" id="disc-greeting" style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;display:none;">// avaliação de <span class="js-user-name"></span></p>
     <h1>Descubra seu<br><em>Perfil DISC</em></h1>
 
     <p class="intro-sub">
@@ -1213,8 +1220,8 @@ async function showResult() {
 // ══════════════════════════════════════
 // SUPABASE AUTH + PERSISTÊNCIA
 // ══════════════════════════════════════
-const SUPABASE_URL = 'https://SEU_PROJECT.supabase.co';
-const SUPABASE_KEY = 'SUA_ANON_KEY';
+const SUPABASE_URL = 'https://dfnmofzbpdmnvlyowtmp.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbm1vZnpicGRtbnZseW93dG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NjQ4MzIsImV4cCI6MjA5MTE0MDgzMn0.KXcRmhpPFwpQGXkYIVjXPJvMh5w1KpIlZiwyIEUBrvU';
 
 // Inicializa cliente Supabase (carregado via CDN no <head>)
 // <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -1326,7 +1333,39 @@ function obFinish() {
 }
 
 // Inicia onboarding ao carregar a página
-document.addEventListener('DOMContentLoaded', obInit);
+
+// ══════════════════════════════════════
+// INICIALIZAÇÃO DA PÁGINA
+// ══════════════════════════════════════
+function initPage() {
+  const raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+  const userData = raw ? JSON.parse(raw) : null;
+
+  // Guard: sem usuário cadastrado → redireciona para cadastro
+  if (!userData || (!userData.nome && !userData.apelido)) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // Sincroniza localStorage caso só exista em sessionStorage
+  if (!localStorage.getItem('capsula_user') && sessionStorage.getItem('capsula_user')) {
+    localStorage.setItem('capsula_user', sessionStorage.getItem('capsula_user'));
+  }
+
+  // Exibe nome na intro
+  const nome = userData.apelido || userData.nome.split(' ')[0];
+  const greeting = document.getElementById('disc-greeting');
+  if (greeting) {
+    greeting.style.display = 'block';
+    const span = greeting.querySelector('.js-user-name');
+    if (span) span.textContent = nome;
+  }
+
+  // Inicia onboarding se necessário
+  obInit();
+}
+
+document.addEventListener('DOMContentLoaded', initPage);
 
 // ══════════════════════════════════════
 // GENERATE PDF — DISC Blueprint

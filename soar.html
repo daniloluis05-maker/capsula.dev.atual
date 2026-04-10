@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Análise SOAR | Cápsula de Desenvolvimento</title>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://capsula.dev/soar.html">
+<meta property="og:title" content="Análise SOAR | Cápsula de Desenvolvimento">
+<meta property="og:description" content="Mapeie suas Forças, Oportunidades, Aspirações e Resultados. Construa sua visão estratégica pessoal.">
+<link rel="canonical" href="https://capsula.dev/soar.html">
+<meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -308,6 +314,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <div class="intro-page">
     <a href="dashboard.html" class="intro-back-link">← Voltar ao Dashboard</a>
     <div class="intro-badge">🧭 Estratégia Pessoal</div>
+    <p class="intro-greeting" id="soar-greeting" style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;display:none;">// análise de <span class="js-user-name"></span></p>
     <h1>Sua visão de<br><span class="accent">longo prazo</span> em dados.</h1>
     <p class="intro-sub">
       A análise SOAR mapeia suas Forças, Oportunidades, Aspirações e Resultados —
@@ -590,6 +597,7 @@ function saveCurrentAnswers() {
     const el = document.getElementById(`q-${question.id}`);
     if (el) answers[q.key][question.id] = el.value.trim();
   });
+  autosaveDraft();
 }
 
 function nextQuadrant() {
@@ -662,6 +670,7 @@ function showResult() {
   const userData = JSON.parse(localStorage.getItem('capsula_user') || '{}');
   userData.soar  = { answers, completionPct, completedAt: new Date().toISOString() };
   localStorage.setItem('capsula_user', JSON.stringify(userData));
+  localStorage.removeItem('capsula_soar_draft');
 }
 
 // ══════════════════════════════════════
@@ -839,6 +848,49 @@ function shareResult() {
     navigator.clipboard.writeText(text).then(() => alert('Link copiado! Cole onde quiser.'));
   }
 }
+
+// ══════════════════════════════════════
+// INICIALIZAÇÃO DA PÁGINA
+// ══════════════════════════════════════
+function initPage() {
+  const userData = JSON.parse(
+    localStorage.getItem('capsula_user') ||
+    sessionStorage.getItem('capsula_user') ||
+    'null'
+  );
+
+  // Guard: sem usuário cadastrado → volta para index
+  if (!userData || (!userData.nome && !userData.apelido)) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // Exibe nome do usuário na intro
+  const nome = userData.apelido || userData.nome.split(' ')[0];
+  const greeting = document.getElementById('soar-greeting');
+  if (greeting) {
+    greeting.style.display = 'block';
+    greeting.querySelector('.js-user-name').textContent = nome;
+  }
+
+  // Restaura rascunho salvo, se houver
+  const draft = localStorage.getItem('capsula_soar_draft');
+  if (draft) {
+    try {
+      const saved = JSON.parse(draft);
+      answers = saved;
+    } catch(e) {}
+  }
+}
+
+// Auto-save rascunho a cada mudança
+function autosaveDraft() {
+  try {
+    localStorage.setItem('capsula_soar_draft', JSON.stringify(answers));
+  } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', initPage);
 </script>
 </body>
 </html>
