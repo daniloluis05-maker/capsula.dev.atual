@@ -45,6 +45,29 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .nav-links a:hover{color:var(--text);}
 .nav-cta{background:var(--accent);color:#fff;border:none;padding:0.5rem 1.25rem;border-radius:5px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:var(--sans);transition:opacity 0.2s;text-decoration:none;}
 .nav-cta:hover{opacity:0.85;}
+.nav-cta-ghost{background:transparent;color:var(--muted);border:1px solid var(--border2);padding:0.5rem 1.1rem;border-radius:5px;font-size:0.82rem;font-weight:500;cursor:pointer;font-family:var(--sans);transition:all 0.2s;text-decoration:none;margin-right:0.5rem;}
+.nav-cta-ghost:hover{border-color:var(--accent);color:var(--accent);}
+/* MODAL TABS */
+.modal-tabs{display:flex;border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:1.75rem;}
+.modal-tab{flex:1;padding:0.55rem 1rem;border:none;background:transparent;color:var(--muted);font-family:var(--sans);font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.2s;border-right:1px solid var(--border);}
+.modal-tab:last-child{border-right:none;}
+.modal-tab.active{background:var(--accent);color:#fff;}
+/* ACESSO RÁPIDO */
+.acesso-panel{display:none;}
+.acesso-panel.active{display:block;}
+.cadastro-panel{display:none;}
+.cadastro-panel.active{display:block;}
+.usuario-card{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--surface);border:1px solid var(--border2);border-radius:8px;margin-bottom:1rem;cursor:pointer;transition:border-color 0.2s;}
+.usuario-card:hover{border-color:var(--accent);}
+.usuario-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--I),var(--C));display:flex;align-items:center;justify-content:center;font-size:0.95rem;font-weight:700;flex-shrink:0;}
+.usuario-info{flex:1;}
+.usuario-nome{font-size:0.9rem;font-weight:700;}
+.usuario-meta{font-size:0.68rem;color:var(--muted);font-family:var(--mono);margin-top:0.1rem;}
+.btn-entrar{width:100%;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:0.82rem;font-family:var(--sans);font-size:0.88rem;font-weight:600;cursor:pointer;transition:opacity 0.2s;}
+.btn-entrar:hover{opacity:0.85;}
+.sem-conta{text-align:center;font-size:0.75rem;color:var(--muted);margin-top:1rem;}
+.sem-conta a{color:var(--accent);cursor:pointer;text-decoration:none;}
+.sem-conta a:hover{text-decoration:underline;}
 
 /* HERO */
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 5% 6rem;position:relative;z-index:1;}
@@ -177,6 +200,7 @@ footer p{font-size:0.7rem;color:var(--muted2);font-family:var(--mono);}
   .hamburger.active span:nth-child(2){opacity:0;}
   .hamburger.active span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
   .nav-cta{display:none;}
+  .nav-cta-ghost{display:none;}
   .eixos-grid{grid-template-columns:1fr;}
   .hero h1{font-size:2.4rem;}
   .form-row{grid-template-columns:1fr;}
@@ -206,7 +230,10 @@ footer p{font-size:0.7rem;color:var(--muted2);font-family:var(--mono);}
   <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
-  <a href="#" class="nav-cta" onclick="openModal(); return false;">Começar agora</a>
+  <div id="nav-actions" style="display:flex;align-items:center;gap:0;">
+    <a href="#" class="nav-cta-ghost" id="btn-entrar-nav" onclick="openModalAcesso(); return false;" style="display:none;">Entrar</a>
+    <a href="#" class="nav-cta" onclick="openModal('cadastro'); return false;">Começar agora</a>
+  </div>
 </nav>
 
 <section class="hero">
@@ -372,13 +399,32 @@ footer p{font-size:0.7rem;color:var(--muted2);font-family:var(--mono);}
 <div class="modal-overlay" id="modal" onclick="closeModalOnOverlay(event)" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()" aria-label="Fechar">×</button>
-    <div id="form-content">
-      <span class="modal-tag">// acesso</span>
-      <h2 id="modal-title">Criar sua conta</h2>
-      <p>Cadastro rápido. Sem e-mail, sem senha, sem cartão.</p>
+
+    <!-- ABAS -->
+    <div class="modal-tabs" id="modal-tabs">
+      <button class="modal-tab active" id="tab-acesso" onclick="switchModalTab('acesso')">Já tenho conta</button>
+      <button class="modal-tab" id="tab-cadastro" onclick="switchModalTab('cadastro')">Criar conta</button>
+    </div>
+
+    <!-- PAINEL: JÁ TENHO CONTA -->
+    <div class="acesso-panel active" id="panel-acesso">
+      <span class="modal-tag">// acesso rápido</span>
+      <h2 id="modal-title" style="margin-bottom:0.3rem;">Bem-vindo de volta</h2>
+      <p style="color:var(--muted);font-size:0.82rem;margin-bottom:1.5rem;">Selecione seu perfil para continuar.</p>
+      <div id="usuarios-list">
+        <!-- preenchido por JS -->
+      </div>
+      <div class="sem-conta">Novo por aqui? <a onclick="switchModalTab('cadastro')">Criar conta grátis →</a></div>
+    </div>
+
+    <!-- PAINEL: CRIAR CONTA -->
+    <div class="cadastro-panel" id="panel-cadastro">
+      <span class="modal-tag">// nova conta</span>
+      <h2 style="margin-bottom:0.3rem;">Criar sua conta</h2>
+      <p style="color:var(--muted);font-size:0.82rem;margin-bottom:1.5rem;">Cadastro rápido. Sem e-mail, sem senha, sem cartão.</p>
       <form id="cadastro-form" novalidate>
-        <div style="position:absolute;left:-9999px;opacity:0;pointer-events:none;" aria-hidden="true">
-          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        <div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+          <input type="text" id="hp_field" name="hp_field" tabindex="-1" autocomplete="nope" value="">
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -409,12 +455,15 @@ footer p{font-size:0.7rem;color:var(--muted2);font-family:var(--mono);}
         <button type="submit" class="form-submit" id="submit-btn">Cadastrar agora →</button>
         <p class="modal-note">// gratuito · sem cartão · dados protegidos</p>
       </form>
+      <div id="success-area" style="display:none;">
+        <div class="success-msg" id="success-msg" role="status" style="display:block;">
+          <span class="success-check">✓</span>
+          <h3>Conta criada.</h3>
+          <p>Bem-vindo(a), <strong id="success-nome"></strong>.<br>Redirecionando para o dashboard...</p>
+        </div>
+      </div>
     </div>
-    <div class="success-msg" id="success-msg" role="status">
-      <span class="success-check">✓</span>
-      <h3>Conta criada.</h3>
-      <p>Bem-vindo(a), <strong id="success-nome"></strong>.<br>Redirecionando para o dashboard...</p>
-    </div>
+
   </div>
 </div>
 
@@ -436,17 +485,113 @@ function switchTab(tab,btn){
   btn.classList.add('active');btn.setAttribute('aria-selected','true');
   document.getElementById('tab-'+tab).classList.add('active');
 }
-function openModal(){document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden';setTimeout(()=>{var n=document.getElementById('nome');if(n)n.focus();},50);}
-function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow='';setTimeout(()=>{var fc=document.getElementById('form-content'),sm=document.getElementById('success-msg'),f=document.getElementById('cadastro-form');if(fc)fc.style.display='block';if(sm)sm.style.display='none';if(f)f.reset();showError('');},300);}
+// ── MODAL CONTROL ──────────────────────────────
+function openModal(aba){
+  // Decide qual aba abrir: se há usuário salvo → acesso, senão → cadastro
+  var temUsuario=!!localStorage.getItem('capsula_user');
+  var abaAlvo=aba||(temUsuario?'acesso':'cadastro');
+  switchModalTab(abaAlvo,true);
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+  if(abaAlvo==='cadastro'){setTimeout(()=>{var n=document.getElementById('nome');if(n)n.focus();},80);}
+}
+
+function openModalAcesso(){openModal('acesso');}
+
+function switchModalTab(aba, silencioso){
+  // Atualiza abas
+  document.getElementById('tab-acesso').classList.toggle('active',aba==='acesso');
+  document.getElementById('tab-cadastro').classList.toggle('active',aba==='cadastro');
+  // Mostra painel correto
+  document.getElementById('panel-acesso').classList.toggle('active',aba==='acesso');
+  document.getElementById('panel-cadastro').classList.toggle('active',aba==='cadastro');
+  // Renderiza lista de usuários quando aba acesso é aberta
+  if(aba==='acesso')renderUsuarios();
+  if(aba==='cadastro'&&!silencioso){setTimeout(()=>{var n=document.getElementById('nome');if(n)n.focus();},80);}
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow='';
+  setTimeout(()=>{
+    var f=document.getElementById('cadastro-form');
+    var sa=document.getElementById('success-area');
+    var pc=document.getElementById('panel-cadastro');
+    if(f)f.reset();
+    if(sa)sa.style.display='none';
+    if(pc)pc.querySelector('form').style.display='block';
+    showError('');
+  },300);
+}
+
 function closeModalOnOverlay(e){if(e.target===document.getElementById('modal'))closeModal();}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+// ── LISTA DE USUÁRIOS SALVOS ──────────────────
+function renderUsuarios(){
+  var lista=document.getElementById('usuarios-list');
+  if(!lista)return;
+  // Lê todos os perfis salvos no localStorage (chave capsula_users[])
+  var perfis=JSON.parse(localStorage.getItem('capsula_users')||'[]');
+  // Compatibilidade: se existe capsula_user antigo mas não está na lista, adiciona
+  var legado=localStorage.getItem('capsula_user');
+  if(legado){
+    try{
+      var u=JSON.parse(legado);
+      if(u.nome&&!perfis.find(function(p){return p.uid===u.uid;})){
+        if(!u.uid)u.uid=gerarUUID();
+        perfis.unshift(u);
+        localStorage.setItem('capsula_users',JSON.stringify(perfis));
+      }
+    }catch(e){}
+  }
+  if(perfis.length===0){
+    lista.innerHTML='<p style="color:var(--muted);font-size:0.82rem;text-align:center;padding:1.5rem 0;">Nenhuma conta encontrada neste dispositivo.</p>';
+    return;
+  }
+  lista.innerHTML=perfis.map(function(u,i){
+    var ini=(u.apelido||u.nome||'?').charAt(0).toUpperCase();
+    var obj={individual:'Autoconhecimento',lider:'Líder',empresa:'Empresa',outro:'Outro'}[u.objetivo]||'';
+    var disc=u.disc?'DISC ✓':'';
+    var soar=u.soar?'SOAR ✓':'';
+    var badges=[disc,soar].filter(Boolean).join(' · ')||'Nenhuma matriz concluída';
+    return '<div class="usuario-card" onclick="entrarComPerfil('+i+')" role="button" tabindex="0">'+
+      '<div class="usuario-avatar">'+ini+'</div>'+
+      '<div class="usuario-info">'+
+        '<div class="usuario-nome">'+(u.apelido||u.nome.split(' ')[0])+'</div>'+
+        '<div class="usuario-meta">'+obj+(obj?' · ':'')+badges+'</div>'+
+      '</div>'+
+      '<span style="color:var(--muted);font-size:0.8rem;">→</span>'+
+    '</div>';
+  }).join('');
+}
+
+function entrarComPerfil(idx){
+  var perfis=JSON.parse(localStorage.getItem('capsula_users')||'[]');
+  var u=perfis[idx];
+  if(!u)return;
+  // Coloca o perfil selecionado como ativo
+  localStorage.setItem('capsula_user',JSON.stringify(u));
+  sessionStorage.setItem('capsula_user',JSON.stringify(u));
+  closeModal();
+  window.location.href='dashboard.html';
+}
+
+// ── FORM UTILS ───────────────────────────────
 function showError(msg){var el=document.getElementById('form-error');if(!el)return;el.textContent=msg;el.style.display=msg?'block':'none';}
 function setLoading(l){var btn=document.getElementById('submit-btn');if(!btn)return;btn.disabled=l;btn.textContent=l?'Cadastrando...':'Cadastrar agora →';btn.style.opacity=l?'0.6':'';}
+
+// ── INICIALIZAÇÃO DA NAV ──────────────────────
+(function initNavButtons(){
+  var temUsuario=!!localStorage.getItem('capsula_user');
+  var btnEntrar=document.getElementById('btn-entrar-nav');
+  if(btnEntrar)btnEntrar.style.display=temUsuario?'inline-block':'none';
+})();
 var form=document.getElementById('cadastro-form');
 if(form){form.addEventListener('submit',async function(e){
   e.preventDefault();showError('');
   // Honeypot anti-bot
-  var hp=document.getElementById('website');
+  var hp=document.getElementById('hp_field');
   if(hp&&hp.value!==''){_finalizarCadastro('Bot');return;}
   // Validações
   var nome=document.getElementById('nome').value.trim();
@@ -483,18 +628,27 @@ if(form){form.addEventListener('submit',async function(e){
 function _finalizarCadastro(nomeExibido,nome,objetivo){
   nome=nome||nomeExibido;
   objetivo=objetivo||'individual';
-  var _userData={uid:gerarUUID(),nome,apelido:nomeExibido,objetivo,criado_em:new Date().toISOString()};
+  var _userData={uid:gerarUUID(),nome:nome,apelido:nomeExibido,objetivo:objetivo,criado_em:new Date().toISOString()};
+  // Salva como usuário ativo
   sessionStorage.setItem('capsula_user',JSON.stringify(_userData));
   localStorage.setItem('capsula_user',JSON.stringify(_userData));
-  // Exibe mensagem de sucesso com nome correto
+  // Adiciona na lista de perfis do dispositivo (permite múltiplos usuários)
+  var perfis=JSON.parse(localStorage.getItem('capsula_users')||'[]');
+  // Evita duplicata pelo uid
+  if(!perfis.find(function(p){return p.uid===_userData.uid;})){
+    perfis.unshift(_userData);
+    localStorage.setItem('capsula_users',JSON.stringify(perfis));
+  }
+  // Exibe mensagem de sucesso
   var el=document.getElementById('success-nome');
   if(el)el.textContent=nomeExibido;
-  var fc=document.getElementById('form-content');
-  var sm=document.getElementById('success-msg');
-  if(fc)fc.style.display='none';
-  if(sm)sm.style.display='block';
+  // Esconde form, mostra success
+  var form=document.getElementById('cadastro-form');
+  var sa=document.getElementById('success-area');
+  if(form)form.style.display='none';
+  if(sa)sa.style.display='block';
   // Redireciona para dashboard
-  setTimeout(function(){window.location.href='dashboard.html';},1200);
+  setTimeout(function(){window.location.href='dashboard.html';},1400);
 }
 var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.remove('js-animate');obs.unobserve(e.target);}});},{threshold:0.1});
 document.querySelectorAll('.matrix-card,.step,.eixo-card,.plano-card').forEach(el=>{el.classList.add('js-animate');obs.observe(el);});

@@ -530,7 +530,12 @@ function showToast(nome){
   setTimeout(()=>t.classList.remove('show'),5000);
 }
 
-function logout(){sessionStorage.removeItem('capsula_user');localStorage.removeItem('capsula_user');window.location.href='index.html';}
+function logout(){
+  // Remove apenas o usuário ativo, preserva a lista de perfis do device
+  sessionStorage.removeItem('capsula_user');
+  localStorage.removeItem('capsula_user');
+  window.location.href='index.html';
+}
 
 initDate();loadUser();
 </script>
