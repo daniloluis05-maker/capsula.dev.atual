@@ -19,6 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -468,8 +469,8 @@ footer p{font-size:0.7rem;color:var(--muted2);font-family:var(--mono);}
 </div>
 
 <script>
-const SUPABASE_URL='https://dfnmofzbpdmnvlyowtmp.supabase.co';
-const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbm1vZnpicGRtbnZseW93dG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NjQ4MzIsImV4cCI6MjA5MTE0MDgzMn0.KXcRmhpPFwpQGXkYIVjXPJvMh5w1KpIlZiwyIEUBrvU';
+const SUPABASE_URL=window.CAPSULA_CONFIG.supabaseUrl;
+const SUPABASE_KEY=window.CAPSULA_CONFIG.supabaseKey;
 var _db=null;
 function getDB(){if(!_db){if(typeof supabase==='undefined')throw new Error('SDK não carregou.');_db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);}return _db;}
 function gerarUUID(){return([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16));}
