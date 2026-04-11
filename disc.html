@@ -1400,219 +1400,230 @@ document.addEventListener('DOMContentLoaded', initPage);
 // GENERATE PDF — DISC Blueprint
 // ══════════════════════════════════════
 function generatePDF() {
-  const dominant = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-  const profile  = PROFILES[dominant];
-  const user     = JSON.parse(localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || 'null') || {};
-  const nome     = getNomeExibido(user);
-  const data     = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
-  const order    = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+  const dominant  = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+  const profile   = PROFILES[dominant];
+  const accentColor = profile.color;   // FIX: era profile.hex (undefined)
+  const user      = JSON.parse(localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || 'null') || {};
+  const nome      = getNomeExibido(user);
+  const data      = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
+  const order     = Object.entries(scores).sort((a,b) => b[1]-a[1]);
 
-  // Radar SVG (inline, cores escuras ajustadas para PDF claro)
+  // ── Radar SVG ──────────────────────────────────────────────
   function buildRadarPDF(sc) {
-    const cx=110,cy=110,R=88;
+    const cx=130, cy=130, R=100;
     const dims=['D','I','S','C'];
-    const colors={'D':'#E8603A','I':'#6C5FE6','S':'#2EC4A0','C':'#1BA8D4'};
+    const dimColors={'D':'#E8603A','I':'#6C5FE6','S':'#2EC4A0','C':'#1BA8D4'};
     const angles=dims.map((_,i)=>(i/dims.length)*2*Math.PI - Math.PI/2);
     let svg='';
+    // Grid rings
     [0.25,0.5,0.75,1].forEach(r=>{
       const pts=angles.map(a=>`${cx+R*r*Math.cos(a)},${cy+R*r*Math.sin(a)}`).join(' ');
-      svg+=`<polygon points="${pts}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>`;
+      svg+=`<polygon points="${pts}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>`;
     });
+    // Axes
     angles.forEach(a=>{
-      svg+=`<line x1="${cx}" y1="${cy}" x2="${cx+R*Math.cos(a)}" y2="${cy+R*Math.sin(a)}" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>`;
+      svg+=`<line x1="${cx}" y1="${cy}" x2="${cx+R*Math.cos(a)}" y2="${cy+R*Math.sin(a)}" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>`;
     });
+    // Filled polygon
     const pts=dims.map((d,i)=>{
       const r=(sc[d]||0)/100;
       return `${cx+R*r*Math.cos(angles[i])},${cy+R*r*Math.sin(angles[i])}`;
     });
-    svg+=`<polygon points="${pts.join(' ')}" fill="${colors[dominant]}30" stroke="${colors[dominant]}" stroke-width="2" stroke-linejoin="round"/>`;
+    svg+=`<polygon points="${pts.join(' ')}" fill="${accentColor}22" stroke="${accentColor}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    // Dots + labels
     dims.forEach((d,i)=>{
       const r=(sc[d]||0)/100;
       const px=cx+R*r*Math.cos(angles[i]);
       const py=cy+R*r*Math.sin(angles[i]);
-      svg+=`<circle cx="${px}" cy="${py}" r="5" fill="${colors[d]}" stroke="${colors[d]}55" stroke-width="3"/>`;
-      const lx=cx+(R+20)*Math.cos(angles[i]);
-      const ly=cy+(R+20)*Math.sin(angles[i]);
-      svg+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-family="monospace" font-size="13" font-weight="700" fill="${colors[d]}">${d}</text>`;
+      svg+=`<circle cx="${px}" cy="${py}" r="5" fill="${dimColors[d]}" stroke="${dimColors[d]}44" stroke-width="4"/>`;
+      const lx=cx+(R+22)*Math.cos(angles[i]);
+      const ly=cy+(R+22)*Math.sin(angles[i]);
+      svg+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-family="monospace" font-size="14" font-weight="700" fill="${dimColors[d]}">${d}</text>`;
     });
     return svg;
   }
 
-  const barsHTML = order.map(([dim,pct])=>`
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-      <span style="font-family:monospace;font-size:12px;font-weight:700;width:14px;color:${PROFILES[dim].color}">${dim}</span>
-      <div style="flex:1;height:6px;background:rgba(255,255,255,0.1);border-radius:100px;overflow:hidden;">
-        <div style="width:${pct}%;height:100%;background:${PROFILES[dim].color};border-radius:100px;box-shadow:0 0 8px ${PROFILES[dim].color}66;"></div>
+  // ── Bars ────────────────────────────────────────────────────
+  const barsHTML = order.map(([dim,pct], idx) => `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:${idx < order.length-1 ? '14px' : '0'};">
+      <span style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;width:16px;color:${PROFILES[dim].color}">${dim}</span>
+      <div style="flex:1;height:7px;background:rgba(255,255,255,0.07);border-radius:100px;overflow:hidden;">
+        <div style="width:${pct}%;height:100%;background:${PROFILES[dim].color};border-radius:100px;"></div>
       </div>
-      <span style="font-family:monospace;font-size:11px;color:#aaa;width:32px;text-align:right">${pct}%</span>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:#888;width:36px;text-align:right">${pct}%</span>
     </div>
   `).join('');
 
-  const traitsHTML = profile.traits.map(t=>`
-    <span style="font-family:monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;border:1px solid ${profile.color}66;color:${profile.color};padding:3px 8px;border-radius:3px;display:inline-block;margin:2px;">${t}</span>
+  // ── Traits ──────────────────────────────────────────────────
+  const traitsHTML = profile.traits.map(t => `
+    <span style="display:inline-block;margin:3px;padding:4px 10px;border:1px solid ${accentColor}55;color:${accentColor};font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;border-radius:3px;">${t}</span>
   `).join('');
 
-  const gridBg = `
-    background-image: linear-gradient(rgba(108,95,230,0.07) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(108,95,230,0.07) 1px, transparent 1px);
-    background-size: 40px 40px;
-  `;
+  // ── Profile blocks ──────────────────────────────────────────
+  const blocksData = [
+    { icon:'01', label:'Pontos Fortes',      text: profile.strengths },
+    { icon:'02', label:'Pontos de Atenção',  text: profile.challenges },
+    { icon:'03', label:'Ambiente Ideal',     text: profile.environment },
+    { icon:'04', label:'Como se Comunicar',  text: profile.communication },
+  ];
+  const blocksHTML = blocksData.map(b=>`
+    <div style="background:#111320;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:${accentColor};opacity:0.7">${b.icon}</span>
+        <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#666;">${b.label}</span>
+      </div>
+      <p style="font-size:12px;color:#B0AEBE;line-height:1.7;margin:0;">${b.text}</p>
+    </div>
+  `).join('');
 
-  const w = window.open('','_blank');
+  // ── Abrir nova janela e escrever o HTML do PDF ───────────────
+  const w = window.open('', '_blank');
   w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
   <meta charset="UTF-8">
-  <title>Relatório DISC — ${nome} | Cápsula.Dev</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <title>Relatório DISC — ${nome} · Cápsula.Dev</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
     body{
       font-family:'Outfit',sans-serif;
-      background:#07080C;color:#E8E6F0;
-      min-height:100vh;padding:0;
-      ${gridBg}
+      background:#0A0B10;
+      color:#E4E2F0;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
     }
-    .page{width:794px;min-height:1123px;margin:0 auto;padding:48px;background:#07080C;position:relative;}
-    .page + .page{border-top:2px solid rgba(255,255,255,0.06);padding-top:48px;margin-top:0;}
+    .page{
+      width:794px;min-height:1123px;margin:0 auto;
+      padding:44px 48px;
+      background:#0A0B10;
+      position:relative;
+    }
 
-    /* HEADER */
-    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:36px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.08);}
-    .brand{display:flex;align-items:center;gap:8px;}
-    .brand-mark{width:28px;height:28px;background:#6C5FE6;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;}
-    .brand-name{font-size:14px;font-weight:700;color:#E8E6F0;letter-spacing:-0.01em;}
-    .brand-name span{color:#6C5FE6;}
-    .header-meta{text-align:right;}
-    .header-tag{font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#E8603A;margin-bottom:3px;display:block;}
-    .header-date{font-family:monospace;font-size:10px;color:#6B6980;}
+    /* Accent bar top */
+    .accent-bar{
+      height:3px;
+      background:linear-gradient(90deg,${accentColor},${accentColor}00);
+      border-radius:2px;
+      margin-bottom:32px;
+    }
 
-    /* HERO */
+    /* Header */
+    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;}
+    .brand{display:flex;align-items:center;gap:10px;}
+    .brand-cube{
+      width:30px;height:30px;background:${accentColor};
+      border-radius:6px;display:flex;align-items:center;
+      justify-content:center;font-size:13px;font-weight:900;color:#fff;
+    }
+    .brand-name{font-size:15px;font-weight:700;letter-spacing:-0.02em;color:#E4E2F0;}
+    .brand-name em{color:${accentColor};font-style:normal;}
+    .header-right{text-align:right;}
+    .header-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${accentColor};margin-bottom:3px;}
+    .header-date{font-family:'Space Mono',monospace;font-size:9px;color:#444;}
+
+    /* Hero */
     .hero{
-      background:#0D0F16;border:1px solid rgba(255,255,255,0.08);
-      border-radius:10px;padding:28px 32px;margin-bottom:20px;
-      position:relative;overflow:hidden;
+      background:linear-gradient(135deg,#111320 60%,${accentColor}0A 100%);
+      border:1px solid rgba(255,255,255,0.07);
+      border-left:3px solid ${accentColor};
+      border-radius:12px;
+      padding:32px 36px;
+      margin-bottom:24px;
+      display:flex;
+      align-items:center;
+      gap:32px;
     }
-    .hero::before{
-      content:'';position:absolute;top:0;left:0;right:0;height:2px;
-      background:linear-gradient(90deg,${profile.hex},#6C5FE6);
-    }
-    .hero-tag{font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#6B6980;margin-bottom:6px;display:block;}
-    .hero-name{font-size:12px;color:#6B6980;margin-bottom:2px;}
-    .hero-title{font-size:42px;font-weight:800;letter-spacing:-0.04em;line-height:1;color:${profile.hex};margin-bottom:8px;}
-    .hero-arch{font-size:13px;color:#aaa;}
-    .hero-arch strong{color:#E8E6F0;}
+    .hero-text{flex:1;}
+    .hero-eyebrow{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#555;margin-bottom:8px;}
+    .hero-name{font-size:13px;color:#888;margin-bottom:2px;}
+    .hero-title{font-size:52px;font-weight:900;letter-spacing:-0.05em;line-height:0.95;color:${accentColor};margin-bottom:10px;}
+    .hero-code{display:inline-block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border:1px solid ${accentColor}44;color:${accentColor};border-radius:4px;margin-bottom:10px;}
+    .hero-arch{font-size:13px;color:#999;line-height:1.5;}
 
-    /* DNA SECTION */
-    .dna-section{
-      display:grid;grid-template-columns:220px 1fr;gap:16px;margin-bottom:16px;
-    }
-    .radar-block{
-      background:#0D0F16;border:1px solid rgba(255,255,255,0.06);
-      border-radius:10px;padding:20px;display:flex;flex-direction:column;align-items:center;
-    }
-    .block-tag{font-family:monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;margin-bottom:12px;display:block;text-align:center;}
-    .bars-block{
-      background:#0D0F16;border:1px solid rgba(255,255,255,0.06);
-      border-radius:10px;padding:20px;
-    }
-    .traits-block{
-      background:#0D0F16;border:1px solid rgba(255,255,255,0.06);
-      border-radius:10px;padding:16px 20px;margin-bottom:16px;
-    }
+    /* DNA row */
+    .dna-row{display:grid;grid-template-columns:270px 1fr;gap:16px;margin-bottom:16px;}
+    .card{background:#111320;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:20px 22px;}
+    .card-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#444;margin-bottom:14px;}
 
-    /* PROFILE GRID */
-    .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;margin-bottom:16px;}
-    .profile-block{background:#0D0F16;padding:18px 20px;}
-    .profile-block h4{font-family:monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;margin-bottom:8px;}
-    .profile-block p{font-size:12px;color:#C0BECE;line-height:1.65;}
+    /* Blocks grid */
+    .blocks-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
 
-    /* FOOTER */
-    .footer{margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;}
-    .footer p{font-family:monospace;font-size:9px;color:#353448;letter-spacing:0.06em;}
-    .footer-brand{font-size:11px;font-weight:700;color:#353448;}
-    .footer-brand span{color:#6C5FE6;}
-
-    /* INSIGHT BOX */
-    .insight-box{
-      background:#0D0F16;border:1px solid rgba(232,96,58,0.2);
-      border-radius:8px;padding:14px 18px;margin-bottom:16px;
-      border-left:3px solid ${profile.hex};
+    /* Footer */
+    .footer{
+      margin-top:auto;padding-top:18px;
+      border-top:1px solid rgba(255,255,255,0.05);
+      display:flex;justify-content:space-between;align-items:center;
     }
-    .insight-box p{font-size:12px;color:#aaa;line-height:1.65;}
-    .insight-box strong{color:#E8E6F0;}
+    .footer p{font-family:'Space Mono',monospace;font-size:8px;color:#2A2A3A;letter-spacing:0.05em;}
+    .footer-brand{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#2A2A3A;}
+    .footer-brand em{color:${accentColor}55;font-style:normal;}
 
     @media print{
-      body{background:#07080C!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
       @page{margin:0;size:A4;}
-      .page{width:100%;padding:32px;}
+      body{background:#0A0B10!important;}
+      .page{width:100%;padding:32px 36px;}
     }
   </style>
 </head>
 <body>
 <div class="page">
 
+  <div class="accent-bar"></div>
+
   <div class="header">
     <div class="brand">
-      <div class="brand-mark">C</div>
-      <div class="brand-name">Cápsula<span>.</span>Dev</div>
+      <div class="brand-cube">C</div>
+      <span class="brand-name">Cápsula<em>.</em>Dev</span>
     </div>
-    <div class="header-meta">
-      <span class="header-tag">// relatório · perfil disc</span>
-      <span class="header-date">EMITIDO EM ${data.toUpperCase()}</span>
+    <div class="header-right">
+      <div class="header-label">// relatório · perfil disc</div>
+      <div class="header-date">${data.toUpperCase()}</div>
     </div>
   </div>
 
   <div class="hero">
-    <span class="hero-tag">// dna comportamental · ${nome.toUpperCase()}</span>
-    <div class="hero-name">${nome}</div>
-    <div class="hero-title">${profile.title}</div>
-    <div class="hero-arch">${profile.arch.replace(/<[^>]*>/g,'')}</div>
+    <div class="hero-text">
+      <div class="hero-eyebrow">// dna comportamental</div>
+      <div class="hero-name">${nome}</div>
+      <div class="hero-title">${profile.title}</div>
+      <span class="hero-code">${profile.code} · ${scores[dominant]}%</span>
+      <div class="hero-arch">${profile.archetype.replace(/<[^>]*>/g,'')}</div>
+    </div>
+    <svg width="220" height="220" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
+      ${buildRadarPDF(scores)}
+    </svg>
   </div>
 
-  <div class="dna-section">
-    <div class="radar-block">
-      <span class="block-tag">RADAR_DISC</span>
-      <svg width="180" height="180" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
-        ${buildRadarPDF(scores)}
-      </svg>
-    </div>
-    <div class="bars-block">
-      <span class="block-tag">MAPEAMENTO DE DIMENSÕES</span>
+  <div class="dna-row">
+    <div class="card">
+      <div class="card-label">Mapeamento de dimensões</div>
       ${barsHTML}
-      <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);">
         ${traitsHTML}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Insight de perfil</div>
+      <p style="font-size:13px;color:#B0AEBE;line-height:1.75;">${profile.strengths}</p>
+      <div style="margin-top:16px;padding:12px 16px;background:${accentColor}0D;border-left:2px solid ${accentColor};border-radius:0 6px 6px 0;">
+        <p style="font-size:11px;color:#888;font-family:'Space Mono',monospace;line-height:1.6;">
+          <strong style="color:${accentColor};display:block;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">// como se comunicar</strong>
+          ${profile.communication}
+        </p>
       </div>
     </div>
   </div>
 
-  <div class="insight-box">
-    <p><strong>Insight de perfil:</strong> ${profile.strengths}</p>
-  </div>
-
-  <div class="profile-grid">
-    <div class="profile-block">
-      <h4>// pontos fortes</h4>
-      <p>${profile.strengths}</p>
-    </div>
-    <div class="profile-block">
-      <h4>// pontos de atenção</h4>
-      <p>${profile.challenges}</p>
-    </div>
-    <div class="profile-block">
-      <h4>// ambiente ideal</h4>
-      <p>${profile.environment}</p>
-    </div>
-    <div class="profile-block">
-      <h4>// como se comunicar</h4>
-      <p>${profile.communication}</p>
-    </div>
+  <div class="blocks-grid">
+    ${blocksHTML}
   </div>
 
   <div class="footer">
-    <p>// CÁPSULA DE DESENVOLVIMENTO · ENGENHARIA COMPORTAMENTAL · CONFIDENCIAL</p>
-    <div class="footer-brand">Cápsula<span>.</span>Dev</div>
+    <p>CÁPSULA DE DESENVOLVIMENTO · RELATÓRIO CONFIDENCIAL · © ${new Date().getFullYear()}</p>
+    <div class="footer-brand">Cápsula<em>.</em>Dev</div>
   </div>
 
 </div>
-<script>window.onload=function(){setTimeout(function(){window.print();},400);}<\/script>
+<script>window.onload=function(){setTimeout(function(){window.print();},500);}<\/script>
 </body></html>`);
   w.document.close();
 }
