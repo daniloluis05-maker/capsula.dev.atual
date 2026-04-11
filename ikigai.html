@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ikigai | Cápsula de Desenvolvimento</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#07080C;--bg2:#0D0F16;--surface:#121520;--surface2:#181C28;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --accent:#6C5FE6;--text:#E8E6F0;--muted:#6B6980;--muted2:#353448;
+  --ama:#E8603A;--bom:#6C5FE6;--precisa:#2EC4A0;--paga:#1BA8D4;
+  --mono:'Space Mono',monospace;--sans:'Outfit',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(108,95,230,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,95,230,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+.orb-1{width:500px;height:500px;background:#E8603A;opacity:0.06;top:-150px;left:-100px;}
+.orb-2{width:400px;height:400px;background:#2EC4A0;opacity:0.05;bottom:-100px;right:-80px;}
+
+.page{display:none;position:relative;z-index:1;}
+.page.active{display:flex;flex-direction:column;min-height:100vh;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── INTRO ── */
+.intro-page{align-items:center;justify-content:center;text-align:center;padding:5rem 2rem;}
+.intro-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(232,96,58,0.1);border:1px solid rgba(232,96,58,0.25);color:var(--ama);font-family:var(--mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.35rem 0.9rem;border-radius:4px;margin-bottom:2rem;animation:fadeUp 0.6s ease both;}
+.intro-page h1{font-size:clamp(2.2rem,5.5vw,4rem);font-weight:800;line-height:1.08;letter-spacing:-0.03em;max-width:680px;margin:0 auto 1.25rem;animation:fadeUp 0.6s 0.1s ease both;}
+.intro-page h1 .accent{color:var(--ama);}
+.intro-sub{color:var(--muted);font-size:0.95rem;max-width:520px;margin:0 auto 2.5rem;line-height:1.75;animation:fadeUp 0.6s 0.2s ease both;}
+
+/* Diagrama Ikigai visual */
+.ikigai-diagram{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;max-width:400px;margin:0 auto 2.5rem;animation:fadeUp 0.6s 0.3s ease both;}
+.ikigai-pill{padding:0.75rem 1rem;border-radius:8px;font-size:0.82rem;font-weight:600;text-align:center;border:1px solid;}
+.intro-meta{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:2.5rem;animation:fadeUp 0.6s 0.4s ease both;}
+.meta-item{padding:1rem 1.5rem;text-align:center;border-right:1px solid var(--border);background:var(--surface);}
+.meta-item:last-child{border-right:none;}
+.meta-val{font-family:var(--mono);font-size:1.2rem;font-weight:700;display:block;letter-spacing:-0.02em;}
+.meta-label{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.2rem;display:block;}
+.btn-start{display:inline-flex;align-items:center;gap:0.5rem;background:var(--ama);color:#fff;border:none;padding:0.9rem 2.25rem;border-radius:7px;font-size:0.9rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all 0.2s;animation:fadeUp 0.6s 0.5s ease both;}
+.btn-start:hover{opacity:0.88;transform:translateY(-2px);}
+.intro-note{margin-top:1.25rem;font-family:var(--mono);font-size:0.62rem;color:var(--muted2);animation:fadeUp 0.6s 0.6s ease both;}
+
+/* ── FORM ── */
+.form-nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.form-logo{font-size:0.9rem;font-weight:700;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:0.4rem;}
+.form-logo-mark{width:22px;height:22px;background:var(--accent);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#fff;}
+.form-logo span{color:var(--ama);}
+.prog-wrap{flex:1;max-width:360px;margin:0 1.5rem;}
+.prog-track{height:3px;background:var(--surface2);border-radius:100px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:100px;transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+.prog-counter{font-family:var(--mono);font-size:0.6rem;color:var(--muted);text-align:center;margin-top:0.3rem;}
+.btn-back{background:transparent;border:1px solid var(--border2);color:var(--muted);padding:0.45rem 0.9rem;border-radius:5px;font-family:var(--mono);font-size:0.7rem;cursor:pointer;transition:all 0.2s;}
+.btn-back:hover{border-color:var(--accent);color:var(--text);}
+
+.form-body{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:3rem 5% 5rem;}
+.form-container{width:100%;max-width:700px;}
+.quadrant-header{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+.quadrant-badge{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.quadrant-label{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.2rem;display:block;}
+.quadrant-title{font-size:1.25rem;font-weight:700;letter-spacing:-0.02em;}
+.quadrant-subtitle{font-size:0.8rem;color:var(--muted);margin-top:0.15rem;}
+
+.questions-list{display:flex;flex-direction:column;gap:1.5rem;margin-bottom:2.5rem;}
+.question-prompt{font-size:0.85rem;color:var(--muted);margin-bottom:0.5rem;font-weight:500;display:flex;gap:0.5rem;align-items:flex-start;}
+.q-num{font-family:var(--mono);font-size:0.6rem;margin-top:0.15rem;flex-shrink:0;}
+.question-input{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:0.88rem;padding:0.85rem 1rem;outline:none;transition:border-color 0.2s;resize:vertical;min-height:80px;line-height:1.6;}
+.question-input::placeholder{color:var(--muted2);}
+.char-count{font-family:var(--mono);font-size:0.6rem;color:var(--muted2);text-align:right;margin-top:0.3rem;}
+
+.form-actions{display:flex;justify-content:space-between;align-items:center;padding-top:1.5rem;border-top:1px solid var(--border);}
+.form-hint{font-family:var(--mono);font-size:0.62rem;color:var(--muted2);}
+.btn-next{display:inline-flex;align-items:center;gap:0.5rem;color:#fff;border:none;padding:0.8rem 1.75rem;border-radius:7px;font-size:0.88rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all 0.2s;opacity:0.35;pointer-events:none;}
+.btn-next.ready{opacity:1;pointer-events:all;}
+.btn-next.ready:hover{opacity:0.88;transform:translateY(-1px);}
+
+/* ── RESULTADO ── */
+.result-page{align-items:center;padding:5rem 5% 6rem;flex-direction:column;}
+.result-eyebrow{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;animation:fadeUp 0.5s ease both;}
+.result-title{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-0.03em;text-align:center;margin-bottom:0.5rem;animation:fadeUp 0.5s 0.1s ease both;}
+.result-title .accent{color:var(--ama);}
+.result-sub{color:var(--muted);font-size:0.9rem;text-align:center;margin-bottom:2.5rem;animation:fadeUp 0.5s 0.15s ease both;}
+
+/* Grid 2x2 resultado */
+.ikigai-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;width:100%;max-width:800px;margin-bottom:2rem;animation:fadeUp 0.5s 0.2s ease both;}
+.ik-quadrant{background:var(--surface);padding:2rem;}
+.ik-q-head{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+.ik-q-icon{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;}
+.ik-q-label{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;}
+.ik-q-name{font-size:0.9rem;font-weight:700;}
+.ik-answers{display:flex;flex-direction:column;gap:0.6rem;}
+.ik-answer-item{display:flex;gap:0.6rem;align-items:flex-start;font-size:0.82rem;color:var(--text);line-height:1.55;}
+.ik-bullet{width:5px;height:5px;border-radius:50%;margin-top:0.45rem;flex-shrink:0;}
+.ik-empty{font-size:0.78rem;color:var(--muted2);font-family:var(--mono);}
+
+/* Intersecção — o Ikigai */
+.ikigai-center{width:100%;max-width:800px;background:var(--surface2);border:1px solid rgba(232,96,58,0.2);border-radius:10px;padding:2rem;margin-bottom:2rem;border-top:2px solid var(--ama);animation:fadeUp 0.5s 0.3s ease both;text-align:center;}
+.ikigai-center-label{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--ama);margin-bottom:0.5rem;display:block;}
+.ikigai-center h3{font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;}
+.ikigai-center p{font-size:0.85rem;color:var(--muted);line-height:1.7;max-width:580px;margin:0 auto;}
+
+.result-actions{display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;animation:fadeUp 0.5s 0.4s ease both;}
+.btn-dashboard{background:var(--accent);color:#fff;border:none;padding:0.85rem 2rem;border-radius:7px;font-size:0.88rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;}
+.btn-dashboard:hover{opacity:0.88;transform:translateY(-1px);}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border2);padding:0.85rem 2rem;border-radius:7px;font-size:0.88rem;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all 0.2s;}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+
+@media(max-width:768px){
+  .ikigai-grid{grid-template-columns:1fr;}
+  .ikigai-diagram{grid-template-columns:1fr 1fr;}
+  .prog-wrap{max-width:160px;margin:0 0.75rem;}
+}
+</style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- INTRO -->
+<div class="page active" id="page-intro">
+  <div class="intro-page">
+    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;margin-bottom:2rem;transition:all 0.2s;">← Voltar ao Dashboard</a>
+    <div class="intro-badge">⬡ Propósito de Vida</div>
+    <h1>Encontre seu<br><span class="accent">Ikigai</span></h1>
+    <p class="intro-sub">O conceito japonês de "razão de ser". A intersecção entre o que você ama, o que sabe fazer bem, o que o mundo precisa e o que pode gerar renda para você.</p>
+
+    <div class="ikigai-diagram">
+      <div class="ikigai-pill" style="background:rgba(232,96,58,0.1);border-color:rgba(232,96,58,0.3);color:var(--ama);">🔥 O que você ama</div>
+      <div class="ikigai-pill" style="background:rgba(108,95,230,0.1);border-color:rgba(108,95,230,0.3);color:var(--bom);">⭐ O que você é bom</div>
+      <div class="ikigai-pill" style="background:rgba(46,196,160,0.1);border-color:rgba(46,196,160,0.3);color:var(--precisa);">🌍 O que o mundo precisa</div>
+      <div class="ikigai-pill" style="background:rgba(27,168,212,0.1);border-color:rgba(27,168,212,0.3);color:var(--paga);">💎 O que te remunera</div>
+    </div>
+
+    <div class="intro-meta">
+      <div class="meta-item"><span class="meta-val">16</span><span class="meta-label">Perguntas</span></div>
+      <div class="meta-item"><span class="meta-val">~12</span><span class="meta-label">Minutos</span></div>
+      <div class="meta-item"><span class="meta-val">4</span><span class="meta-label">Quadrantes</span></div>
+    </div>
+    <button class="btn-start" onclick="startForm()">Iniciar Ikigai →</button>
+    <p class="intro-note">// seja honesto — quanto mais profundo, mais preciso o resultado</p>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="page" id="page-form">
+  <nav class="form-nav">
+    <a href="dashboard.html" class="form-logo"><div class="form-logo-mark">C</div>Cápsula<span>.</span>Dev</a>
+    <div class="prog-wrap">
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="prog-counter" id="prog-counter">Quadrante 1 de 4</div>
+    </div>
+    <button class="btn-back" onclick="goBack()">← Voltar</button>
+  </nav>
+  <div class="form-body">
+    <div class="form-container" id="form-container"></div>
+  </div>
+</div>
+
+<!-- RESULTADO -->
+<div class="page" id="page-result">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);">
+    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;transition:all 0.2s;">← Dashboard</a>
+    <span style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ama);">// resultado · ikigai</span>
+    <button onclick="generatePDF()" style="font-family:var(--mono);font-size:0.7rem;background:transparent;color:var(--muted);border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;cursor:pointer;">↓ PDF</button>
+  </nav>
+  <div class="result-page">
+    <div class="result-eyebrow">Seu Ikigai</div>
+    <div class="result-title">Sua <span class="accent">Razão</span> de Ser</div>
+    <div class="result-sub">Os quatro pilares do seu propósito mapeados. Onde eles se encontram é o seu Ikigai.</div>
+    <div class="ikigai-grid" id="ikigai-grid"></div>
+    <div class="ikigai-center" id="ikigai-center"></div>
+    <div class="result-actions">
+      <a href="dashboard.html" class="btn-dashboard">Ver meu Dashboard →</a>
+      <button class="btn-outline" onclick="generatePDF()">↓ Baixar PDF</button>
+      <button class="btn-outline" onclick="resetForm()">↺ Refazer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const QUADRANTS = [
+  {
+    key:'ama', label:'Quadrante I', name:'O que você Ama', subtitle:'Paixões, valores e o que te traz alegria genuína',
+    color:'#E8603A', bg:'rgba(232,96,58,0.12)', icon:'🔥',
+    questions:[
+      {id:'ama1', prompt:'Quais atividades fazem você perder a noção do tempo por puro prazer?', placeholder:'Ex: criar conteúdo, resolver problemas complexos, ensinar outras pessoas...'},
+      {id:'ama2', prompt:'Se dinheiro não fosse obstáculo, o que você passaria seus dias fazendo?', placeholder:'Ex: viajar e documentar experiências, construir produtos digitais...'},
+      {id:'ama3', prompt:'Sobre quais assuntos você consegue falar por horas sem cansar?', placeholder:'Ex: psicologia, tecnologia, desenvolvimento humano, design...'},
+      {id:'ama4', prompt:'Que tipo de ambiente ou situação faz você se sentir completamente vivo(a)?', placeholder:'Ex: ambientes criativos, situações de liderança, trabalho solo com foco profundo...'},
+    ]
+  },
+  {
+    key:'bom', label:'Quadrante II', name:'O que você Faz Bem', subtitle:'Habilidades naturais, talentos e competências desenvolvidas',
+    color:'#6C5FE6', bg:'rgba(108,95,230,0.12)', icon:'⭐',
+    questions:[
+      {id:'bom1', prompt:'Quais habilidades as pessoas ao seu redor sempre reconhecem e elogiam em você?', placeholder:'Ex: capacidade analítica, comunicação clara, empatia, organização...'},
+      {id:'bom2', prompt:'Em que tipo de tarefa você se sente naturalmente mais competente e confiante?', placeholder:'Ex: estruturar processos, vender ideias, criar soluções criativas...'},
+      {id:'bom3', prompt:'Quais conquistas do seu passado demonstram seu maior potencial?', placeholder:'Ex: projeto que liderou com sucesso, meta difícil que atingiu...'},
+      {id:'bom4', prompt:'Que recursos únicos você possui que poucas pessoas têm?', placeholder:'Ex: combinação de conhecimentos técnicos e comportamentais, rede de contatos...'},
+    ]
+  },
+  {
+    key:'precisa', label:'Quadrante III', name:'O que o Mundo Precisa', subtitle:'Necessidades reais que você pode endereçar',
+    color:'#2EC4A0', bg:'rgba(46,196,160,0.12)', icon:'🌍',
+    questions:[
+      {id:'prec1', prompt:'Que problema recorrente no mundo ou na sua área te incomoda profundamente?', placeholder:'Ex: falta de líderes emocionalmente inteligentes, excesso de burocracia...'},
+      {id:'prec2', prompt:'Que mudança você gostaria de ver na sociedade ou no mercado de trabalho?', placeholder:'Ex: empresas mais humanas, educação mais prática, saúde mental valorizada...'},
+      {id:'prec3', prompt:'Que necessidade específica de pessoas ao seu redor você poderia resolver?', placeholder:'Ex: pessoas que precisam de clareza de propósito, equipes que precisam de estrutura...'},
+      {id:'prec4', prompt:'Que impacto você quer causar na vida das pessoas ou no mercado nos próximos 10 anos?', placeholder:'Ex: ajudar 10.000 pessoas a encontrarem seu propósito, criar emprego de qualidade...'},
+    ]
+  },
+  {
+    key:'paga', label:'Quadrante IV', name:'O que te Remunera', subtitle:'O que o mercado paga e valorizaria em você',
+    color:'#1BA8D4', bg:'rgba(27,168,212,0.12)', icon:'💎',
+    questions:[
+      {id:'paga1', prompt:'Por que as pessoas ou empresas já pagaram ou pagariam por seu trabalho?', placeholder:'Ex: consultoria estratégica, criação de conteúdo, liderança de projetos...'},
+      {id:'paga2', prompt:'Que habilidades suas têm alta demanda no mercado atual ou futuro?', placeholder:'Ex: inteligência emocional, análise de dados, gestão de times remotos...'},
+      {id:'paga3', prompt:'Que tipo de solução você entrega que gera resultado financeiro real para outros?', placeholder:'Ex: aumento de conversão, redução de turnover, agilidade de entrega...'},
+      {id:'paga4', prompt:'Qual seria o modelo de trabalho ou negócio onde seu valor seria mais reconhecido?', placeholder:'Ex: consultoria, mentoria, produto digital, carreira corporativa como especialista...'},
+    ]
+  }
+];
+
+let currentQ = 0;
+let answers = {ama:{}, bom:{}, precisa:{}, paga:{}};
+
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+
+function startForm(){currentQ=0;answers={ama:{},bom:{},precisa:{},paga:{}};showPage('page-form');renderQuadrant(0);}
+
+function goBack(){if(currentQ===0)showPage('page-intro');else{saveAnswers();currentQ--;renderQuadrant(currentQ);}}
+
+function resetForm(){answers={ama:{},bom:{},precisa:{},paga:{}};startForm();}
+
+function renderQuadrant(idx){
+  const q = QUADRANTS[idx];
+  const pct = Math.round((idx/QUADRANTS.length)*100);
+  document.getElementById('prog-fill').style.cssText = `width:${pct}%;background:${q.color};`;
+  document.getElementById('prog-counter').textContent = `Quadrante ${idx+1} de ${QUADRANTS.length}`;
+  const saved = answers[q.key]||{};
+  const hasAny = Object.values(saved).some(v=>v&&v.trim().length>0);
+  document.getElementById('form-container').innerHTML = `
+    <div class="quadrant-header">
+      <div class="quadrant-badge" style="background:${q.bg};border:1px solid ${q.color}44;">${q.icon}</div>
+      <div>
+        <span class="quadrant-label" style="color:${q.color}">${q.label}</span>
+        <div class="quadrant-title">${q.name}</div>
+        <div class="quadrant-subtitle">${q.subtitle}</div>
+      </div>
+    </div>
+    <div class="questions-list">
+      ${q.questions.map((quest,qi)=>`
+        <div>
+          <div class="question-prompt" style="--q-color:${q.color}">
+            <span class="q-num" style="color:${q.color}">${String(qi+1).padStart(2,'0')}</span>
+            ${quest.prompt}
+          </div>
+          <textarea class="question-input" id="q-${quest.id}" placeholder="${quest.placeholder}" maxlength="400" oninput="onInput()" style="border-color:${q.color}22;"
+            onfocus="this.style.borderColor='${q.color}'" onblur="this.style.borderColor='${q.color}22'"
+          >${saved[quest.id]||''}</textarea>
+          <div class="char-count" id="cc-${quest.id}">${(saved[quest.id]||'').length}/400</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="form-actions">
+      <span class="form-hint">// preencha ao menos uma resposta</span>
+      <button class="btn-next ${hasAny?'ready':''}" id="btn-next" style="background:${q.color}" onclick="nextQuadrant()">
+        ${idx===QUADRANTS.length-1?'Ver meu Ikigai →':'Próximo →'}
+      </button>
+    </div>
+  `;
+  q.questions.forEach(quest=>{
+    const el=document.getElementById(`q-${quest.id}`);
+    if(el)el.addEventListener('input',()=>{
+      const cc=document.getElementById(`cc-${quest.id}`);
+      if(cc)cc.textContent=`${el.value.length}/400`;
+      onInput();
+      autosave();
+    });
+  });
+}
+
+function onInput(){
+  const q=QUADRANTS[currentQ];
+  const hasAny=q.questions.some(quest=>{const el=document.getElementById(`q-${quest.id}`);return el&&el.value.trim().length>0;});
+  const btn=document.getElementById('btn-next');
+  if(btn)btn.classList.toggle('ready',hasAny);
+}
+
+function saveAnswers(){
+  const q=QUADRANTS[currentQ];
+  q.questions.forEach(quest=>{const el=document.getElementById(`q-${quest.id}`);if(el)answers[q.key][quest.id]=el.value.trim();});
+}
+
+function autosave(){
+  saveAnswers();
+  try{
+    const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');
+    u.ikigai_draft=answers;
+    localStorage.setItem('capsula_user',JSON.stringify(u));
+  }catch(e){}
+}
+
+function nextQuadrant(){
+  saveAnswers();currentQ++;
+  if(currentQ>=QUADRANTS.length)showResult();
+  else{renderQuadrant(currentQ);window.scrollTo(0,0);}
+}
+
+function showResult(){
+  showPage('page-result');
+  // Grid
+  document.getElementById('ikigai-grid').innerHTML = QUADRANTS.map(q=>{
+    const filled=Object.values(answers[q.key]||{}).filter(v=>v&&v.length>0);
+    return `
+      <div class="ik-quadrant">
+        <div class="ik-q-head">
+          <div class="ik-q-icon" style="background:${q.bg};border:1px solid ${q.color}33;">${q.icon}</div>
+          <div>
+            <span class="ik-q-label" style="color:${q.color}">${q.label}</span>
+            <div class="ik-q-name">${q.name}</div>
+          </div>
+        </div>
+        <div class="ik-answers">
+          ${filled.length>0?filled.map(v=>`<div class="ik-answer-item"><span class="ik-bullet" style="background:${q.color}"></span><span>${v}</span></div>`).join(''):'<span class="ik-empty">// não respondido</span>'}
+        </div>
+      </div>`;
+  }).join('');
+
+  // Síntese central
+  const ama = Object.values(answers.ama).filter(v=>v).slice(0,1)[0]||'';
+  const bom = Object.values(answers.bom).filter(v=>v).slice(0,1)[0]||'';
+  const prec = Object.values(answers.precisa).filter(v=>v).slice(0,1)[0]||'';
+  const paga = Object.values(answers.paga).filter(v=>v).slice(0,1)[0]||'';
+  const filled = [ama,bom,prec,paga].filter(Boolean).length;
+  document.getElementById('ikigai-center').innerHTML = `
+    <span class="ikigai-center-label">✦ O SEU IKIGAI</span>
+    <h3>A intersecção dos seus quatro pilares</h3>
+    <p>${filled>=3?
+      'Seu Ikigai emerge na confluência do que você ama e faz bem, com o que o mundo precisa e o que te remunera. Revisite cada quadrante e identifique onde há maior sobreposição — essa é sua zona de máximo propósito e impacto.'
+      :'Complete mais quadrantes para obter uma síntese mais precisa do seu Ikigai. Quanto mais honesto e específico, mais poderoso o resultado.'
+    }</p>
+  `;
+
+  // Salva
+  const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');
+  u.ikigai={answers,completedAt:new Date().toISOString()};
+  delete u.ikigai_draft;
+  localStorage.setItem('capsula_user',JSON.stringify(u));
+  // Sync capsula_users[]
+  try{
+    const perfis=JSON.parse(localStorage.getItem('capsula_users')||'[]');
+    const idx=perfis.findIndex(p=>p.uid===u.uid);
+    if(idx>=0){perfis[idx].ikigai=u.ikigai;localStorage.setItem('capsula_users',JSON.stringify(perfis));}
+  }catch(e){}
+}
+
+// Restaura rascunho
+(function(){
+  try{
+    const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');
+    if(u.ikigai_draft)answers=u.ikigai_draft;
+    // Proteção de rota
+    if(!u.nome&&!u.apelido)window.location.href='index.html';
+  }catch(e){}
+})();
+
+function generatePDF(){
+  const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');
+  const nome=u.apelido||u.nome||'Usuário';
+  const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ikigai — ${nome}</title>
+<style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,sans-serif;background:#07080C;color:#E8E6F0;-webkit-print-color-adjust:exact;print-color-adjust:exact;background-image:linear-gradient(rgba(108,95,230,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(108,95,230,0.06) 1px,transparent 1px);background-size:40px 40px;}
+.page{padding:40px;}.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.brand{font-size:13px;font-weight:700;color:#E8E6F0;}.brand span{color:#6C5FE6;}.date{font-size:9px;color:#6B6980;}
+.hero{background:#0D0F16;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:20px 24px;margin-bottom:16px;border-top:3px solid #E8603A;}
+.hero-tag{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;display:block;margin-bottom:4px;}
+.hero-title{font-size:30px;font-weight:800;color:#E8603A;margin-bottom:4px;}
+.hero-sub{font-size:12px;color:#aaa;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.block{background:#0D0F16;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:16px;}
+.block-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.block-icon{font-size:14px;}.block-name{font-size:12px;font-weight:700;}
+.item{display:flex;gap:6px;margin-bottom:5px;font-size:11px;color:#C0BECE;line-height:1.55;}
+.dot{width:4px;height:4px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.center{background:#0D0F16;border:1px solid rgba(232,96,58,0.25);border-radius:8px;padding:16px;margin-bottom:12px;text-align:center;border-top:2px solid #E8603A;}
+.center-label{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#E8603A;margin-bottom:6px;display:block;}
+.center h3{font-size:14px;font-weight:700;margin-bottom:5px;}
+.center p{font-size:11px;color:#aaa;line-height:1.6;}
+.footer{padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;}
+.footer p{font-size:9px;color:#353448;}
+@media print{body{background:#07080C!important;}@page{size:A4;margin:0;}.page{padding:28px;}}
+</style></head><body><div class="page">
+<div class="header"><div class="brand">Cápsula<span>.</span>Dev — Engenharia Comportamental</div><div class="date">Ikigai — Emitido em ${data}</div></div>
+<div class="hero"><span class="hero-tag">// propósito de vida · ${nome.toUpperCase()}</span><div class="hero-title">Ikigai de ${nome}</div><div class="hero-sub">Razão de ser — a intersecção dos quatro pilares do propósito.</div></div>
+<div class="grid">
+${QUADRANTS.map(q=>{const filled=Object.values(answers[q.key]||{}).filter(v=>v&&v.length>0);return`<div class="block"><div class="block-head"><span class="block-icon">${q.icon}</span><span class="block-name" style="color:${q.color}">${q.name}</span></div>${filled.map(v=>`<div class="item"><span class="dot" style="background:${q.color}"></span><span>${v}</span></div>`).join('')||'<span style="font-size:10px;color:#353448;">// não respondido</span>'}</div>`;}).join('')}
+</div>
+<div class="center"><span class="center-label">✦ O SEU IKIGAI</span><h3>A intersecção dos quatro pilares</h3><p>Revisite cada quadrante e identifique onde há maior sobreposição — essa confluência é sua zona de máximo propósito e impacto.</p></div>
+<div class="footer"><p>// CÁPSULA DE DESENVOLVIMENTO · CONFIDENCIAL</p><p>capsuladedesenvolvimento.com.br</p></div>
+</div></body></html>`;
+  _imprimirPDF(html);
+}
+
+function _imprimirPDF(html){
+  var old=document.getElementById('_pdf_frame');if(old)old.remove();
+  var iframe=document.createElement('iframe');iframe.id='_pdf_frame';
+  iframe.setAttribute('style','position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;border:none;');
+  document.body.appendChild(iframe);
+  var doc=iframe.contentDocument||iframe.contentWindow.document;
+  doc.open();doc.write(html);doc.close();
+  iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='ikigai.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
+}
+</script>
+</body>
+</html>

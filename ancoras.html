@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Âncoras de Carreira | Cápsula de Desenvolvimento</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#07080C;--bg2:#0D0F16;--surface:#121520;--surface2:#181C28;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --accent:#2EC4A0;--text:#E8E6F0;--muted:#6B6980;--muted2:#353448;
+  --mono:'Space Mono',monospace;--sans:'Outfit',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(46,196,160,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(46,196,160,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+.orb-1{width:500px;height:500px;background:#2EC4A0;opacity:0.06;top:-150px;right:-100px;}
+.orb-2{width:350px;height:350px;background:#6C5FE6;opacity:0.05;bottom:-80px;left:-80px;}
+
+.page{display:none;position:relative;z-index:1;}
+.page.active{display:flex;flex-direction:column;min-height:100vh;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── INTRO ── */
+.intro-page{align-items:center;justify-content:center;text-align:center;padding:5rem 2rem;}
+.intro-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(46,196,160,0.1);border:1px solid rgba(46,196,160,0.25);color:var(--accent);font-family:var(--mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.35rem 0.9rem;border-radius:4px;margin-bottom:2rem;animation:fadeUp 0.6s ease both;}
+.intro-page h1{font-size:clamp(2.2rem,5.5vw,4rem);font-weight:800;line-height:1.08;letter-spacing:-0.03em;max-width:680px;margin:0 auto 1.25rem;animation:fadeUp 0.6s 0.1s ease both;}
+.intro-page h1 .accent{color:var(--accent);}
+.intro-sub{color:var(--muted);font-size:0.95rem;max-width:520px;margin:0 auto 2.5rem;line-height:1.75;animation:fadeUp 0.6s 0.2s ease both;}
+.intro-meta{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:2.5rem;animation:fadeUp 0.6s 0.3s ease both;}
+.meta-item{padding:1rem 1.5rem;text-align:center;border-right:1px solid var(--border);background:var(--surface);}
+.meta-item:last-child{border-right:none;}
+.meta-val{font-family:var(--mono);font-size:1.2rem;font-weight:700;display:block;letter-spacing:-0.02em;}
+.meta-label{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.2rem;display:block;}
+.btn-start{display:inline-flex;align-items:center;gap:0.5rem;background:var(--accent);color:#fff;border:none;padding:0.9rem 2.25rem;border-radius:7px;font-size:0.9rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all 0.2s;animation:fadeUp 0.6s 0.4s ease both;}
+.btn-start:hover{opacity:0.88;transform:translateY(-2px);}
+.intro-note{margin-top:1.25rem;font-family:var(--mono);font-size:0.62rem;color:var(--muted2);animation:fadeUp 0.6s 0.5s ease both;}
+
+/* ── QUIZ NAV ── */
+.quiz-nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.quiz-logo{font-size:0.9rem;font-weight:700;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:0.4rem;}
+.quiz-logo-mark{width:22px;height:22px;background:#6C5FE6;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#fff;}
+.quiz-logo span{color:var(--accent);}
+.prog-wrap{flex:1;max-width:360px;margin:0 1.5rem;}
+.prog-track{height:3px;background:var(--surface2);border-radius:100px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:100px;background:var(--accent);transition:width 0.5s cubic-bezier(0.34,1.56,0.64,1);}
+.prog-label{font-family:var(--mono);font-size:0.6rem;color:var(--muted);text-align:center;margin-top:0.3rem;}
+.btn-back{background:transparent;border:1px solid var(--border2);color:var(--muted);padding:0.45rem 0.9rem;border-radius:5px;font-family:var(--mono);font-size:0.7rem;cursor:pointer;transition:all 0.2s;}
+.btn-back:hover{border-color:var(--accent);color:var(--text);}
+
+/* ── QUIZ BODY ── */
+.quiz-body{flex:1;display:flex;align-items:center;justify-content:center;padding:4rem 5%;min-height:calc(100vh - 70px);}
+.anchor-card{max-width:680px;width:100%;animation:slideIn 0.35s ease both;}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.anchor-tag{display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(46,196,160,0.3);background:rgba(46,196,160,0.08);padding:0.28rem 0.75rem;border-radius:3px;margin-bottom:1.5rem;}
+.anchor-icon{font-size:2rem;margin-bottom:1rem;display:block;}
+.anchor-name{font-size:clamp(1.5rem,3.5vw,2rem);font-weight:800;letter-spacing:-0.025em;margin-bottom:0.5rem;}
+.anchor-desc{color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:0.75rem;max-width:540px;}
+.anchor-example{font-family:var(--mono);font-size:0.72rem;color:var(--muted2);margin-bottom:2.5rem;}
+
+/* Escala 1-5 */
+.scale-label-row{display:flex;justify-content:space-between;margin-bottom:0.75rem;font-family:var(--mono);font-size:0.62rem;color:var(--muted);}
+.scale-btns{display:flex;gap:0.75rem;align-items:center;justify-content:center;margin-bottom:0.85rem;}
+.scale-btn{
+  border:1.5px solid var(--border2);background:transparent;
+  border-radius:50%;cursor:pointer;transition:all 0.18s;
+  position:relative;flex-shrink:0;
+}
+.scale-btn[data-val="1"]{width:40px;height:40px;}
+.scale-btn[data-val="2"]{width:48px;height:48px;}
+.scale-btn[data-val="3"]{width:54px;height:54px;}
+.scale-btn[data-val="4"]{width:48px;height:48px;}
+.scale-btn[data-val="5"]{width:40px;height:40px;}
+.scale-btn::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:var(--muted2);transition:all 0.18s;}
+.scale-btn:hover{border-color:var(--accent);background:rgba(46,196,160,0.06);}
+.scale-btn:hover::after{background:var(--accent);}
+.scale-btn.selected{border-color:var(--accent);background:rgba(46,196,160,0.1);}
+.scale-btn.selected::after{background:var(--accent);box-shadow:0 0 8px var(--accent);width:45%;height:45%;}
+.scale-hint{font-family:var(--mono);font-size:0.62rem;color:var(--muted2);text-align:center;min-height:1em;transition:all 0.2s;}
+
+.quiz-actions{margin-top:2rem;display:flex;justify-content:center;}
+.btn-next{display:inline-flex;align-items:center;gap:0.4rem;background:var(--accent);color:#fff;border:none;padding:0.8rem 1.75rem;border-radius:7px;font-size:0.9rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all 0.2s;opacity:0.3;pointer-events:none;}
+.btn-next.ready{opacity:1;pointer-events:all;}
+.btn-next.ready:hover{opacity:0.88;transform:translateY(-1px);}
+
+/* ── RESULTADO ── */
+.result-page{align-items:center;padding:5rem 5% 6rem;flex-direction:column;}
+.result-eyebrow{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;animation:fadeUp 0.5s ease both;}
+.result-title{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-0.03em;text-align:center;margin-bottom:0.5rem;animation:fadeUp 0.5s 0.1s ease both;}
+.result-title .accent{color:var(--accent);}
+.result-sub{color:var(--muted);font-size:0.9rem;text-align:center;margin-bottom:2.5rem;animation:fadeUp 0.5s 0.15s ease both;}
+
+.anchors-result{width:100%;max-width:720px;display:flex;flex-direction:column;gap:8px;margin-bottom:2rem;animation:fadeUp 0.5s 0.2s ease both;}
+.anchor-result-row{display:flex;align-items:center;gap:1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;transition:all 0.2s;}
+.anchor-result-row.top-1{border-color:var(--accent);background:rgba(46,196,160,0.08);}
+.anchor-result-row.top-2{border-color:rgba(46,196,160,0.4);}
+.anchor-result-row.top-3{border-color:rgba(46,196,160,0.2);}
+.anchor-rank{font-family:var(--mono);font-size:0.62rem;width:24px;color:var(--muted);flex-shrink:0;}
+.anchor-rank.gold{color:var(--accent);}
+.anchor-result-icon{font-size:1.2rem;flex-shrink:0;}
+.anchor-result-name{font-size:0.9rem;font-weight:700;flex:1;}
+.anchor-result-desc{font-size:0.75rem;color:var(--muted);margin-top:0.1rem;}
+.anchor-score-bar{display:flex;align-items:center;gap:0.5rem;}
+.bar-dots{display:flex;gap:3px;}
+.dot-filled{width:8px;height:8px;border-radius:50%;background:var(--accent);}
+.dot-empty{width:8px;height:8px;border-radius:50%;background:var(--muted2);}
+.score-num{font-family:var(--mono);font-size:0.65rem;color:var(--muted);width:20px;}
+
+/* Insight */
+.insight-box{width:100%;max-width:720px;background:var(--surface2);border:1px solid rgba(46,196,160,0.2);border-radius:10px;padding:1.75rem;margin-bottom:2rem;border-top:2px solid var(--accent);animation:fadeUp 0.5s 0.3s ease both;}
+.insight-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.75rem;display:block;}
+.insight-box p{font-size:0.88rem;color:var(--text);line-height:1.7;}
+
+.result-actions{display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;animation:fadeUp 0.5s 0.4s ease both;}
+.btn-dashboard{background:#6C5FE6;color:#fff;border:none;padding:0.85rem 2rem;border-radius:7px;font-size:0.88rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;}
+.btn-dashboard:hover{opacity:0.88;}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border2);padding:0.85rem 2rem;border-radius:7px;font-size:0.88rem;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all 0.2s;}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+
+@media(max-width:768px){.prog-wrap{max-width:150px;margin:0 0.75rem;}.anchor-score-bar{display:none;}.anchor-result-row{flex-wrap:wrap;}}
+</style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- INTRO -->
+<div class="page active" id="page-intro">
+  <div class="intro-page">
+    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;margin-bottom:2rem;">← Voltar ao Dashboard</a>
+    <div class="intro-badge">⚓ Propósito Profissional</div>
+    <h1>Suas <span class="accent">Âncoras</span><br>de Carreira</h1>
+    <p class="intro-sub">Edgar Schein identificou 8 âncoras que revelam o que você não abre mão na sua vida profissional. Avalie cada uma e descubra o que realmente te move.</p>
+    <div class="intro-meta">
+      <div class="meta-item"><span class="meta-val">08</span><span class="meta-label">Âncoras</span></div>
+      <div class="meta-item"><span class="meta-val">~5</span><span class="meta-label">Minutos</span></div>
+      <div class="meta-item"><span class="meta-val">Escala</span><span class="meta-label">1 a 5</span></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">Iniciar avaliação →</button>
+    <p class="intro-note">// escolha com base em como você realmente é, não como gostaria de ser</p>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="page" id="page-quiz">
+  <nav class="quiz-nav">
+    <a href="dashboard.html" class="quiz-logo"><div class="quiz-logo-mark">C</div>Cápsula<span>.</span>Dev</a>
+    <div class="prog-wrap">
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="prog-label" id="prog-label">1 de 8</div>
+    </div>
+    <button class="btn-back" onclick="goBack()">← Voltar</button>
+  </nav>
+  <div class="quiz-body">
+    <div class="anchor-card" id="anchor-card"></div>
+  </div>
+</div>
+
+<!-- RESULTADO -->
+<div class="page" id="page-result">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);">
+    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;">← Dashboard</a>
+    <span style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);">// resultado · âncoras</span>
+    <button onclick="generatePDF()" style="font-family:var(--mono);font-size:0.7rem;background:transparent;color:var(--muted);border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;cursor:pointer;">↓ PDF</button>
+  </nav>
+  <div class="result-page">
+    <div class="result-eyebrow">Âncoras de Carreira</div>
+    <div class="result-title">Seu <span class="accent">Núcleo</span> Profissional</div>
+    <div class="result-sub">As âncoras mais altas revelam o que você não abre mão. As mais baixas mostram o que não é prioridade.</div>
+    <div class="anchors-result" id="anchors-result"></div>
+    <div class="insight-box" id="insight-box"></div>
+    <div class="result-actions">
+      <a href="dashboard.html" class="btn-dashboard">Ver meu Dashboard →</a>
+      <button class="btn-outline" onclick="generatePDF()">↓ Baixar PDF</button>
+      <button class="btn-outline" onclick="startQuiz()">↺ Refazer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ANCHORS = [
+  {id:'tecnica', icon:'🔬', name:'Competência Técnica', color:'#1BA8D4',
+    desc:'Ser especialista e reconhecido pela excelência no que faz. Prefere profundidade a amplitude.',
+    example:'Ex: engenheiro sênior, médico especialista, designer expert, programador de nicho.',
+    insight:'Você se realiza sendo o melhor na sua área. Evite cargos generalistas que tirem você do seu domínio.'},
+  {id:'gestao', icon:'👥', name:'Competência em Gestão', color:'#E8603A',
+    desc:'Liderar pessoas, integrar esforços e ser responsável por resultados organizacionais.',
+    example:'Ex: diretor, gerente geral, CEO, líder de equipe multidisciplinar.',
+    insight:'Você precisa de autoridade e influência. Busque posições de liderança com visibilidade e impacto.'},
+  {id:'autonomia', icon:'🦅', name:'Autonomia e Independência', color:'#6C5FE6',
+    desc:'Fazer as coisas do seu jeito, no seu tempo, com o mínimo de restrições externas.',
+    example:'Ex: freelancer, consultor independente, empreendedor solo, especialista autônomo.',
+    insight:'Ambientes corporativos rígidos vão te frustrar. Priorize flexibilidade e controle sobre sua agenda.'},
+  {id:'seguranca', icon:'🛡️', name:'Segurança e Estabilidade', color:'#2EC4A0',
+    desc:'Ter emprego seguro, benefícios, previsibilidade e lealdade de longo prazo.',
+    example:'Ex: funcionário público, empresa grande com plano de carreira, multinacional estável.',
+    insight:'Estabilidade é seu combustível. Evite startups de alto risco e ambientes voláteis sem estrutura.'},
+  {id:'empreendedor', icon:'🚀', name:'Criatividade Empreendedora', color:'#E8603A',
+    desc:'Criar algo do zero — produto, empresa, processo — que seja reconhecidamente seu.',
+    example:'Ex: fundador de startup, intraempreendedor, criador de produto, inovador corporativo.',
+    insight:'Você precisa construir. Funções de execução pura sem espaço para criar vão te entediar rapidamente.'},
+  {id:'servico', icon:'🤝', name:'Serviço e Dedicação', color:'#2EC4A0',
+    desc:'Trabalhar por uma causa que vale a pena — impacto social, ambiental ou humano.',
+    example:'Ex: ONGs, saúde, educação, empresas com propósito claro de impacto positivo.',
+    insight:'Seu trabalho precisa ter significado além do financeiro. Salário alto sem propósito te esvaziará.'},
+  {id:'desafio', icon:'⚡', name:'Desafio Puro', color:'#E8603A',
+    desc:'Superar obstáculos impossíveis, competir e vencer problemas extremamente difíceis.',
+    example:'Ex: vendas complexas, turnaround de empresas, consultor de crise, atleta de alta performance.',
+    insight:'Você precisa de problemas difíceis. Rotinas previsíveis drenam sua energia e motivação.'},
+  {id:'estilo', icon:'⚖️', name:'Estilo de Vida Integrado', color:'#1BA8D4',
+    desc:'Integrar carreira, família e interesses pessoais sem sacrificar nenhum pelo outro.',
+    example:'Ex: trabalho remoto, horário flexível, empresa com cultura de bem-estar e life balance.',
+    insight:'Equilíbrio é inegociável para você. Culturas de "sempre disponível" vão comprometer sua saúde.'},
+];
+
+const HINTS = ['Não me representa','Me representa pouco','Neutro','Me representa bem','Me representa muito'];
+let currentA = 0;
+let scores = {};
+
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+
+function startQuiz(){currentA=0;scores={};showPage('page-quiz');renderAnchor(0);}
+
+function goBack(){if(currentA===0)showPage('page-intro');else{currentA--;renderAnchor(currentA);}}
+
+function renderAnchor(idx){
+  const a=ANCHORS[idx];
+  const pct=Math.round((idx/ANCHORS.length)*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-label').textContent=`${idx+1} de ${ANCHORS.length}`;
+  const sel=scores[a.id]||null;
+  const card=document.getElementById('anchor-card');
+  card.style.animation='none';card.offsetHeight;card.style.animation='';
+  card.innerHTML=`
+    <div class="anchor-tag"><span style="background:${a.color};width:6px;height:6px;border-radius:50%;display:inline-block;"></span>${a.name}</div>
+    <span class="anchor-icon">${a.icon}</span>
+    <div class="anchor-name" style="color:${a.color}">${a.name}</div>
+    <div class="anchor-desc">${a.desc}</div>
+    <div class="anchor-example" style="color:${a.color}88">${a.example}</div>
+    <div class="scale-label-row"><span>Não me representa</span><span>Me representa muito</span></div>
+    <div class="scale-btns">
+      ${[1,2,3,4,5].map(v=>`
+        <button class="scale-btn ${sel===v?'selected':''}" data-val="${v}"
+          style="--ac:${a.color}" onclick="selectScore('${a.id}',${v},${idx})"
+          title="${HINTS[v-1]}"></button>
+      `).join('')}
+    </div>
+    <div class="scale-hint" id="scale-hint">${sel?HINTS[sel-1]:'// toque para avaliar'}</div>
+    <div class="quiz-actions">
+      <button class="btn-next ${sel?'ready':''}" id="btn-next" style="background:${a.color}" onclick="nextAnchor()">
+        ${idx===ANCHORS.length-1?'Ver meu resultado →':'Próxima âncora →'}
+      </button>
+    </div>
+  `;
+}
+
+function selectScore(id,val,idx){
+  scores[id]=val;
+  document.querySelectorAll('.scale-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelector(`.scale-btn[data-val="${val}"]`).classList.add('selected');
+  document.getElementById('scale-hint').textContent=HINTS[val-1];
+  document.getElementById('btn-next').classList.add('ready');
+  clearTimeout(window._autoNext);
+  window._autoNext=setTimeout(()=>nextAnchor(),700);
+}
+
+function nextAnchor(){
+  if(!scores[ANCHORS[currentA].id])return;
+  currentA++;
+  if(currentA>=ANCHORS.length)showResult();
+  else renderAnchor(currentA);
+}
+
+function showResult(){
+  showPage('page-result');
+  // Ordena âncoras por score
+  const ranked=[...ANCHORS].map(a=>({...a,score:scores[a.id]||0})).sort((a,b)=>b.score-a.score);
+  const top=ranked[0];
+
+  // Renderiza lista
+  document.getElementById('anchors-result').innerHTML=ranked.map((a,i)=>{
+    const cls=i===0?'top-1':i===1?'top-2':i===2?'top-3':'';
+    const dots=Array.from({length:5},(_,d)=>d<a.score?`<span class="dot-filled" style="background:${a.color}"></span>`:`<span class="dot-empty"></span>`).join('');
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}º`;
+    return `
+      <div class="anchor-result-row ${cls}">
+        <span class="anchor-rank ${i===0?'gold':''}">${medal}</span>
+        <span class="anchor-result-icon">${a.icon}</span>
+        <div style="flex:1;">
+          <div class="anchor-result-name">${a.name}</div>
+          <div class="anchor-result-desc">${a.desc.split('.')[0]}.</div>
+        </div>
+        <div class="anchor-score-bar"><div class="bar-dots">${dots}</div><span class="score-num">${a.score}/5</span></div>
+      </div>`;
+  }).join('');
+
+  // Insight da âncora principal
+  document.getElementById('insight-box').innerHTML=`
+    <span class="insight-label">✦ SUA ÂNCORA PRINCIPAL · ${top.icon} ${top.name.toUpperCase()}</span>
+    <p>${top.insight} <br><br>Âncoras secundárias que também importam para você: <strong>${ranked[1].name}</strong> e <strong>${ranked[2].name}</strong>. Busque ambientes que honrem pelo menos suas 3 âncoras mais altas.</p>
+  `;
+
+  // Salva
+  const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');
+  u.ancoras={scores,topAnchor:top.id,completedAt:new Date().toISOString()};
+  localStorage.setItem('capsula_user',JSON.stringify(u));
+  try{const perfis=JSON.parse(localStorage.getItem('capsula_users')||'[]');const idx=perfis.findIndex(p=>p.uid===u.uid);if(idx>=0){perfis[idx].ancoras=u.ancoras;localStorage.setItem('capsula_users',JSON.stringify(perfis));}}catch(e){}
+}
+
+// Proteção de rota
+(function(){try{const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');if(!u.nome&&!u.apelido)window.location.href='index.html';}catch(e){}})();
+
+function generatePDF(){
+  const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');
+  const nome=u.apelido||u.nome||'Usuário';
+  const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  const ranked=[...ANCHORS].map(a=>({...a,score:scores[a.id]||0})).sort((a,b)=>b.score-a.score);
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Âncoras de Carreira — ${nome}</title>
+<style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,sans-serif;background:#07080C;color:#E8E6F0;-webkit-print-color-adjust:exact;print-color-adjust:exact;background-image:linear-gradient(rgba(46,196,160,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(46,196,160,0.04) 1px,transparent 1px);background-size:40px 40px;}
+.page{padding:40px;}.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.brand{font-size:13px;font-weight:700;color:#E8E6F0;}.brand span{color:#6C5FE6;}.date{font-size:9px;color:#6B6980;}
+.hero{background:#0D0F16;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:20px 24px;margin-bottom:16px;border-top:3px solid #2EC4A0;}
+.hero-tag{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;display:block;margin-bottom:4px;}
+.hero-title{font-size:30px;font-weight:800;color:#2EC4A0;margin-bottom:4px;}
+.hero-sub{font-size:12px;color:#aaa;}
+.row{display:flex;align-items:center;gap:10px;background:#0D0F16;border:1px solid rgba(255,255,255,0.06);border-radius:7px;padding:12px 16px;margin-bottom:6px;}
+.row.top{border-color:#2EC4A0;background:rgba(46,196,160,0.07);}
+.rank{font-size:11px;font-weight:700;width:28px;color:#6B6980;}
+.rank.g{color:#2EC4A0;}.icon{font-size:14px;}.rname{font-size:13px;font-weight:700;flex:1;}.rdesc{font-size:10px;color:#aaa;margin-top:1px;}
+.dots{display:flex;gap:3px;}.dot{width:7px;height:7px;border-radius:50%;}
+.insight{background:#0D0F16;border:1px solid rgba(46,196,160,0.25);border-radius:8px;padding:16px;margin-bottom:12px;border-top:2px solid #2EC4A0;}
+.insight-label{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#2EC4A0;margin-bottom:8px;display:block;}
+.insight p{font-size:11.5px;color:#C0BECE;line-height:1.65;}
+.footer{padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;}
+.footer p{font-size:9px;color:#353448;}
+@media print{body{background:#07080C!important;}@page{size:A4;margin:0;}.page{padding:28px;}}
+</style></head><body><div class="page">
+<div class="header"><div class="brand">Cápsula<span>.</span>Dev — Engenharia Comportamental</div><div class="date">Âncoras de Carreira — ${data}</div></div>
+<div class="hero"><span class="hero-tag">// núcleo profissional · ${nome.toUpperCase()}</span><div class="hero-title">Âncoras de Carreira</div><div class="hero-sub">O que você não abre mão na sua vida profissional.</div></div>
+${ranked.map((a,i)=>{const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}º`;const dots=Array.from({length:5},(_,d)=>`<span class="dot" style="background:${d<a.score?a.color:'#353448'}"></span>`).join('');return`<div class="row ${i===0?'top':''}"><span class="rank ${i===0?'g':''}">${medal}</span><span class="icon">${a.icon}</span><div style="flex:1;"><div class="rname">${a.name}</div><div class="rdesc">${a.desc.split('.')[0]}.</div></div><div class="dots">${dots}</div><span style="font-size:10px;color:#6B6980;margin-left:4px;">${a.score}/5</span></div>`;}).join('')}
+<div class="insight" style="margin-top:12px;"><span class="insight-label">✦ ÂNCORA PRINCIPAL · ${ranked[0].icon} ${ranked[0].name.toUpperCase()}</span><p>${ranked[0].insight}</p></div>
+<div class="footer"><p>// CÁPSULA DE DESENVOLVIMENTO · CONFIDENCIAL</p><p>capsuladedesenvolvimento.com.br</p></div>
+</div></body></html>`;
+  _imprimirPDF(html);
+}
+
+function _imprimirPDF(html){
+  var old=document.getElementById('_pdf_frame');if(old)old.remove();
+  var iframe=document.createElement('iframe');iframe.id='_pdf_frame';
+  iframe.setAttribute('style','position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;border:none;');
+  document.body.appendChild(iframe);
+  var doc=iframe.contentDocument||iframe.contentWindow.document;
+  doc.open();doc.write(html);doc.close();
+  iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='ancoras-carreira.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
+}
+</script>
+</body>
+</html>
