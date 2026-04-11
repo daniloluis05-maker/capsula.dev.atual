@@ -709,6 +709,14 @@ body::before {
      PAGE 3: RESULTADO
 ══════════════════════════════════════ -->
 <div class="page" id="page-result">
+
+  <!-- Nav de retorno — FIX CRÍTICO 2 -->
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);">
+    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;transition:all 0.2s;" onmouseover="this.style.color='var(--text)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border2)'">← Dashboard</a>
+    <span style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);">// resultado · disc</span>
+    <button onclick="generatePDF()" style="font-family:var(--mono);font-size:0.7rem;background:transparent;color:var(--muted);border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='var(--text)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border2)'">↓ PDF</button>
+  </nav>
+
   <div class="result-page">
 
     <div class="result-eyebrow">Seu DNA Comportamental</div>
@@ -1215,6 +1223,17 @@ async function showResult() {
   const userData = JSON.parse(localStorage.getItem('capsula_user') || '{}');
   userData.disc = { dominant, scores, completedAt: new Date().toISOString() };
   localStorage.setItem('capsula_user', JSON.stringify(userData));
+
+  // ── FIX CRÍTICO 1: Sincroniza resultado no array capsula_users[] ──
+  // Garante que trocar de perfil não apague o resultado
+  try {
+    const perfis = JSON.parse(localStorage.getItem('capsula_users') || '[]');
+    const idx = perfis.findIndex(function(p) { return p.uid === userData.uid; });
+    if (idx >= 0) {
+      perfis[idx].disc = userData.disc;
+      localStorage.setItem('capsula_users', JSON.stringify(perfis));
+    }
+  } catch(e) { /* silencioso */ }
 }
 
 // ══════════════════════════════════════
@@ -1432,119 +1451,169 @@ function generatePDF() {
     <span style="font-family:monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;border:1px solid ${profile.color}66;color:${profile.color};padding:3px 8px;border-radius:3px;display:inline-block;margin:2px;">${t}</span>
   `).join('');
 
-  // ── Monta HTML do relatório ──────────────────────────────────
-  const pdfHTML = `<!DOCTYPE html><html lang="pt-BR"><head>
-<meta charset="UTF-8"><title>Relatório DISC — ${nome} | Cápsula.Dev</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:Arial,Helvetica,sans-serif;background:#07080C;color:#E8E6F0;-webkit-print-color-adjust:exact;print-color-adjust:exact;background-image:linear-gradient(rgba(108,95,230,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(108,95,230,0.06) 1px,transparent 1px);background-size:40px 40px;}
-.page{width:100%;padding:44px;}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.08);}
-.brand{font-size:13px;font-weight:700;color:#E8E6F0;}.brand span{color:#6C5FE6;}
-.header-right{text-align:right;}
-.htag{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#E8603A;display:block;margin-bottom:2px;}
-.hdate{font-size:10px;color:#6B6980;}
-.hero{background:#0D0F16;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:22px 26px;margin-bottom:16px;border-top:3px solid ${profile.hex};}
-.htag2{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;display:block;margin-bottom:4px;}
-.hnome{font-size:11px;color:#6B6980;margin-bottom:2px;}
-.htitle{font-size:36px;font-weight:800;letter-spacing:-0.03em;line-height:1;color:${profile.hex};margin-bottom:5px;}
-.harch{font-size:12px;color:#aaa;}
-.dna{display:grid;grid-template-columns:200px 1fr;gap:14px;margin-bottom:14px;}
-.block{background:#0D0F16;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:18px;}
-.btag{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;display:block;margin-bottom:10px;}
-.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;margin-bottom:14px;}
-.pb{background:#0D0F16;padding:16px 18px;}
-.pb h4{font-size:9px;letter-spacing:0.09em;text-transform:uppercase;color:#6B6980;margin-bottom:6px;}
-.pb p{font-size:11.5px;color:#C0BECE;line-height:1.6;}
-.footer{padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;}
-.footer p{font-size:9px;color:#353448;letter-spacing:0.05em;}
-@media print{body{background:#07080C!important;}@page{size:A4;margin:0;}.page{padding:28px;}}
-</style></head><body><div class="page">
-<div class="header">
-  <div class="brand">Cápsula<span>.</span>Dev — Engenharia Comportamental</div>
-  <div class="header-right">
-    <span class="htag">// relatório · perfil disc</span>
-    <span class="hdate">Emitido em ${data}</span>
+  const gridBg = `
+    background-image: linear-gradient(rgba(108,95,230,0.07) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(108,95,230,0.07) 1px, transparent 1px);
+    background-size: 40px 40px;
+  `;
+
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8">
+  <title>Relatório DISC — ${nome} | Cápsula.Dev</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:'Outfit',sans-serif;
+      background:#07080C;color:#E8E6F0;
+      min-height:100vh;padding:0;
+      ${gridBg}
+    }
+    .page{width:794px;min-height:1123px;margin:0 auto;padding:48px;background:#07080C;position:relative;}
+    .page + .page{border-top:2px solid rgba(255,255,255,0.06);padding-top:48px;margin-top:0;}
+
+    /* HEADER */
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:36px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.08);}
+    .brand{display:flex;align-items:center;gap:8px;}
+    .brand-mark{width:28px;height:28px;background:#6C5FE6;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;}
+    .brand-name{font-size:14px;font-weight:700;color:#E8E6F0;letter-spacing:-0.01em;}
+    .brand-name span{color:#6C5FE6;}
+    .header-meta{text-align:right;}
+    .header-tag{font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#E8603A;margin-bottom:3px;display:block;}
+    .header-date{font-family:monospace;font-size:10px;color:#6B6980;}
+
+    /* HERO */
+    .hero{
+      background:#0D0F16;border:1px solid rgba(255,255,255,0.08);
+      border-radius:10px;padding:28px 32px;margin-bottom:20px;
+      position:relative;overflow:hidden;
+    }
+    .hero::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,${profile.hex},#6C5FE6);
+    }
+    .hero-tag{font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#6B6980;margin-bottom:6px;display:block;}
+    .hero-name{font-size:12px;color:#6B6980;margin-bottom:2px;}
+    .hero-title{font-size:42px;font-weight:800;letter-spacing:-0.04em;line-height:1;color:${profile.hex};margin-bottom:8px;}
+    .hero-arch{font-size:13px;color:#aaa;}
+    .hero-arch strong{color:#E8E6F0;}
+
+    /* DNA SECTION */
+    .dna-section{
+      display:grid;grid-template-columns:220px 1fr;gap:16px;margin-bottom:16px;
+    }
+    .radar-block{
+      background:#0D0F16;border:1px solid rgba(255,255,255,0.06);
+      border-radius:10px;padding:20px;display:flex;flex-direction:column;align-items:center;
+    }
+    .block-tag{font-family:monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;margin-bottom:12px;display:block;text-align:center;}
+    .bars-block{
+      background:#0D0F16;border:1px solid rgba(255,255,255,0.06);
+      border-radius:10px;padding:20px;
+    }
+    .traits-block{
+      background:#0D0F16;border:1px solid rgba(255,255,255,0.06);
+      border-radius:10px;padding:16px 20px;margin-bottom:16px;
+    }
+
+    /* PROFILE GRID */
+    .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;margin-bottom:16px;}
+    .profile-block{background:#0D0F16;padding:18px 20px;}
+    .profile-block h4{font-family:monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;margin-bottom:8px;}
+    .profile-block p{font-size:12px;color:#C0BECE;line-height:1.65;}
+
+    /* FOOTER */
+    .footer{margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;}
+    .footer p{font-family:monospace;font-size:9px;color:#353448;letter-spacing:0.06em;}
+    .footer-brand{font-size:11px;font-weight:700;color:#353448;}
+    .footer-brand span{color:#6C5FE6;}
+
+    /* INSIGHT BOX */
+    .insight-box{
+      background:#0D0F16;border:1px solid rgba(232,96,58,0.2);
+      border-radius:8px;padding:14px 18px;margin-bottom:16px;
+      border-left:3px solid ${profile.hex};
+    }
+    .insight-box p{font-size:12px;color:#aaa;line-height:1.65;}
+    .insight-box strong{color:#E8E6F0;}
+
+    @media print{
+      body{background:#07080C!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+      @page{margin:0;size:A4;}
+      .page{width:100%;padding:32px;}
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="brand">
+      <div class="brand-mark">C</div>
+      <div class="brand-name">Cápsula<span>.</span>Dev</div>
+    </div>
+    <div class="header-meta">
+      <span class="header-tag">// relatório · perfil disc</span>
+      <span class="header-date">EMITIDO EM ${data.toUpperCase()}</span>
+    </div>
   </div>
-</div>
-<div class="hero">
-  <span class="htag2">// dna comportamental · ${nome.toUpperCase()}</span>
-  <div class="hnome">${nome}</div>
-  <div class="htitle">${profile.title}</div>
-  <div class="harch">${( profile.archetype || '' ).replace(/<[^>]*>/g,'')}</div>
-</div>
-<div class="dna">
-  <div class="block" style="display:flex;flex-direction:column;align-items:center;">
-    <span class="btag" style="text-align:center;">RADAR DISC</span>
-    <svg width="164" height="164" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">${buildRadarPDF(scores)}</svg>
+
+  <div class="hero">
+    <span class="hero-tag">// dna comportamental · ${nome.toUpperCase()}</span>
+    <div class="hero-name">${nome}</div>
+    <div class="hero-title">${profile.title}</div>
+    <div class="hero-arch">${profile.arch.replace(/<[^>]*>/g,'')}</div>
   </div>
-  <div class="block">
-    <span class="btag">MAPEAMENTO DE DIMENSÕES</span>
-    ${barsHTML}
-    <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">${traitsHTML}</div>
+
+  <div class="dna-section">
+    <div class="radar-block">
+      <span class="block-tag">RADAR_DISC</span>
+      <svg width="180" height="180" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+        ${buildRadarPDF(scores)}
+      </svg>
+    </div>
+    <div class="bars-block">
+      <span class="block-tag">MAPEAMENTO DE DIMENSÕES</span>
+      ${barsHTML}
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
+        ${traitsHTML}
+      </div>
+    </div>
   </div>
+
+  <div class="insight-box">
+    <p><strong>Insight de perfil:</strong> ${profile.strengths}</p>
+  </div>
+
+  <div class="profile-grid">
+    <div class="profile-block">
+      <h4>// pontos fortes</h4>
+      <p>${profile.strengths}</p>
+    </div>
+    <div class="profile-block">
+      <h4>// pontos de atenção</h4>
+      <p>${profile.challenges}</p>
+    </div>
+    <div class="profile-block">
+      <h4>// ambiente ideal</h4>
+      <p>${profile.environment}</p>
+    </div>
+    <div class="profile-block">
+      <h4>// como se comunicar</h4>
+      <p>${profile.communication}</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>// CÁPSULA DE DESENVOLVIMENTO · ENGENHARIA COMPORTAMENTAL · CONFIDENCIAL</p>
+    <div class="footer-brand">Cápsula<span>.</span>Dev</div>
+  </div>
+
 </div>
-<div class="pgrid">
-  <div class="pb"><h4>// pontos fortes</h4><p>${profile.strengths}</p></div>
-  <div class="pb"><h4>// pontos de atenção</h4><p>${profile.challenges}</p></div>
-  <div class="pb"><h4>// ambiente ideal</h4><p>${profile.environment}</p></div>
-  <div class="pb"><h4>// como se comunicar</h4><p>${profile.communication}</p></div>
-</div>
-<div class="footer">
-  <p>// CÁPSULA DE DESENVOLVIMENTO · CONFIDENCIAL · USO PESSOAL</p>
-  <p>capsuladedesenvolvimento.com.br</p>
-</div>
-</div></body></html>`;
-
-  // ── Imprime via iframe (sem popup, sem bloqueio de browser) ──
-  _imprimirPDF(pdfHTML);
-}
-
-function _imprimirPDF(html) {
-  // Exibe feedback visual imediato
-  var btn = document.querySelector('.btn-share[onclick*="generatePDF"]');
-  var btnOriginal = btn ? btn.innerHTML : null;
-  if (btn) { btn.innerHTML = '⏳ Gerando PDF...'; btn.disabled = true; }
-
-  // Usa Blob URL + aba nova — método mais confiável para print em browsers modernos
-  // (doc.write() em iframe hidden não dispara onload de forma confiável no Chrome 90+/Firefox/Safari)
-  var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-  var blobURL = URL.createObjectURL(blob);
-
-  var printWin = window.open(blobURL, '_blank');
-
-  if (!printWin) {
-    // Popup bloqueado — fallback: download do HTML
-    if (btn) { btn.innerHTML = btnOriginal; btn.disabled = false; }
-    var a = document.createElement('a');
-    a.href = blobURL;
-    a.download = 'relatorio-disc.html';
-    a.click();
-    setTimeout(function () { URL.revokeObjectURL(blobURL); }, 5000);
-    return;
-  }
-
-  // Aguarda a página carregar na nova aba antes de disparar o print
-  printWin.addEventListener('load', function () {
-    setTimeout(function () {
-      try {
-        printWin.focus();
-        printWin.print();
-        // Restaura botão após o print ser acionado
-        printWin.addEventListener('afterprint', function () {
-          printWin.close();
-          URL.revokeObjectURL(blobURL);
-        });
-      } catch (err) {
-        // Fallback caso print falhe: mantém aba aberta para o usuário usar Ctrl+P
-        console.warn('Capsula PDF: print() falhou, use Ctrl+P na aba aberta.', err);
-      }
-      if (btn) { btn.innerHTML = btnOriginal; btn.disabled = false; }
-    }, 600);
-  });
-
-  // Limpeza de segurança após 60s
-  setTimeout(function () { URL.revokeObjectURL(blobURL); }, 60000);
+<script>window.onload=function(){setTimeout(function(){window.print();},400);}<\/script>
+</body></html>`);
+  w.document.close();
 }
 
 // ══════════════════════════════════════

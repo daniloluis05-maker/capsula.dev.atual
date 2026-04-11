@@ -176,18 +176,13 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="nav-section">
         <span class="nav-label">Principal</span>
         <a class="nav-item active" href="dashboard.html"><span class="nav-icon">⬡</span>Dashboard</a>
-        <a class="nav-item" href="#"><span class="nav-icon">◈</span>Minhas Matrizes</a>
-        <a class="nav-item" href="#"><span class="nav-icon">◎</span>Resultados</a>
-        <a class="nav-item" href="#"><span class="nav-icon">⬕</span>Histórico</a>
-      </div>
-      <div class="nav-section">
-        <span class="nav-label">Equipe</span>
-        <a class="nav-item" href="#"><span class="nav-icon">⬡</span>Minha Equipe</a>
-        <a class="nav-item" href="#"><span class="nav-icon">◈</span>Relatórios</a>
+        <a class="nav-item" href="disc.html"><span class="nav-icon">🎯</span>DISC</a>
+        <a class="nav-item" href="soar.html"><span class="nav-icon">🧭</span>SOAR</a>
+        <a class="nav-item" href="#resultados" onclick="scrollToSection('resultados')"><span class="nav-icon">◎</span>Resultados</a>
       </div>
       <div class="nav-section">
         <span class="nav-label">Conta</span>
-        <a class="nav-item" href="#"><span class="nav-icon">◇</span>Configurações</a>
+        <a class="nav-item" href="index.html#planos"><span class="nav-icon">◇</span>Planos</a>
         <button class="nav-item" onclick="logout()"><span class="nav-icon">↩</span>Sair</button>
       </div>
     </nav>
@@ -210,8 +205,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <div class="topbar-date" id="greeting-date">—</div>
       </div>
       <div class="topbar-actions">
-        <button class="btn-ghost">↓ Exportar</button>
-        <button class="btn-accent">+ Nova Matriz</button>
+        <button class="btn-ghost" onclick="exportarDados()">↓ Exportar</button>
+        <button class="btn-accent" onclick="novaMatriz()">+ Nova Matriz</button>
       </div>
     </div>
 
@@ -234,7 +229,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="stat-card" style="--stat-color:var(--D)">
         <span class="stat-tag">Plano Atual</span>
         <div class="stat-val" style="font-size:1.1rem;padding-top:0.3rem">Gratuito</div>
-        <div class="stat-sub action" onclick="alert('Em breve!')">Fazer upgrade →</div>
+        <div class="stat-sub action" onclick="window.location.href='index.html#planos'">Fazer upgrade →</div>
       </div>
     </div>
 
@@ -243,7 +238,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <span class="section-eyebrow">Eixo Individual</span>
         <h2>Matrizes de Autoconhecimento</h2>
       </div>
-      <span class="section-note">2 disponíveis no plano gratuito</span>
+      <span class="section-note">5 matrizes disponíveis</span>
     </div>
 
     <div class="matrices-grid">
@@ -273,45 +268,42 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         </div>
       </div>
 
-      <div class="matrix-card locked" style="--card-accent:var(--D)">
+      <div class="matrix-card" style="--card-accent:var(--D)" onclick="window.location.href='ikigai.html'">
         <div class="card-top">
-          <div class="card-glyph" style="background:rgba(232,96,58,0.06);border:1px solid rgba(232,96,58,0.08);">🌸</div>
-          <span class="lock-badge">PRO</span>
+          <div class="card-glyph" style="background:rgba(232,96,58,0.1);border:1px solid rgba(232,96,58,0.18);">🌸</div>
         </div>
         <span class="card-category">Propósito de Vida</span>
         <h3>Ikigai</h3>
         <p>A intersecção entre o que você ama, sabe fazer, o mundo precisa e o que te remunera.</p>
         <div class="card-foot">
-          <span class="card-status locked-text">Disponível no plano Pro</span>
-          <span class="card-arrow">🔒</span>
+          <span class="card-status" id="ikigai-status">Não iniciado</span>
+          <span class="card-arrow">→</span>
         </div>
       </div>
 
-      <div class="matrix-card locked" style="--card-accent:var(--S)">
+      <div class="matrix-card" style="--card-accent:var(--S)" onclick="window.location.href='ancoras.html'">
         <div class="card-top">
-          <div class="card-glyph" style="background:rgba(46,196,160,0.06);border:1px solid rgba(46,196,160,0.08);">⚓</div>
-          <span class="lock-badge">PRO</span>
+          <div class="card-glyph" style="background:rgba(46,196,160,0.1);border:1px solid rgba(46,196,160,0.18);">⚓</div>
         </div>
         <span class="card-category">Carreira</span>
         <h3>Âncoras de Carreira</h3>
         <p>Identifique o que você não abre mão profissionalmente. Clareza sobre seu núcleo de carreira.</p>
         <div class="card-foot">
-          <span class="card-status locked-text">Disponível no plano Pro</span>
-          <span class="card-arrow">🔒</span>
+          <span class="card-status" id="ancoras-status">Não iniciado</span>
+          <span class="card-arrow">→</span>
         </div>
       </div>
 
-      <div class="matrix-card locked" style="--card-accent:var(--C)">
+      <div class="matrix-card" style="--card-accent:var(--C)" onclick="window.location.href='johari.html'">
         <div class="card-top">
-          <div class="card-glyph" style="background:rgba(27,168,212,0.06);border:1px solid rgba(27,168,212,0.08);">🪟</div>
-          <span class="lock-badge">PRO</span>
+          <div class="card-glyph" style="background:rgba(27,168,212,0.1);border:1px solid rgba(27,168,212,0.18);">🪟</div>
         </div>
         <span class="card-category">Autopercepção</span>
         <h3>Janela de Johari</h3>
         <p>Autopercepção versus percepção dos outros. Ferramenta essencial para líderes e equipes.</p>
         <div class="card-foot">
-          <span class="card-status locked-text">Disponível no plano Pro</span>
-          <span class="card-arrow">🔒</span>
+          <span class="card-status" id="johari-status">Não iniciado</span>
+          <span class="card-arrow">→</span>
         </div>
       </div>
     </div>
@@ -384,8 +376,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <div class="prog-track"><div class="prog-fill" id="soar-fill" style="width:0%;background:var(--I);"></div></div>
         </div>
         <div class="progress-item">
-          <div class="prog-head"><span>Perfil completo</span><span class="prog-pct" id="total-pct">10%</span></div>
-          <div class="prog-track"><div class="prog-fill" id="total-fill" style="width:10%;background:var(--accent);"></div></div>
+          <div class="prog-head"><span>Perfil completo</span><span class="prog-pct" id="total-pct">2%</span></div>
+          <div class="prog-track"><div class="prog-fill" id="total-fill" style="width:2%;background:var(--accent);"></div></div>
         </div>
       </div>
     </div>
@@ -404,6 +396,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     <a href="soar.html" class="mobile-nav-item">
       <span class="mobile-nav-icon">🧭</span>
       <span>SOAR</span>
+    </a>
+    <a href="index.html#planos" class="mobile-nav-item">
+      <span class="mobile-nav-icon">◇</span>
+      <span>Planos</span>
     </a>
     <button class="mobile-nav-item" onclick="logout()">
       <span class="mobile-nav-icon">↩</span>
@@ -477,26 +473,49 @@ function loadMatrixState(userData){
   const soarData=userData.soar;
   const soarPct=soarData?Math.round(soarData.completionPct||0):0;
   const soarDone=soarPct>=80;
-  const total=discDone&&soarDone?2:discDone||soarDone?1:0;
+  const ikigaiDone=!!(userData.ikigai&&userData.ikigai.completedAt);
+  const ancorasDone=!!(userData.ancoras&&userData.ancoras.completedAt);
+  const johariDone=!!(userData.johari&&userData.johari.completedAt);
+
+  const total=[discDone,soarDone,ikigaiDone,ancorasDone,johariDone].filter(Boolean).length;
   document.getElementById('stat-matrizes').textContent=total;
-  const insights=discDone?(soarDone?2:1):0;
-  document.getElementById('stat-insights').textContent=insights;
-  if(insights>0)document.getElementById('stat-insights-sub').textContent=insights===1?'1 relatório disponível':'2 relatórios disponíveis';
-  if(discDone){const el=document.getElementById('disc-status');if(el){el.textContent='Concluído ✓';el.classList.add('done');}}
-  if(soarDone){const el=document.getElementById('soar-status');if(el){el.textContent='Concluído ✓';el.classList.add('done');}}
-  else if(soarPct>0){const el=document.getElementById('soar-status');if(el){el.textContent='Em andamento · '+soarPct+'%';}}
+  document.getElementById('stat-insights').textContent=total;
+  if(total>0){
+    const sub=total===1?'1 relatório disponível':`${total} relatórios disponíveis`;
+    document.getElementById('stat-insights-sub').textContent=sub;
+  }
+
+  function setStatus(id,done,inProgress){
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(done){el.textContent='Concluído ✓';el.classList.add('done');}
+    else if(inProgress){el.textContent=inProgress;}
+  }
+  setStatus('disc-status',discDone);
+  setStatus('soar-status',soarDone,soarPct>0?`Em andamento · ${soarPct}%`:null);
+  setStatus('ikigai-status',ikigaiDone);
+  setStatus('ancoras-status',ancorasDone);
+  setStatus('johari-status',johariDone);
+
+  // Progresso
   const discP=discDone?100:0;
-  const totalP=Math.min(Math.round(10+(discP*0.45)+(soarPct*0.45)),100);
+  const totalP=Math.min(Math.round(10+(total/5)*90),100);
   setProgress('disc-pct','disc-fill',discP);
   setProgress('soar-pct','soar-fill',soarPct);
   setProgress('total-pct','total-fill',totalP);
+
+  // Atividades
   const activities=[];
   if(discDone)activities.push({icon:'🎯',label:'Perfil DISC concluído',date:userData.disc.completedAt,color:'var(--D)'});
   if(soarDone)activities.push({icon:'🧭',label:'Análise SOAR concluída',date:userData.soar.completedAt,color:'var(--I)'});
-  else if(soarPct>0)activities.push({icon:'🧭',label:'SOAR em andamento ('+soarPct+'%)',date:userData.soar.completedAt||new Date().toISOString(),color:'var(--I)'});
+  else if(soarPct>0)activities.push({icon:'🧭',label:`SOAR em andamento (${soarPct}%)`,date:userData.soar.completedAt||new Date().toISOString(),color:'var(--I)'});
+  if(ikigaiDone)activities.push({icon:'🌸',label:'Ikigai concluído',date:userData.ikigai.completedAt,color:'var(--D)'});
+  if(ancorasDone)activities.push({icon:'⚓',label:'Âncoras de Carreira concluídas',date:userData.ancoras.completedAt,color:'var(--S)'});
+  if(johariDone)activities.push({icon:'🪟',label:'Janela de Johari concluída',date:userData.johari.completedAt,color:'var(--C)'});
+
   if(activities.length>0){
     const list=document.getElementById('activity-list');
-    list.innerHTML=activities.map(a=>{
+    list.innerHTML=activities.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(a=>{
       const d=new Date(a.date);
       const lbl=d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
       return '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0;border-bottom:1px solid var(--border);">'+
@@ -546,6 +565,63 @@ function logout(){
 }
 
 initDate();loadUser();
+
+// ── FIX CRÍTICO 2: Recarrega estado ao voltar do DISC/SOAR ────
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') {
+    const raw = localStorage.getItem('capsula_user');
+    if (raw) loadMatrixState(JSON.parse(raw));
+  }
+});
+
+// Também ouve mudanças no localStorage (caso abra em outra aba)
+window.addEventListener('storage', function(e) {
+  if (e.key === 'capsula_user' && e.newValue) {
+    loadMatrixState(JSON.parse(e.newValue));
+  }
+});
+
+// ── FIX CRÍTICO 3: Botão Nova Matriz ─────────────────────────
+function novaMatriz() {
+  // Scrolla para a seção de matrizes disponíveis
+  const grid = document.querySelector('.matrices-grid');
+  if (grid) {
+    grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Pisca levemente para indicar ao usuário
+    grid.style.transition = 'outline 0.3s';
+    grid.style.outline = '1px solid var(--accent)';
+    setTimeout(function() { grid.style.outline = 'none'; }, 1200);
+  }
+}
+
+// ── FIX CRÍTICO 3: Botão Exportar ────────────────────────────
+function exportarDados() {
+  const raw = localStorage.getItem('capsula_user');
+  if (!raw) return;
+  const u = JSON.parse(raw);
+  const exp = {
+    exportado_em: new Date().toISOString(),
+    perfil: { nome: u.nome, apelido: u.apelido, objetivo: u.objetivo, criado_em: u.criado_em },
+    disc: u.disc || null,
+    soar: u.soar || null,
+    ikigai: u.ikigai || null,
+    ancoras: u.ancoras || null,
+    johari: u.johari || null
+  };
+  const blob = new Blob([JSON.stringify(exp, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'capsula-' + (u.apelido || u.nome || 'perfil').replace(/\s+/g,'-').toLowerCase() + '.json';
+  a.click();
+  setTimeout(function() { URL.revokeObjectURL(url); }, 3000);
+}
+
+// ── Helper: scroll para seção ─────────────────────────────────
+function scrollToSection(id) {
+  var el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
 </script>
 </body>
 </html>
