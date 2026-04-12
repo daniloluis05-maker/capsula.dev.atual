@@ -240,7 +240,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <span class="section-eyebrow">Eixo Individual</span>
         <h2>Matrizes de Autoconhecimento</h2>
       </div>
-      <span class="section-note">5 matrizes disponíveis</span>
+      <span class="section-note">6 matrizes disponíveis</span>
     </div>
 
     <div class="matrices-grid">
@@ -305,6 +305,19 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <p>Autopercepção versus percepção dos outros. Ferramenta essencial para líderes e equipes.</p>
         <div class="card-foot">
           <span class="card-status" id="johari-status">Não iniciado</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="matrix-card" style="--card-accent:var(--I)" onclick="window.location.href='bigfive.html'">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(108,95,230,0.1);border:1px solid rgba(108,95,230,0.18);">🧠</div>
+        </div>
+        <span class="card-category">Psicometria Científica</span>
+        <h3>Big Five — OCEAN</h3>
+        <p>O modelo mais validado da psicologia da personalidade. Mede 5 traços fundamentais: Abertura, Conscienciosidade, Extroversão, Amabilidade e Neuroticismo.</p>
+        <div class="card-foot">
+          <span class="card-status" id="bigfive-status">Não iniciado</span>
           <span class="card-arrow">→</span>
         </div>
       </div>
@@ -478,8 +491,9 @@ function loadMatrixState(userData){
   const ikigaiDone=!!(userData.ikigai&&userData.ikigai.completedAt);
   const ancorasDone=!!(userData.ancoras&&userData.ancoras.completedAt);
   const johariDone=!!(userData.johari&&userData.johari.completedAt);
+  const bigfiveDone=!!(userData.bigfive&&userData.bigfive.completedAt);
 
-  const total=[discDone,soarDone,ikigaiDone,ancorasDone,johariDone].filter(Boolean).length;
+  const total=[discDone,soarDone,ikigaiDone,ancorasDone,johariDone,bigfiveDone].filter(Boolean).length;
   document.getElementById('stat-matrizes').textContent=total;
   document.getElementById('stat-insights').textContent=total;
   if(total>0){
@@ -498,6 +512,7 @@ function loadMatrixState(userData){
   setStatus('ikigai-status',ikigaiDone);
   setStatus('ancoras-status',ancorasDone);
   setStatus('johari-status',johariDone);
+  setStatus('bigfive-status',bigfiveDone);
 
   // Progresso
   const discP=discDone?100:0;
@@ -514,6 +529,7 @@ function loadMatrixState(userData){
   if(ikigaiDone)activities.push({icon:'🌸',label:'Ikigai concluído',date:userData.ikigai.completedAt,color:'var(--D)'});
   if(ancorasDone)activities.push({icon:'⚓',label:'Âncoras de Carreira concluídas',date:userData.ancoras.completedAt,color:'var(--S)'});
   if(johariDone)activities.push({icon:'🪟',label:'Janela de Johari concluída',date:userData.johari.completedAt,color:'var(--C)'});
+  if(bigfiveDone)activities.push({icon:'🧠',label:'Big Five — OCEAN concluído',date:userData.bigfive.completedAt,color:'var(--I)'});
 
   if(activities.length>0){
     const list=document.getElementById('activity-list');
