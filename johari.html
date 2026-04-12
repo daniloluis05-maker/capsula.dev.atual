@@ -348,7 +348,7 @@ function showResult(){
 }
 
 // Proteção de rota
-(function(){try{const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');if(!u.nome&&!u.apelido)window.location.href='index.html';}catch(e){}})();
+document.addEventListener('DOMContentLoaded',function(){try{const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');if(!u.nome&&!u.apelido)window.location.href='index.html';}catch(e){}});
 
 function generatePDF(){
   const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');
