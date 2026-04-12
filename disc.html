@@ -747,6 +747,7 @@ body::before {
         ↗ Compartilhar
       </button>
     </div>
+    <div id="sync-status" style="font-family:var(--mono,monospace);font-size:0.6rem;letter-spacing:0.08em;color:var(--muted,#666);text-align:center;margin-top:0.75rem;min-height:1rem;transition:opacity 0.3s;opacity:0;"></div>
 
   </div>
 </div>
@@ -1315,11 +1316,27 @@ async function saveResultToSupabase({ dominant, scores }) {
       completed_at: new Date().toISOString(),
     }, { onConflict: 'user_id,matrix' });
 
-    if (error) console.error('[Cápsula] Erro ao salvar resultado:', error.message);
-    else console.info('[Cápsula] Resultado DISC salvo no Supabase ✓');
+    if (error) {
+      console.error('[Cápsula] Erro ao salvar resultado:', error.message);
+      setSyncStatus('Erro ao sincronizar resultado.', true);
+    } else {
+      setSyncStatus('Resultado sincronizado ✓');
+    }
 
   } catch (err) {
     console.error('[Cápsula] saveResultToSupabase falhou:', err);
+    setSyncStatus('Erro ao sincronizar resultado.', true);
+  }
+}
+
+function setSyncStatus(msg, isError) {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color   = isError ? 'var(--danger, #e24b4a)' : 'var(--muted, #666)';
+  el.style.opacity = '1';
+  if (!isError) {
+    setTimeout(() => { el.style.opacity = '0'; }, 3000);
   }
 }
 
@@ -1638,8 +1655,23 @@ function shareResult() {
   if (navigator.share) {
     navigator.share({ title: 'Meu Perfil DISC', text });
   } else {
-    navigator.clipboard.writeText(text).then(() => alert('Resultado copiado! Cole onde quiser.'));
+    navigator.clipboard.writeText(text).then(() => showCopyToast('Resultado copiado! Cole onde quiser.'));
   }
+}
+
+function showCopyToast(msg) {
+  let t = document.getElementById('_copy-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = '_copy-toast';
+    t.style.cssText = 'position:fixed;bottom:2rem;right:2rem;background:var(--surface2,#1e1e1e);border:1px solid var(--border2,#333);border-radius:8px;padding:0.75rem 1.1rem;font-size:0.82rem;color:var(--text,#fff);z-index:9999;opacity:0;transform:translateY(12px);transition:opacity 0.25s,transform 0.25s;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = '✓  ' + msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateY(0)';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(12px)'; }, 2800);
 }
 </script>
 

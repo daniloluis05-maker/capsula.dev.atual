@@ -538,6 +538,7 @@ function renderQuadrant(idx) {
         id="q-${question.id}"
         placeholder="${question.placeholder}"
         maxlength="400"
+        aria-label="${question.prompt}"
         oninput="onInputChange()"
         style="--q-color:${q.color}"
       >${saved[question.id] || ''}</textarea>
@@ -678,7 +679,11 @@ function showResult() {
   const userData = JSON.parse(localStorage.getItem('capsula_user') || '{}');
   userData.soar  = { answers, completionPct, completedAt: new Date().toISOString() };
   localStorage.setItem('capsula_user', JSON.stringify(userData));
-  localStorage.removeItem('capsula_soar_draft');
+  try {
+    const _ud = JSON.parse(localStorage.getItem('capsula_user') || '{}');
+    delete _ud.soar_draft;
+    localStorage.setItem('capsula_user', JSON.stringify(_ud));
+  } catch(e) {}
 
   // ── FIX CRÍTICO 1: Sincroniza resultado no array capsula_users[] ──
   try {
@@ -871,7 +876,7 @@ function shareResult() {
   if (navigator.share) {
     navigator.share({ title: 'Minha Análise SOAR', text });
   } else {
-    navigator.clipboard.writeText(text).then(() => alert('Link copiado! Cole onde quiser.'));
+    navigator.clipboard.writeText(text).then(() => showCopyToast('Link copiado! Cole onde quiser.'));
   }
 }
 
@@ -900,10 +905,11 @@ function initPage() {
   }
 
   // Restaura rascunho salvo, se houver
-  const draft = localStorage.getItem('capsula_soar_draft');
+  const _u = JSON.parse(localStorage.getItem('capsula_user') || '{}');
+  const draft = _u.soar_draft || null;
   if (draft) {
     try {
-      const saved = JSON.parse(draft);
+      const saved = draft;
       answers = saved;
     } catch(e) {}
   }
@@ -912,7 +918,9 @@ function initPage() {
 // Auto-save rascunho a cada mudança + feedback visual
 function autosaveDraft() {
   try {
-    localStorage.setItem('capsula_soar_draft', JSON.stringify(answers));
+    const u = JSON.parse(localStorage.getItem('capsula_user') || '{}');
+    u.soar_draft = answers;
+    localStorage.setItem('capsula_user', JSON.stringify(u));
     // Feedback visual sutil no contador
     const counter = document.getElementById('form-counter');
     if (counter) {
@@ -926,6 +934,21 @@ function autosaveDraft() {
       }, 1800);
     }
   } catch(e) {}
+}
+
+function showCopyToast(msg) {
+  let t = document.getElementById('_copy-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = '_copy-toast';
+    t.style.cssText = 'position:fixed;bottom:2rem;right:2rem;background:var(--surface2,#1e1e1e);border:1px solid var(--border2,#333);border-radius:8px;padding:0.75rem 1.1rem;font-size:0.82rem;color:var(--text,#fff);z-index:9999;opacity:0;transform:translateY(12px);transition:opacity 0.25s,transform 0.25s;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = '✓  ' + msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateY(0)';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(12px)'; }, 2800);
 }
 
 document.addEventListener('DOMContentLoaded', initPage);

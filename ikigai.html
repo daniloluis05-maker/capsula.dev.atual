@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://capsula.dev/ikigai.html">
+<meta property="og:title" content="Ikigai | Cápsula de Desenvolvimento">
+<meta property="og:description" content="Encontre sua razão de ser. Mapeie a interseção entre o que você ama, sabe fazer, o que o mundo precisa e o que pode gerar renda.">
+<link rel="canonical" href="https://capsula.dev/ikigai.html">
+<meta name="robots" content="noindex, nofollow">
 <title>Ikigai | Cápsula de Desenvolvimento</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -260,7 +266,7 @@ function renderQuadrant(idx){
             <span class="q-num" style="color:${q.color}">${String(qi+1).padStart(2,'0')}</span>
             ${quest.prompt}
           </div>
-          <textarea class="question-input" id="q-${quest.id}" placeholder="${quest.placeholder}" maxlength="400" oninput="onInput()" style="border-color:${q.color}22;"
+          <textarea class="question-input" id="q-${quest.id}" placeholder="${quest.placeholder}" maxlength="400" aria-label="${quest.prompt}" oninput="onInput()" style="border-color:${q.color}22;"
             onfocus="this.style.borderColor='${q.color}'" onblur="this.style.borderColor='${q.color}22'"
           >${saved[quest.id]||''}</textarea>
           <div class="char-count" id="cc-${quest.id}">${(saved[quest.id]||'').length}/400</div>
