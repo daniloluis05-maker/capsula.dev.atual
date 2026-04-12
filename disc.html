@@ -12,6 +12,7 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <!-- Supabase JS (Auth + DB) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -1362,7 +1363,10 @@ function setSyncStatus(msg, isError) {
 const OB_KEY = 'capsula_onboarding_done';
 
 function obInit() {
-  const done = localStorage.getItem(OB_KEY);
+  const _raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+  const _uid = _raw ? (JSON.parse(_raw).uid || '') : '';
+  const _key = OB_KEY + (_uid ? '_' + _uid : '');
+  const done = localStorage.getItem(_key);
   if (!done) {
     document.getElementById('onboarding-overlay').classList.add('show');
   }
@@ -1374,7 +1378,10 @@ function obNext(step) {
 }
 
 function obFinish() {
-  localStorage.setItem(OB_KEY, '1');
+  const _raw2 = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+  const _uid2 = _raw2 ? (JSON.parse(_raw2).uid || '') : '';
+  const _key2 = OB_KEY + (_uid2 ? '_' + _uid2 : '');
+  localStorage.setItem(_key2, '1');
   document.getElementById('onboarding-overlay').classList.remove('show');
 }
 

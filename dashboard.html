@@ -12,6 +12,7 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
@@ -559,7 +560,21 @@ function showToast(nome){
 }
 
 function logout(){
-  // Remove apenas o usuário ativo, preserva a lista de perfis do device
+  // Limpa dados do usuário ativo (preserva lista de perfis do device)
+  try {
+    // Remove soar_draft e ikigai_draft do objeto antes de apagar
+    const raw = localStorage.getItem('capsula_user');
+    if (raw) {
+      const u = JSON.parse(raw);
+      // Limpa rascunhos vinculados ao usuário
+      delete u.soar_draft;
+      delete u.ikigai_draft;
+      // Atualiza o perfil na lista capsula_users antes de remover o ativo
+      const perfis = JSON.parse(localStorage.getItem('capsula_users') || '[]');
+      const idx = perfis.findIndex(p => p.uid === u.uid);
+      if (idx >= 0) { perfis[idx] = u; localStorage.setItem('capsula_users', JSON.stringify(perfis)); }
+    }
+  } catch(e) {}
   sessionStorage.removeItem('capsula_user');
   localStorage.removeItem('capsula_user');
   window.location.href='index.html';
