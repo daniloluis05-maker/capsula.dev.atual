@@ -1,7 +1,11 @@
 // ─────────────────────────────────────────────────────────────
-// capsula.dev · js/config.js
+// capsula.dev · config.js
 // Fonte única das credenciais Supabase.
 // Para rotacionar a chave: edite APENAS este arquivo.
+//
+// ATENÇÃO: esta é a chave pública (anon key). Certifique-se de
+// que as políticas RLS (Row Level Security) estejam ativas no
+// painel do Supabase para proteger seus dados.
 // ─────────────────────────────────────────────────────────────
 
 window.CAPSULA_CONFIG = {

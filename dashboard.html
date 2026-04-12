@@ -14,7 +14,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -419,8 +418,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 </div>
 
 <script>
-const SUPABASE_URL=window.CAPSULA_CONFIG.supabaseUrl;
-const SUPABASE_KEY=window.CAPSULA_CONFIG.supabaseKey;
+const SUPABASE_URL='https://dfnmofzbpdmnvlyowtmp.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbm1vZnpicGRtbnZseW93dG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NjQ4MzIsImV4cCI6MjA5MTE0MDgzMn0.KXcRmhpPFwpQGXkYIVjXPJvMh5w1KpIlZiwyIEUBrvU';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 function initDate(){
