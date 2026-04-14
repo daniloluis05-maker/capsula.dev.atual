@@ -180,7 +180,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <a class="nav-item active" href="dashboard.html"><span class="nav-icon">⬡</span>Dashboard</a>
         <a class="nav-item" href="disc.html"><span class="nav-icon">🎯</span>DISC</a>
         <a class="nav-item" href="soar.html"><span class="nav-icon">🧭</span>SOAR</a>
-        <a class="nav-item" href="swot.html"><span class="nav-icon">📊</span>SWOT Pessoal</a>
         <a class="nav-item" href="#resultados" onclick="scrollToSection('resultados')"><span class="nav-icon">◎</span>Resultados</a>
       </div>
       <div class="nav-section">
@@ -322,19 +321,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <span class="card-arrow">→</span>
         </div>
       </div>
-
-      <div class="matrix-card" style="--card-accent:var(--S)" onclick="window.location.href='swot.html'">
-        <div class="card-top">
-          <div class="card-glyph" style="background:rgba(46,196,160,0.1);border:1px solid rgba(46,196,160,0.18);">📊</div>
-        </div>
-        <span class="card-category">Diagnóstico Integrado</span>
-        <h3>SWOT Pessoal</h3>
-        <p>Cruze todos os seus resultados — DISC, OCEAN, SOAR — em uma análise estratégica com plano de ação orientado por IA.</p>
-        <div class="card-foot">
-          <span class="card-status" id="swot-status">Não iniciado</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </div>
     </div>
 
     <div class="section-header">
@@ -426,10 +412,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <span class="mobile-nav-icon">🧭</span>
       <span>SOAR</span>
     </a>
-    <a href="swot.html" class="mobile-nav-item">
-      <span class="mobile-nav-icon">📊</span>
-      <span>SWOT</span>
-    </a>
     <a href="index.html#planos" class="mobile-nav-item">
       <span class="mobile-nav-icon">◇</span>
       <span>Planos</span>
@@ -510,9 +492,8 @@ function loadMatrixState(userData){
   const ancorasDone=!!(userData.ancoras&&userData.ancoras.completedAt);
   const johariDone=!!(userData.johari&&userData.johari.completedAt);
   const bigfiveDone=!!(userData.bigfive&&userData.bigfive.completedAt);
-  const swotDone=!!(userData.swot&&userData.swot.completedAt);
 
-  const total=[discDone,soarDone,ikigaiDone,ancorasDone,johariDone,bigfiveDone,swotDone].filter(Boolean).length;
+  const total=[discDone,soarDone,ikigaiDone,ancorasDone,johariDone,bigfiveDone].filter(Boolean).length;
   document.getElementById('stat-matrizes').textContent=total;
   document.getElementById('stat-insights').textContent=total;
   if(total>0){
@@ -532,7 +513,6 @@ function loadMatrixState(userData){
   setStatus('ancoras-status',ancorasDone);
   setStatus('johari-status',johariDone);
   setStatus('bigfive-status',bigfiveDone);
-  setStatus('swot-status',swotDone);
 
   // Progresso
   const discP=discDone?100:0;
@@ -550,7 +530,6 @@ function loadMatrixState(userData){
   if(ancorasDone)activities.push({icon:'⚓',label:'Âncoras de Carreira concluídas',date:userData.ancoras.completedAt,color:'var(--S)'});
   if(johariDone)activities.push({icon:'🪟',label:'Janela de Johari concluída',date:userData.johari.completedAt,color:'var(--C)'});
   if(bigfiveDone)activities.push({icon:'🧠',label:'Big Five — OCEAN concluído',date:userData.bigfive.completedAt,color:'var(--I)'});
-  if(swotDone)activities.push({icon:'📊',label:'SWOT Pessoal concluída',date:userData.swot.completedAt,color:'var(--S)'});
 
   if(activities.length>0){
     const list=document.getElementById('activity-list');
