@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C6FF7"/>
+      <stop offset="100%" stop-color="#4FC9A0"/>
+    </linearGradient>
+  </defs>
+  <!-- rounded square background -->
+  <rect width="64" height="64" rx="14" fill="#0A0A0F"/>
+  <!-- Letter C with gradient -->
+  <text x="32" y="46" font-family="Georgia,serif" font-size="42" font-weight="700"
+        text-anchor="middle" fill="url(#g)">C</text>
+</svg>
