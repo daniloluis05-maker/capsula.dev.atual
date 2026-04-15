@@ -16,11 +16,25 @@
 <meta name="twitter:description" content="Matrizes de autoconhecimento e performance coletiva. Transforme seu DNA comportamental em dados de alta performance.">
 <link rel="canonical" href="https://capsula.dev/">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+<!-- #4: Content Security Policy -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src 'self' https://fonts.gstatic.com;
+  img-src 'self' data: https:;
+  connect-src 'self' https://*.supabase.co;
+  frame-ancestors 'none';
+">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- #7: Google Fonts com subset explícito (versão estável via URL imutável) -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap&v=2&v=2" rel="stylesheet">
+<!-- #7: Supabase com versão fixada -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
 <script src="js/config.js"></script>
+<!-- #6: Cliente Supabase centralizado -->
+<script src="js/db.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -470,10 +484,7 @@ footer p{font-size:0.7rem;color:var(--muted2);font-family:var(--mono);}
 </div>
 
 <script>
-const SUPABASE_URL=window.CAPSULA_CONFIG.supabaseUrl;
-const SUPABASE_KEY=window.CAPSULA_CONFIG.supabaseKey;
-var _db=null;
-function getDB(){if(!_db){if(typeof supabase==='undefined')throw new Error('SDK não carregou.');_db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);}return _db;}
+// #6: Cliente Supabase centralizado em js/db.js
 function gerarUUID(){return([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16));}
 function getNomeExibido(u){if(!u)return'Usuário';if(u.apelido&&u.apelido.trim())return u.apelido.trim();if(u.nome&&u.nome.trim())return u.nome.trim();return'Usuário';}
 document.getElementById('ano-atual').textContent=new Date().getFullYear();
@@ -607,7 +618,7 @@ if(form){form.addEventListener('submit',async function(e){
   var nomeExibido=getNomeExibido({nome:nome,apelido:apelido});
   setLoading(true);
   try{
-    var db=getDB();
+    var db=capsulaDB.getDB();
     var result=await db.from('leads').insert([{nome,apelido:nomeExibido,whatsapp:whatsapp||null,objetivo,criado_em:new Date().toISOString()}]);
     // Trata erro do Supabase — mas NÃO bloqueia o cadastro local
     // RLS pode bloquear INSERT sem impedir o uso da plataforma

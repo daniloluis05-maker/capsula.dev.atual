@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co; frame-ancestors 'none';">
 <title>Perfil DISC | Cápsula de Desenvolvimento</title>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://capsula.dev/disc.html">
@@ -13,10 +14,11 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
 <!-- Supabase JS (Auth + DB) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
 <script src="js/config.js"></script>
+<script src="js/db.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1242,56 +1244,15 @@ async function showResult() {
 // ══════════════════════════════════════
 // SUPABASE AUTH + PERSISTÊNCIA
 // ══════════════════════════════════════
-const SUPABASE_URL = window.CAPSULA_CONFIG.supabaseUrl;
+// #6: Cliente Supabase e helpers de auth centralizados em js/db.js → window.capsulaDB
+// getDB(), getSession(), loginWithMagicLink(), loginWithOAuth() disponíveis via window.capsulaDB
 
 // ── UTILITÁRIO: nome de exibição ──────────────────────────────
-// Regra: apelido → primeiro nome → nome completo (nunca vazio)
 function getNomeExibido(userData) {
   if (!userData) return 'Usuário';
   if (userData.apelido && userData.apelido.trim()) return userData.apelido.trim();
   if (userData.nome && userData.nome.trim()) return userData.nome.trim();
   return 'Usuário';
-}
-const SUPABASE_KEY = window.CAPSULA_CONFIG.supabaseKey;
-
-// Inicializa cliente Supabase (carregado via CDN no <head>)
-// SDK carregado via CDN no <head> da página
-let _supabase = null;
-function getSupabase() {
-  if (_supabase) return _supabase;
-  if (typeof window.supabase !== 'undefined') {
-    _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  }
-  return _supabase;
-}
-
-// Retorna sessão atual (null se não logado)
-async function getSession() {
-  const sb = getSupabase();
-  if (!sb) return null;
-  const { data: { session } } = await sb.auth.getSession();
-  return session;
-}
-
-// Login com magic link
-async function loginWithMagicLink(email) {
-  const sb = getSupabase();
-  if (!sb) return { error: 'Supabase não configurado' };
-  const { error } = await sb.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: window.location.href }
-  });
-  return { error };
-}
-
-// Login com OAuth (Google/GitHub)
-async function loginWithOAuth(provider = 'google') {
-  const sb = getSupabase();
-  if (!sb) return;
-  await sb.auth.signInWithOAuth({
-    provider,
-    options: { redirectTo: window.location.href }
-  });
 }
 
 // Salva resultado na tabela `avaliations`
@@ -1299,10 +1260,10 @@ async function loginWithOAuth(provider = 'google') {
 //   avaliations(id, user_id, matrix, dominant, scores jsonb, completed_at timestamptz)
 async function saveResultToSupabase({ dominant, scores }) {
   try {
-    const sb = getSupabase();
+    const sb = capsulaDB.getDB();
     if (!sb) return;
 
-    const session = await getSession();
+    const session = await capsulaDB.getSession();
     if (!session) {
       // Sem sessão: salva apenas local (já feito acima)
       console.warn('[Cápsula] Usuário não autenticado — resultado salvo apenas localmente.');
@@ -1343,7 +1304,7 @@ function setSyncStatus(msg, isError) {
 
 // Verifica autenticação ao carregar e escuta mudanças de sessão
 (async () => {
-  const sb = getSupabase();
+  const sb = capsulaDB.getDB();
   if (!sb) return;
 
   // Listener de auth: atualiza UI se necessário
@@ -1505,7 +1466,7 @@ function generatePDF() {
   w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
   <meta charset="UTF-8">
   <title>Relatório DISC — ${nome} · Cápsula.Dev</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
     body{
