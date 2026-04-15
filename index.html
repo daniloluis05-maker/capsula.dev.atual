@@ -360,12 +360,12 @@
   .step p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
 
   /* EIXOS */
+  .eixos-section { background: var(--surface); padding: 6rem 5%; }
+  .eixos-inner { max-width: 1100px; margin: 0 auto; }
   .eixos-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
-    max-width: 1100px;
-    margin: 0 auto;
   }
   .eixo-card {
     background: var(--surface);
@@ -389,6 +389,7 @@
     font-size: 1.5rem;
     margin-bottom: 0.35rem;
   }
+  .eixo-title--team { color: var(--accent2); }
   .eixo-subtitle { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; }
   .eixo-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
   .eixo-list li {
@@ -408,12 +409,12 @@
 
   /* PLANOS */
   .planos { background: var(--surface); }
+  .planos-inner { max-width: 1000px; margin: 0 auto; }
   .planos-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1.5rem;
-    max-width: 1000px;
-    margin: 3rem auto 0;
+    margin-top: 3rem;
   }
   .plano-card {
     background: var(--bg);
@@ -483,6 +484,7 @@
   .plano-btn-filled:hover { opacity: 0.85; }
 
   /* CTA FINAL */
+  .cta-final-section { text-align: center; padding: 7rem 5%; }
   .cta-final {
     text-align: center;
     max-width: 680px;
@@ -490,6 +492,11 @@
   }
   .cta-final .section-title { font-size: clamp(2rem, 4vw, 3.2rem); }
   .cta-final p { color: var(--muted); margin: 1rem 0 2.5rem; font-size: 1.05rem; }
+
+  /* Seções com section-label centralizado */
+  .section-header--centered { text-align: center; margin: 0 auto 0; }
+  .section-header--centered .section-label { text-align: center; display: block; }
+  .section-header--centered .section-desc { margin: 0 auto; }
 
   /* FOOTER */
   footer {
@@ -556,6 +563,14 @@
   }
   .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
   .form-group select option { background: var(--surface2); }
+  .form-group input.input--error,
+  .form-group select.input--error { border-color: var(--accent3); }
+  .field-error {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--accent3);
+    margin-top: 0.3rem;
+  }
   .form-submit {
     width: 100%;
     background: var(--accent);
@@ -571,6 +586,16 @@
     transition: opacity 0.2s;
   }
   .form-submit:hover { opacity: 0.85; }
+  .form-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .form-terms {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--muted2);
+    margin-top: 1rem;
+  }
   .success-msg {
     display: none;
     text-align: center;
@@ -579,6 +604,17 @@
   .success-msg .check-big { font-size: 2.5rem; margin-bottom: 0.75rem; display: block; }
   .success-msg h3 { font-family: var(--serif); font-size: 1.4rem; margin-bottom: 0.4rem; }
   .success-msg p { color: var(--muted); font-size: 0.9rem; }
+
+  .section-label--centered { text-align: center; display: block; }
+
+  /* Animação de entrada via classe — não manipulada via JS inline */
+  .animate-in {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .animate-in.is-visible {
+    opacity: 1;
+  }
 
   @media (max-width: 768px) {
     nav { padding: 1rem 5%; }
@@ -599,7 +635,7 @@
     <li><a href="#como-funciona">Como funciona</a></li>
     <li><a href="#planos">Planos</a></li>
   </ul>
-  <a href="#" class="nav-cta" onclick="openModal()">Começar agora</a>
+  <button class="nav-cta" data-modal-open>Começar agora</button>
 </nav>
 
 <!-- HERO -->
@@ -608,7 +644,7 @@
   <h1>Descubra seu potencial.<br><em>Expanda</em> sua equipe.</h1>
   <p class="hero-sub">Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes que querem resultados reais e duradouros.</p>
   <div class="hero-actions">
-    <a href="#" class="btn-primary" onclick="openModal(); return false;">Criar minha conta grátis</a>
+    <button class="btn-primary" data-modal-open>Criar minha conta grátis</button>
     <a href="#matrizes" class="btn-secondary">Ver as matrizes →</a>
   </div>
   <div class="hero-stats">
@@ -637,42 +673,42 @@
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('individual', this)">Eixo Individual</button>
-      <button class="tab-btn" onclick="switchTab('equipe', this)">Eixo de Equipe</button>
+      <button class="tab-btn active" data-tab="individual">Eixo Individual</button>
+      <button class="tab-btn" data-tab="equipe">Eixo de Equipe</button>
     </div>
 
     <div class="tab-panel active" id="tab-individual">
-      <div class="matrix-card" style="--card-accent: #7C6FF7;">
+      <div class="matrix-card animate-in" style="--card-accent: #7C6FF7;">
         <div class="card-icon">🧠</div>
         <h3>DISC</h3>
         <p>Mapeie seu perfil comportamental em 4 dimensões: Dominância, Influência, Estabilidade e Conformidade.</p>
         <span class="card-tag">Personalidade</span>
       </div>
-      <div class="matrix-card" style="--card-accent: #4FC9A0;">
+      <div class="matrix-card animate-in" style="--card-accent: #4FC9A0;">
         <div class="card-icon">⭐</div>
         <h3>SOAR</h3>
         <p>Identifique suas Forças, Oportunidades, Aspirações e Resultados para uma visão estratégica pessoal.</p>
         <span class="card-tag">Estratégia pessoal</span>
       </div>
-      <div class="matrix-card" style="--card-accent: #F4845F;">
+      <div class="matrix-card animate-in" style="--card-accent: #F4845F;">
         <div class="card-icon">🌀</div>
         <h3>Enneagrama</h3>
         <p>Explore os 9 tipos de personalidade e compreenda suas motivações mais profundas e pontos cegos.</p>
         <span class="card-tag">Motivação</span>
       </div>
-      <div class="matrix-card" style="--card-accent: #7C6FF7;">
+      <div class="matrix-card animate-in" style="--card-accent: #7C6FF7;">
         <div class="card-icon">🪟</div>
         <h3>Janela de Johari</h3>
         <p>Entenda a diferença entre como você se vê e como os outros te percebem. Poderoso para líderes.</p>
         <span class="card-tag">Autopercepção</span>
       </div>
-      <div class="matrix-card" style="--card-accent: #4FC9A0;">
+      <div class="matrix-card animate-in" style="--card-accent: #4FC9A0;">
         <div class="card-icon">⚓</div>
         <h3>Âncoras de Carreira</h3>
         <p>Descubra o que você realmente não abre mão na sua vida profissional — o seu núcleo de carreira.</p>
         <span class="card-tag">Propósito</span>
       </div>
-      <div class="matrix-card" style="--card-accent: #F4845F;">
+      <div class="matrix-card animate-in" style="--card-accent: #F4845F;">
         <div class="card-icon">☯</div>
         <h3>Ikigai</h3>
         <p>Encontre a intersecção entre o que você ama, o que sabe fazer, o que o mundo precisa e o que te paga.</p>
@@ -681,31 +717,31 @@
     </div>
 
     <div class="tab-panel" id="tab-equipe">
-      <div class="matrix-card" style="--card-accent: #4FC9A0;">
+      <div class="matrix-card animate-in" style="--card-accent: #4FC9A0;">
         <div class="card-icon">📋</div>
         <h3>5W2H</h3>
         <p>Planejamento de ação completo: o quê, por quê, onde, quando, quem, como e quanto custa.</p>
         <span class="card-tag">Planejamento</span>
       </div>
-      <div class="matrix-card" style="--card-accent: #7C6FF7;">
+      <div class="matrix-card animate-in" style="--card-accent: #7C6FF7;">
         <div class="card-icon">📊</div>
         <h3>Matriz RACI</h3>
         <p>Defina com clareza quem é Responsável, Autoridade, Consultado e Informado em cada processo.</p>
         <span class="card-tag">Papéis e responsabilidades</span>
       </div>
-      <div class="matrix-card" style="--card-accent: #F4845F;">
+      <div class="matrix-card animate-in" style="--card-accent: #F4845F;">
         <div class="card-icon">⏱</div>
         <h3>Matriz de Eisenhower</h3>
         <p>Priorize tarefas da equipe separando o urgente do importante para maximizar o foco coletivo.</p>
         <span class="card-tag">Gestão do tempo</span>
       </div>
-      <div class="matrix-card" style="--card-accent: #4FC9A0;">
+      <div class="matrix-card animate-in" style="--card-accent: #4FC9A0;">
         <div class="card-icon">🔷</div>
         <h3>Matriz SWOT</h3>
         <p>Analise as Forças, Fraquezas, Oportunidades e Ameaças da sua equipe com clareza estratégica.</p>
         <span class="card-tag">Análise estratégica</span>
       </div>
-      <div class="matrix-card" style="--card-accent: #7C6FF7;">
+      <div class="matrix-card animate-in" style="--card-accent: #7C6FF7;">
         <div class="card-icon">💬</div>
         <h3>Feedback Canvas</h3>
         <p>Estruture sessões de feedback coletivo de forma visual, segura e orientada ao crescimento.</p>
@@ -718,28 +754,28 @@
 <!-- COMO FUNCIONA -->
 <section id="como-funciona">
   <div class="como-funciona">
-    <div class="section-header" style="text-align:center; margin: 0 auto 0;">
-      <span class="section-label" style="text-align:center; display:block;">Processo</span>
+    <div class="section-header section-header--centered">
+      <span class="section-label">Processo</span>
       <h2 class="section-title">Como a Cápsula funciona</h2>
-      <p class="section-desc" style="margin: 0 auto;">Do acesso ao insight em minutos. Sem complicação.</p>
+      <p class="section-desc">Do acesso ao insight em minutos. Sem complicação.</p>
     </div>
     <div class="steps">
-      <div class="step">
+      <div class="step animate-in">
         <div class="step-num">1</div>
         <h4>Crie sua conta</h4>
         <p>Cadastro gratuito em menos de 2 minutos. Sem cartão de crédito.</p>
       </div>
-      <div class="step">
+      <div class="step animate-in">
         <div class="step-num">2</div>
         <h4>Escolha uma matriz</h4>
         <p>Selecione pelo eixo individual ou de equipe conforme seu objetivo.</p>
       </div>
-      <div class="step">
+      <div class="step animate-in">
         <div class="step-num">3</div>
         <h4>Preencha guiado</h4>
         <p>Interface passo a passo, sem sobrecarregar. Salva automaticamente.</p>
       </div>
-      <div class="step">
+      <div class="step animate-in">
         <div class="step-num">4</div>
         <h4>Receba seus insights</h4>
         <p>Gráficos, relatório e PDF com seus resultados prontos para baixar.</p>
@@ -749,14 +785,14 @@
 </section>
 
 <!-- EIXOS -->
-<section style="background: var(--surface); padding: 6rem 5%;">
-  <div style="max-width: 1100px; margin: 0 auto;">
+<section class="eixos-section">
+  <div class="eixos-inner">
     <div class="section-header">
       <span class="section-label">Arquitetura</span>
       <h2 class="section-title">Dois eixos,<br>um sistema</h2>
     </div>
     <div class="eixos-grid">
-      <div class="eixo-card">
+      <div class="eixo-card animate-in">
         <h3 class="eixo-title">Eixo Individual</h3>
         <p class="eixo-subtitle">Matrizes de identificação e autoconhecimento</p>
         <ul class="eixo-list">
@@ -768,8 +804,8 @@
           <li>Histórico de evolução ao longo do tempo</li>
         </ul>
       </div>
-      <div class="eixo-card team">
-        <h3 class="eixo-title" style="color: var(--accent2)">Eixo de Equipe</h3>
+      <div class="eixo-card team animate-in">
+        <h3 class="eixo-title eixo-title--team">Eixo de Equipe</h3>
         <p class="eixo-subtitle">Matrizes de desenvolvimento e performance coletiva</p>
         <ul class="eixo-list">
           <li>Planejamento estruturado com 5W2H</li>
@@ -786,14 +822,14 @@
 
 <!-- PLANOS -->
 <section class="planos" id="planos">
-  <div style="max-width: 1000px; margin: 0 auto;">
-    <div class="section-header" style="text-align: center; margin: 0 auto 0;">
-      <span class="section-label" style="text-align:center; display:block;">Planos</span>
+  <div class="planos-inner">
+    <div class="section-header section-header--centered">
+      <span class="section-label">Planos</span>
       <h2 class="section-title">Simples e transparente</h2>
-      <p class="section-desc" style="margin: 0 auto;">Comece grátis. Escale quando fizer sentido para você.</p>
+      <p class="section-desc">Comece grátis. Escale quando fizer sentido para você.</p>
     </div>
     <div class="planos-grid">
-      <div class="plano-card">
+      <div class="plano-card animate-in">
         <p class="plano-nome">Gratuito</p>
         <div class="plano-preco">R$0<span>/mês</span></div>
         <p class="plano-desc">Para você começar a se descobrir agora.</p>
@@ -803,9 +839,9 @@
           <li><span class="check">✓</span> Histórico dos últimos 30 dias</li>
           <li><span class="check">✓</span> Sem cartão de crédito</li>
         </ul>
-        <a href="#" class="plano-btn plano-btn-outline" onclick="openModal(); return false;">Criar conta grátis</a>
+        <button class="plano-btn plano-btn-outline" data-modal-open>Criar conta grátis</button>
       </div>
-      <div class="plano-card destaque">
+      <div class="plano-card destaque animate-in">
         <p class="plano-nome">Pro</p>
         <div class="plano-preco">R$39<span>/mês</span></div>
         <p class="plano-desc">Para profissionais que levam o desenvolvimento a sério.</p>
@@ -816,9 +852,9 @@
           <li><span class="check">✓</span> Histórico completo</li>
           <li><span class="check">✓</span> Comparação de evolução</li>
         </ul>
-        <a href="#" class="plano-btn plano-btn-filled" onclick="openModal(); return false;">Assinar Pro</a>
+        <button class="plano-btn plano-btn-filled" data-modal-open>Assinar Pro</button>
       </div>
-      <div class="plano-card">
+      <div class="plano-card animate-in">
         <p class="plano-nome">Empresa</p>
         <div class="plano-preco">R$149<span>/mês</span></div>
         <p class="plano-desc">Para líderes que querem desenvolver suas equipes.</p>
@@ -829,19 +865,19 @@
           <li><span class="check">✓</span> Relatórios coletivos</li>
           <li><span class="check">✓</span> Faturamento por CNPJ</li>
         </ul>
-        <a href="#" class="plano-btn plano-btn-outline" onclick="openModal(); return false;">Falar com time</a>
+        <button class="plano-btn plano-btn-outline" data-modal-open>Falar com time</button>
       </div>
     </div>
   </div>
 </section>
 
 <!-- CTA FINAL -->
-<section style="text-align: center; padding: 7rem 5%;">
+<section class="cta-final-section">
   <div class="cta-final">
-    <span class="section-label" style="text-align: center; display: block;">Comece hoje</span>
+    <span class="section-label section-label--centered">Comece hoje</span>
     <h2 class="section-title">Sua cápsula de crescimento está esperando</h2>
     <p>Junte-se às pessoas que já usam matrizes para tomar decisões melhores sobre carreira, equipe e vida.</p>
-    <a href="#" class="btn-primary" onclick="openModal(); return false;">Criar conta gratuita agora</a>
+    <button class="btn-primary" data-modal-open>Criar conta gratuita agora</button>
   </div>
 </section>
 
@@ -852,19 +888,19 @@
 </footer>
 
 <!-- MODAL DE CADASTRO -->
-<div class="modal-overlay" id="modal" onclick="closeModalOnOverlay(event)">
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal()">×</button>
+    <button class="modal-close" id="modal-close-btn" aria-label="Fechar modal">×</button>
     <div id="form-content">
-      <h2>Criar sua conta</h2>
+      <h2 id="modal-title">Criar sua conta</h2>
       <p>Comece gratuitamente. Sem cartão de crédito.</p>
       <div class="form-group">
         <label for="nome">Seu nome</label>
-        <input type="text" id="nome" placeholder="Como prefere ser chamado(a)?" />
+        <input type="text" id="nome" placeholder="Como prefere ser chamado(a)?" autocomplete="name" />
       </div>
       <div class="form-group">
         <label for="email">E-mail</label>
-        <input type="email" id="email" placeholder="seu@email.com" />
+        <input type="email" id="email" placeholder="seu@email.com" autocomplete="email" />
       </div>
       <div class="form-group">
         <label for="objetivo">Seu objetivo principal</label>
@@ -876,10 +912,10 @@
           <option value="outro">Outro</option>
         </select>
       </div>
-      <button class="form-submit" onclick="submitForm()">Criar conta grátis →</button>
-      <p style="text-align:center; font-size:0.78rem; color: var(--muted2); margin-top: 1rem;">Ao criar sua conta, você concorda com os Termos de Uso e Política de Privacidade.</p>
+      <button class="form-submit" id="form-submit-btn" type="button">Criar conta grátis →</button>
+      <p class="form-terms">Ao criar sua conta, você concorda com os Termos de Uso e Política de Privacidade.</p>
     </div>
-    <div class="success-msg" id="success-msg">
+    <div class="success-msg" id="success-msg" aria-live="polite">
       <span class="check-big">✓</span>
       <h3>Conta criada com sucesso!</h3>
       <p>Em breve você receberá um e-mail de boas-vindas com o acesso à sua Cápsula de Desenvolvimento.</p>
@@ -888,43 +924,68 @@
 </div>
 
 <script>
-  function switchTab(tab, btn) {
+  // ── Modal ─────────────────────────────────────────────────────
+  const modal        = document.getElementById('modal');
+  const formContent  = document.getElementById('form-content');
+  const successMsg   = document.getElementById('success-msg');
+
+  function openModal() {
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('modal-close-btn').focus();
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => {
+      formContent.style.display = 'block';
+      successMsg.style.display  = 'none';
+      clearFieldErrors();
+    }, 300);
+  }
+
+  // Delegação: qualquer botão com [data-modal-open] abre o modal
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-modal-open]')) openModal();
+  });
+
+  // Fechar pelo botão ×
+  document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+
+  // Fechar clicando no overlay
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // Fechar com Esc
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+
+  // ── Tabs ──────────────────────────────────────────────────────
+  document.querySelector('.tabs').addEventListener('click', (e) => {
+    const btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    const tab = btn.dataset.tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('tab-' + tab).classList.add('active');
-  }
+  });
 
-  function openModal() {
-    document.getElementById('modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeModal() {
-    document.getElementById('modal').classList.remove('open');
-    document.body.style.overflow = '';
-    setTimeout(() => {
-      document.getElementById('form-content').style.display = 'block';
-      document.getElementById('success-msg').style.display = 'none';
-    }, 300);
-  }
-
-  function closeModalOnOverlay(e) {
-    if (e.target === document.getElementById('modal')) closeModal();
-  }
-
+  // ── Formulário ────────────────────────────────────────────────
   function validateEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
   }
 
   function showFieldError(id, msg) {
     const input = document.getElementById(id);
-    input.style.borderColor = 'var(--accent3)';
+    input.classList.add('input--error');
     let err = input.parentElement.querySelector('.field-error');
     if (!err) {
       err = document.createElement('span');
       err.className = 'field-error';
-      err.style.cssText = 'display:block;font-size:0.75rem;color:var(--accent3);margin-top:0.3rem;';
       input.parentElement.appendChild(err);
     }
     err.textContent = msg;
@@ -932,17 +993,21 @@
 
   function clearFieldErrors() {
     document.querySelectorAll('.field-error').forEach(e => e.remove());
-    ['nome','email','objetivo'].forEach(id => {
+    ['nome', 'email', 'objetivo'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.style.borderColor = '';
+      if (el) el.classList.remove('input--error');
     });
   }
 
-  function submitForm() {
+  // Proteção contra duplo clique: flag de submissão em andamento
+  let isSubmitting = false;
+
+  document.getElementById('form-submit-btn').addEventListener('click', () => {
+    if (isSubmitting) return;
     clearFieldErrors();
 
-    const nome    = document.getElementById('nome').value.trim();
-    const email   = document.getElementById('email').value.trim();
+    const nome     = document.getElementById('nome').value.trim();
+    const email    = document.getElementById('email').value.trim();
     const objetivo = document.getElementById('objetivo').value;
 
     let valid = true;
@@ -970,6 +1035,12 @@
 
     if (!valid) return;
 
+    // Bloqueia o botão enquanto processa
+    isSubmitting = true;
+    const btn = document.getElementById('form-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Criando conta...';
+
     // Persistir no localStorage
     const userData = { nome, email, objetivo, criadoEm: new Date().toISOString() };
     try {
@@ -978,25 +1049,27 @@
       console.warn('localStorage indisponível:', e);
     }
 
-    document.getElementById('form-content').style.display = 'none';
-    document.getElementById('success-msg').style.display = 'block';
-  }
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeModal();
+    // Simula latência de rede (remover quando integrar API real)
+    setTimeout(() => {
+      isSubmitting = false;
+      btn.disabled = false;
+      btn.textContent = 'Criar conta grátis →';
+      formContent.style.display = 'none';
+      successMsg.style.display  = 'block';
+    }, 600);
   });
 
+  // ── Animações de entrada via IntersectionObserver + classes CSS ──
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.style.opacity = '1';
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target); // Observa apenas uma vez
+      }
     });
   }, { threshold: 0.1 });
 
-  document.querySelectorAll('.matrix-card, .step, .eixo-card, .plano-card').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transition = 'opacity 0.5s ease';
-    observer.observe(el);
-  });
+  document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
 </script>
 </body>
 </html>
