@@ -1098,7 +1098,8 @@
     btn.disabled = true;
     btn.textContent = 'Criando conta...';
 
-    const userData = { nome, email, objetivo, criado_em: new Date().toISOString() };
+    const uid = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+    const userData = { uid, nome, email, objetivo, criado_em: new Date().toISOString() };
 
     // 1. Salva no localStorage (imediato, funciona offline)
     try {
@@ -1166,8 +1167,18 @@
       return;
     }
 
-    // Restaura sessão local
+    // Restaura sessão local — garante que uid seja preservado
     try {
+      // Se o usuário do Supabase não trouxer uid, recupera do local ou gera um novo
+      if (!user.uid) {
+        try {
+          const localUsers = JSON.parse(localStorage.getItem('capsula_users') || '[]');
+          const localUser = localUsers.find(u => u.email === email);
+          user.uid = (localUser && localUser.uid) || (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+        } catch(_) {
+          user.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+        }
+      }
       localStorage.setItem('capsula_user', JSON.stringify(user));
       // Atualiza lista local também
       let users = [];

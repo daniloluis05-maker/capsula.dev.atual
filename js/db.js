@@ -131,20 +131,28 @@
       await saveUser(local);
       console.log('[db] Migração localStorage → Supabase concluída para', email);
     } else {
-      // Já existe → mescla: Supabase ganha nos campos de perfil, local ganha nas matrizes
+      // Já existe → mescla: Supabase ganha nos campos de perfil; para matrizes, ganha a versão mais recente (por completedAt)
+      function pickNewest(a, b) {
+        if (!a) return b;
+        if (!b) return a;
+        const tA = a.completedAt || a.criado_em || '';
+        const tB = b.completedAt || b.criado_em || '';
+        return tA >= tB ? a : b;
+      }
       const merged = {
         ...existing,
         nome:      existing.nome      || local.nome,
         objetivo:  existing.objetivo  || local.objetivo,
         criado_em: existing.criado_em || local.criado_em,
-        // Matrizes: preserva a versão mais completa
-        disc:    local.disc    || existing.disc    || undefined,
-        soar:    local.soar    || existing.soar    || undefined,
-        ikigai:  local.ikigai  || existing.ikigai  || undefined,
-        ancoras: local.ancoras || existing.ancoras || undefined,
-        johari:  local.johari  || existing.johari  || undefined,
-        bigfive: local.bigfive || existing.bigfive || undefined,
-        swot:    local.swot    || existing.swot    || undefined,
+        uid:       existing.uid       || local.uid,
+        // Matrizes: vence a versão com completedAt mais recente
+        disc:    pickNewest(local.disc,    existing.disc),
+        soar:    pickNewest(local.soar,    existing.soar),
+        ikigai:  pickNewest(local.ikigai,  existing.ikigai),
+        ancoras: pickNewest(local.ancoras, existing.ancoras),
+        johari:  pickNewest(local.johari,  existing.johari),
+        bigfive: pickNewest(local.bigfive, existing.bigfive),
+        swot:    pickNewest(local.swot,    existing.swot),
       };
       // Remove chaves undefined
       Object.keys(merged).forEach(k => merged[k] === undefined && delete merged[k]);

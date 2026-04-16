@@ -399,6 +399,11 @@ window.addEventListener('DOMContentLoaded', function() {
   const raw = localStorage.getItem('capsula_user');
   if (!raw) { window.location.href = 'index.html'; return; }
   userData = JSON.parse(raw);
+  // Auto-heal: garante uid
+  if (!userData.uid) {
+    userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+    try { localStorage.setItem('capsula_user', JSON.stringify(userData)); } catch(_) {}
+  }
 
   // Nome
   const nome = userData.apelido || (userData.nome||'').split(' ')[0] || 'Usuário';
@@ -719,6 +724,9 @@ function formatAIText(text) {
 // SALVAR
 // ══════════════════════════════════════
 function saveToLS(aiText) {
+  if (!userData.uid) {
+    userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+  }
   userData.swot = {
     items: { f: [...SWOT.f], fk: [...SWOT.fk], o: [...SWOT.o], a: [...SWOT.a] },
     aiAnalysis: aiText || null,

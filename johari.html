@@ -350,6 +350,7 @@ function showResult(){
 
   // Salva
   const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');
+  if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{localStorage.setItem('capsula_user',JSON.stringify(u));}catch(_){}}
   u.johari={self:[...self],others:[...others],aberto,cego,oculto,completedAt:new Date().toISOString()};
   localStorage.setItem('capsula_user',JSON.stringify(u));
   try{const perfis=JSON.parse(localStorage.getItem('capsula_users')||'[]');const idx=perfis.findIndex(p=>p.uid===u.uid);if(idx>=0){perfis[idx].johari=u.johari;localStorage.setItem('capsula_users',JSON.stringify(perfis));}}catch(e){}
