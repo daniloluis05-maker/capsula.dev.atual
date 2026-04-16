@@ -6,7 +6,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co; frame-ancestors 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co;">
 <title>Cápsula de Desenvolvimento | Matrizes de Alta Performance</title>
 
 <!-- SEO -->
@@ -542,6 +542,29 @@
     width: 100%;
     position: relative;
   }
+  .modal-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--border, #e5e7eb);
+    margin-bottom: 1.2rem;
+  }
+  .modal-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 0.6rem 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--muted, #6b7280);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color .2s, border-color .2s;
+  }
+  .modal-tab.active {
+    color: var(--accent, #6366f1);
+    border-bottom-color: var(--accent, #6366f1);
+  }
   .modal-close {
     position: absolute;
     top: 1.25rem; right: 1.25rem;
@@ -895,8 +918,16 @@
 <div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal">
     <button class="modal-close" id="modal-close-btn" aria-label="Fechar modal">×</button>
+
+    <!-- Modal tabs -->
+    <div class="modal-tabs" id="modal-tabs">
+      <button class="modal-tab active" id="tab-signup" type="button">Criar conta</button>
+      <button class="modal-tab" id="tab-login" type="button">Já tenho conta</button>
+    </div>
+
+    <!-- ── CADASTRO ── -->
     <div id="form-content">
-      <h2 id="modal-title">Criar sua conta</h2>
+      <h2 id="modal-title" style="margin-top:0.5rem">Criar sua conta</h2>
       <p>Comece gratuitamente. Sem cartão de crédito.</p>
       <div class="form-group">
         <label for="nome">Seu nome</label>
@@ -919,23 +950,58 @@
       <button class="form-submit" id="form-submit-btn" type="button">Criar conta grátis →</button>
       <p class="form-terms">Ao criar sua conta, você concorda com os Termos de Uso e Política de Privacidade.</p>
     </div>
+
+    <!-- ── LOGIN ── -->
+    <div id="login-content" style="display:none">
+      <h2 style="margin-top:0.5rem">Acessar minha conta</h2>
+      <p>Entre com o e-mail usado no cadastro.</p>
+      <div class="form-group">
+        <label for="login-email">E-mail</label>
+        <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email" />
+      </div>
+      <button class="form-submit" id="login-submit-btn" type="button">Entrar →</button>
+    </div>
+
+    <!-- ── SUCESSO CADASTRO ── -->
     <div class="success-msg" id="success-msg" aria-live="polite">
       <span class="check-big">✓</span>
       <h3>Conta criada com sucesso!</h3>
-      <p>Em breve você receberá um e-mail de boas-vindas com o acesso à sua Cápsula de Desenvolvimento.</p>
+      <p>Redirecionando para seu dashboard…</p>
     </div>
+
+    <!-- ── SUCESSO LOGIN ── -->
+    <div class="success-msg" id="login-success-msg" aria-live="polite" style="display:none">
+      <span class="check-big">✓</span>
+      <h3>Bem-vindo(a) de volta!</h3>
+      <p>Redirecionando para seu dashboard…</p>
+    </div>
+
+    <!-- ── ERRO LOGIN ── -->
+    <div id="login-error" style="display:none;color:#c0392b;font-size:0.9rem;margin-top:0.5rem;text-align:center"></div>
   </div>
 </div>
 
 <script>
   // ── Modal ─────────────────────────────────────────────────────
-  const modal        = document.getElementById('modal');
-  const formContent  = document.getElementById('form-content');
-  const successMsg   = document.getElementById('success-msg');
+  const modal            = document.getElementById('modal');
+  const formContent      = document.getElementById('form-content');
+  const loginContent     = document.getElementById('login-content');
+  const successMsg       = document.getElementById('success-msg');
+  const loginSuccessMsg  = document.getElementById('login-success-msg');
+  const loginError       = document.getElementById('login-error');
 
-  function openModal() {
+  function showPanel(name) {
+    formContent.style.display     = name === 'signup'        ? 'block' : 'none';
+    loginContent.style.display    = name === 'login'         ? 'block' : 'none';
+    successMsg.style.display      = name === 'success'       ? 'block' : 'none';
+    loginSuccessMsg.style.display = name === 'loginSuccess'  ? 'block' : 'none';
+    loginError.style.display      = 'none';
+  }
+
+  function openModal(tab) {
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
+    switchModalTab(tab || 'signup');
     document.getElementById('modal-close-btn').focus();
   }
 
@@ -943,31 +1009,33 @@
     modal.classList.remove('open');
     document.body.style.overflow = '';
     setTimeout(() => {
-      formContent.style.display = 'block';
-      successMsg.style.display  = 'none';
+      switchModalTab('signup');
       clearFieldErrors();
     }, 300);
   }
 
+  function switchModalTab(tab) {
+    document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    showPanel(tab);
+  }
+
+  // Modal-tab buttons
+  document.getElementById('tab-signup').addEventListener('click', () => switchModalTab('signup'));
+  document.getElementById('tab-login').addEventListener('click', () => switchModalTab('login'));
+
   // Delegação: qualquer botão com [data-modal-open] abre o modal
   document.addEventListener('click', (e) => {
-    if (e.target.closest('[data-modal-open]')) openModal();
+    if (e.target.closest('[data-modal-open]')) openModal('signup');
   });
 
-  // Fechar pelo botão ×
   document.getElementById('modal-close-btn').addEventListener('click', closeModal);
-
-  // Fechar clicando no overlay
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
-  });
-
-  // Fechar com Esc
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
   });
 
-  // ── Tabs ──────────────────────────────────────────────────────
+  // ── Tabs da página (Eixo Individual / Equipe) ─────────────────
   document.querySelector('.tabs').addEventListener('click', (e) => {
     const btn = e.target.closest('.tab-btn');
     if (!btn) return;
@@ -978,7 +1046,7 @@
     document.getElementById('tab-' + tab).classList.add('active');
   });
 
-  // ── Formulário ────────────────────────────────────────────────
+  // ── Helpers ───────────────────────────────────────────────────
   function validateEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
   }
@@ -997,13 +1065,13 @@
 
   function clearFieldErrors() {
     document.querySelectorAll('.field-error').forEach(e => e.remove());
-    ['nome', 'email', 'objetivo'].forEach(id => {
+    ['nome', 'email', 'objetivo', 'login-email'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.classList.remove('input--error');
     });
   }
 
-  // Proteção contra duplo clique: flag de submissão em andamento
+  // ── Cadastro ──────────────────────────────────────────────────
   let isSubmitting = false;
 
   document.getElementById('form-submit-btn').addEventListener('click', () => {
@@ -1013,62 +1081,89 @@
     const nome     = document.getElementById('nome').value.trim();
     const email    = document.getElementById('email').value.trim();
     const objetivo = document.getElementById('objetivo').value;
-
     let valid = true;
 
-    if (!nome) {
-      showFieldError('nome', 'Informe seu nome.');
-      valid = false;
-    } else if (nome.length < 2) {
-      showFieldError('nome', 'Nome muito curto.');
-      valid = false;
-    }
-
-    if (!email) {
-      showFieldError('email', 'Informe seu e-mail.');
-      valid = false;
-    } else if (!validateEmail(email)) {
-      showFieldError('email', 'E-mail inválido. Ex: voce@dominio.com');
-      valid = false;
-    }
-
-    if (!objetivo) {
-      showFieldError('objetivo', 'Selecione um objetivo.');
-      valid = false;
-    }
-
+    if (!nome)            { showFieldError('nome',  'Informe seu nome.');                       valid = false; }
+    else if (nome.length < 2) { showFieldError('nome', 'Nome muito curto.');                   valid = false; }
+    if (!email)           { showFieldError('email', 'Informe seu e-mail.');                     valid = false; }
+    else if (!validateEmail(email)) { showFieldError('email', 'E-mail inválido. Ex: voce@dominio.com'); valid = false; }
+    if (!objetivo)        { showFieldError('objetivo', 'Selecione um objetivo.');               valid = false; }
     if (!valid) return;
 
-    // Bloqueia o botão enquanto processa
     isSubmitting = true;
     const btn = document.getElementById('form-submit-btn');
     btn.disabled = true;
     btn.textContent = 'Criando conta...';
 
-    // Persistir no localStorage
-    const userData = { nome, email, objetivo, criadoEm: new Date().toISOString() };
+    // Salva perfil (capsula_user = sessão ativa; capsula_users = lista para login futuro)
+    const userData = { nome, email, objetivo, criado_em: new Date().toISOString() };
     try {
       localStorage.setItem('capsula_user', JSON.stringify(userData));
+
+      // Adiciona/atualiza no registro de usuários para o login funcionar
+      let users = [];
+      try { users = JSON.parse(localStorage.getItem('capsula_users') || '[]'); } catch(_) {}
+      const idx = users.findIndex(u => u.email === email);
+      if (idx >= 0) users[idx] = userData; else users.push(userData);
+      localStorage.setItem('capsula_users', JSON.stringify(users));
     } catch (e) {
       console.warn('localStorage indisponível:', e);
     }
 
-    // Simula latência de rede (remover quando integrar API real)
     setTimeout(() => {
       isSubmitting = false;
       btn.disabled = false;
       btn.textContent = 'Criar conta grátis →';
-      formContent.style.display = 'none';
-      successMsg.style.display  = 'block';
+      showPanel('success');
+      // Redireciona para o dashboard após exibir a mensagem de sucesso
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
     }, 600);
   });
 
-  // ── Animações de entrada via IntersectionObserver + classes CSS ──
+  // ── Login ─────────────────────────────────────────────────────
+  let isLoggingIn = false;
+
+  document.getElementById('login-submit-btn').addEventListener('click', () => {
+    if (isLoggingIn) return;
+    clearFieldErrors();
+    loginError.style.display = 'none';
+
+    const email = document.getElementById('login-email').value.trim();
+    if (!email)                { showFieldError('login-email', 'Informe seu e-mail.'); return; }
+    if (!validateEmail(email)) { showFieldError('login-email', 'E-mail inválido.');    return; }
+
+    isLoggingIn = true;
+    const btn = document.getElementById('login-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Entrando...';
+
+    setTimeout(() => {
+      isLoggingIn = false;
+      btn.disabled = false;
+      btn.textContent = 'Entrar →';
+
+      let users = [];
+      try { users = JSON.parse(localStorage.getItem('capsula_users') || '[]'); } catch(_) {}
+      const user = users.find(u => u.email === email);
+
+      if (!user) {
+        loginError.textContent = 'E-mail não encontrado. Crie sua conta primeiro.';
+        loginError.style.display = 'block';
+        return;
+      }
+
+      try { localStorage.setItem('capsula_user', JSON.stringify(user)); } catch(_) {}
+      showPanel('loginSuccess');
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+    }, 600);
+  });
+
+  // ── Animações de entrada via IntersectionObserver ─────────────
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target); // Observa apenas uma vez
+        observer.unobserve(entry.target);
       }
     });
   }, { threshold: 0.1 });
