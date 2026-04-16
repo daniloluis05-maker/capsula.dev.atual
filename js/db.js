@@ -44,7 +44,8 @@
     if (!db) return { error: 'offline' };
 
     // Separa campos de perfil dos dados de matrizes
-    const { nome, email, objetivo, criado_em, apelido, ...matrizes } = userData;
+    // uid, soar_draft e ikigai_draft são campos internos e não devem ir para a coluna matrizes
+    const { nome, email, objetivo, criado_em, apelido, uid, soar_draft, ikigai_draft, ...matrizes } = userData;
 
     const row = {
       email:     email.toLowerCase().trim(),

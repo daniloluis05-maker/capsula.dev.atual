@@ -1225,13 +1225,13 @@ async function showResult() {
     </div>
   `;
 
-  // ── PERSISTÊNCIA: salva no Supabase (se autenticado) ──
-  await saveResultToSupabase({ dominant, scores });
-
-  // Fallback local para leitura imediata pelo dashboard
+  // Salva no localStorage ANTES de sincronizar com Supabase
   const userData = JSON.parse(localStorage.getItem('capsula_user') || '{}');
   userData.disc = { dominant, scores, completedAt: new Date().toISOString() };
   localStorage.setItem('capsula_user', JSON.stringify(userData));
+
+  // ── PERSISTÊNCIA: salva no Supabase com userData já atualizado ──
+  await saveResultToSupabase(userData);
 
   // ── FIX CRÍTICO 1: Sincroniza resultado no array capsula_users[] ──
   // Garante que trocar de perfil não apague o resultado
@@ -1260,10 +1260,9 @@ function getNomeExibido(userData) {
 }
 
 // Sincroniza resultado DISC no Supabase via capsulaDB.syncMatrizes
-async function saveResultToSupabase({ dominant, scores }) {
+async function saveResultToSupabase(userData) {
   try {
-    const userData = JSON.parse(localStorage.getItem('capsula_user') || '{}');
-    if (!userData.email) {
+    if (!userData || !userData.email) {
       console.warn('[Cápsula] Usuário sem e-mail — resultado salvo apenas localmente.');
       setSyncStatus('Salvo localmente ✓');
       return;
