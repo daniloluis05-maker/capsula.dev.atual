@@ -651,6 +651,9 @@
     .hero h1 { font-size: 2.5rem; }
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
 </head>
 <body>
 
@@ -1074,7 +1077,7 @@
   // ── Cadastro ──────────────────────────────────────────────────
   let isSubmitting = false;
 
-  document.getElementById('form-submit-btn').addEventListener('click', () => {
+  document.getElementById('form-submit-btn').addEventListener('click', async () => {
     if (isSubmitting) return;
     clearFieldErrors();
 
@@ -1083,11 +1086,11 @@
     const objetivo = document.getElementById('objetivo').value;
     let valid = true;
 
-    if (!nome)            { showFieldError('nome',  'Informe seu nome.');                       valid = false; }
-    else if (nome.length < 2) { showFieldError('nome', 'Nome muito curto.');                   valid = false; }
-    if (!email)           { showFieldError('email', 'Informe seu e-mail.');                     valid = false; }
+    if (!nome)                  { showFieldError('nome',    'Informe seu nome.');                        valid = false; }
+    else if (nome.length < 2)   { showFieldError('nome',    'Nome muito curto.');                        valid = false; }
+    if (!email)                 { showFieldError('email',   'Informe seu e-mail.');                      valid = false; }
     else if (!validateEmail(email)) { showFieldError('email', 'E-mail inválido. Ex: voce@dominio.com'); valid = false; }
-    if (!objetivo)        { showFieldError('objetivo', 'Selecione um objetivo.');               valid = false; }
+    if (!objetivo)              { showFieldError('objetivo','Selecione um objetivo.');                   valid = false; }
     if (!valid) return;
 
     isSubmitting = true;
@@ -1095,35 +1098,35 @@
     btn.disabled = true;
     btn.textContent = 'Criando conta...';
 
-    // Salva perfil (capsula_user = sessão ativa; capsula_users = lista para login futuro)
     const userData = { nome, email, objetivo, criado_em: new Date().toISOString() };
+
+    // 1. Salva no localStorage (imediato, funciona offline)
     try {
       localStorage.setItem('capsula_user', JSON.stringify(userData));
-
-      // Adiciona/atualiza no registro de usuários para o login funcionar
       let users = [];
       try { users = JSON.parse(localStorage.getItem('capsula_users') || '[]'); } catch(_) {}
       const idx = users.findIndex(u => u.email === email);
       if (idx >= 0) users[idx] = userData; else users.push(userData);
       localStorage.setItem('capsula_users', JSON.stringify(users));
-    } catch (e) {
-      console.warn('localStorage indisponível:', e);
-    }
+    } catch(e) { console.warn('localStorage indisponível:', e); }
 
-    setTimeout(() => {
-      isSubmitting = false;
-      btn.disabled = false;
-      btn.textContent = 'Criar conta grátis →';
-      showPanel('success');
-      // Redireciona para o dashboard após exibir a mensagem de sucesso
-      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
-    }, 600);
+    // 2. Persiste no Supabase (não bloqueia o fluxo se falhar)
+    try {
+      const { error } = await capsulaDB.saveUser(userData);
+      if (error && error !== 'offline') console.warn('[cadastro] Supabase:', error);
+    } catch(e) { console.warn('[cadastro] Supabase exception:', e); }
+
+    isSubmitting = false;
+    btn.disabled = false;
+    btn.textContent = 'Criar conta grátis →';
+    showPanel('success');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
   });
 
   // ── Login ─────────────────────────────────────────────────────
   let isLoggingIn = false;
 
-  document.getElementById('login-submit-btn').addEventListener('click', () => {
+  document.getElementById('login-submit-btn').addEventListener('click', async () => {
     if (isLoggingIn) return;
     clearFieldErrors();
     loginError.style.display = 'none';
@@ -1137,25 +1140,45 @@
     btn.disabled = true;
     btn.textContent = 'Entrando...';
 
-    setTimeout(() => {
-      isLoggingIn = false;
-      btn.disabled = false;
-      btn.textContent = 'Entrar →';
+    let user = null;
 
+    // 1. Tenta buscar no Supabase (fonte de verdade)
+    try {
+      const { data, error } = await capsulaDB.findUserByEmail(email);
+      if (!error && data) user = data;
+    } catch(e) { console.warn('[login] Supabase exception:', e); }
+
+    // 2. Fallback: busca no localStorage (caso offline ou ainda não migrado)
+    if (!user) {
+      try {
+        const users = JSON.parse(localStorage.getItem('capsula_users') || '[]');
+        user = users.find(u => u.email === email) || null;
+      } catch(_) {}
+    }
+
+    isLoggingIn = false;
+    btn.disabled = false;
+    btn.textContent = 'Entrar →';
+
+    if (!user) {
+      loginError.textContent = 'E-mail não encontrado. Crie sua conta primeiro.';
+      loginError.style.display = 'block';
+      return;
+    }
+
+    // Restaura sessão local
+    try {
+      localStorage.setItem('capsula_user', JSON.stringify(user));
+      // Atualiza lista local também
       let users = [];
       try { users = JSON.parse(localStorage.getItem('capsula_users') || '[]'); } catch(_) {}
-      const user = users.find(u => u.email === email);
+      const idx = users.findIndex(u => u.email === email);
+      if (idx >= 0) users[idx] = user; else users.push(user);
+      localStorage.setItem('capsula_users', JSON.stringify(users));
+    } catch(_) {}
 
-      if (!user) {
-        loginError.textContent = 'E-mail não encontrado. Crie sua conta primeiro.';
-        loginError.style.display = 'block';
-        return;
-      }
-
-      try { localStorage.setItem('capsula_user', JSON.stringify(user)); } catch(_) {}
-      showPanel('loginSuccess');
-      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
-    }, 600);
+    showPanel('loginSuccess');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
   });
 
   // ── Animações de entrada via IntersectionObserver ─────────────

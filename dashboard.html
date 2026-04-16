@@ -460,8 +460,6 @@ function loadUser(){
   const raw = lsRaw || ssRaw;
 
   if (!raw) {
-    // Sem dados locais: redireciona para cadastro
-    // (nunca expõe dados de outro usuário via Supabase)
     window.location.href = 'index.html';
     return;
   }
@@ -485,6 +483,16 @@ function loadUser(){
     const dias = Math.max(1, Math.ceil((Date.now() - criado.getTime()) / (1000*60*60*24)));
     document.getElementById('stat-dias').textContent = dias;
     document.getElementById('stat-dias-sub').textContent = dias === 1 ? 'membro desde hoje' : 'dias na plataforma';
+  }
+
+  // ── Sincroniza com Supabase em background ──────────────────
+  if (u.email) {
+    capsulaDB.migrateLocalToSupabase(u.email).then(merged => {
+      // Se houve mesclagem com dados do banco, recarrega o estado das matrizes
+      if (merged) {
+        loadMatrixState(merged);
+      }
+    }).catch(e => console.warn('[dashboard] sync Supabase:', e));
   }
 }
 
@@ -607,7 +615,14 @@ initDate();loadUser();
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState === 'visible') {
     const raw = localStorage.getItem('capsula_user');
-    if (raw) loadMatrixState(JSON.parse(raw));
+    if (raw) {
+      const u = JSON.parse(raw);
+      loadMatrixState(u);
+      // Sincroniza progresso atualizado com o Supabase
+      if (u.email) {
+        capsulaDB.syncMatrizes(u).catch(e => console.warn('[sync] visibilitychange:', e));
+      }
+    }
   }
 });
 
