@@ -54,7 +54,6 @@
       objetivo:  objetivo,
       criado_em: criado_em || new Date().toISOString(),
       matrizes:  Object.keys(matrizes).length ? matrizes : {},
-      atualizado_em: new Date().toISOString(),
     };
 
     const { data, error } = await db

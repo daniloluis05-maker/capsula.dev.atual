@@ -1295,7 +1295,7 @@ function setSyncStatus(msg, isError) {
 }
 
 // Verifica autenticação ao carregar e escuta mudanças de sessão
-(async () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const sb = capsulaDB.getDB();
   if (!sb) return;
 
@@ -1308,7 +1308,7 @@ function setSyncStatus(msg, isError) {
       localStorage.removeItem('capsula_user');
     }
   });
-})();
+});
 
 // ══════════════════════════════════════
 // ONBOARDING WIZARD
