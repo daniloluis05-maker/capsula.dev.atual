@@ -730,6 +730,8 @@ function saveToLS(aiText) {
     const idx = perfis.findIndex(p => p.uid === userData.uid);
     if (idx >= 0) { perfis[idx].swot = userData.swot; localStorage.setItem('capsula_users', JSON.stringify(perfis)); }
   } catch(e) {}
+  // Sync Supabase
+  if(window.capsulaDB && userData.email){ capsulaDB.saveUser(userData).catch(e => console.warn('[swot] sync:', e)); }
 }
 
 function saveSWOT() {

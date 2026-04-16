@@ -310,6 +310,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .intro-meta{flex-wrap:wrap;}
 }
 </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" defer></script>
+  <script src="js/config.js" defer></script>
+  <script src="js/db.js" defer></script>
 </head>
 <body>
 <div class="orb orb-1"></div>
@@ -700,6 +703,8 @@ function showResult() {
       localStorage.setItem('capsula_users', JSON.stringify(perfis));
     }
   } catch(e) { /* silencioso */ }
+  // Sync Supabase
+  if(window.capsulaDB && userData.email){ capsulaDB.saveUser(userData).catch(e => console.warn('[soar] sync:', e)); }
 }
 
 // ══════════════════════════════════════

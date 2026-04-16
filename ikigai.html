@@ -128,6 +128,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .prog-wrap{max-width:160px;margin:0 0.75rem;}
 }
 </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" defer></script>
+  <script src="js/config.js" defer></script>
+  <script src="js/db.js" defer></script>
 </head>
 <body>
 <div class="orb orb-1"></div>
@@ -370,6 +373,8 @@ function showResult(){
     const idx=perfis.findIndex(p=>p.uid===u.uid);
     if(idx>=0){perfis[idx].ikigai=u.ikigai;localStorage.setItem('capsula_users',JSON.stringify(perfis));}
   }catch(e){}
+  // Sync Supabase
+  if(window.capsulaDB && u.email){ capsulaDB.saveUser(u).catch(function(e){ console.warn('[ikigai] sync:', e); }); }
 }
 
 // Restaura rascunho e proteção de rota

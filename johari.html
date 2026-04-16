@@ -128,6 +128,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 @media(max-width:768px){.johari-window{grid-template-columns:1fr;}.johari-mini{grid-template-columns:1fr 1fr;}.form-body{padding:2rem 1.25rem 5rem;}}
 </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" defer></script>
+  <script src="js/config.js" defer></script>
+  <script src="js/db.js" defer></script>
 </head>
 <body>
 <div class="orb orb-1"></div>
@@ -350,6 +353,8 @@ function showResult(){
   u.johari={self:[...self],others:[...others],aberto,cego,oculto,completedAt:new Date().toISOString()};
   localStorage.setItem('capsula_user',JSON.stringify(u));
   try{const perfis=JSON.parse(localStorage.getItem('capsula_users')||'[]');const idx=perfis.findIndex(p=>p.uid===u.uid);if(idx>=0){perfis[idx].johari=u.johari;localStorage.setItem('capsula_users',JSON.stringify(perfis));}}catch(e){}
+  // Sync Supabase
+  if(window.capsulaDB && u.email){ capsulaDB.saveUser(u).catch(function(e){ console.warn('[johari] sync:', e); }); }
 }
 
 // Proteção de rota

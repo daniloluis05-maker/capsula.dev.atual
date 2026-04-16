@@ -1259,31 +1259,20 @@ function getNomeExibido(userData) {
   return 'Usuário';
 }
 
-// Salva resultado na tabela `avaliations`
-// Schema esperado:
-//   avaliations(id, user_id, matrix, dominant, scores jsonb, completed_at timestamptz)
+// Sincroniza resultado DISC no Supabase via capsulaDB.syncMatrizes
 async function saveResultToSupabase({ dominant, scores }) {
   try {
-    const sb = capsulaDB.getDB();
-    if (!sb) return;
-
-    const session = await capsulaDB.getSession();
-    if (!session) {
-      // Sem sessão: salva apenas local (já feito acima)
-      console.warn('[Cápsula] Usuário não autenticado — resultado salvo apenas localmente.');
+    const userData = JSON.parse(localStorage.getItem('capsula_user') || '{}');
+    if (!userData.email) {
+      console.warn('[Cápsula] Usuário sem e-mail — resultado salvo apenas localmente.');
+      setSyncStatus('Salvo localmente ✓');
       return;
     }
 
-    const { error } = await sb.from('avaliations').upsert({
-      user_id: session.user.id,
-      matrix: 'disc',
-      dominant,
-      scores,
-      completed_at: new Date().toISOString(),
-    }, { onConflict: 'user_id,matrix' });
+    const { error } = await capsulaDB.saveUser(userData);
 
-    if (error) {
-      console.error('[Cápsula] Erro ao salvar resultado:', error.message);
+    if (error && error !== 'offline') {
+      console.error('[Cápsula] Erro ao salvar resultado:', error.message || error);
       setSyncStatus('Erro ao sincronizar resultado.', true);
     } else {
       setSyncStatus('Resultado sincronizado ✓');
