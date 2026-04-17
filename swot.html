@@ -355,7 +355,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <div class="intro-meta">
     <div class="meta-item"><span class="meta-val">4</span><span class="meta-label">Quadrantes</span></div>
     <div class="meta-item"><span class="meta-val">IA</span><span class="meta-label">Análise</span></div>
-    <div class="meta-item"><span class="meta-val">PDF</span><span class="meta-label">Relatório</span></div>
+    <div class="meta-item"><span class="meta-val">∞</span><span class="meta-label">Cruzamentos</span></div>
   </div>
 
   <button class="btn-start" onclick="startSWOT()">Iniciar minha SWOT →</button>
@@ -706,11 +706,33 @@ function addSuggestion(type, text) {
 }
 
 function removeItem(type, idx) {
-  SWOT[type].splice(idx, 1);
+  const removed = SWOT[type].splice(idx, 1)[0];
   renderItems(type);
   updateProgress();
   renderSuggestionsFor(type);
   updateMobileBadges();
+
+  // Undo rápido: 4 segundos para desfazer
+  const t = document.getElementById('toast');
+  const prevTitle = document.getElementById('toast-title').textContent;
+  const prevSub   = document.getElementById('toast-sub').textContent;
+  clearTimeout(window._removeTimer);
+
+  document.getElementById('toast-title').textContent = 'Item removido';
+  document.getElementById('toast-sub').innerHTML =
+    `<span style="cursor:pointer;text-decoration:underline;color:var(--S)" onclick="undoRemove('${type}',${idx},'${removed.replace(/'/g,"\\'")}')" id="undo-link">↩ Desfazer</span>`;
+  t.classList.add('show');
+  window._removeTimer = setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+function undoRemove(type, idx, text) {
+  SWOT[type].splice(idx, 0, text);
+  renderItems(type);
+  updateProgress();
+  renderSuggestionsFor(type);
+  updateMobileBadges();
+  clearTimeout(window._removeTimer);
+  document.getElementById('toast').classList.remove('show');
 }
 
 function renderItems(type) {
@@ -906,27 +928,31 @@ function renderConfronto() {
   const el = document.getElementById('confronto-content');
   const strategies = [];
 
-  SWOT.f.slice(0,2).forEach(f => {
-    SWOT.o.slice(0,2).forEach(o => {
-      strategies.push({ type:'Estratégia Ofensiva', icon:'🎯', color:'var(--sw-F)', text:`Use <strong>${f}</strong> para aproveitar <strong>${o}</strong>` });
+  // F×O — Estratégia Ofensiva: todas as forças × todas as oportunidades
+  SWOT.f.forEach(f => {
+    SWOT.o.forEach(o => {
+      strategies.push({ type:'Estratégia Ofensiva', icon:'🎯', color:'var(--sw-F)', text:`Use <strong>${escHtml(f)}</strong> para aproveitar <strong>${escHtml(o)}</strong>` });
     });
   });
 
-  SWOT.f.slice(0,1).forEach(f => {
-    SWOT.a.slice(0,2).forEach(a => {
-      strategies.push({ type:'Estratégia Defensiva', icon:'🛡️', color:'var(--sw-A)', text:`Aplique <strong>${f}</strong> para neutralizar <strong>${a}</strong>` });
+  // F×A — Estratégia Defensiva: todas as forças × todas as ameaças
+  SWOT.f.forEach(f => {
+    SWOT.a.forEach(a => {
+      strategies.push({ type:'Estratégia Defensiva', icon:'🛡️', color:'var(--sw-A)', text:`Aplique <strong>${escHtml(f)}</strong> para neutralizar <strong>${escHtml(a)}</strong>` });
     });
   });
 
-  SWOT.fk.slice(0,1).forEach(fk => {
-    SWOT.o.slice(0,2).forEach(o => {
-      strategies.push({ type:'Área de Crescimento', icon:'📈', color:'var(--sw-O)', text:`Supere <strong>${fk}</strong> para capturar <strong>${o}</strong>` });
+  // Fk×O — Área de Crescimento: todas as fraquezas × todas as oportunidades
+  SWOT.fk.forEach(fk => {
+    SWOT.o.forEach(o => {
+      strategies.push({ type:'Área de Crescimento', icon:'📈', color:'var(--sw-O)', text:`Supere <strong>${escHtml(fk)}</strong> para capturar <strong>${escHtml(o)}</strong>` });
     });
   });
 
-  SWOT.fk.slice(0,1).forEach(fk => {
-    SWOT.a.slice(0,1).forEach(a => {
-      strategies.push({ type:'Risco Crítico', icon:'⚠️', color:'var(--sw-Fk)', text:`<strong>${fk}</strong> somada a <strong>${a}</strong> exige atenção imediata` });
+  // Fk×A — Risco Crítico: todas as fraquezas × todas as ameaças
+  SWOT.fk.forEach(fk => {
+    SWOT.a.forEach(a => {
+      strategies.push({ type:'Risco Crítico', icon:'⚠️', color:'var(--sw-Fk)', text:`<strong>${escHtml(fk)}</strong> somada a <strong>${escHtml(a)}</strong> exige atenção imediata` });
     });
   });
 
@@ -935,13 +961,31 @@ function renderConfronto() {
     return;
   }
 
-  el.innerHTML = `<div class="confronto-grid">` +
-    strategies.map(s => `
-      <div class="confronto-card" style="--cc-color:${s.color}">
-        <div class="cc-type">${s.icon} ${s.type}</div>
-        <div class="cc-text">${s.text}</div>
-      </div>
-    `).join('') + `</div>`;
+  // Agrupar por tipo para facilitar leitura quando há muitos cruzamentos
+  const grupos = [
+    { key:'Estratégia Ofensiva',  icon:'🎯', color:'var(--sw-F)'  },
+    { key:'Estratégia Defensiva', icon:'🛡️', color:'var(--sw-A)'  },
+    { key:'Área de Crescimento',  icon:'📈', color:'var(--sw-O)'  },
+    { key:'Risco Crítico',        icon:'⚠️', color:'var(--sw-Fk)' },
+  ];
+
+  el.innerHTML = grupos.map(g => {
+    const items = strategies.filter(s => s.type === g.key);
+    if (!items.length) return '';
+    return `
+      <div style="margin-bottom:1.25rem;">
+        <div style="font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:${g.color};margin-bottom:0.6rem;display:flex;align-items:center;gap:0.4rem;">
+          ${g.icon} ${g.key} <span style="color:var(--muted);font-size:0.55rem;">(${items.length})</span>
+        </div>
+        <div class="confronto-grid">
+          ${items.map(s => `
+            <div class="confronto-card" style="--cc-color:${s.color}">
+              <div class="cc-text">${s.text}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  }).join('');
 }
 
 // ══════════════════════════════════════
@@ -957,6 +1001,27 @@ async function generateAI() {
   const ocean = (userData.bigfive||{}).scores || {};
   const nome  = userData.apelido || (userData.nome||'').split(' ')[0] || 'Usuário';
 
+  // Contexto enriquecido: SOAR, Ikigai, Âncoras
+  const soar   = userData.soar   || {};
+  const ikigai = userData.ikigai || {};
+  const anc    = userData.ancoras|| {};
+
+  const soarCtx = soar.completionPct >= 50 ? [
+    soar.forcas  ? `• Forças (SOAR): ${Array.isArray(soar.forcas)  ? soar.forcas.join(', ')  : soar.forcas}`  : '',
+    soar.aspiracoes ? `• Aspirações (SOAR): ${Array.isArray(soar.aspiracoes) ? soar.aspiracoes.join(', ') : soar.aspiracoes}` : '',
+    soar.resultados ? `• Resultados desejados (SOAR): ${Array.isArray(soar.resultados) ? soar.resultados.join(', ') : soar.resultados}` : '',
+  ].filter(Boolean).join('\n') : '';
+
+  const ikigaiCtx = ikigai.completedAt ? [
+    ikigai.amaBem   ? `• Ama & faz bem: ${ikigai.amaBem}`   : '',
+    ikigai.mundoPaga ? `• Mundo paga por: ${ikigai.mundoPaga}` : '',
+    ikigai.missao   ? `• Missão percebida: ${ikigai.missao}` : '',
+  ].filter(Boolean).join('\n') : '';
+
+  const ancCtx = anc.completedAt && anc.top ? `• Âncoras de carreira dominantes: ${Array.isArray(anc.top) ? anc.top.join(', ') : anc.top}` : '';
+
+  const extraCtx = [soarCtx, ikigaiCtx, ancCtx].filter(Boolean).join('\n');
+
   const prompt = `Você é um especialista em desenvolvimento de carreira e psicologia organizacional.
 Analise a SWOT pessoal de ${nome} e produza uma análise profissional estruturada em português brasileiro.
 
@@ -968,10 +1033,11 @@ SWOT:
 
 Perfil DISC: Dominância ${disc.D||'—'}% | Influência ${disc.I||'—'}% | Estabilidade ${disc.S||'—'}% | Conformidade ${disc.C||'—'}%
 Perfil OCEAN: Abertura ${ocean.O||'—'} | Conscienciosidade ${ocean.C||'—'} | Extroversão ${ocean.E||'—'} | Amabilidade ${ocean.A||'—'} | Neuroticismo ${ocean.N||'—'}
+${extraCtx ? '\nContexto adicional dos demais instrumentos:\n' + extraCtx : ''}
 
 Estruture a resposta em 4 seções:
-1. 🔎 DIAGNÓSTICO DO PERFIL — 2 parágrafos sobre quem é esse profissional
-2. 🚀 3 CAMINHOS DE CARREIRA — caminhos específicos baseados na SWOT + perfis comportamentais
+1. 🔎 DIAGNÓSTICO DO PERFIL — 2 parágrafos sobre quem é esse profissional, integrando todos os instrumentos disponíveis
+2. 🚀 3 CAMINHOS DE CARREIRA — caminhos específicos baseados na SWOT + perfis comportamentais + aspirações
 3. 📋 PLANO DE AÇÃO 90 DIAS — 5 a 7 passos práticos e concretos
 4. ⚠️ ALERTAS IMPORTANTES — riscos que precisam de atenção imediata
 
@@ -1042,7 +1108,7 @@ function saveToLS(aiText) {
 }
 
 function saveSWOT() {
-  saveToLS(null);
+  saveToLS(userData.swot?.aiAnalysis || null);
   toast('SWOT salva!', 'Você pode editar a qualquer momento.');
   showPage('page-result');
 }
