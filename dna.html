@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="DNA Estratégico — análise sintética e preditiva do seu perfil comportamental na Cápsula de Desenvolvimento.">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.anthropic.com;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co;">
 <title>DNA Estratégico | Cápsula de Desenvolvimento</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -490,7 +490,8 @@ async function generateDNA() {
     const systemPrompt = buildSystemPrompt();
     const userPrompt = buildUserPrompt(payload);
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const proxyUrl = window.CAPSULA_CONFIG.supabaseUrl + '/functions/v1/anthropic-proxy';
+    const response = await fetch(proxyUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

@@ -135,10 +135,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .matrix-labels{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:0.35rem;}
 .ml{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:0.35rem 0;}
 .ml:last-child{text-align:right;}
-/* Row axis labels (Interno / Externo) */
-.swot-grid-wrap{display:flex;gap:0;align-items:stretch;}
-.swot-row-labels{display:flex;flex-direction:column;justify-content:stretch;gap:1px;margin-right:0.5rem;width:1.1rem;flex-shrink:0;}
-.srl{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--mono);font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;justify-content:center;flex:1;}
 
 /* Progress bar */
 .progress-bar-wrap{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1.25rem;}
@@ -158,21 +154,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .confronto-empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
 .confronto-empty .ei{font-size:2rem;margin-bottom:0.65rem;display:block;opacity:0.3;}
 .confronto-empty p{font-size:0.8rem;line-height:1.75;}
-/* Confronto filters */
-.cfr-filters{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem;}
-.cfr-filter-btn{display:inline-flex;align-items:center;gap:0.35rem;background:none;border:1px solid var(--border2);color:var(--muted);border-radius:5px;padding:0.3rem 0.7rem;font-family:var(--sans);font-size:0.73rem;cursor:pointer;transition:all 0.15s;}
-.cfr-filter-btn:hover{border-color:var(--S);color:var(--S);}
-.cfr-filter-btn.active{background:rgba(46,196,160,0.08);border-color:var(--S);color:var(--S);font-weight:600;}
-.cfr-badge{background:rgba(255,255,255,0.06);border-radius:3px;padding:0.05rem 0.35rem;font-size:0.65rem;font-family:var(--mono);}
-.cfr-filter-btn.active .cfr-badge{background:rgba(46,196,160,0.15);}
-/* Confronto pager */
-.cfr-pager{display:flex;align-items:center;justify-content:center;gap:0.75rem;margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border);}
-.cfr-pg-btn{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:5px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;transition:all 0.15s;}
-.cfr-pg-btn:hover:not(:disabled){border-color:var(--S);color:var(--S);}
-.cfr-pg-btn:disabled{opacity:0.3;cursor:default;}
-.cfr-pg-info{font-size:0.78rem;color:var(--text);font-weight:600;}
-.cfr-pg-total{color:var(--muted);font-size:0.7rem;font-weight:400;}
-.cfr-pager-simple{text-align:center;margin-top:0.75rem;font-size:0.72rem;color:var(--muted);font-family:var(--mono);}
 
 /* ── AI ANÁLISE ── */
 .ai-panel{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:1.75rem;min-height:320px;}
@@ -331,29 +312,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .mqn-badge.has-items { display: inline-block; }
 
 }
-/* ── PRINT / PDF EXPORT ── */
-@media print {
-  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  body { background: #0F1117 !important; color: #F1F5F9 !important; }
-  .page { display: none !important; }
-  #page-matrix { display: flex !important; flex-direction: column; }
-  .back-link, .matrix-header .header-actions, .tabs, .tab-content,
-  .confronto-preview, .mobile-quadrant-nav, .q-input-row, .suggestions-block,
-  .progress-bar-wrap, .toast, #tab-confronto, #tab-analise { display: none !important; }
-  #tab-matriz { display: block !important; }
-  .swot-grid { page-break-inside: avoid; }
-  .quadrant { min-height: 160px !important; }
-  .q-item-del { display: none !important; }
-  .print-ai-section { display: block !important; }
-  .print-header { display: flex !important; }
-  @page { size: A4 landscape; margin: 1.2cm; }
-}
-.print-ai-section { display: none; margin-top: 1.5rem; padding: 1.25rem; background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; }
-.print-ai-section h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--S); }
-.print-ai-section .print-ai-body { font-size: 0.78rem; line-height: 1.8; color: #CBD5E1; white-space: pre-wrap; }
-.print-header { display: none; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
-.print-header-title { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; }
-.print-header-meta { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -393,7 +351,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <div class="intro-meta">
     <div class="meta-item"><span class="meta-val">4</span><span class="meta-label">Quadrantes</span></div>
     <div class="meta-item"><span class="meta-val">IA</span><span class="meta-label">Análise</span></div>
-    <div class="meta-item" style="cursor:pointer" title="Exportar SWOT em PDF"><span class="meta-val">PDF</span><span class="meta-label">Relatório</span></div>
+    <div class="meta-item"><span class="meta-val">PDF</span><span class="meta-label">Relatório</span></div>
   </div>
 
   <button class="btn-start" onclick="startSWOT()">Iniciar minha SWOT →</button>
@@ -411,7 +369,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     </div>
     <div class="header-actions">
       <button class="btn-ghost" onclick="toggleSuggestions()">💡 <span id="sug-toggle-label">Ocultar sugestões</span></button>
-      <button class="btn-ghost" onclick="exportPDF()" id="btn-pdf" title="Exportar SWOT como PDF">⬇ PDF</button>
       <button class="btn-primary" id="btn-ai" onclick="generateAI()" disabled>✦ Gerar Análise IA</button>
       <button class="btn-green" onclick="saveSWOT()">✓ Salvar</button>
     </div>
@@ -438,9 +395,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
   <!-- TAB: Matriz -->
   <div class="tab-content active" id="tab-matriz">
-    <div class="matrix-labels" style="margin-left:1.6rem">
-      <span class="ml">✦ Positivo (Forças / Oportunidades)</span>
-      <span class="ml">✕ Negativo (Fraquezas / Ameaças)</span>
+    <div class="matrix-labels">
+      <span class="ml">✦ Positivo</span>
+      <span class="ml">✕ Negativo</span>
     </div>
 
     <!-- MOBILE: tabs deslizantes por quadrante (ordem S→W→O→T) -->
@@ -464,12 +421,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     </nav>
 
     <!-- Grade SWOT: padrão internacional S|W / O|T -->
-    <div class="swot-grid-wrap">
-    <div class="swot-row-labels">
-      <span class="srl" style="color:var(--muted)">Interno</span>
-      <span class="srl" style="color:var(--muted)">Externo</span>
-    </div>
-    <div class="swot-grid" style="flex:1;min-width:0">
+    <div class="swot-grid">
       <!-- Forças (S) — Interno / Positivo -->
       <div class="quadrant" data-q="f" style="--q-color:var(--sw-F)">
         <div class="q-header">
@@ -526,8 +478,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <button class="q-add-btn" onclick="addItem('a')">+</button>
         </div>
       </div>
-    </div><!-- /swot-grid -->
-    </div><!-- /swot-grid-wrap -->
+    </div>
 
     <!-- ── PREVIEW DE CONFRONTO (sempre visível) ── -->
     <div id="confronto-preview" class="confronto-preview">
@@ -551,16 +502,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="cp-cards" id="cp-cards" style="display:none"></div>
       <button class="cp-full-btn" id="cp-full-btn" onclick="switchTab('confronto')" style="display:none">Ver análise de confronto completa</button>
     </div>
-  </div>
-
-  <!-- PRINT ONLY: header + AI section -->
-  <div class="print-header" id="print-header">
-    <div class="print-header-title">SWOT Pessoal — <span id="print-user-name"></span></div>
-    <div class="print-header-meta">capsula.dev · <span id="print-date"></span></div>
-  </div>
-  <div class="print-ai-section" id="print-ai-section">
-    <h3>✦ Análise IA</h3>
-    <div class="print-ai-body" id="print-ai-body">Gere a Análise IA antes de exportar para incluí-la no PDF.</div>
   </div>
 
   <!-- TAB: Confronto -->
@@ -596,11 +537,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 <!-- Toast -->
 <div class="toast" id="toast">
   <div class="toast-check">✓</div>
-  <div style="flex:1">
+  <div>
     <strong id="toast-title">Salvo!</strong>
     <div class="toast-sub" id="toast-sub">SWOT atualizada.</div>
   </div>
-  <button id="toast-undo-btn" style="display:none;background:none;border:1px solid var(--border2);border-radius:5px;color:var(--text);cursor:pointer;font-size:0.75rem;padding:0.2rem 0.55rem;white-space:nowrap;align-items:center;">↩ Desfazer</button>
 </div>
 
 <script>
@@ -761,30 +701,10 @@ function addSuggestion(type, text) {
   updateMobileBadges();
 }
 
-let _undoTimer = null;
-let _undoPending = null;
-
 function removeItem(type, idx) {
-  const removed = SWOT[type][idx];
   SWOT[type].splice(idx, 1);
   renderItems(type);
-
-  // Cancelar undo anterior se houver
-  if (_undoTimer) {
-    clearTimeout(_undoTimer);
-    _undoTimer = null;
-    _undoPending = null;
-  }
-
-  _undoPending = { type, removed };
-  toastUndo('Item removido.', () => {
-    if (_undoPending) {
-      SWOT[_undoPending.type].push(_undoPending.removed);
-      renderItems(_undoPending.type);
-      renderSuggestions();
-      _undoPending = null;
-    }
-  });
+  updateProgress();
   renderSuggestionsFor(type);
   updateMobileBadges();
 }
@@ -877,11 +797,25 @@ function renderConfrontoPreview() {
   ctaBtn.style.display    = 'inline-block';
   hint.textContent        = `${filled} de 4 quadrantes preenchidos`;
 
-  const previews = buildAllStrategies().slice(0, 3);
-  const totalCruzamentos = buildAllStrategies().length;
-  const hidden = Math.max(0, totalCruzamentos - previews.length);
+  const previews = [];
+  if (SWOT.f.length && SWOT.o.length)
+    previews.push({ type:'Estratégia Ofensiva', icon:'🎯', color:'var(--sw-F)',
+      text:`Use <strong>${escHtml(SWOT.f[0])}</strong> para aproveitar <strong>${escHtml(SWOT.o[0])}</strong>` });
+  if (SWOT.f.length && SWOT.a.length)
+    previews.push({ type:'Estratégia Defensiva', icon:'🛡️', color:'var(--sw-A)',
+      text:`Aplique <strong>${escHtml(SWOT.f[0])}</strong> para neutralizar <strong>${escHtml(SWOT.a[0])}</strong>` });
+  if (SWOT.fk.length && SWOT.o.length)
+    previews.push({ type:'Área de Crescimento', icon:'📈', color:'var(--sw-O)',
+      text:`Supere <strong>${escHtml(SWOT.fk[0])}</strong> para capturar <strong>${escHtml(SWOT.o[0])}</strong>` });
+  if (SWOT.fk.length && SWOT.a.length && previews.length < 3)
+    previews.push({ type:'Risco Crítico', icon:'⚠️', color:'var(--sw-Fk)',
+      text:`<strong>${escHtml(SWOT.fk[0])}</strong> somada a <strong>${escHtml(SWOT.a[0])}</strong> exige atenção imediata` });
 
-  cards.innerHTML = previews.map(s => `
+  const totalPreviews = previews.length;
+  const shown = previews.slice(0, 3);
+  const hidden = totalPreviews > 3 ? totalPreviews - 3 : 0;
+
+  cards.innerHTML = shown.map(s => `
     <div class="confronto-card" style="--cc-color:${s.color};cursor:pointer" onclick="switchTab('confronto')" title="Ver análise completa">
       <div class="cc-type">${s.icon} ${s.type}</div>
       <div class="cc-text">${s.text}</div>
@@ -918,72 +852,12 @@ function buildSuggestions() {
   if (ocean.N >= 60) sug.fk.push('Sensibilidade emocional em ambientes de alta pressão');
   if (ocean.E < 35)  sug.fk.push('Dificuldade em redes de relacionamento intensas');
 
-  // C alto → riscos de perfeccionismo e microgestão
-  if (ocean.C >= 75) {
-    sug.fk.push('Tendência ao perfeccionismo que pode travar entregas');
-    sug.fk.push('Dificuldade em delegar por padrão elevado de qualidade');
-    sug.o.push('Funções de gestão de qualidade, compliance ou auditoria');
-    sug.o.push('Liderança técnica ou arquitetura de processos');
-  }
-
-  // N alto → oportunidades e ameaças adicionais
-  if (ocean.N >= 60) {
-    sug.o.push('Papéis que demandam atenção a riscos e prevenção de crises');
-    sug.a.push('Burnout em ambientes de alta demanda');
-    sug.a.push('Risco de ruminação prejudicando tomada de decisão sob pressão');
-  }
-
-  // N baixo → força adicional
-  if (ocean.N < 35) sug.f.push('Estabilidade emocional e resiliência sob pressão');
-
-  // SOAR → Forças (S: habilidades reconhecidas, recursos únicos)
-  const soarAnswers = soar.answers || {};
-  const soarS = soarAnswers.S || {};
-  const soarR = soarAnswers.R || {};
-  const soarA = soarAnswers.A || {};
-  const soarO = soarAnswers.O || {};
-
-  // S1 = habilidades reconhecidas pelas pessoas → Força
-  if (soarS.S1 && soarS.S1.trim()) {
-    const safe = String(soarS.S1).trim().slice(0, 200);
-    if (safe) sug.f.push(safe);
-  }
-  // S4 = recursos únicos (rede, conhecimento) → Força
-  if (soarS.S4 && soarS.S4.trim()) {
-    const safe = String(soarS.S4).trim().slice(0, 200);
-    if (safe) sug.f.push(safe);
-  }
-
-  // R4 = obstáculos previstos e como superá-los → Fraqueza/Ameaça
-  if (soarR.R4 && soarR.R4.trim()) {
-    const safe = String(soarR.R4).trim().slice(0, 200);
-    if (safe) sug.fk.push(safe);
-  }
-
-  // R1 = resultado mais importante nos próximos 12 meses → Oportunidade
-  if (soarR.R1 && soarR.R1.trim()) {
-    const safe = String(soarR.R1).trim().slice(0, 200);
-    if (safe) sug.o.push(safe);
-  }
-
-  // A (aspirações) → Oportunidades
+  // SOAR → Oportunidades (dados do usuário — sanitizar para uso como texto puro)
   if (soar.aspiracoes && soar.aspiracoes.length) {
     soar.aspiracoes.slice(0,2).forEach(a => {
       const safe = String(a).trim().slice(0, 200);
       if (safe) sug.o.push(safe);
     });
-  } else {
-    // fallback: A1 = visão de vida ideal
-    if (soarA.A1 && soarA.A1.trim()) {
-      const safe = String(soarA.A1).trim().slice(0, 200);
-      if (safe) sug.o.push(safe);
-    }
-  }
-
-  // O1 = tendências de mercado que pode aproveitar → Oportunidade
-  if (soarO.O1 && soarO.O1.trim()) {
-    const safe = String(soarO.O1).trim().slice(0, 200);
-    if (safe) sug.o.push(safe);
   }
   if (ocean.A >= 65) sug.o.push('Papéis de liderança de pessoas (RH, gestão)');
   if (dom === 'I')   sug.o.push('Mercado de vendas consultivas e marketing');
@@ -996,6 +870,7 @@ function buildSuggestions() {
   // Ameaças
   sug.a.push('Automação de tarefas operacionais do setor');
   sug.a.push('Mercado competitivo exigindo atualização constante');
+  if (ocean.N >= 60) sug.a.push('Burnout em ambientes de alta demanda');
 
   return sug;
 }
@@ -1021,108 +896,50 @@ function toggleSuggestions() {
 }
 
 // ══════════════════════════════════════
-// CONFRONTO — paginação completa
+// CONFRONTO
 // ══════════════════════════════════════
-
-const CONFRONTO_PAGE_SIZE = 6;
-let confrontoFilter = 'all';
-let confrontoPage   = 0;
-
-function buildAllStrategies() {
-  const all = [];
-
-  SWOT.f.forEach(f => {
-    SWOT.o.forEach(o => {
-      all.push({ type:'Estratégia Ofensiva', key:'ofensiva', icon:'🎯', color:'var(--sw-F)',
-        text:`Use <strong>${escHtml(f)}</strong> para aproveitar <strong>${escHtml(o)}</strong>` });
-    });
-  });
-
-  SWOT.f.forEach(f => {
-    SWOT.a.forEach(a => {
-      all.push({ type:'Estratégia Defensiva', key:'defensiva', icon:'🛡️', color:'var(--sw-A)',
-        text:`Aplique <strong>${escHtml(f)}</strong> para neutralizar <strong>${escHtml(a)}</strong>` });
-    });
-  });
-
-  SWOT.fk.forEach(fk => {
-    SWOT.o.forEach(o => {
-      all.push({ type:'Área de Crescimento', key:'crescimento', icon:'📈', color:'var(--sw-O)',
-        text:`Supere <strong>${escHtml(fk)}</strong> para capturar <strong>${escHtml(o)}</strong>` });
-    });
-  });
-
-  SWOT.fk.forEach(fk => {
-    SWOT.a.forEach(a => {
-      all.push({ type:'Risco Crítico', key:'risco', icon:'⚠️', color:'var(--sw-Fk)',
-        text:`<strong>${escHtml(fk)}</strong> somada a <strong>${escHtml(a)}</strong> exige atenção imediata` });
-    });
-  });
-
-  return all;
-}
-
 function renderConfronto() {
   const el = document.getElementById('confronto-content');
-  const all = buildAllStrategies();
+  const strategies = [];
 
-  if (!all.length) {
+  SWOT.f.slice(0,2).forEach(f => {
+    SWOT.o.slice(0,2).forEach(o => {
+      strategies.push({ type:'Estratégia Ofensiva', icon:'🎯', color:'var(--sw-F)', text:`Use <strong>${f}</strong> para aproveitar <strong>${o}</strong>` });
+    });
+  });
+
+  SWOT.f.slice(0,1).forEach(f => {
+    SWOT.a.slice(0,2).forEach(a => {
+      strategies.push({ type:'Estratégia Defensiva', icon:'🛡️', color:'var(--sw-A)', text:`Aplique <strong>${f}</strong> para neutralizar <strong>${a}</strong>` });
+    });
+  });
+
+  SWOT.fk.slice(0,1).forEach(fk => {
+    SWOT.o.slice(0,2).forEach(o => {
+      strategies.push({ type:'Área de Crescimento', icon:'📈', color:'var(--sw-O)', text:`Supere <strong>${fk}</strong> para capturar <strong>${o}</strong>` });
+    });
+  });
+
+  SWOT.fk.slice(0,1).forEach(fk => {
+    SWOT.a.slice(0,1).forEach(a => {
+      strategies.push({ type:'Risco Crítico', icon:'⚠️', color:'var(--sw-Fk)', text:`<strong>${fk}</strong> somada a <strong>${a}</strong> exige atenção imediata` });
+    });
+  });
+
+  if (!strategies.length) {
     el.innerHTML = `<div class="confronto-empty"><span class="ei">⚙️</span><p>Preencha ao menos 2 quadrantes para gerar os cruzamentos estratégicos.</p></div>`;
     return;
   }
 
-  const counts = { all: all.length, ofensiva: 0, defensiva: 0, crescimento: 0, risco: 0 };
-  all.forEach(s => counts[s.key]++);
-
-  const filtered = confrontoFilter === 'all' ? all : all.filter(s => s.key === confrontoFilter);
-  const totalPages = Math.ceil(filtered.length / CONFRONTO_PAGE_SIZE);
-  if (confrontoPage >= totalPages) confrontoPage = Math.max(0, totalPages - 1);
-  const page = filtered.slice(confrontoPage * CONFRONTO_PAGE_SIZE, (confrontoPage + 1) * CONFRONTO_PAGE_SIZE);
-
-  const filterDefs = [
-    { key:'all',        label:'Todos',      count: counts.all },
-    { key:'ofensiva',   label:'🎯 Ofensiva',   count: counts.ofensiva },
-    { key:'defensiva',  label:'🛡️ Defensiva',  count: counts.defensiva },
-    { key:'crescimento',label:'📈 Crescimento', count: counts.crescimento },
-    { key:'risco',      label:'⚠️ Risco',       count: counts.risco },
-  ].filter(f => f.count > 0);
-
-  const filtersHTML = `<div class="cfr-filters">` +
-    filterDefs.map(f => `
-      <button class="cfr-filter-btn${confrontoFilter === f.key ? ' active' : ''}"
-        onclick="setConfrontoFilter('${f.key}')">
-        ${escHtml(f.label)} <span class="cfr-badge">${f.count}</span>
-      </button>`).join('') +
-    `</div>`;
-
-  const cardsHTML = `<div class="confronto-grid">` +
-    page.map(s => `
+  el.innerHTML = `<div class="confronto-grid">` +
+    strategies.map(s => `
       <div class="confronto-card" style="--cc-color:${s.color}">
         <div class="cc-type">${s.icon} ${s.type}</div>
         <div class="cc-text">${s.text}</div>
-      </div>`).join('') +
-    `</div>`;
-
-  const pagerHTML = totalPages > 1 ? `
-    <div class="cfr-pager">
-      <button class="cfr-pg-btn" onclick="setConfrontoPage(${confrontoPage - 1})" ${confrontoPage === 0 ? 'disabled' : ''}>‹</button>
-      <span class="cfr-pg-info">${confrontoPage + 1} / ${totalPages} <span class="cfr-pg-total">(${filtered.length} cruzamentos)</span></span>
-      <button class="cfr-pg-btn" onclick="setConfrontoPage(${confrontoPage + 1})" ${confrontoPage >= totalPages - 1 ? 'disabled' : ''}>›</button>
-    </div>` : `<div class="cfr-pager-simple">${filtered.length} cruzamento${filtered.length !== 1 ? 's' : ''}</div>`;
-
-  el.innerHTML = filtersHTML + cardsHTML + pagerHTML;
+      </div>
+    `).join('') + `</div>`;
 }
 
-function setConfrontoFilter(key) {
-  confrontoFilter = key;
-  confrontoPage = 0;
-  renderConfronto();
-}
-
-function setConfrontoPage(p) {
-  confrontoPage = p;
-  renderConfronto();
-}
 // ══════════════════════════════════════
 // ANÁLISE IA
 // ══════════════════════════════════════
@@ -1132,39 +949,33 @@ async function generateAI() {
 
   panel.innerHTML = `<div class="ai-loading"><div class="ai-spinner"></div><p>Analisando seu perfil completo...</p></div>`;
 
-  const disc     = userData.disc     || {};
-  const ocean    = (userData.bigfive||{}).scores || {};
-  const soarAI   = userData.soar     || {};
-  const ancAI    = userData.ancoras  || {};
-  const ikigaiAI = userData.ikigai   || {};
-  const nome     = userData.apelido  || (userData.nome||'').split(' ')[0] || 'Usuário';
+  const disc  = userData.disc  || {};
+  const ocean = (userData.bigfive||{}).scores || {};
+  const nome  = userData.apelido || (userData.nome||'').split(' ')[0] || 'Usuário';
 
-  // Âncora de carreira dominante
-  const _ancLabels = {tecnica:'Competência Técnica',gestao:'Competência em Gestão',autonomia:'Autonomia e Independência',seguranca:'Segurança e Estabilidade',empreendedor:'Criatividade Empreendedora',servico:'Serviço e Dedicação',desafio:'Desafio Puro',estilo:'Estilo de Vida Integrado'};
-  const ancContext = ancAI.topAnchor ? '\nÂncora de Carreira dominante: ' + (_ancLabels[ancAI.topAnchor] || ancAI.topAnchor) : '';
+  const prompt = `Você é um especialista em desenvolvimento de carreira e psicologia organizacional.
+Analise a SWOT pessoal de ${nome} e produza uma análise profissional estruturada em português brasileiro.
 
-  // SOAR context
-  const _soarAns = soarAI.answers || {};
-  const _soarLines = [];
-  if (_soarAns.S) { const v = Object.values(_soarAns.S).filter(Boolean); if (v.length) _soarLines.push('Forças: ' + v.slice(0,2).join(' | ')); }
-  if (_soarAns.A) { const v = Object.values(_soarAns.A).filter(Boolean); if (v.length) _soarLines.push('Aspirações: ' + v.slice(0,2).join(' | ')); }
-  else if (soarAI.aspiracoes && soarAI.aspiracoes.length) _soarLines.push('Aspirações: ' + soarAI.aspiracoes.slice(0,2).join(' | '));
-  if (_soarAns.R) { const v = Object.values(_soarAns.R).filter(Boolean); if (v.length) _soarLines.push('Resultados esperados: ' + v.slice(0,2).join(' | ')); }
-  const soarContext = _soarLines.length ? '\n\nSOAR:\n' + _soarLines.map(function(l){return '• '+l;}).join('\n') : '';
+SWOT:
+• Forças: ${SWOT.f.join(', ') || 'não informado'}
+• Fraquezas: ${SWOT.fk.join(', ') || 'não informado'}
+• Oportunidades: ${SWOT.o.join(', ') || 'não informado'}
+• Ameaças: ${SWOT.a.join(', ') || 'não informado'}
 
-  // Ikigai context
-  const _ikAns = ikigaiAI.answers || {};
-  const _ikLines = [];
-  if (_ikAns.ama)     { const v = Object.values(_ikAns.ama).filter(Boolean);     if (v.length) _ikLines.push('O que ama: ' + v[0]); }
-  if (_ikAns.bom)     { const v = Object.values(_ikAns.bom).filter(Boolean);     if (v.length) _ikLines.push('O que faz bem: ' + v[0]); }
-  if (_ikAns.precisa) { const v = Object.values(_ikAns.precisa).filter(Boolean); if (v.length) _ikLines.push('O que o mundo precisa: ' + v[0]); }
-  if (_ikAns.paga)    { const v = Object.values(_ikAns.paga).filter(Boolean);    if (v.length) _ikLines.push('O que te remunera: ' + v[0]); }
-  const ikigaiContext = _ikLines.length ? '\n\nIkigai:\n' + _ikLines.map(function(l){return '• '+l;}).join('\n') : '';
+Perfil DISC: Dominância ${disc.D||'—'}% | Influência ${disc.I||'—'}% | Estabilidade ${disc.S||'—'}% | Conformidade ${disc.C||'—'}%
+Perfil OCEAN: Abertura ${ocean.O||'—'} | Conscienciosidade ${ocean.C||'—'} | Extroversão ${ocean.E||'—'} | Amabilidade ${ocean.A||'—'} | Neuroticismo ${ocean.N||'—'}
 
-  const prompt = 'Você é um especialista em desenvolvimento de carreira e psicologia organizacional.\nAnalise a SWOT pessoal de ' + nome + ' e produza uma análise profissional estruturada em português brasileiro.\n\nSWOT:\n• Forças: ' + (SWOT.f.join(', ') || 'não informado') + '\n• Fraquezas: ' + (SWOT.fk.join(', ') || 'não informado') + '\n• Oportunidades: ' + (SWOT.o.join(', ') || 'não informado') + '\n• Ameaças: ' + (SWOT.a.join(', ') || 'não informado') + '\n\nPerfil DISC: Dominância ' + (disc.D||'—') + '% | Influência ' + (disc.I||'—') + '% | Estabilidade ' + (disc.S||'—') + '% | Conformidade ' + (disc.C||'—') + '%\nPerfil OCEAN: Abertura ' + (ocean.O||'—') + ' | Conscienciosidade ' + (ocean.C||'—') + ' | Extroversão ' + (ocean.E||'—') + ' | Amabilidade ' + (ocean.A||'—') + ' | Neuroticismo ' + (ocean.N||'—') + ancContext + soarContext + ikigaiContext + '\n\nEstruture a resposta em 4 seções:\n1. 🔎 DIAGNÓSTICO DO PERFIL — 2 parágrafos sobre quem é esse profissional\n2. 🚀 3 CAMINHOS DE CARREIRA — caminhos específicos baseados na SWOT + todos os perfis disponíveis\n3. 📋 PLANO DE AÇÃO 90 DIAS — 5 a 7 passos práticos e concretos\n4. ⚠️ ALERTAS IMPORTANTES — riscos que precisam de atenção imediata\n\nTom: direto, motivador, sem floreios. Use emojis como marcadores de tópico. Foque no concreto.';
+Estruture a resposta em 4 seções:
+1. 🔎 DIAGNÓSTICO DO PERFIL — 2 parágrafos sobre quem é esse profissional
+2. 🚀 3 CAMINHOS DE CARREIRA — caminhos específicos baseados na SWOT + perfis comportamentais
+3. 📋 PLANO DE AÇÃO 90 DIAS — 5 a 7 passos práticos e concretos
+4. ⚠️ ALERTAS IMPORTANTES — riscos que precisam de atenção imediata
+
+Tom: direto, motivador, sem floreios. Use emojis como marcadores de tópico. Foque no concreto.`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const proxyUrl = window.CAPSULA_CONFIG.supabaseUrl + '/functions/v1/anthropic-proxy';
+    const res = await fetch(proxyUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1232,63 +1043,12 @@ function saveSWOT() {
 // ══════════════════════════════════════
 // TOAST
 // ══════════════════════════════════════
-// ══════════════════════════════════════
-// EXPORT PDF
-// ══════════════════════════════════════
-function exportPDF() {
-  // Populate print header
-  const nome = userData.apelido || (userData.nome || '').split(' ')[0] || '';
-  document.getElementById('print-user-name').textContent = nome;
-  document.getElementById('print-date').textContent = new Date().toLocaleDateString('pt-BR', { year:'numeric', month:'long', day:'numeric' });
-
-  // Populate AI section if available
-  const aiResult = document.getElementById('ai-result');
-  const printBody = document.getElementById('print-ai-body');
-  if (aiResult) {
-    printBody.textContent = aiResult.innerText || aiResult.textContent;
-  } else {
-    printBody.textContent = 'Gere a Análise IA antes de exportar para incluí-la no PDF.';
-  }
-
-  // Make sure the matrix tab is active so print shows it
-  switchTab('matriz');
-
-  // Brief timeout to let DOM settle, then print
-  setTimeout(() => window.print(), 80);
-}
-
-
 function toast(title, sub) {
   const t = document.getElementById('toast');
   document.getElementById('toast-title').textContent = title;
   document.getElementById('toast-sub').textContent = sub;
-  const undoBtn = document.getElementById('toast-undo-btn');
-  if (undoBtn) undoBtn.style.display = 'none';
   t.classList.add('show');
-  if (_undoTimer) clearTimeout(_undoTimer);
-  _undoTimer = setTimeout(() => { t.classList.remove('show'); _undoTimer = null; }, 3500);
-}
-
-function toastUndo(sub, onUndo) {
-  const t = document.getElementById('toast');
-  document.getElementById('toast-title').textContent = 'Item removido';
-  document.getElementById('toast-sub').textContent = sub;
-  const undoBtn = document.getElementById('toast-undo-btn');
-  if (undoBtn) {
-    undoBtn.style.display = 'inline-flex';
-    undoBtn.onclick = () => {
-      t.classList.remove('show');
-      if (_undoTimer) { clearTimeout(_undoTimer); _undoTimer = null; }
-      onUndo();
-    };
-  }
-  t.classList.add('show');
-  if (_undoTimer) clearTimeout(_undoTimer);
-  _undoTimer = setTimeout(() => {
-    t.classList.remove('show');
-    _undoTimer = null;
-    _undoPending = null;
-  }, 3500);
+  setTimeout(() => t.classList.remove('show'), 3500);
 }
 </script>
 </body>
