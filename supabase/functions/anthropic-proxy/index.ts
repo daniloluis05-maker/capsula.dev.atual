@@ -5,6 +5,12 @@
 // Deploy:
 //   supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
 //   supabase functions deploy anthropic-proxy
+//
+// Variáveis de ambiente automáticas (NÃO precisam de secrets set):
+//   SUPABASE_URL       — injetada automaticamente pelo Supabase
+//   SUPABASE_ANON_KEY  — injetada automaticamente pelo Supabase
+//
+// Apenas ANTHROPIC_API_KEY precisa ser configurada manualmente.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.103.1";

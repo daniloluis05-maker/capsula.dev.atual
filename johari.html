@@ -17,6 +17,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Janela de Johari | Cápsula de Desenvolvimento</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+<link rel="preload" href="https://fonts.gstatic.com/s/outfit/v11/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC0C4G-EiAou6Y.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
@@ -132,6 +133,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" defer></script>
   <script src="js/config.js" defer></script>
   <script src="js/db.js" defer></script>
+  <script src="js/ui.js" defer></script>
 <meta property="og:image" content="https://capsula.dev/apple-touch-icon.png">
 </head>
 <body>
@@ -165,7 +167,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 <!-- FORM -->
 <div class="page" id="page-form">
-  <nav class="form-nav">
+  <nav aria-label="Navegação principal" class="form-nav">
     <a href="dashboard.html" class="form-logo"><div class="form-logo-mark">C</div>Cápsula<span>.</span>Dev</a>
     <span class="step-indicator" id="step-indicator">ETAPA 1 DE 2</span>
     <button class="btn-back" onclick="goBack()">← Voltar</button>

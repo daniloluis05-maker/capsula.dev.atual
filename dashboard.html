@@ -17,12 +17,14 @@
 <link rel="canonical" href="https://capsula.dev/dashboard.html">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+<link rel="preload" href="https://fonts.gstatic.com/s/outfit/v11/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC0C4G-EiAou6Y.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" defer></script>
 <script src="js/config.js" defer></script>
 <script src="js/db.js" defer></script>
+  <script src="js/ui.js" defer></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -182,7 +184,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="logo-mark">C</div>
       Cápsula<span>.</span>Dev
     </a>
-    <nav>
+    <nav aria-label="Navegação principal">
       <div class="nav-section">
         <span class="nav-label">Principal</span>
         <a class="nav-item active" href="dashboard.html"><span class="nav-icon">⬡</span>Dashboard</a>
@@ -208,7 +210,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     </div>
   </aside>
 
-  <main class="main">
+  <main role="main" class="main">
     <div class="topbar">
       <div>
         <span class="topbar-eyebrow">Painel de Controle</span>
