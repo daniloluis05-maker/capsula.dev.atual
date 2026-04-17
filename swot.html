@@ -452,6 +452,15 @@ function startSWOT() {
   renderAll();
   renderSuggestions();
   showPage('page-matrix');
+
+  // Event delegation para sug-chips — evita onclick inline com dados do usuário
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('button.sug-chip');
+    if (!btn) return;
+    const type = btn.dataset.sugType;
+    const text = btn.dataset.sugText;
+    if (type && text !== undefined) addSuggestion(type, text);
+  });
 }
 
 // ══════════════════════════════════════
@@ -519,7 +528,12 @@ function renderAll() {
 }
 
 function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#x27;');
 }
 
 // ══════════════════════════════════════
@@ -568,9 +582,12 @@ function buildSuggestions() {
   if (ocean.N >= 60) sug.fk.push('Sensibilidade emocional em ambientes de alta pressão');
   if (ocean.E < 35)  sug.fk.push('Dificuldade em redes de relacionamento intensas');
 
-  // SOAR → Oportunidades
+  // SOAR → Oportunidades (dados do usuário — sanitizar para uso como texto puro)
   if (soar.aspiracoes && soar.aspiracoes.length) {
-    soar.aspiracoes.slice(0,2).forEach(a => sug.o.push(a));
+    soar.aspiracoes.slice(0,2).forEach(a => {
+      const safe = String(a).trim().slice(0, 200);
+      if (safe) sug.o.push(safe);
+    });
   }
   if (ocean.A >= 65) sug.o.push('Papéis de liderança de pessoas (RH, gestão)');
   if (dom === 'I')   sug.o.push('Mercado de vendas consultivas e marketing');
@@ -599,7 +616,7 @@ function renderSuggestionsFor(type) {
   const available = all.filter(s => !SWOT[type].includes(s)).slice(0, 3);
   if (!available.length) { el.innerHTML=''; return; }
   el.innerHTML = `<div class="sug-label">💡 sugestões dos seus testes</div>` +
-    available.map(s => `<button class="sug-chip" onclick="addSuggestion('${type}','${escHtml(s)}')" title="Adicionar">${escHtml(s)}</button>`).join('');
+    available.map(s => `<button class="sug-chip" data-sug-type="${escHtml(type)}" data-sug-text="${escHtml(s)}" title="Adicionar">${escHtml(s)}</button>`).join('');
 }
 
 function toggleSuggestions() {
