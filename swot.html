@@ -190,6 +190,36 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--muted2);border-radius:100px;}
 
+/* ── CONFRONTO PREVIEW ── */
+.confronto-preview{margin-top:1.75rem;border:1px solid var(--border2);border-radius:10px;overflow:hidden;animation:fadeUp 0.3s ease both;}
+.cp-header{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.1rem;background:var(--surface2);border-bottom:1px solid var(--border);}
+.cp-header-left{display:flex;flex-direction:column;gap:0.1rem;}
+.cp-eyebrow{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text);font-weight:600;}
+.cp-hint{font-size:0.7rem;color:var(--muted);}
+.cp-cta{background:none;border:1px solid var(--border2);color:var(--muted);padding:0.35rem 0.85rem;border-radius:5px;font-family:var(--sans);font-size:0.75rem;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.cp-cta:hover{border-color:var(--S);color:var(--S);}
+.cp-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.65rem;padding:1rem 1.1rem;}
+.cp-full-btn{display:flex;align-items:center;justify-content:center;gap:0.4rem;width:100%;background:rgba(46,196,160,0.04);border:none;border-top:1px solid var(--border);padding:0.8rem 1.1rem;font-family:var(--sans);font-size:0.8rem;font-weight:700;color:var(--S);cursor:pointer;text-align:center;transition:all 0.15s;letter-spacing:0.01em;}
+.cp-full-btn:hover{background:rgba(46,196,160,0.1);}
+.cp-full-btn::after{content:'↗';font-size:0.85rem;}
+
+/* Cards clicáveis com hover explícito */
+.confronto-card[onclick]{transition:border-color 0.15s, transform 0.15s, box-shadow 0.15s;}
+.confronto-card[onclick]:hover{border-color:var(--cc-color);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.18);}
+
+/* Estado locked (menos de 2 quadrantes preenchidos) */
+.cp-locked{padding:1.25rem 1.1rem;display:flex;align-items:center;gap:1rem;}
+.cp-locked-icon{font-size:1.5rem;opacity:0.3;flex-shrink:0;}
+.cp-locked-text{font-size:0.78rem;color:var(--muted);line-height:1.6;}
+.cp-locked-text strong{color:var(--text);font-weight:600;}
+.cp-locked-bar{height:3px;background:var(--border);margin:0 1.1rem 1.1rem;border-radius:2px;overflow:hidden;}
+.cp-locked-fill{height:100%;background:linear-gradient(90deg,var(--S),var(--accent));border-radius:2px;transition:width 0.4s ease;}
+
+/* Mobile */
+@media(max-width:700px){
+  .cp-cards{grid-template-columns:1fr;}
+}
+
 /* ── MOBILE QUADRANT TABS ── */
 .mobile-quadrant-nav { display: none; }
 
@@ -449,6 +479,29 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         </div>
       </div>
     </div>
+
+    <!-- ── PREVIEW DE CONFRONTO (sempre visível) ── -->
+    <div id="confronto-preview" class="confronto-preview">
+      <div class="cp-header">
+        <div class="cp-header-left">
+          <span class="cp-eyebrow">⚙️ Cruzamentos estratégicos</span>
+          <span class="cp-hint" id="cp-hint-text">Preencha 2 quadrantes para desbloquear</span>
+        </div>
+        <button class="cp-cta" id="cp-cta-btn" onclick="switchTab('confronto')" style="display:none">Ver todos →</button>
+      </div>
+      <!-- Estado locked: menos de 2 quadrantes preenchidos -->
+      <div id="cp-locked" class="cp-locked">
+        <span class="cp-locked-icon">⚙️</span>
+        <div class="cp-locked-text">
+          <strong>Cruzamentos estratégicos</strong> desbloqueados quando você preencher ao menos 2 quadrantes.<br>
+          Eles mostram como usar suas forças para capturar oportunidades e neutralizar ameaças.
+        </div>
+      </div>
+      <div class="cp-locked-bar" id="cp-locked-bar" style="display:none"><div class="cp-locked-fill" id="cp-locked-fill" style="width:0%"></div></div>
+      <!-- Cards de preview -->
+      <div class="cp-cards" id="cp-cards" style="display:none"></div>
+      <button class="cp-full-btn" id="cp-full-btn" onclick="switchTab('confronto')" style="display:none">Ver análise de confronto completa</button>
+    </div>
   </div>
 
   <!-- TAB: Confronto -->
@@ -484,10 +537,11 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 <!-- Toast -->
 <div class="toast" id="toast">
   <div class="toast-check">✓</div>
-  <div>
+  <div style="flex:1">
     <strong id="toast-title">Salvo!</strong>
     <div class="toast-sub" id="toast-sub">SWOT atualizada.</div>
   </div>
+  <button id="toast-undo-btn" style="display:none;background:none;border:1px solid var(--border2);border-radius:5px;color:var(--text);cursor:pointer;font-size:0.75rem;padding:0.2rem 0.55rem;white-space:nowrap;align-items:center;">↩ Desfazer</button>
 </div>
 
 <script>
@@ -648,10 +702,30 @@ function addSuggestion(type, text) {
   updateMobileBadges();
 }
 
+let _undoTimer = null;
+let _undoPending = null;
+
 function removeItem(type, idx) {
+  const removed = SWOT[type][idx];
   SWOT[type].splice(idx, 1);
   renderItems(type);
-  updateProgress();
+
+  // Cancelar undo anterior se houver
+  if (_undoTimer) {
+    clearTimeout(_undoTimer);
+    _undoTimer = null;
+    _undoPending = null;
+  }
+
+  _undoPending = { type, removed };
+  toastUndo('Item removido.', () => {
+    if (_undoPending) {
+      SWOT[_undoPending.type].push(_undoPending.removed);
+      renderItems(_undoPending.type);
+      renderSuggestions();
+      _undoPending = null;
+    }
+  });
   renderSuggestionsFor(type);
   updateMobileBadges();
 }
@@ -702,6 +776,76 @@ function updateProgress() {
     document.getElementById('pb-hint').textContent = 'Adicione ao menos 4 itens para habilitar a análise IA';
     document.getElementById('pb-hint').style.color = '';
   }
+
+  renderConfrontoPreview();
+}
+
+// ══════════════════════════════════════
+// PREVIEW DE CONFRONTO
+// ══════════════════════════════════════
+function renderConfrontoPreview() {
+  const locked    = document.getElementById('cp-locked');
+  const lockedBar = document.getElementById('cp-locked-bar');
+  const lockedFill= document.getElementById('cp-locked-fill');
+  const cards     = document.getElementById('cp-cards');
+  const fullBtn   = document.getElementById('cp-full-btn');
+  const ctaBtn    = document.getElementById('cp-cta-btn');
+  const hint      = document.getElementById('cp-hint-text');
+  if (!cards) return;
+
+  const filled = [SWOT.f, SWOT.fk, SWOT.o, SWOT.a].filter(q => q.length > 0).length;
+  const pct    = Math.round(filled / 4 * 100);
+
+  if (filled < 2) {
+    // ── Estado locked: mostra progresso animado ──
+    locked.style.display    = 'flex';
+    lockedBar.style.display = 'block';
+    lockedFill.style.width  = pct + '%';
+    cards.style.display     = 'none';
+    fullBtn.style.display   = 'none';
+    ctaBtn.style.display    = 'none';
+    hint.textContent        = filled === 0
+      ? 'Preencha 2 quadrantes para desbloquear'
+      : `${4 - filled} quadrante${4 - filled > 1 ? 's' : ''} restante${4 - filled > 1 ? 's' : ''} para desbloquear`;
+    return;
+  }
+
+  // ── Estado ativo: gera cards de preview ──
+  locked.style.display    = 'none';
+  lockedBar.style.display = 'none';
+  cards.style.display     = 'grid';
+  fullBtn.style.display   = 'flex';
+  ctaBtn.style.display    = 'inline-block';
+  hint.textContent        = `${filled} de 4 quadrantes preenchidos`;
+
+  const previews = [];
+  if (SWOT.f.length && SWOT.o.length)
+    previews.push({ type:'Estratégia Ofensiva', icon:'🎯', color:'var(--sw-F)',
+      text:`Use <strong>${escHtml(SWOT.f[0])}</strong> para aproveitar <strong>${escHtml(SWOT.o[0])}</strong>` });
+  if (SWOT.f.length && SWOT.a.length)
+    previews.push({ type:'Estratégia Defensiva', icon:'🛡️', color:'var(--sw-A)',
+      text:`Aplique <strong>${escHtml(SWOT.f[0])}</strong> para neutralizar <strong>${escHtml(SWOT.a[0])}</strong>` });
+  if (SWOT.fk.length && SWOT.o.length)
+    previews.push({ type:'Área de Crescimento', icon:'📈', color:'var(--sw-O)',
+      text:`Supere <strong>${escHtml(SWOT.fk[0])}</strong> para capturar <strong>${escHtml(SWOT.o[0])}</strong>` });
+  if (SWOT.fk.length && SWOT.a.length && previews.length < 3)
+    previews.push({ type:'Risco Crítico', icon:'⚠️', color:'var(--sw-Fk)',
+      text:`<strong>${escHtml(SWOT.fk[0])}</strong> somada a <strong>${escHtml(SWOT.a[0])}</strong> exige atenção imediata` });
+
+  const totalPreviews = previews.length;
+  const shown = previews.slice(0, 3);
+  const hidden = totalPreviews > 3 ? totalPreviews - 3 : 0;
+
+  cards.innerHTML = shown.map(s => `
+    <div class="confronto-card" style="--cc-color:${s.color};cursor:pointer" onclick="switchTab('confronto')" title="Ver análise completa">
+      <div class="cc-type">${s.icon} ${s.type}</div>
+      <div class="cc-text">${s.text}</div>
+    </div>
+  `).join('') + (hidden > 0 ? `
+    <div class="confronto-card" style="--cc-color:var(--border2);cursor:pointer;opacity:0.6" onclick="switchTab('confronto')" title="Ver todos os cruzamentos">
+      <div class="cc-type">＋${hidden} cruzamento${hidden > 1 ? 's' : ''}</div>
+      <div class="cc-text" style="color:var(--muted)">Clique para ver a análise completa</div>
+    </div>` : '');
 }
 
 // ══════════════════════════════════════
@@ -729,6 +873,24 @@ function buildSuggestions() {
   if (ocean.N >= 60) sug.fk.push('Sensibilidade emocional em ambientes de alta pressão');
   if (ocean.E < 35)  sug.fk.push('Dificuldade em redes de relacionamento intensas');
 
+  // C alto → riscos de perfeccionismo e microgestão
+  if (ocean.C >= 75) {
+    sug.fk.push('Tendência ao perfeccionismo que pode travar entregas');
+    sug.fk.push('Dificuldade em delegar por padrão elevado de qualidade');
+    sug.o.push('Funções de gestão de qualidade, compliance ou auditoria');
+    sug.o.push('Liderança técnica ou arquitetura de processos');
+  }
+
+  // N alto → oportunidades e ameaças adicionais
+  if (ocean.N >= 60) {
+    sug.o.push('Papéis que demandam atenção a riscos e prevenção de crises');
+    sug.a.push('Burnout em ambientes de alta demanda');
+    sug.a.push('Risco de ruminação prejudicando tomada de decisão sob pressão');
+  }
+
+  // N baixo → força adicional
+  if (ocean.N < 35) sug.f.push('Estabilidade emocional e resiliência sob pressão');
+
   // SOAR → Oportunidades (dados do usuário — sanitizar para uso como texto puro)
   if (soar.aspiracoes && soar.aspiracoes.length) {
     soar.aspiracoes.slice(0,2).forEach(a => {
@@ -747,7 +909,6 @@ function buildSuggestions() {
   // Ameaças
   sug.a.push('Automação de tarefas operacionais do setor');
   sug.a.push('Mercado competitivo exigindo atualização constante');
-  if (ocean.N >= 60) sug.a.push('Burnout em ambientes de alta demanda');
 
   return sug;
 }
@@ -923,8 +1084,33 @@ function toast(title, sub) {
   const t = document.getElementById('toast');
   document.getElementById('toast-title').textContent = title;
   document.getElementById('toast-sub').textContent = sub;
+  const undoBtn = document.getElementById('toast-undo-btn');
+  if (undoBtn) undoBtn.style.display = 'none';
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3500);
+  if (_undoTimer) clearTimeout(_undoTimer);
+  _undoTimer = setTimeout(() => { t.classList.remove('show'); _undoTimer = null; }, 3500);
+}
+
+function toastUndo(sub, onUndo) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-title').textContent = 'Item removido';
+  document.getElementById('toast-sub').textContent = sub;
+  const undoBtn = document.getElementById('toast-undo-btn');
+  if (undoBtn) {
+    undoBtn.style.display = 'inline-flex';
+    undoBtn.onclick = () => {
+      t.classList.remove('show');
+      if (_undoTimer) { clearTimeout(_undoTimer); _undoTimer = null; }
+      onUndo();
+    };
+  }
+  t.classList.add('show');
+  if (_undoTimer) clearTimeout(_undoTimer);
+  _undoTimer = setTimeout(() => {
+    t.classList.remove('show');
+    _undoTimer = null;
+    _undoPending = null;
+  }, 3500);
 }
 </script>
 </body>
