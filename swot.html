@@ -190,12 +190,97 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--muted2);border-radius:100px;}
 
+/* ── MOBILE QUADRANT TABS ── */
+.mobile-quadrant-nav { display: none; }
+
 @media(max-width:700px){
-  .swot-grid{grid-template-columns:1fr;}
-  .confronto-grid{grid-template-columns:1fr;}
-  .header-actions{flex-direction:column;}
-  .matrix-labels{display:none;}
-  .progress-bar-wrap{flex-direction:column;align-items:flex-start;gap:0.5rem;}
+  .matrix-labels { display: none; }
+  .header-actions { flex-direction: column; }
+  .progress-bar-wrap { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .confronto-grid { grid-template-columns: 1fr; }
+
+  /* Mobile: transformar grid em display único por quadrante */
+  .swot-grid {
+    display: block !important;
+    background: none;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Ocultar todos os quadrantes por padrão no mobile */
+  .swot-grid .quadrant {
+    display: none;
+    min-height: auto;
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    overflow: hidden;
+    animation: fadeUp 0.22s ease both;
+  }
+
+  /* Mostrar apenas o quadrante ativo (controlado via JS com data-active) */
+  .swot-grid .quadrant.mobile-active {
+    display: flex;
+  }
+
+  /* Mobile tab nav strip */
+  .mobile-quadrant-nav {
+    display: flex;
+    gap: 0.45rem;
+    overflow-x: auto;
+    padding-bottom: 0.35rem;
+    margin-bottom: 1.1rem;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mobile-quadrant-nav::-webkit-scrollbar { display: none; }
+
+  .mqn-tab {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--surface);
+    border: 1.5px solid var(--border2);
+    border-radius: 8px;
+    padding: 0.5rem 0.85rem;
+    font-family: var(--sans);
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+  }
+  .mqn-tab.active {
+    color: var(--q-tab-color, var(--S));
+    border-color: var(--q-tab-color, var(--S));
+    background: color-mix(in srgb, var(--q-tab-color, var(--S)) 12%, transparent);
+  }
+  .mqn-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--q-tab-color, var(--S));
+    flex-shrink: 0;
+    opacity: 0.5;
+    transition: opacity 0.18s;
+  }
+  .mqn-tab.active .mqn-dot { opacity: 1; }
+  .mqn-badge {
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    background: var(--q-tab-color, var(--S));
+    color: #07080C;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 0.1rem 0.38rem;
+    min-width: 16px;
+    text-align: center;
+    display: none;
+    line-height: 1.5;
+  }
+  .mqn-badge.has-items { display: inline-block; }
+
 }
 </style>
 </head>
@@ -281,12 +366,34 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <!-- TAB: Matriz -->
   <div class="tab-content active" id="tab-matriz">
     <div class="matrix-labels">
-      <span class="ml">Interno (você)</span>
-      <span class="ml">Externo (mercado)</span>
+      <span class="ml">✦ Positivo</span>
+      <span class="ml">✕ Negativo</span>
     </div>
+
+    <!-- MOBILE: tabs deslizantes por quadrante (ordem S→W→O→T) -->
+    <nav class="mobile-quadrant-nav" id="mobile-q-nav" aria-label="Quadrantes SWOT">
+      <button class="mqn-tab active" data-q="f" style="--q-tab-color:var(--sw-F)" onclick="switchMobileQ('f')">
+        <span class="mqn-dot"></span>⚡ Forças
+        <span class="mqn-badge" id="mbadge-f">0</span>
+      </button>
+      <button class="mqn-tab" data-q="fk" style="--q-tab-color:var(--sw-Fk)" onclick="switchMobileQ('fk')">
+        <span class="mqn-dot"></span>🔍 Fraquezas
+        <span class="mqn-badge" id="mbadge-fk">0</span>
+      </button>
+      <button class="mqn-tab" data-q="o" style="--q-tab-color:var(--sw-O)" onclick="switchMobileQ('o')">
+        <span class="mqn-dot"></span>🚀 Oportunidades
+        <span class="mqn-badge" id="mbadge-o">0</span>
+      </button>
+      <button class="mqn-tab" data-q="a" style="--q-tab-color:var(--sw-A)" onclick="switchMobileQ('a')">
+        <span class="mqn-dot"></span>⚠️ Ameaças
+        <span class="mqn-badge" id="mbadge-a">0</span>
+      </button>
+    </nav>
+
+    <!-- Grade SWOT: padrão internacional S|W / O|T -->
     <div class="swot-grid">
-      <!-- Forças -->
-      <div class="quadrant" style="--q-color:var(--sw-F)">
+      <!-- Forças (S) — Interno / Positivo -->
+      <div class="quadrant" data-q="f" style="--q-color:var(--sw-F)">
         <div class="q-header">
           <span class="q-icon">⚡</span>
           <span class="q-label">Forças</span>
@@ -299,22 +406,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <button class="q-add-btn" onclick="addItem('f')">+</button>
         </div>
       </div>
-      <!-- Oportunidades -->
-      <div class="quadrant" style="--q-color:var(--sw-O)">
-        <div class="q-header">
-          <span class="q-icon">🚀</span>
-          <span class="q-label">Oportunidades</span>
-          <span class="q-count" id="count-o">0</span>
-        </div>
-        <div class="q-items" id="items-o"></div>
-        <div id="sug-o" class="suggestions-block"></div>
-        <div class="q-input-row">
-          <input class="q-input" id="input-o" placeholder="Ex: mercado digital em expansão..." onkeydown="handleKey(event,'o')">
-          <button class="q-add-btn" onclick="addItem('o')">+</button>
-        </div>
-      </div>
-      <!-- Fraquezas -->
-      <div class="quadrant" style="--q-color:var(--sw-Fk)">
+      <!-- Fraquezas (W) — Interno / Negativo -->
+      <div class="quadrant" data-q="fk" style="--q-color:var(--sw-Fk)">
         <div class="q-header">
           <span class="q-icon">🔍</span>
           <span class="q-label">Fraquezas</span>
@@ -327,8 +420,22 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <button class="q-add-btn" onclick="addItem('fk')">+</button>
         </div>
       </div>
-      <!-- Ameaças -->
-      <div class="quadrant" style="--q-color:var(--sw-A)">
+      <!-- Oportunidades (O) — Externo / Positivo -->
+      <div class="quadrant" data-q="o" style="--q-color:var(--sw-O)">
+        <div class="q-header">
+          <span class="q-icon">🚀</span>
+          <span class="q-label">Oportunidades</span>
+          <span class="q-count" id="count-o">0</span>
+        </div>
+        <div class="q-items" id="items-o"></div>
+        <div id="sug-o" class="suggestions-block"></div>
+        <div class="q-input-row">
+          <input class="q-input" id="input-o" placeholder="Ex: mercado digital em expansão..." onkeydown="handleKey(event,'o')">
+          <button class="q-add-btn" onclick="addItem('o')">+</button>
+        </div>
+      </div>
+      <!-- Ameaças (T) — Externo / Negativo -->
+      <div class="quadrant" data-q="a" style="--q-color:var(--sw-A)">
         <div class="q-header">
           <span class="q-icon">⚠️</span>
           <span class="q-label">Ameaças</span>
@@ -452,6 +559,8 @@ function startSWOT() {
   renderAll();
   renderSuggestions();
   showPage('page-matrix');
+  // Inicializa tabs mobile
+  switchMobileQ('f');
 
   // Event delegation para sug-chips — evita onclick inline com dados do usuário
   document.addEventListener('click', function(e) {
@@ -477,6 +586,40 @@ function switchTab(tab) {
 }
 
 // ══════════════════════════════════════
+// MOBILE QUADRANT TABS
+// ══════════════════════════════════════
+const MOBILE_Q_ORDER = ['f','o','fk','a'];
+let currentMobileQ = 'f';
+
+function switchMobileQ(q) {
+  currentMobileQ = q;
+
+  // Atualiza tabs ativas
+  document.querySelectorAll('.mqn-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.q === q);
+  });
+
+  // Mostra só o quadrante selecionado no mobile
+  document.querySelectorAll('.swot-grid .quadrant').forEach(el => {
+    el.classList.toggle('mobile-active', el.dataset.q === q);
+  });
+
+  // Scroll suave para a tab ativa
+  const activeTab = document.querySelector('.mqn-tab[data-q="' + q + '"]');
+  if (activeTab) activeTab.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+}
+
+function updateMobileBadges() {
+  MOBILE_Q_ORDER.forEach(function(q) {
+    const badge = document.getElementById('mbadge-' + q);
+    if (!badge) return;
+    const count = (SWOT[q] || []).length;
+    badge.textContent = count;
+    badge.classList.toggle('has-items', count > 0);
+  });
+}
+
+// ══════════════════════════════════════
 // ITENS
 // ══════════════════════════════════════
 function handleKey(e, type) {
@@ -493,6 +636,7 @@ function addItem(type) {
   renderItems(type);
   updateProgress();
   renderSuggestionsFor(type);
+  updateMobileBadges();
 }
 
 function addSuggestion(type, text) {
@@ -501,6 +645,7 @@ function addSuggestion(type, text) {
   renderItems(type);
   updateProgress();
   renderSuggestionsFor(type);
+  updateMobileBadges();
 }
 
 function removeItem(type, idx) {
@@ -508,6 +653,7 @@ function removeItem(type, idx) {
   renderItems(type);
   updateProgress();
   renderSuggestionsFor(type);
+  updateMobileBadges();
 }
 
 function renderItems(type) {
@@ -525,6 +671,7 @@ function renderItems(type) {
 function renderAll() {
   ['f','fk','o','a'].forEach(t => renderItems(t));
   updateProgress();
+  updateMobileBadges();
 }
 
 function escHtml(s) {
