@@ -135,6 +135,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .matrix-labels{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:0.35rem;}
 .ml{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:0.35rem 0;}
 .ml:last-child{text-align:right;}
+/* Row axis labels (Interno / Externo) */
+.swot-grid-wrap{display:flex;gap:0;align-items:stretch;}
+.swot-row-labels{display:flex;flex-direction:column;justify-content:stretch;gap:1px;margin-right:0.5rem;width:1.1rem;flex-shrink:0;}
+.srl{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--mono);font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;justify-content:center;flex:1;}
 
 /* Progress bar */
 .progress-bar-wrap{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1.25rem;}
@@ -327,6 +331,29 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .mqn-badge.has-items { display: inline-block; }
 
 }
+/* ── PRINT / PDF EXPORT ── */
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: #0F1117 !important; color: #F1F5F9 !important; }
+  .page { display: none !important; }
+  #page-matrix { display: flex !important; flex-direction: column; }
+  .back-link, .matrix-header .header-actions, .tabs, .tab-content,
+  .confronto-preview, .mobile-quadrant-nav, .q-input-row, .suggestions-block,
+  .progress-bar-wrap, .toast, #tab-confronto, #tab-analise { display: none !important; }
+  #tab-matriz { display: block !important; }
+  .swot-grid { page-break-inside: avoid; }
+  .quadrant { min-height: 160px !important; }
+  .q-item-del { display: none !important; }
+  .print-ai-section { display: block !important; }
+  .print-header { display: flex !important; }
+  @page { size: A4 landscape; margin: 1.2cm; }
+}
+.print-ai-section { display: none; margin-top: 1.5rem; padding: 1.25rem; background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; }
+.print-ai-section h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--S); }
+.print-ai-section .print-ai-body { font-size: 0.78rem; line-height: 1.8; color: #CBD5E1; white-space: pre-wrap; }
+.print-header { display: none; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+.print-header-title { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; }
+.print-header-meta { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -366,7 +393,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <div class="intro-meta">
     <div class="meta-item"><span class="meta-val">4</span><span class="meta-label">Quadrantes</span></div>
     <div class="meta-item"><span class="meta-val">IA</span><span class="meta-label">Análise</span></div>
-    <div class="meta-item"><span class="meta-val">PDF</span><span class="meta-label">Relatório</span></div>
+    <div class="meta-item" style="cursor:pointer" title="Exportar SWOT em PDF"><span class="meta-val">PDF</span><span class="meta-label">Relatório</span></div>
   </div>
 
   <button class="btn-start" onclick="startSWOT()">Iniciar minha SWOT →</button>
@@ -384,6 +411,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     </div>
     <div class="header-actions">
       <button class="btn-ghost" onclick="toggleSuggestions()">💡 <span id="sug-toggle-label">Ocultar sugestões</span></button>
+      <button class="btn-ghost" onclick="exportPDF()" id="btn-pdf" title="Exportar SWOT como PDF">⬇ PDF</button>
       <button class="btn-primary" id="btn-ai" onclick="generateAI()" disabled>✦ Gerar Análise IA</button>
       <button class="btn-green" onclick="saveSWOT()">✓ Salvar</button>
     </div>
@@ -410,9 +438,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
   <!-- TAB: Matriz -->
   <div class="tab-content active" id="tab-matriz">
-    <div class="matrix-labels">
-      <span class="ml">✦ Positivo</span>
-      <span class="ml">✕ Negativo</span>
+    <div class="matrix-labels" style="margin-left:1.6rem">
+      <span class="ml">✦ Positivo (Forças / Oportunidades)</span>
+      <span class="ml">✕ Negativo (Fraquezas / Ameaças)</span>
     </div>
 
     <!-- MOBILE: tabs deslizantes por quadrante (ordem S→W→O→T) -->
@@ -436,7 +464,12 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     </nav>
 
     <!-- Grade SWOT: padrão internacional S|W / O|T -->
-    <div class="swot-grid">
+    <div class="swot-grid-wrap">
+    <div class="swot-row-labels">
+      <span class="srl" style="color:var(--muted)">Interno</span>
+      <span class="srl" style="color:var(--muted)">Externo</span>
+    </div>
+    <div class="swot-grid" style="flex:1;min-width:0">
       <!-- Forças (S) — Interno / Positivo -->
       <div class="quadrant" data-q="f" style="--q-color:var(--sw-F)">
         <div class="q-header">
@@ -493,7 +526,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <button class="q-add-btn" onclick="addItem('a')">+</button>
         </div>
       </div>
-    </div>
+    </div><!-- /swot-grid -->
+    </div><!-- /swot-grid-wrap -->
 
     <!-- ── PREVIEW DE CONFRONTO (sempre visível) ── -->
     <div id="confronto-preview" class="confronto-preview">
@@ -517,6 +551,16 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="cp-cards" id="cp-cards" style="display:none"></div>
       <button class="cp-full-btn" id="cp-full-btn" onclick="switchTab('confronto')" style="display:none">Ver análise de confronto completa</button>
     </div>
+  </div>
+
+  <!-- PRINT ONLY: header + AI section -->
+  <div class="print-header" id="print-header">
+    <div class="print-header-title">SWOT Pessoal — <span id="print-user-name"></span></div>
+    <div class="print-header-meta">capsula.dev · <span id="print-date"></span></div>
+  </div>
+  <div class="print-ai-section" id="print-ai-section">
+    <h3>✦ Análise IA</h3>
+    <div class="print-ai-body" id="print-ai-body">Gere a Análise IA antes de exportar para incluí-la no PDF.</div>
   </div>
 
   <!-- TAB: Confronto -->
@@ -1188,6 +1232,32 @@ function saveSWOT() {
 // ══════════════════════════════════════
 // TOAST
 // ══════════════════════════════════════
+// ══════════════════════════════════════
+// EXPORT PDF
+// ══════════════════════════════════════
+function exportPDF() {
+  // Populate print header
+  const nome = userData.apelido || (userData.nome || '').split(' ')[0] || '';
+  document.getElementById('print-user-name').textContent = nome;
+  document.getElementById('print-date').textContent = new Date().toLocaleDateString('pt-BR', { year:'numeric', month:'long', day:'numeric' });
+
+  // Populate AI section if available
+  const aiResult = document.getElementById('ai-result');
+  const printBody = document.getElementById('print-ai-body');
+  if (aiResult) {
+    printBody.textContent = aiResult.innerText || aiResult.textContent;
+  } else {
+    printBody.textContent = 'Gere a Análise IA antes de exportar para incluí-la no PDF.';
+  }
+
+  // Make sure the matrix tab is active so print shows it
+  switchTab('matriz');
+
+  // Brief timeout to let DOM settle, then print
+  setTimeout(() => window.print(), 80);
+}
+
+
 function toast(title, sub) {
   const t = document.getElementById('toast');
   document.getElementById('toast-title').textContent = title;
