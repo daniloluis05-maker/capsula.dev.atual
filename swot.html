@@ -891,12 +891,54 @@ function buildSuggestions() {
   // N baixo → força adicional
   if (ocean.N < 35) sug.f.push('Estabilidade emocional e resiliência sob pressão');
 
-  // SOAR → Oportunidades (dados do usuário — sanitizar para uso como texto puro)
+  // SOAR → Forças (S: habilidades reconhecidas, recursos únicos)
+  const soarAnswers = soar.answers || {};
+  const soarS = soarAnswers.S || {};
+  const soarR = soarAnswers.R || {};
+  const soarA = soarAnswers.A || {};
+  const soarO = soarAnswers.O || {};
+
+  // S1 = habilidades reconhecidas pelas pessoas → Força
+  if (soarS.S1 && soarS.S1.trim()) {
+    const safe = String(soarS.S1).trim().slice(0, 200);
+    if (safe) sug.f.push(safe);
+  }
+  // S4 = recursos únicos (rede, conhecimento) → Força
+  if (soarS.S4 && soarS.S4.trim()) {
+    const safe = String(soarS.S4).trim().slice(0, 200);
+    if (safe) sug.f.push(safe);
+  }
+
+  // R4 = obstáculos previstos e como superá-los → Fraqueza/Ameaça
+  if (soarR.R4 && soarR.R4.trim()) {
+    const safe = String(soarR.R4).trim().slice(0, 200);
+    if (safe) sug.fk.push(safe);
+  }
+
+  // R1 = resultado mais importante nos próximos 12 meses → Oportunidade
+  if (soarR.R1 && soarR.R1.trim()) {
+    const safe = String(soarR.R1).trim().slice(0, 200);
+    if (safe) sug.o.push(safe);
+  }
+
+  // A (aspirações) → Oportunidades
   if (soar.aspiracoes && soar.aspiracoes.length) {
     soar.aspiracoes.slice(0,2).forEach(a => {
       const safe = String(a).trim().slice(0, 200);
       if (safe) sug.o.push(safe);
     });
+  } else {
+    // fallback: A1 = visão de vida ideal
+    if (soarA.A1 && soarA.A1.trim()) {
+      const safe = String(soarA.A1).trim().slice(0, 200);
+      if (safe) sug.o.push(safe);
+    }
+  }
+
+  // O1 = tendências de mercado que pode aproveitar → Oportunidade
+  if (soarO.O1 && soarO.O1.trim()) {
+    const safe = String(soarO.O1).trim().slice(0, 200);
+    if (safe) sug.o.push(safe);
   }
   if (ocean.A >= 65) sug.o.push('Papéis de liderança de pessoas (RH, gestão)');
   if (dom === 'I')   sug.o.push('Mercado de vendas consultivas e marketing');
@@ -987,29 +1029,36 @@ async function generateAI() {
 
   panel.innerHTML = `<div class="ai-loading"><div class="ai-spinner"></div><p>Analisando seu perfil completo...</p></div>`;
 
-  const disc  = userData.disc  || {};
-  const ocean = (userData.bigfive||{}).scores || {};
-  const nome  = userData.apelido || (userData.nome||'').split(' ')[0] || 'Usuário';
+  const disc     = userData.disc     || {};
+  const ocean    = (userData.bigfive||{}).scores || {};
+  const soarAI   = userData.soar     || {};
+  const ancAI    = userData.ancoras  || {};
+  const ikigaiAI = userData.ikigai   || {};
+  const nome     = userData.apelido  || (userData.nome||'').split(' ')[0] || 'Usuário';
 
-  const prompt = `Você é um especialista em desenvolvimento de carreira e psicologia organizacional.
-Analise a SWOT pessoal de ${nome} e produza uma análise profissional estruturada em português brasileiro.
+  // Âncora de carreira dominante
+  const _ancLabels = {tecnica:'Competência Técnica',gestao:'Competência em Gestão',autonomia:'Autonomia e Independência',seguranca:'Segurança e Estabilidade',empreendedor:'Criatividade Empreendedora',servico:'Serviço e Dedicação',desafio:'Desafio Puro',estilo:'Estilo de Vida Integrado'};
+  const ancContext = ancAI.topAnchor ? '\nÂncora de Carreira dominante: ' + (_ancLabels[ancAI.topAnchor] || ancAI.topAnchor) : '';
 
-SWOT:
-• Forças: ${SWOT.f.join(', ') || 'não informado'}
-• Fraquezas: ${SWOT.fk.join(', ') || 'não informado'}
-• Oportunidades: ${SWOT.o.join(', ') || 'não informado'}
-• Ameaças: ${SWOT.a.join(', ') || 'não informado'}
+  // SOAR context
+  const _soarAns = soarAI.answers || {};
+  const _soarLines = [];
+  if (_soarAns.S) { const v = Object.values(_soarAns.S).filter(Boolean); if (v.length) _soarLines.push('Forças: ' + v.slice(0,2).join(' | ')); }
+  if (_soarAns.A) { const v = Object.values(_soarAns.A).filter(Boolean); if (v.length) _soarLines.push('Aspirações: ' + v.slice(0,2).join(' | ')); }
+  else if (soarAI.aspiracoes && soarAI.aspiracoes.length) _soarLines.push('Aspirações: ' + soarAI.aspiracoes.slice(0,2).join(' | '));
+  if (_soarAns.R) { const v = Object.values(_soarAns.R).filter(Boolean); if (v.length) _soarLines.push('Resultados esperados: ' + v.slice(0,2).join(' | ')); }
+  const soarContext = _soarLines.length ? '\n\nSOAR:\n' + _soarLines.map(function(l){return '• '+l;}).join('\n') : '';
 
-Perfil DISC: Dominância ${disc.D||'—'}% | Influência ${disc.I||'—'}% | Estabilidade ${disc.S||'—'}% | Conformidade ${disc.C||'—'}%
-Perfil OCEAN: Abertura ${ocean.O||'—'} | Conscienciosidade ${ocean.C||'—'} | Extroversão ${ocean.E||'—'} | Amabilidade ${ocean.A||'—'} | Neuroticismo ${ocean.N||'—'}
+  // Ikigai context
+  const _ikAns = ikigaiAI.answers || {};
+  const _ikLines = [];
+  if (_ikAns.ama)     { const v = Object.values(_ikAns.ama).filter(Boolean);     if (v.length) _ikLines.push('O que ama: ' + v[0]); }
+  if (_ikAns.bom)     { const v = Object.values(_ikAns.bom).filter(Boolean);     if (v.length) _ikLines.push('O que faz bem: ' + v[0]); }
+  if (_ikAns.precisa) { const v = Object.values(_ikAns.precisa).filter(Boolean); if (v.length) _ikLines.push('O que o mundo precisa: ' + v[0]); }
+  if (_ikAns.paga)    { const v = Object.values(_ikAns.paga).filter(Boolean);    if (v.length) _ikLines.push('O que te remunera: ' + v[0]); }
+  const ikigaiContext = _ikLines.length ? '\n\nIkigai:\n' + _ikLines.map(function(l){return '• '+l;}).join('\n') : '';
 
-Estruture a resposta em 4 seções:
-1. 🔎 DIAGNÓSTICO DO PERFIL — 2 parágrafos sobre quem é esse profissional
-2. 🚀 3 CAMINHOS DE CARREIRA — caminhos específicos baseados na SWOT + perfis comportamentais
-3. 📋 PLANO DE AÇÃO 90 DIAS — 5 a 7 passos práticos e concretos
-4. ⚠️ ALERTAS IMPORTANTES — riscos que precisam de atenção imediata
-
-Tom: direto, motivador, sem floreios. Use emojis como marcadores de tópico. Foque no concreto.`;
+  const prompt = 'Você é um especialista em desenvolvimento de carreira e psicologia organizacional.\nAnalise a SWOT pessoal de ' + nome + ' e produza uma análise profissional estruturada em português brasileiro.\n\nSWOT:\n• Forças: ' + (SWOT.f.join(', ') || 'não informado') + '\n• Fraquezas: ' + (SWOT.fk.join(', ') || 'não informado') + '\n• Oportunidades: ' + (SWOT.o.join(', ') || 'não informado') + '\n• Ameaças: ' + (SWOT.a.join(', ') || 'não informado') + '\n\nPerfil DISC: Dominância ' + (disc.D||'—') + '% | Influência ' + (disc.I||'—') + '% | Estabilidade ' + (disc.S||'—') + '% | Conformidade ' + (disc.C||'—') + '%\nPerfil OCEAN: Abertura ' + (ocean.O||'—') + ' | Conscienciosidade ' + (ocean.C||'—') + ' | Extroversão ' + (ocean.E||'—') + ' | Amabilidade ' + (ocean.A||'—') + ' | Neuroticismo ' + (ocean.N||'—') + ancContext + soarContext + ikigaiContext + '\n\nEstruture a resposta em 4 seções:\n1. 🔎 DIAGNÓSTICO DO PERFIL — 2 parágrafos sobre quem é esse profissional\n2. 🚀 3 CAMINHOS DE CARREIRA — caminhos específicos baseados na SWOT + todos os perfis disponíveis\n3. 📋 PLANO DE AÇÃO 90 DIAS — 5 a 7 passos práticos e concretos\n4. ⚠️ ALERTAS IMPORTANTES — riscos que precisam de atenção imediata\n\nTom: direto, motivador, sem floreios. Use emojis como marcadores de tópico. Foque no concreto.';
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
