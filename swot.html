@@ -13,12 +13,13 @@
 <meta property="og:url" content="https://capsula.dev/swot.html">
 <meta property="og:title" content="SWOT Pessoal | Cápsula de Desenvolvimento">
 <meta property="og:description" content="Diagnóstico profissional completo. Cruze todos os seus resultados e receba um plano de ação orientado por IA.">
+<link rel="stylesheet" href="css/capsula.css">
 <link rel="canonical" href="https://capsula.dev/swot.html">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" defer></script>
 <script src="js/config.js" defer></script>
 <script src="js/db.js" defer></script>
@@ -313,6 +314,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 }
 </style>
+<meta property="og:image" content="https://capsula.dev/apple-touch-icon.png">
 </head>
 <body>
 <div class="orb orb-1"></div>
@@ -975,9 +977,12 @@ Tom: direto, motivador, sem floreios. Use emojis como marcadores de tópico. Foq
 
   try {
     const proxyUrl = window.CAPSULA_CONFIG.supabaseUrl + '/functions/v1/anthropic-proxy';
+    const _sb = window.capsulaDB && window.capsulaDB.getDB ? window.capsulaDB.getDB() : null;
+    const _sess = _sb ? (await _sb.auth.getSession()).data.session : null;
+    const _jwt = _sess ? _sess.access_token : '';
     const res = await fetch(proxyUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_jwt}` },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,

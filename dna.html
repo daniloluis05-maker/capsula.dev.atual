@@ -207,6 +207,9 @@ body::before{content:'';position:fixed;inset:0;background-image:
 .error-toast{position:fixed;bottom:2rem;right:2rem;background:rgba(232,96,58,0.1);border:1px solid rgba(232,96,58,0.3);border-radius:8px;padding:0.9rem 1.25rem;font-size:0.8rem;color:var(--D);z-index:999;transform:translateY(80px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);max-width:360px;}
 .error-toast.show{transform:translateY(0);opacity:1;}
 </style>
+<meta property="og:image" content="https://capsula.dev/apple-touch-icon.png">
+<link rel="canonical" href="https://capsula.dev/dna.html">
+<link rel="stylesheet" href="css/capsula.css">
 </head>
 <body>
 <div class="orb orb-1"></div>
@@ -491,9 +494,12 @@ async function generateDNA() {
     const userPrompt = buildUserPrompt(payload);
 
     const proxyUrl = window.CAPSULA_CONFIG.supabaseUrl + '/functions/v1/anthropic-proxy';
+    const _sb = window.capsulaDB && window.capsulaDB.getDB ? window.capsulaDB.getDB() : null;
+    const _sess = _sb ? (await _sb.auth.getSession()).data.session : null;
+    const _jwt = _sess ? _sess.access_token : '';
     const response = await fetch(proxyUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_jwt}` },
       body: JSON.stringify({
         model: ANTHROPIC_MODEL,
         max_tokens: 1000,

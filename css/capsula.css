@@ -1,0 +1,50 @@
+/* ─────────────────────────────────────────────────────────────
+   capsula.dev · css/capsula.css
+   Estilos compartilhados entre todas as páginas.
+   Inclua ANTES dos estilos específicos de cada página.
+───────────────────────────────────────────────────────────── */
+
+/* Reset */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Variáveis globais */
+:root {
+  --bg:       #0a0a0f;
+  --surface:  #13131a;
+  --border:   rgba(255,255,255,0.08);
+  --text:     #e8e8f0;
+  --muted:    rgba(232,232,240,0.45);
+  --accent:   #7c6af7;
+  --success:  #4caf87;
+  --warning:  #e8603a;
+  --radius:   12px;
+  --shadow:   0 4px 24px rgba(0,0,0,0.4);
+}
+
+/* Tipografia base */
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(124,106,247,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(124,106,247,0.6); }
+
+/* Botões base */
+button { cursor: pointer; font-family: inherit; }
+
+/* Links */
+a { color: var(--accent); }
+
+/* Utilitários */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); border: 0;
+}
