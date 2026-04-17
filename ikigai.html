@@ -385,7 +385,9 @@ document.addEventListener('DOMContentLoaded', function(){
     const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');
     if(u.ikigai_draft)answers=u.ikigai_draft;
     // Proteção de rota
-    if(!u.nome&&!u.apelido)window.location.href='index.html';
+    if(!u.nome&&!u.apelido&&!u.email)window.location.href='index.html';
+    // Auto-heal uid
+    if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{localStorage.setItem('capsula_user',JSON.stringify(u));}catch(_){}}
   }catch(e){}
 });
 

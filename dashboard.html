@@ -187,6 +187,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <a class="nav-item" href="disc.html"><span class="nav-icon">🎯</span>DISC</a>
         <a class="nav-item" href="soar.html"><span class="nav-icon">🧭</span>SOAR</a>
         <a class="nav-item" href="#resultados" onclick="scrollToSection('resultados')"><span class="nav-icon">◎</span>Resultados</a>
+        <a class="nav-item" href="dna.html" style="border:1px solid rgba(201,168,76,0.2);color:#C9A84C;background:rgba(201,168,76,0.06);"><span class="nav-icon">🧬</span>DNA Estratégico</a>
       </div>
       <div class="nav-section">
         <span class="nav-label">Conta</span>
@@ -324,6 +325,29 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <p>O modelo mais validado da psicologia da personalidade. Mede 5 traços fundamentais: Abertura, Conscienciosidade, Extroversão, Amabilidade e Neuroticismo.</p>
         <div class="card-foot">
           <span class="card-status" id="bigfive-status">Não iniciado</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:2.25rem;">
+      <div>
+        <span class="section-eyebrow" style="color:#C9A84C;">Síntese Estratégica</span>
+        <h2>DNA Estratégico</h2>
+      </div>
+      <span class="section-note">Gerado por IA · 4 Hélices</span>
+    </div>
+    <div class="matrices-grid" style="margin-bottom:2.25rem;">
+      <div class="matrix-card" style="--card-accent:#C9A84C;grid-column:1/-1;" onclick="window.location.href='dna.html'">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15);font-size:1.2rem;">🧬</div>
+          <span style="font-family:var(--mono);font-size:0.52rem;letter-spacing:0.1em;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);color:#C9A84C;padding:0.18rem 0.5rem;border-radius:3px;">NOVO</span>
+        </div>
+        <span class="card-category" style="color:#C9A84C;">Convergência das 4 Hélices</span>
+        <h3>DNA Estratégico — Sua Assinatura Comportamental</h3>
+        <p>Motor de análise sintética que cruza DISC, Big Five, Âncoras, Johari, Ikigai e SOAR para gerar um diagnóstico ultra-personalizado. Não é um relatório — é o seu mapa genético profissional.</p>
+        <div class="card-foot">
+          <span class="card-status" id="dna-status" style="color:#C9A84C;">Pronto para sequenciar</span>
           <span class="card-arrow">→</span>
         </div>
       </div>
@@ -475,7 +499,7 @@ function loadUser(){
   const u = JSON.parse(raw);
   applyUser(u.nome, u.apelido);
 
-  if (isNew) showToast(u.apelido || u.nome.split(' ')[0]);
+  if (isNew) showToast(u.apelido || (u.nome ? u.nome.split(' ')[0] : 'Usuário'));
 
   // Carrega estado completo das matrizes do localStorage
   loadMatrixState(JSON.parse(localStorage.getItem('capsula_user') || '{}'));
@@ -546,6 +570,7 @@ function loadMatrixState(userData){
   if(ancorasDone)activities.push({icon:'⚓',label:'Âncoras de Carreira concluídas',date:userData.ancoras.completedAt,color:'var(--S)'});
   if(johariDone)activities.push({icon:'🪟',label:'Janela de Johari concluída',date:userData.johari.completedAt,color:'var(--C)'});
   if(bigfiveDone)activities.push({icon:'🧠',label:'Big Five — OCEAN concluído',date:userData.bigfive.completedAt,color:'var(--I)'});
+  if(userData.dna&&userData.dna.generatedAt){const dnaEl=document.getElementById('dna-status');if(dnaEl){dnaEl.textContent='DNA gerado · '+new Date(userData.dna.generatedAt).toLocaleDateString('pt-BR');}activities.push({icon:'🧬',label:'DNA Estratégico gerado',date:userData.dna.generatedAt,color:'#C9A84C'});}
 
   if(activities.length>0){
     const list=document.getElementById('activity-list');
@@ -579,7 +604,7 @@ function getNomeExibido(userData) {
 function applyUser(nome,apelido){
   const ex=getNomeExibido({nome,apelido});
   document.getElementById('greeting-nome').textContent=ex;
-  document.getElementById('sb-nome').textContent=nome;
+  document.getElementById('sb-nome').textContent=nome||ex;
   document.getElementById('sb-avatar').textContent=ex.charAt(0).toUpperCase();const mob=document.getElementById('mob-avatar');if(mob)mob.textContent=ex.charAt(0).toUpperCase();
 }
 
@@ -603,7 +628,7 @@ function logout(){
       delete u.ikigai_draft;
       // Atualiza o perfil na lista capsula_users antes de remover o ativo
       const perfis = JSON.parse(localStorage.getItem('capsula_users') || '[]');
-      const idx = perfis.findIndex(p => p.uid === u.uid);
+      const idx = perfis.findIndex(p => (u.uid && p.uid === u.uid) || p.email === u.email);
       if (idx >= 0) { perfis[idx] = u; localStorage.setItem('capsula_users', JSON.stringify(perfis)); }
     }
   } catch(e) {}
@@ -661,7 +686,9 @@ function exportarDados() {
     soar: u.soar || null,
     ikigai: u.ikigai || null,
     ancoras: u.ancoras || null,
-    johari: u.johari || null
+    johari: u.johari || null,
+    bigfive: u.bigfive || null,
+    swot: u.swot || null,
   };
   const blob = new Blob([JSON.stringify(exp, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
