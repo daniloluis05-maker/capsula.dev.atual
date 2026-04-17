@@ -1101,9 +1101,13 @@
     const uid = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
     const userData = { uid, nome, email, objetivo, criado_em: new Date().toISOString() };
 
-    // 1. Salva no localStorage (imediato, funciona offline)
+    // 1. Salva no localStorage E sessionStorage (imediato, funciona offline)
+    // sessionStorage sinaliza ao dashboard que é um usuário recém-cadastrado
     try {
-      localStorage.setItem('capsula_user', JSON.stringify(userData));
+      const userDataStr = JSON.stringify(userData);
+      localStorage.setItem('capsula_user', userDataStr);
+      sessionStorage.setItem('capsula_user', userDataStr);
+      sessionStorage.setItem('capsula_is_new_user', '1'); // flag de novo cadastro
       let users = [];
       try { users = JSON.parse(localStorage.getItem('capsula_users') || '[]'); } catch(_) {}
       const idx = users.findIndex(u => u.email === email);

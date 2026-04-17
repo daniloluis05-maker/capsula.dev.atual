@@ -363,11 +363,12 @@ function showResult(){
   `;
 
   // Salva
-  const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');
+  const u=JSON.parse(localStorage.getItem('capsula_user')||sessionStorage.getItem('capsula_user')||'{}');
   if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);}
   u.ikigai={answers,completedAt:new Date().toISOString()};
   delete u.ikigai_draft;
   localStorage.setItem('capsula_user',JSON.stringify(u));
+  try{sessionStorage.setItem('capsula_user',JSON.stringify(u));}catch(_){}
   // Sync capsula_users[]
   try{
     const perfis=JSON.parse(localStorage.getItem('capsula_users')||'[]');

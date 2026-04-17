@@ -452,10 +452,10 @@ function initDate(){
 
 function loadUser(){
   // Lê sempre do localStorage (fonte primária de progresso)
-  // sessionStorage apenas sinaliza sessão nova (recém-cadastrado)
   const lsRaw = localStorage.getItem('capsula_user');
   const ssRaw = sessionStorage.getItem('capsula_user');
-  const isNew = !!ssRaw && !lsRaw; // novo usuário que ainda não fechou a aba
+  // Novo usuário: flag gravada pelo cadastro OU veio só pelo sessionStorage
+  const isNew = sessionStorage.getItem('capsula_is_new_user') === '1' || (!!ssRaw && !lsRaw);
 
   const raw = lsRaw || ssRaw;
 
@@ -468,6 +468,9 @@ function loadUser(){
   if (ssRaw && !lsRaw) {
     localStorage.setItem('capsula_user', ssRaw);
   }
+
+  // Consome a flag de novo usuário (mostrar toast só uma vez)
+  if (isNew) sessionStorage.removeItem('capsula_is_new_user');
 
   const u = JSON.parse(raw);
   applyUser(u.nome, u.apelido);

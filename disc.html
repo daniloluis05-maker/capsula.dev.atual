@@ -1226,12 +1226,15 @@ async function showResult() {
   `;
 
   // Salva no localStorage ANTES de sincronizar com Supabase
-  const userData = JSON.parse(localStorage.getItem('capsula_user') || '{}');
+  // Fallback para sessionStorage caso o usuário venha direto do cadastro
+  const _rawUser = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || '{}';
+  const userData = JSON.parse(_rawUser);
   if (!userData.uid) {
     userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
   }
   userData.disc = { dominant, scores, completedAt: new Date().toISOString() };
   localStorage.setItem('capsula_user', JSON.stringify(userData));
+  try { sessionStorage.setItem('capsula_user', JSON.stringify(userData)); } catch(_) {}
 
   // ── PERSISTÊNCIA: salva no Supabase com userData já atualizado ──
   await saveResultToSupabase(userData);

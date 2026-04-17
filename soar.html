@@ -685,7 +685,7 @@ function showResult() {
   `;
 
   // Save to localStorage
-  const userData = JSON.parse(localStorage.getItem('capsula_user') || '{}');
+  const userData = JSON.parse(localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || '{}');
   if (!userData.uid) {
     userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
   }
