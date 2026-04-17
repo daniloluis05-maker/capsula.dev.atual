@@ -154,6 +154,21 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .confronto-empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
 .confronto-empty .ei{font-size:2rem;margin-bottom:0.65rem;display:block;opacity:0.3;}
 .confronto-empty p{font-size:0.8rem;line-height:1.75;}
+/* Confronto filters */
+.cfr-filters{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem;}
+.cfr-filter-btn{display:inline-flex;align-items:center;gap:0.35rem;background:none;border:1px solid var(--border2);color:var(--muted);border-radius:5px;padding:0.3rem 0.7rem;font-family:var(--sans);font-size:0.73rem;cursor:pointer;transition:all 0.15s;}
+.cfr-filter-btn:hover{border-color:var(--S);color:var(--S);}
+.cfr-filter-btn.active{background:rgba(46,196,160,0.08);border-color:var(--S);color:var(--S);font-weight:600;}
+.cfr-badge{background:rgba(255,255,255,0.06);border-radius:3px;padding:0.05rem 0.35rem;font-size:0.65rem;font-family:var(--mono);}
+.cfr-filter-btn.active .cfr-badge{background:rgba(46,196,160,0.15);}
+/* Confronto pager */
+.cfr-pager{display:flex;align-items:center;justify-content:center;gap:0.75rem;margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border);}
+.cfr-pg-btn{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:5px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;transition:all 0.15s;}
+.cfr-pg-btn:hover:not(:disabled){border-color:var(--S);color:var(--S);}
+.cfr-pg-btn:disabled{opacity:0.3;cursor:default;}
+.cfr-pg-info{font-size:0.78rem;color:var(--text);font-weight:600;}
+.cfr-pg-total{color:var(--muted);font-size:0.7rem;font-weight:400;}
+.cfr-pager-simple{text-align:center;margin-top:0.75rem;font-size:0.72rem;color:var(--muted);font-family:var(--mono);}
 
 /* ── AI ANÁLISE ── */
 .ai-panel{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:1.75rem;min-height:320px;}
@@ -818,25 +833,11 @@ function renderConfrontoPreview() {
   ctaBtn.style.display    = 'inline-block';
   hint.textContent        = `${filled} de 4 quadrantes preenchidos`;
 
-  const previews = [];
-  if (SWOT.f.length && SWOT.o.length)
-    previews.push({ type:'Estratégia Ofensiva', icon:'🎯', color:'var(--sw-F)',
-      text:`Use <strong>${escHtml(SWOT.f[0])}</strong> para aproveitar <strong>${escHtml(SWOT.o[0])}</strong>` });
-  if (SWOT.f.length && SWOT.a.length)
-    previews.push({ type:'Estratégia Defensiva', icon:'🛡️', color:'var(--sw-A)',
-      text:`Aplique <strong>${escHtml(SWOT.f[0])}</strong> para neutralizar <strong>${escHtml(SWOT.a[0])}</strong>` });
-  if (SWOT.fk.length && SWOT.o.length)
-    previews.push({ type:'Área de Crescimento', icon:'📈', color:'var(--sw-O)',
-      text:`Supere <strong>${escHtml(SWOT.fk[0])}</strong> para capturar <strong>${escHtml(SWOT.o[0])}</strong>` });
-  if (SWOT.fk.length && SWOT.a.length && previews.length < 3)
-    previews.push({ type:'Risco Crítico', icon:'⚠️', color:'var(--sw-Fk)',
-      text:`<strong>${escHtml(SWOT.fk[0])}</strong> somada a <strong>${escHtml(SWOT.a[0])}</strong> exige atenção imediata` });
+  const previews = buildAllStrategies().slice(0, 3);
+  const totalCruzamentos = buildAllStrategies().length;
+  const hidden = Math.max(0, totalCruzamentos - previews.length);
 
-  const totalPreviews = previews.length;
-  const shown = previews.slice(0, 3);
-  const hidden = totalPreviews > 3 ? totalPreviews - 3 : 0;
-
-  cards.innerHTML = shown.map(s => `
+  cards.innerHTML = previews.map(s => `
     <div class="confronto-card" style="--cc-color:${s.color};cursor:pointer" onclick="switchTab('confronto')" title="Ver análise completa">
       <div class="cc-type">${s.icon} ${s.type}</div>
       <div class="cc-text">${s.text}</div>
@@ -976,50 +977,108 @@ function toggleSuggestions() {
 }
 
 // ══════════════════════════════════════
-// CONFRONTO
+// CONFRONTO — paginação completa
 // ══════════════════════════════════════
+
+const CONFRONTO_PAGE_SIZE = 6;
+let confrontoFilter = 'all';
+let confrontoPage   = 0;
+
+function buildAllStrategies() {
+  const all = [];
+
+  SWOT.f.forEach(f => {
+    SWOT.o.forEach(o => {
+      all.push({ type:'Estratégia Ofensiva', key:'ofensiva', icon:'🎯', color:'var(--sw-F)',
+        text:`Use <strong>${escHtml(f)}</strong> para aproveitar <strong>${escHtml(o)}</strong>` });
+    });
+  });
+
+  SWOT.f.forEach(f => {
+    SWOT.a.forEach(a => {
+      all.push({ type:'Estratégia Defensiva', key:'defensiva', icon:'🛡️', color:'var(--sw-A)',
+        text:`Aplique <strong>${escHtml(f)}</strong> para neutralizar <strong>${escHtml(a)}</strong>` });
+    });
+  });
+
+  SWOT.fk.forEach(fk => {
+    SWOT.o.forEach(o => {
+      all.push({ type:'Área de Crescimento', key:'crescimento', icon:'📈', color:'var(--sw-O)',
+        text:`Supere <strong>${escHtml(fk)}</strong> para capturar <strong>${escHtml(o)}</strong>` });
+    });
+  });
+
+  SWOT.fk.forEach(fk => {
+    SWOT.a.forEach(a => {
+      all.push({ type:'Risco Crítico', key:'risco', icon:'⚠️', color:'var(--sw-Fk)',
+        text:`<strong>${escHtml(fk)}</strong> somada a <strong>${escHtml(a)}</strong> exige atenção imediata` });
+    });
+  });
+
+  return all;
+}
+
 function renderConfronto() {
   const el = document.getElementById('confronto-content');
-  const strategies = [];
+  const all = buildAllStrategies();
 
-  SWOT.f.slice(0,2).forEach(f => {
-    SWOT.o.slice(0,2).forEach(o => {
-      strategies.push({ type:'Estratégia Ofensiva', icon:'🎯', color:'var(--sw-F)', text:`Use <strong>${f}</strong> para aproveitar <strong>${o}</strong>` });
-    });
-  });
-
-  SWOT.f.slice(0,1).forEach(f => {
-    SWOT.a.slice(0,2).forEach(a => {
-      strategies.push({ type:'Estratégia Defensiva', icon:'🛡️', color:'var(--sw-A)', text:`Aplique <strong>${f}</strong> para neutralizar <strong>${a}</strong>` });
-    });
-  });
-
-  SWOT.fk.slice(0,1).forEach(fk => {
-    SWOT.o.slice(0,2).forEach(o => {
-      strategies.push({ type:'Área de Crescimento', icon:'📈', color:'var(--sw-O)', text:`Supere <strong>${fk}</strong> para capturar <strong>${o}</strong>` });
-    });
-  });
-
-  SWOT.fk.slice(0,1).forEach(fk => {
-    SWOT.a.slice(0,1).forEach(a => {
-      strategies.push({ type:'Risco Crítico', icon:'⚠️', color:'var(--sw-Fk)', text:`<strong>${fk}</strong> somada a <strong>${a}</strong> exige atenção imediata` });
-    });
-  });
-
-  if (!strategies.length) {
+  if (!all.length) {
     el.innerHTML = `<div class="confronto-empty"><span class="ei">⚙️</span><p>Preencha ao menos 2 quadrantes para gerar os cruzamentos estratégicos.</p></div>`;
     return;
   }
 
-  el.innerHTML = `<div class="confronto-grid">` +
-    strategies.map(s => `
+  const counts = { all: all.length, ofensiva: 0, defensiva: 0, crescimento: 0, risco: 0 };
+  all.forEach(s => counts[s.key]++);
+
+  const filtered = confrontoFilter === 'all' ? all : all.filter(s => s.key === confrontoFilter);
+  const totalPages = Math.ceil(filtered.length / CONFRONTO_PAGE_SIZE);
+  if (confrontoPage >= totalPages) confrontoPage = Math.max(0, totalPages - 1);
+  const page = filtered.slice(confrontoPage * CONFRONTO_PAGE_SIZE, (confrontoPage + 1) * CONFRONTO_PAGE_SIZE);
+
+  const filterDefs = [
+    { key:'all',        label:'Todos',      count: counts.all },
+    { key:'ofensiva',   label:'🎯 Ofensiva',   count: counts.ofensiva },
+    { key:'defensiva',  label:'🛡️ Defensiva',  count: counts.defensiva },
+    { key:'crescimento',label:'📈 Crescimento', count: counts.crescimento },
+    { key:'risco',      label:'⚠️ Risco',       count: counts.risco },
+  ].filter(f => f.count > 0);
+
+  const filtersHTML = `<div class="cfr-filters">` +
+    filterDefs.map(f => `
+      <button class="cfr-filter-btn${confrontoFilter === f.key ? ' active' : ''}"
+        onclick="setConfrontoFilter('${f.key}')">
+        ${escHtml(f.label)} <span class="cfr-badge">${f.count}</span>
+      </button>`).join('') +
+    `</div>`;
+
+  const cardsHTML = `<div class="confronto-grid">` +
+    page.map(s => `
       <div class="confronto-card" style="--cc-color:${s.color}">
         <div class="cc-type">${s.icon} ${s.type}</div>
         <div class="cc-text">${s.text}</div>
-      </div>
-    `).join('') + `</div>`;
+      </div>`).join('') +
+    `</div>`;
+
+  const pagerHTML = totalPages > 1 ? `
+    <div class="cfr-pager">
+      <button class="cfr-pg-btn" onclick="setConfrontoPage(${confrontoPage - 1})" ${confrontoPage === 0 ? 'disabled' : ''}>‹</button>
+      <span class="cfr-pg-info">${confrontoPage + 1} / ${totalPages} <span class="cfr-pg-total">(${filtered.length} cruzamentos)</span></span>
+      <button class="cfr-pg-btn" onclick="setConfrontoPage(${confrontoPage + 1})" ${confrontoPage >= totalPages - 1 ? 'disabled' : ''}>›</button>
+    </div>` : `<div class="cfr-pager-simple">${filtered.length} cruzamento${filtered.length !== 1 ? 's' : ''}</div>`;
+
+  el.innerHTML = filtersHTML + cardsHTML + pagerHTML;
 }
 
+function setConfrontoFilter(key) {
+  confrontoFilter = key;
+  confrontoPage = 0;
+  renderConfronto();
+}
+
+function setConfrontoPage(p) {
+  confrontoPage = p;
+  renderConfronto();
+}
 // ══════════════════════════════════════
 // ANÁLISE IA
 // ══════════════════════════════════════
