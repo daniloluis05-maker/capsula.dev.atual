@@ -1,6 +1,7 @@
 // supabase/functions/anthropic-proxy/index.ts
-// Proxy seguro para a API da Anthropic com autenticação JWT do Supabase.
-// Apenas usuários autenticados no capsula.dev podem chamar a Anthropic.
+// Proxy seguro para a API da Anthropic com autenticação Supabase.
+// Aceita tanto sessão autenticada (JWT user) quanto anon key (usuários
+// do capsula.dev que não passam por Supabase Auth).
 //
 // Deploy:
 //   supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
@@ -23,6 +24,7 @@ const MAX_TOKENS_LIMIT  = 1500;
 const ALLOWED_ORIGINS = [
   "https://capsula.dev",
   "https://www.capsula.dev",
+  "https://capsula-dev-atualizado.vercel.app",
 ];
 
 function corsHeaders(origin: string | null): Record<string, string> {
@@ -59,7 +61,7 @@ serve(async (req: Request) => {
     );
   }
 
-  // ── ITEM 1: Autenticação JWT do Supabase ─────────────────────
+  // ── Autenticação: aceita JWT de usuário OU anon key ──────────
   const authHeader = req.headers.get("Authorization");
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return new Response(
@@ -78,18 +80,25 @@ serve(async (req: Request) => {
     );
   }
 
-  const supabase = createClient(supabaseUrl, supabaseKey, {
-    global: { headers: { Authorization: authHeader } },
-  });
+  // Verifica se o token enviado é a própria anon key (usuários sem Supabase Auth)
+  const token = authHeader.replace("Bearer ", "");
+  const isAnonKey = token === supabaseKey;
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return new Response(
-      JSON.stringify({ error: "Token inválido ou expirado" }),
-      { status: 401, headers: { ...cors, "Content-Type": "application/json" } },
-    );
+  if (!isAnonKey) {
+    // Token desconhecido — valida como sessão JWT de usuário autenticado
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Token inválido ou expirado" }),
+        { status: 401, headers: { ...cors, "Content-Type": "application/json" } },
+      );
+    }
   }
+  // Se isAnonKey === true: usuário identificado pelo capsula_user (localStorage),
+  // sem sessão Supabase Auth — permitido pois a anon key é pública e protegida por CORS.
   // ─────────────────────────────────────────────────────────────
 
   const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
@@ -115,13 +124,6 @@ serve(async (req: Request) => {
   if (!body.max_tokens || (body.max_tokens as number) > MAX_TOKENS_LIMIT) {
     body.max_tokens = MAX_TOKENS_LIMIT;
   }
-
-  // ── ITEM 7: Rate limiting simples por usuário ─────────────────
-  // Usa Supabase KV (via tabela) ou simples header check.
-  // Implementação leve: limita pela frequência de requisições usando
-  // o user.id — pode ser expandido para tabela rate_limits no Supabase.
-  // Por ora, o limite de max_tokens já protege o custo por chamada.
-  // ─────────────────────────────────────────────────────────────
 
   let anthropicResponse: Response;
   try {

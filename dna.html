@@ -773,7 +773,7 @@ function renderDNA(rawText, payload, palette) {
 
   // Save to localStorage
   try {
-    const raw = localStorage.getItem('capsula_user') || '{}';
+    const raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || '{}';
     const userData = JSON.parse(raw);
     userData.dna = { generated: parsed, palette: palette.type, generatedAt: new Date().toISOString() };
     capsulaDB.lsSetUser(userData);

@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Diagnóstico profissional completo. Cruze todos os seus resultados e receba um plano de ação orientado por IA com o SWOT Pessoal.">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co;">
 <title>SWOT Pessoal | Cápsula de Desenvolvimento</title>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://capsula.dev/swot.html">
@@ -1047,7 +1047,7 @@ Tom: direto, motivador, sem floreios. Use emojis como marcadores de tópico. Foq
     const proxyUrl = window.CAPSULA_CONFIG.supabaseUrl + '/functions/v1/anthropic-proxy';
     const _sb = window.capsulaDB && window.capsulaDB.getDB ? window.capsulaDB.getDB() : null;
     const _sess = _sb ? (await _sb.auth.getSession()).data.session : null;
-    const _jwt = _sess ? _sess.access_token : '';
+    const _jwt = _sess ? _sess.access_token : (window.CAPSULA_CONFIG && window.CAPSULA_CONFIG.supabaseKey ? window.CAPSULA_CONFIG.supabaseKey : '');
     const res = await fetch(proxyUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_jwt}` },
