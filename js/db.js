@@ -165,6 +165,41 @@
     }
   }
 
+  // ── Helpers de localStorage seguro ─────────────────────────
+
+  function lsGetRaw(key) {
+    try {
+      return localStorage.getItem(key) || sessionStorage.getItem(key) || null;
+    } catch(_) { return null; }
+  }
+
+  function lsGet(key) {
+    const raw = lsGetRaw(key);
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch(_) { return null; }
+  }
+
+  function lsSetRaw(key, value) {
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch(_) {
+      try { sessionStorage.setItem(key, value); return true; } catch(__) { return false; }
+    }
+  }
+
+  function lsSet(key, value) {
+    try {
+      return lsSetRaw(key, JSON.stringify(value));
+    } catch(_) { return false; }
+  }
+
+  // Atalhos específicos para as chaves usadas no projeto
+  function lsGetUser()       { return lsGet('capsula_user'); }
+  function lsSetUser(u)      { return lsSet('capsula_user', u); }
+  function lsGetUsers()      { return lsGet('capsula_users') || []; }
+  function lsSetUsers(arr)   { return lsSet('capsula_users', arr); }
+
   // ── Exporta para escopo global ──────────────────────────────
   window.capsulaDB = {
     getDB,
@@ -172,5 +207,14 @@
     findUserByEmail,
     syncMatrizes,
     migrateLocalToSupabase,
+    // localStorage seguro
+    lsGet,
+    lsGetRaw,
+    lsSet,
+    lsSetRaw,
+    lsGetUser,
+    lsSetUser,
+    lsGetUsers,
+    lsSetUsers,
   };
 })();
