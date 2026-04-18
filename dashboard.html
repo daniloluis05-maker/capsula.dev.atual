@@ -21,9 +21,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" defer></script>
-<script src="js/config.js" defer></script>
-<script src="js/db.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
   <script src="js/ui.js" defer></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -468,7 +468,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 <script>
 // #6: Cliente Supabase centralizado em js/db.js
-const db = capsulaDB.getDB();
+var db = (typeof capsulaDB !== "undefined") ? capsulaDB.getDB() : null;
 
 function initDate(){
   const now=new Date(),h=now.getHours();
@@ -641,7 +641,7 @@ function logout(){
   window.location.href='index.html';
 }
 
-initDate();loadUser();
+document.addEventListener("DOMContentLoaded", function() { if(typeof capsulaDB !== "undefined") { db = capsulaDB.getDB(); } initDate(); loadUser(); });
 
 // ── FIX CRÍTICO 2: Recarrega estado ao voltar do DISC/SOAR ────
 document.addEventListener('visibilitychange', function() {
