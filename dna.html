@@ -495,18 +495,18 @@ async function generateDNA() {
     const systemPrompt = buildSystemPrompt();
     const userPrompt = buildUserPrompt(payload);
 
-    const proxyUrl = window.CAPSULA_CONFIG.supabaseUrl + '/functions/v1/anthropic-proxy';
-    const _sb = window.capsulaDB && window.capsulaDB.getDB ? window.capsulaDB.getDB() : null;
-    const _sess = _sb ? (await _sb.auth.getSession()).data.session : null;
-    const _jwt = _sess ? _sess.access_token : (window.CAPSULA_CONFIG && window.CAPSULA_CONFIG.supabaseKey ? window.CAPSULA_CONFIG.supabaseKey : '');
-    const response = await fetch(proxyUrl, {
+    const groqUrl = 'https://api.groq.com/openai/v1/chat/completions';
+    const groqKey = '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';
+    const response = await fetch(groqUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_jwt}` },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${groqKey}` },
       body: JSON.stringify({
-        model: ANTHROPIC_MODEL,
+        model: 'llama-3.3-70b-versatile',
         max_tokens: 1500,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }],
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
       }),
     });
 
@@ -516,7 +516,7 @@ async function generateDNA() {
     }
 
     const data = await response.json();
-    const text = data.content.map(b => b.type === 'text' ? b.text : '').join('');
+    const text = data.choices?.[0]?.message?.content || '';
 
     stopLoadingAnimation();
     loadBlock.classList.remove('visible');
