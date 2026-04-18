@@ -319,9 +319,9 @@ function saveAnswers(){
 function autosave(){
   saveAnswers();
   try{
-    const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');
+    const u=(capsulaDB.lsGetUser() || {});
     u.ikigai_draft=answers;
-    localStorage.setItem('capsula_user',JSON.stringify(u));
+    capsulaDB.lsSetUser(u);
   }catch(e){}
 }
 
@@ -367,17 +367,17 @@ function showResult(){
   `;
 
   // Salva
-  const u=JSON.parse(localStorage.getItem('capsula_user')||sessionStorage.getItem('capsula_user')||'{}');
+  const u=(capsulaDB.lsGetUser() || {});
   if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);}
   u.ikigai={answers,completedAt:new Date().toISOString()};
   delete u.ikigai_draft;
-  localStorage.setItem('capsula_user',JSON.stringify(u));
+  capsulaDB.lsSetUser(u);
   try{sessionStorage.setItem('capsula_user',JSON.stringify(u));}catch(_){}
   // Sync capsula_users[]
   try{
-    const perfis=JSON.parse(localStorage.getItem('capsula_users')||'[]');
+    const perfis=capsulaDB.lsGetUsers();
     const idx=perfis.findIndex(p=>p.uid===u.uid);
-    if(idx>=0){perfis[idx].ikigai=u.ikigai;localStorage.setItem('capsula_users',JSON.stringify(perfis));}
+    if(idx>=0){perfis[idx].ikigai=u.ikigai;capsulaDB.lsSetUsers(perfis);}
   }catch(e){}
   // Sync Supabase
   if(window.capsulaDB && u.email){ capsulaDB.saveUser(u).catch(function(e){ console.warn('[ikigai] sync:', e); }); }
@@ -386,17 +386,17 @@ function showResult(){
 // Restaura rascunho e proteção de rota
 document.addEventListener('DOMContentLoaded', function(){
   try{
-    const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');
+    const u=(capsulaDB.lsGetUser() || {});
     if(u.ikigai_draft)answers=u.ikigai_draft;
     // Proteção de rota
     if(!u.nome&&!u.apelido&&!u.email)window.location.href='index.html';
     // Auto-heal uid
-    if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{localStorage.setItem('capsula_user',JSON.stringify(u));}catch(_){}}
+    if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}
   }catch(e){}
 });
 
 function generatePDF(){
-  const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');
+  const u=(capsulaDB.lsGetUser() || {});
   const nome=u.apelido||u.nome||'Usuário';
   const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ikigai — ${nome}</title>

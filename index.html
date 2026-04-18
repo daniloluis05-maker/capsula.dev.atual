@@ -1108,14 +1108,14 @@
     // sessionStorage sinaliza ao dashboard que é um usuário recém-cadastrado
     try {
       const userDataStr = JSON.stringify(userData);
-      localStorage.setItem('capsula_user', userDataStr);
+      capsulaDB.lsSetRaw('capsula_user', userDataStr);
       sessionStorage.setItem('capsula_user', userDataStr);
       sessionStorage.setItem('capsula_is_new_user', '1'); // flag de novo cadastro
       let users = [];
-      try { users = JSON.parse(localStorage.getItem('capsula_users') || '[]'); } catch(_) {}
+      try { users = capsulaDB.lsGetUsers(); } catch(_) {}
       const idx = users.findIndex(u => u.email === email);
       if (idx >= 0) users[idx] = userData; else users.push(userData);
-      localStorage.setItem('capsula_users', JSON.stringify(users));
+      capsulaDB.lsSetUsers(users);
     } catch(e) { console.warn('localStorage indisponível:', e); }
 
     // 2. Persiste no Supabase (não bloqueia o fluxo se falhar)
@@ -1159,7 +1159,7 @@
     // 2. Fallback: busca no localStorage (caso offline ou ainda não migrado)
     if (!user) {
       try {
-        const users = JSON.parse(localStorage.getItem('capsula_users') || '[]');
+        const users = capsulaDB.lsGetUsers();
         user = users.find(u => u.email === email) || null;
       } catch(_) {}
     }
@@ -1179,20 +1179,20 @@
       // Se o usuário do Supabase não trouxer uid, recupera do local ou gera um novo
       if (!user.uid) {
         try {
-          const localUsers = JSON.parse(localStorage.getItem('capsula_users') || '[]');
+          const localUsers = capsulaDB.lsGetUsers();
           const localUser = localUsers.find(u => u.email === email);
           user.uid = (localUser && localUser.uid) || (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
         } catch(_) {
           user.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
         }
       }
-      localStorage.setItem('capsula_user', JSON.stringify(user));
+      capsulaDB.lsSetUser(user);
       // Atualiza lista local também
       let users = [];
-      try { users = JSON.parse(localStorage.getItem('capsula_users') || '[]'); } catch(_) {}
+      try { users = capsulaDB.lsGetUsers(); } catch(_) {}
       const idx = users.findIndex(u => u.email === email);
       if (idx >= 0) users[idx] = user; else users.push(user);
-      localStorage.setItem('capsula_users', JSON.stringify(users));
+      capsulaDB.lsSetUsers(users);
     } catch(_) {}
 
     showPanel('loginSuccess');

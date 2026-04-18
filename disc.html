@@ -1237,7 +1237,7 @@ async function showResult() {
     userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
   }
   userData.disc = { dominant, scores, completedAt: new Date().toISOString() };
-  localStorage.setItem('capsula_user', JSON.stringify(userData));
+  capsulaDB.lsSetUser(userData);
   try { sessionStorage.setItem('capsula_user', JSON.stringify(userData)); } catch(_) {}
 
   // ── PERSISTÊNCIA: salva no Supabase com userData já atualizado ──
@@ -1246,11 +1246,11 @@ async function showResult() {
   // ── FIX CRÍTICO 1: Sincroniza resultado no array capsula_users[] ──
   // Garante que trocar de perfil não apague o resultado
   try {
-    const perfis = JSON.parse(localStorage.getItem('capsula_users') || '[]');
+    const perfis = capsulaDB.lsGetUsers();
     const idx = perfis.findIndex(function(p) { return p.uid === userData.uid; });
     if (idx >= 0) {
       perfis[idx].disc = userData.disc;
-      localStorage.setItem('capsula_users', JSON.stringify(perfis));
+      capsulaDB.lsSetUsers(perfis);
     }
   } catch(e) { /* silencioso */ }
 }
@@ -1368,12 +1368,12 @@ function initPage() {
   // Auto-heal: garante que uid sempre existe
   if (!userData.uid) {
     userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
-    try { localStorage.setItem('capsula_user', JSON.stringify(userData)); } catch(_) {}
+    try { capsulaDB.lsSetUser(userData); } catch(_) {}
   }
 
   // Sincroniza localStorage caso só exista em sessionStorage
   if (!localStorage.getItem('capsula_user') && sessionStorage.getItem('capsula_user')) {
-    localStorage.setItem('capsula_user', sessionStorage.getItem('capsula_user'));
+    capsulaDB.lsSetRaw('capsula_user', sessionStorage.getItem('capsula_user'));
   }
 
   // Exibe nome na intro
@@ -1398,7 +1398,7 @@ function generatePDF() {
   const dominant  = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
   const profile   = PROFILES[dominant];
   const accentColor = profile.color;   // FIX: era profile.hex (undefined)
-  const user      = JSON.parse(localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || 'null') || {};
+  const user      = (capsulaDB.lsGetUser() || {});
   const nome      = getNomeExibido(user);
   const data      = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
   const order     = Object.entries(scores).sort((a,b) => b[1]-a[1]);

@@ -689,25 +689,25 @@ function showResult() {
   `;
 
   // Save to localStorage
-  const userData = JSON.parse(localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || '{}');
+  const userData = (capsulaDB.lsGetUser() || {});
   if (!userData.uid) {
     userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
   }
   userData.soar  = { answers, completionPct, completedAt: new Date().toISOString() };
-  localStorage.setItem('capsula_user', JSON.stringify(userData));
+  capsulaDB.lsSetUser(userData);
   try {
-    const _ud = JSON.parse(localStorage.getItem('capsula_user') || '{}');
+    const _ud = (capsulaDB.lsGetUser() || {});
     delete _ud.soar_draft;
-    localStorage.setItem('capsula_user', JSON.stringify(_ud));
+    capsulaDB.lsSetUser(_ud);
   } catch(e) {}
 
   // ── FIX CRÍTICO 1: Sincroniza resultado no array capsula_users[] ──
   try {
-    const perfis = JSON.parse(localStorage.getItem('capsula_users') || '[]');
+    const perfis = capsulaDB.lsGetUsers();
     const idx = perfis.findIndex(function(p) { return p.uid === userData.uid; });
     if (idx >= 0) {
       perfis[idx].soar = userData.soar;
-      localStorage.setItem('capsula_users', JSON.stringify(perfis));
+      capsulaDB.lsSetUsers(perfis);
     }
   } catch(e) { /* silencioso */ }
   // Sync Supabase
@@ -773,7 +773,7 @@ function getNomeExibido(userData) {
 }
 
 function generatePDF() {
-  const user = JSON.parse(localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || 'null') || {};
+  const user = (capsulaDB.lsGetUser() || {});
   const nome = getNomeExibido(user);
   const data = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
 
@@ -917,7 +917,7 @@ function initPage() {
   // Auto-heal: garante que uid sempre existe
   if (!userData.uid) {
     userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
-    try { localStorage.setItem('capsula_user', JSON.stringify(userData)); } catch(_) {}
+    try { capsulaDB.lsSetUser(userData); } catch(_) {}
   }
 
   // Exibe nome do usuário na intro
@@ -929,7 +929,7 @@ function initPage() {
   }
 
   // Restaura rascunho salvo, se houver
-  const _u = JSON.parse(localStorage.getItem('capsula_user') || '{}');
+  const _u = (capsulaDB.lsGetUser() || {});
   const draft = _u.soar_draft || null;
   if (draft) {
     try {
@@ -942,9 +942,9 @@ function initPage() {
 // Auto-save rascunho a cada mudança + feedback visual
 function autosaveDraft() {
   try {
-    const u = JSON.parse(localStorage.getItem('capsula_user') || '{}');
+    const u = (capsulaDB.lsGetUser() || {});
     u.soar_draft = answers;
-    localStorage.setItem('capsula_user', JSON.stringify(u));
+    capsulaDB.lsSetUser(u);
     // Feedback visual sutil no contador
     const counter = document.getElementById('form-counter');
     if (counter) {

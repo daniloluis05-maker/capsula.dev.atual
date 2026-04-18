@@ -504,7 +504,7 @@ async function generateDNA() {
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_jwt}` },
       body: JSON.stringify({
         model: ANTHROPIC_MODEL,
-        max_tokens: 1000,
+        max_tokens: 1500,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
       }),
@@ -776,7 +776,7 @@ function renderDNA(rawText, payload, palette) {
     const raw = localStorage.getItem('capsula_user') || '{}';
     const userData = JSON.parse(raw);
     userData.dna = { generated: parsed, palette: palette.type, generatedAt: new Date().toISOString() };
-    localStorage.setItem('capsula_user', JSON.stringify(userData));
+    capsulaDB.lsSetUser(userData);
     if (window.capsulaDB && userData.email) capsulaDB.syncMatrizes(userData).catch(() => {});
   } catch(_) {}
 }

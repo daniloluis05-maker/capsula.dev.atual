@@ -353,21 +353,21 @@ function showResult(){
   `;
 
   // Salva
-  const u=JSON.parse(localStorage.getItem('capsula_user')||sessionStorage.getItem('capsula_user')||'{}');
-  if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{localStorage.setItem('capsula_user',JSON.stringify(u));}catch(_){}}
+  const u=(capsulaDB.lsGetUser() || {});
+  if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}
   u.johari={self:[...self],others:[...others],aberto,cego,oculto,completedAt:new Date().toISOString()};
-  localStorage.setItem('capsula_user',JSON.stringify(u));
+  capsulaDB.lsSetUser(u);
   try{sessionStorage.setItem('capsula_user',JSON.stringify(u));}catch(_){}
-  try{const perfis=JSON.parse(localStorage.getItem('capsula_users')||'[]');const idx=perfis.findIndex(p=>p.uid===u.uid);if(idx>=0){perfis[idx].johari=u.johari;localStorage.setItem('capsula_users',JSON.stringify(perfis));}}catch(e){}
+  try{const perfis=capsulaDB.lsGetUsers();const idx=perfis.findIndex(p=>p.uid===u.uid);if(idx>=0){perfis[idx].johari=u.johari;capsulaDB.lsSetUsers(perfis);}}catch(e){}
   // Sync Supabase
   if(window.capsulaDB && u.email){ capsulaDB.saveUser(u).catch(function(e){ console.warn('[johari] sync:', e); }); }
 }
 
 // Proteção de rota
-document.addEventListener('DOMContentLoaded',function(){try{const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');if(!u.nome&&!u.apelido&&!u.email)window.location.href='index.html';if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{localStorage.setItem('capsula_user',JSON.stringify(u));}catch(_){}}}catch(e){}});
+document.addEventListener('DOMContentLoaded',function(){try{const u=(capsulaDB.lsGetUser() || {});if(!u.nome&&!u.apelido&&!u.email)window.location.href='index.html';if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}}catch(e){}});
 
 function generatePDF(){
-  const u=JSON.parse(localStorage.getItem('capsula_user')||'{}');
+  const u=(capsulaDB.lsGetUser() || {});
   const nome=u.apelido||u.nome||'Usuário';
   const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
   const aberto=[...selfSelected].filter(a=>othersSelected.has(a));

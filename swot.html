@@ -563,13 +563,13 @@ window.addEventListener('DOMContentLoaded', function() {
   const raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
   if (!raw) { window.location.href = 'index.html'; return; }
   if (!localStorage.getItem('capsula_user') && sessionStorage.getItem('capsula_user')) {
-    try { localStorage.setItem('capsula_user', raw); } catch(_) {}
+    try { capsulaDB.lsSetRaw('capsula_user', raw); } catch(_) {}
   }
   userData = JSON.parse(raw);
   // Auto-heal: garante uid
   if (!userData.uid) {
     userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
-    try { localStorage.setItem('capsula_user', JSON.stringify(userData)); } catch(_) {}
+    try { capsulaDB.lsSetUser(userData); } catch(_) {}
   }
 
   // Nome
@@ -1053,7 +1053,7 @@ Tom: direto, motivador, sem floreios. Use emojis como marcadores de tópico. Foq
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_jwt}` },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
+        max_tokens: 1500,
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -1096,12 +1096,12 @@ function saveToLS(aiText) {
     aiAnalysis: aiText || null,
     completedAt: new Date().toISOString()
   };
-  localStorage.setItem('capsula_user', JSON.stringify(userData));
+  capsulaDB.lsSetUser(userData);
   try { sessionStorage.setItem('capsula_user', JSON.stringify(userData)); } catch(_) {}
   try {
-    const perfis = JSON.parse(localStorage.getItem('capsula_users') || '[]');
+    const perfis = capsulaDB.lsGetUsers();
     const idx = perfis.findIndex(p => p.uid === userData.uid);
-    if (idx >= 0) { perfis[idx].swot = userData.swot; localStorage.setItem('capsula_users', JSON.stringify(perfis)); }
+    if (idx >= 0) { perfis[idx].swot = userData.swot; capsulaDB.lsSetUsers(perfis); }
   } catch(e) {}
   // Sync Supabase
   if(window.capsulaDB && userData.email){ capsulaDB.saveUser(userData).catch(e => console.warn('[swot] sync:', e)); }

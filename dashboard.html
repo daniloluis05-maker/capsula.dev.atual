@@ -494,7 +494,7 @@ function loadUser(){
 
   // Sincroniza sessionStorage → localStorage se necessário
   if (ssRaw && !lsRaw) {
-    localStorage.setItem('capsula_user', ssRaw);
+    capsulaDB.lsSetRaw('capsula_user', ssRaw);
   }
 
   // Consome a flag de novo usuário (mostrar toast só uma vez)
@@ -506,7 +506,7 @@ function loadUser(){
   if (isNew) showToast(u.apelido || (u.nome ? u.nome.split(' ')[0] : 'Usuário'));
 
   // Carrega estado completo das matrizes do localStorage
-  loadMatrixState(JSON.parse(localStorage.getItem('capsula_user') || '{}'));
+  loadMatrixState((capsulaDB.lsGetUser() || {}));
 
   // Calcula dias ativo com base em criado_em (salvo no cadastro)
   if (u.criado_em) {
@@ -631,9 +631,9 @@ function logout(){
       delete u.soar_draft;
       delete u.ikigai_draft;
       // Atualiza o perfil na lista capsula_users antes de remover o ativo
-      const perfis = JSON.parse(localStorage.getItem('capsula_users') || '[]');
+      const perfis = capsulaDB.lsGetUsers();
       const idx = perfis.findIndex(p => (u.uid && p.uid === u.uid) || p.email === u.email);
-      if (idx >= 0) { perfis[idx] = u; localStorage.setItem('capsula_users', JSON.stringify(perfis)); }
+      if (idx >= 0) { perfis[idx] = u; capsulaDB.lsSetUsers(perfis); }
     }
   } catch(e) {}
   sessionStorage.removeItem('capsula_user');
