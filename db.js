@@ -165,19 +165,7 @@
     }
   }
 
-  // ── localStorage seguro ─────────────────────────────────────
-  // Substitui chamadas diretas a localStorage que podem lançar:
-  //   • SyntaxError    — JSON corrompido no getItem
-  //   • QuotaExceededError — storage cheio no setItem
-  //   • SecurityError  — storage bloqueado (iframe, modo privativo restrito)
-  //
-  // API:
-  //   capsulaDB.lsGet('capsula_user')        → objeto | null
-  //   capsulaDB.lsGetRaw('capsula_user')     → string | null
-  //   capsulaDB.lsSet('capsula_user', obj)   → true | false
-  //   capsulaDB.lsSetRaw('capsula_user', s)  → true | false
-  //   capsulaDB.lsGetUsers()                 → array
-  //   capsulaDB.lsSetUsers(arr)              → true | false
+  // ── Helpers de localStorage seguro ─────────────────────────
 
   function lsGetRaw(key) {
     try {
