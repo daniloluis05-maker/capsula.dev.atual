@@ -498,7 +498,7 @@ async function generateDNA() {
     const proxyUrl = window.CAPSULA_CONFIG.supabaseUrl + '/functions/v1/anthropic-proxy';
     const _sb = window.capsulaDB && window.capsulaDB.getDB ? window.capsulaDB.getDB() : null;
     const _sess = _sb ? (await _sb.auth.getSession()).data.session : null;
-    const _jwt = _sess ? _sess.access_token : '';
+    const _jwt = _sess ? _sess.access_token : (window.CAPSULA_CONFIG && window.CAPSULA_CONFIG.supabaseKey ? window.CAPSULA_CONFIG.supabaseKey : '');
     const response = await fetch(proxyUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_jwt}` },
