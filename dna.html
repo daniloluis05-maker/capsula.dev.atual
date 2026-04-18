@@ -496,7 +496,7 @@ async function generateDNA() {
     const userPrompt = buildUserPrompt(payload);
 
     const groqUrl = 'https://api.groq.com/openai/v1/chat/completions';
-    const groqKey = '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';
+    const groqKey = window.CAPSULA_CONFIG.groqKey;
     const response = await fetch(groqUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${groqKey}` },
