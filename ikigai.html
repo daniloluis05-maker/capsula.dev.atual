@@ -399,36 +399,89 @@ function generatePDF(){
   const u=(capsulaDB.lsGetUser() || {});
   const nome=u.apelido||u.nome||'Usuário';
   const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ikigai — ${nome}</title>
-<style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,sans-serif;background:#07080C;color:#E8E6F0;-webkit-print-color-adjust:exact;print-color-adjust:exact;background-image:linear-gradient(rgba(108,95,230,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(108,95,230,0.06) 1px,transparent 1px);background-size:40px 40px;}
-.page{padding:40px;}.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.08);}
-.brand{font-size:13px;font-weight:700;color:#E8E6F0;}.brand span{color:#6C5FE6;}.date{font-size:9px;color:#6B6980;}
-.hero{background:#0D0F16;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:20px 24px;margin-bottom:16px;border-top:3px solid #E8603A;}
-.hero-tag{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;display:block;margin-bottom:4px;}
-.hero-title{font-size:30px;font-weight:800;color:#E8603A;margin-bottom:4px;}
-.hero-sub{font-size:12px;color:#aaa;}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-.block{background:#0D0F16;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:16px;}
-.block-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
-.block-icon{font-size:14px;}.block-name{font-size:12px;font-weight:700;}
-.item{display:flex;gap:6px;margin-bottom:5px;font-size:11px;color:#C0BECE;line-height:1.55;}
-.dot{width:4px;height:4px;border-radius:50%;margin-top:5px;flex-shrink:0;}
-.center{background:#0D0F16;border:1px solid rgba(232,96,58,0.25);border-radius:8px;padding:16px;margin-bottom:12px;text-align:center;border-top:2px solid #E8603A;}
-.center-label{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#E8603A;margin-bottom:6px;display:block;}
-.center h3{font-size:14px;font-weight:700;margin-bottom:5px;}
-.center p{font-size:11px;color:#aaa;line-height:1.6;}
-.footer{padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;}
-.footer p{font-size:9px;color:#353448;}
-@media print{body{background:#07080C!important;}@page{size:A4;margin:0;}.page{padding:28px;}}
-</style></head><body><div class="page">
-<div class="header"><div class="brand">Cápsula<span>.</span>Dev — Engenharia Comportamental</div><div class="date">Ikigai — Emitido em ${data}</div></div>
-<div class="hero"><span class="hero-tag">// propósito de vida · ${nome.toUpperCase()}</span><div class="hero-title">Ikigai de ${nome}</div><div class="hero-sub">Razão de ser — a intersecção dos quatro pilares do propósito.</div></div>
-<div class="grid">
-${QUADRANTS.map(q=>{const filled=Object.values(answers[q.key]||{}).filter(v=>v&&v.length>0);return`<div class="block"><div class="block-head"><span class="block-icon">${q.icon}</span><span class="block-name" style="color:${q.color}">${q.name}</span></div>${filled.map(v=>`<div class="item"><span class="dot" style="background:${q.color}"></span><span>${v}</span></div>`).join('')||'<span style="font-size:10px;color:#353448;">// não respondido</span>'}</div>`;}).join('')}
+  const ACCENT='#E8603A';
+
+  const quadrantsHTML = QUADRANTS.map(q=>{
+    const filled=Object.values(answers[q.key]||{}).filter(v=>v&&v.length>0);
+    const items=filled.map(v=>`
+      <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:7px;">
+        <span style="width:5px;height:5px;border-radius:50%;background:${q.color};margin-top:6px;flex-shrink:0;display:block;box-shadow:0 0 5px ${q.color}66;"></span>
+        <span style="font-size:11.5px;color:#C0BECE;line-height:1.6;">${v}</span>
+      </div>`).join('') || '<span style="font-family:monospace;font-size:10px;color:#353448;">// não respondido</span>';
+    return `
+      <div style="background:#0D0F16;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:18px 20px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${q.color},${q.color}00);"></div>
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);">
+          <div style="width:30px;height:30px;border-radius:7px;background:${q.color}18;border:1px solid ${q.color}44;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">${q.icon}</div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:#555;margin-bottom:2px;">${q.label||q.name.toUpperCase()}</div>
+            <div style="font-size:13px;font-weight:700;color:${q.color};">${q.name}</div>
+          </div>
+        </div>
+        ${items}
+      </div>`;
+  }).join('');
+
+  const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Ikigai — ${nome} · Cápsula.Dev</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:#07080C;color:#E8E6F0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.page{width:794px;min-height:1123px;margin:0 auto;padding:44px 48px;background:#07080C;position:relative;}
+.accent-bar{height:3px;background:linear-gradient(90deg,${ACCENT},${ACCENT}00);border-radius:2px;margin-bottom:32px;}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-cube{width:30px;height:30px;background:${ACCENT};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;}
+.brand-name{font-size:15px;font-weight:700;letter-spacing:-0.02em;color:#E4E2F0;}
+.brand-name em{color:${ACCENT};font-style:normal;}
+.header-right{text-align:right;}
+.header-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${ACCENT};margin-bottom:3px;}
+.header-date{font-family:'Space Mono',monospace;font-size:9px;color:#444;}
+.hero{background:linear-gradient(135deg,#111320 60%,${ACCENT}0A 100%);border:1px solid rgba(255,255,255,0.07);border-left:3px solid ${ACCENT};border-radius:12px;padding:28px 32px;margin-bottom:20px;}
+.hero-eyebrow{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#555;margin-bottom:8px;}
+.hero-title{font-size:42px;font-weight:900;letter-spacing:-0.04em;line-height:1;color:${ACCENT};margin-bottom:8px;}
+.hero-sub{font-size:13px;color:#888;line-height:1.5;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.center-block{background:#0D0F16;border:1px solid rgba(232,96,58,0.2);border-radius:10px;padding:20px 24px;margin-bottom:20px;text-align:center;position:relative;overflow:hidden;}
+.center-block::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:2px;background:${ACCENT};border-radius:0 0 2px 2px;}
+.center-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${ACCENT};margin-bottom:8px;display:block;}
+.center-title{font-size:16px;font-weight:700;margin-bottom:6px;}
+.center-text{font-size:12px;color:#888;line-height:1.65;}
+.footer{margin-top:auto;padding-top:18px;border-top:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;}
+.footer p{font-family:'Space Mono',monospace;font-size:8px;color:#2A2A3A;letter-spacing:0.05em;}
+.footer-brand{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#2A2A3A;}
+.footer-brand em{color:${ACCENT}55;font-style:normal;}
+@media print{@page{margin:0;size:A4;}body{background:#07080C!important;}.page{width:100%;padding:32px 36px;}}
+</style></head><body>
+<div class="page">
+  <div class="accent-bar"></div>
+  <div class="header">
+    <div class="brand">
+      <div class="brand-cube">C</div>
+      <span class="brand-name">Cápsula<em>.</em>Dev</span>
+    </div>
+    <div class="header-right">
+      <div class="header-label">// propósito de vida · ikigai</div>
+      <div class="header-date">EMITIDO EM ${data.toUpperCase()}</div>
+    </div>
+  </div>
+  <div class="hero">
+    <div class="hero-eyebrow">// propósito de vida · ${nome.toUpperCase()}</div>
+    <div class="hero-title">Ikigai de ${nome}</div>
+    <div class="hero-sub">Razão de ser — a intersecção dos quatro pilares do propósito.</div>
+  </div>
+  <div class="grid">${quadrantsHTML}</div>
+  <div class="center-block">
+    <span class="center-label">✦ O SEU IKIGAI</span>
+    <div class="center-title">A intersecção dos quatro pilares</div>
+    <div class="center-text">Revisite cada quadrante e identifique onde há maior sobreposição — essa confluência é sua zona de máximo propósito e impacto.</div>
+  </div>
+  <div class="footer">
+    <p>CÁPSULA DE DESENVOLVIMENTO · ENGENHARIA COMPORTAMENTAL · CONFIDENCIAL</p>
+    <div class="footer-brand">Cápsula<em>.</em>Dev</div>
+  </div>
 </div>
-<div class="center"><span class="center-label">✦ O SEU IKIGAI</span><h3>A intersecção dos quatro pilares</h3><p>Revisite cada quadrante e identifique onde há maior sobreposição — essa confluência é sua zona de máximo propósito e impacto.</p></div>
-<div class="footer"><p>// CÁPSULA DE DESENVOLVIMENTO · CONFIDENCIAL</p><p>capsuladedesenvolvimento.com.br</p></div>
-</div></body></html>`;
+</body></html>`;
   _imprimirPDF(html);
 }
 

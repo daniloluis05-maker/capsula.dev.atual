@@ -343,33 +343,64 @@ function generatePDF(){
   const u=(capsulaDB.lsGetUser() || {});
   const nome=u.apelido||u.nome||'Usuário';
   const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  const ACCENT='#2EC4A0';
   const ranked=[...ANCHORS].map(a=>({...a,score:scores[a.id]||0})).sort((a,b)=>b.score-a.score);
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Âncoras de Carreira — ${nome}</title>
-<style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,sans-serif;background:#07080C;color:#E8E6F0;-webkit-print-color-adjust:exact;print-color-adjust:exact;background-image:linear-gradient(rgba(46,196,160,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(46,196,160,0.04) 1px,transparent 1px);background-size:40px 40px;}
-.page{padding:40px;}.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.08);}
-.brand{font-size:13px;font-weight:700;color:#E8E6F0;}.brand span{color:#6C5FE6;}.date{font-size:9px;color:#6B6980;}
-.hero{background:#0D0F16;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:20px 24px;margin-bottom:16px;border-top:3px solid #2EC4A0;}
-.hero-tag{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;display:block;margin-bottom:4px;}
-.hero-title{font-size:30px;font-weight:800;color:#2EC4A0;margin-bottom:4px;}
-.hero-sub{font-size:12px;color:#aaa;}
-.row{display:flex;align-items:center;gap:10px;background:#0D0F16;border:1px solid rgba(255,255,255,0.06);border-radius:7px;padding:12px 16px;margin-bottom:6px;}
-.row.top{border-color:#2EC4A0;background:rgba(46,196,160,0.07);}
-.rank{font-size:11px;font-weight:700;width:28px;color:#6B6980;}
-.rank.g{color:#2EC4A0;}.icon{font-size:14px;}.rname{font-size:13px;font-weight:700;flex:1;}.rdesc{font-size:10px;color:#aaa;margin-top:1px;}
-.dots{display:flex;gap:3px;}.dot{width:7px;height:7px;border-radius:50%;}
-.insight{background:#0D0F16;border:1px solid rgba(46,196,160,0.25);border-radius:8px;padding:16px;margin-bottom:12px;border-top:2px solid #2EC4A0;}
-.insight-label{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#2EC4A0;margin-bottom:8px;display:block;}
-.insight p{font-size:11.5px;color:#C0BECE;line-height:1.65;}
-.footer{padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;}
-.footer p{font-size:9px;color:#353448;}
-@media print{body{background:#07080C!important;}@page{size:A4;margin:0;}.page{padding:28px;}}
-</style></head><body><div class="page">
-<div class="header"><div class="brand">Cápsula<span>.</span>Dev — Engenharia Comportamental</div><div class="date">Âncoras de Carreira — ${data}</div></div>
-<div class="hero"><span class="hero-tag">// núcleo profissional · ${nome.toUpperCase()}</span><div class="hero-title">Âncoras de Carreira</div><div class="hero-sub">O que você não abre mão na sua vida profissional.</div></div>
-${ranked.map((a,i)=>{const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}º`;const dots=Array.from({length:5},(_,d)=>`<span class="dot" style="background:${d<a.score?a.color:'#353448'}"></span>`).join('');return`<div class="row ${i===0?'top':''}"><span class="rank ${i===0?'g':''}">${medal}</span><span class="icon">${a.icon}</span><div style="flex:1;"><div class="rname">${a.name}</div><div class="rdesc">${a.desc.split('.')[0]}.</div></div><div class="dots">${dots}</div><span style="font-size:10px;color:#6B6980;margin-left:4px;">${a.score}/5</span></div>`;}).join('')}
-<div class="insight" style="margin-top:12px;"><span class="insight-label">✦ ÂNCORA PRINCIPAL · ${ranked[0].icon} ${ranked[0].name.toUpperCase()}</span><p>${ranked[0].insight}</p></div>
-<div class="footer"><p>// CÁPSULA DE DESENVOLVIMENTO · CONFIDENCIAL</p><p>capsuladedesenvolvimento.com.br</p></div>
-</div></body></html>`;
+
+  const rankHTML=ranked.map((a,i)=>{
+    const isTop=i===0;
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}º`;
+    const dots=Array.from({length:5},(_,d)=>`<span style="width:8px;height:8px;border-radius:50%;background:${d<a.score?a.color:'#252535'};display:inline-block;${d<a.score?`box-shadow:0 0 4px ${a.color}66;`:''}"></span>`).join('');
+    return `
+      <div style="display:flex;align-items:center;gap:12px;background:${isTop?`rgba(46,196,160,0.06)`:'#0D0F16'};border:1px solid ${isTop?`${ACCENT}33`:'rgba(255,255,255,0.06)'};border-radius:9px;padding:12px 16px;margin-bottom:7px;${isTop?`border-left:2px solid ${ACCENT};`:''} position:relative;overflow:hidden;">
+        ${isTop?`<div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,${ACCENT}44,transparent);"></div>`:''}
+        <span style="font-size:14px;min-width:24px;text-align:center;">${medal}</span>
+        <span style="font-size:16px;">${a.icon}</span>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:700;color:${isTop?ACCENT:'#E4E2F0'};">${a.name}</div>
+          <div style="font-size:10px;color:#777;margin-top:2px;">${a.desc.split('.')[0]}.</div>
+        </div>
+        <div style="display:flex;gap:3px;align-items:center;">${dots}</div>
+        <span style="font-family:monospace;font-size:10px;color:#666;min-width:28px;text-align:right;">${a.score}/5</span>
+      </div>`;
+  }).join('');
+
+  const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Âncoras de Carreira — ${nome} · Cápsula.Dev</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:#07080C;color:#E8E6F0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.page{width:794px;min-height:1123px;margin:0 auto;padding:44px 48px;background:#07080C;}
+@media print{@page{margin:0;size:A4;}body{background:#07080C!important;}.page{width:100%;padding:32px 36px;}}
+</style></head><body>
+<div class="page">
+  <div style="height:3px;background:linear-gradient(90deg,${ACCENT},${ACCENT}00);border-radius:2px;margin-bottom:32px;"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:30px;height:30px;background:${ACCENT};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;">C</div>
+      <span style="font-size:15px;font-weight:700;letter-spacing:-0.02em;">Cápsula<span style="color:${ACCENT};">.</span>Dev</span>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${ACCENT};margin-bottom:3px;">// núcleo profissional · âncoras</div>
+      <div style="font-family:monospace;font-size:9px;color:#444;">EMITIDO EM ${data.toUpperCase()}</div>
+    </div>
+  </div>
+  <div style="background:linear-gradient(135deg,#111320 60%,${ACCENT}0A 100%);border:1px solid rgba(255,255,255,0.07);border-left:3px solid ${ACCENT};border-radius:12px;padding:28px 32px;margin-bottom:24px;">
+    <div style="font-family:monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#555;margin-bottom:8px;">// núcleo profissional · ${nome.toUpperCase()}</div>
+    <div style="font-size:42px;font-weight:900;letter-spacing:-0.04em;line-height:1;color:${ACCENT};margin-bottom:8px;">Âncoras de Carreira</div>
+    <div style="font-size:13px;color:#888;">O que você não abre mão na sua vida profissional.</div>
+  </div>
+  <div style="margin-bottom:18px;">${rankHTML}</div>
+  <div style="background:#0D0F16;border:1px solid rgba(46,196,160,0.2);border-radius:10px;padding:18px 22px;margin-bottom:20px;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${ACCENT},${ACCENT}00);"></div>
+    <div style="font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${ACCENT};margin-bottom:10px;">✦ ÂNCORA PRINCIPAL · ${ranked[0].icon} ${ranked[0].name.toUpperCase()}</div>
+    <p style="font-size:12px;color:#C0BECE;line-height:1.7;">${ranked[0].insight}</p>
+  </div>
+  <div style="padding-top:18px;border-top:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;">
+    <p style="font-family:monospace;font-size:8px;color:#2A2A3A;letter-spacing:0.05em;">CÁPSULA DE DESENVOLVIMENTO · ENGENHARIA COMPORTAMENTAL · CONFIDENCIAL</p>
+    <span style="font-family:monospace;font-size:10px;font-weight:700;color:#2A2A3A;">Cápsula<span style="color:${ACCENT}55;">.</span>Dev</span>
+  </div>
+</div>
+</body></html>`;
   _imprimirPDF(html);
 }
 

@@ -795,25 +795,94 @@ function showError(msg) {
 }
 
 function printDNA() {
-  const doc = document.getElementById('dna-document');
-  if (!doc) return;
+  const ACCENT = '#C9A84C';
+  const ACCENT2 = '#6C5FE6';
+
+  const nome = (document.getElementById('doc-name')||{}).textContent || 'Usuário';
+  const meta  = (document.getElementById('doc-meta')||{}).textContent || '';
+  const badge = (document.getElementById('doc-badge')||{}).textContent || '';
+  const data  = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+
+  const helices = [
+    { num:'01', title:'Arquitetura do Ser · Instinto',           id:'hc-1-content' },
+    { num:'02', title:'Reator de Impulso · Motivação',           id:'hc-2-content' },
+    { num:'03', title:'Projeção de Performance · Mercado',       id:'hc-3-content' },
+    { num:'04', title:'Código de Convergência · Linha de Ouro',  id:'hc-4-content' },
+  ];
+
+  const helixColors = ['#6C5FE6','#2EC4A0','#E8603A','#C9A84C'];
+
+  const helicesHTML = helices.map((h,i) => {
+    const el = document.getElementById(h.id);
+    const content = el ? el.innerHTML : '—';
+    const color = helixColors[i];
+    return `
+      <div style="background:#0D0F16;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:20px 22px;margin-bottom:12px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${color},${color}00);"></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);">
+          <div style="width:28px;height:28px;border-radius:6px;background:${color}18;border:1px solid ${color}44;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:10px;font-weight:700;color:${color};flex-shrink:0;">${h.num}</div>
+          <div>
+            <div style="font-family:monospace;font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:#444;margin-bottom:2px;">hélice ${h.num}</div>
+            <div style="font-size:12px;font-weight:700;color:${color};">${h.title}</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:#C0BECE;line-height:1.8;">${content}</div>
+      </div>`;
+  }).join('');
+
+  const convEl = document.getElementById('conv-content');
+  const convContent = convEl ? convEl.innerHTML : '';
+  const convVisible = document.getElementById('convergence-block');
+  const showConv = convVisible && convVisible.style.display !== 'none';
+
+  const convHTML = showConv ? `
+    <div style="background:linear-gradient(135deg,rgba(201,168,76,0.06),rgba(108,95,230,0.04));border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:20px 24px;margin-bottom:20px;position:relative;overflow:hidden;">
+      <div style="position:absolute;left:0;top:20%;bottom:20%;width:2px;background:linear-gradient(to bottom,transparent,${ACCENT},transparent);border-radius:100px;"></div>
+      <div style="font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${ACCENT};margin-bottom:10px;">✦ ASSINATURA COMPORTAMENTAL</div>
+      <div style="font-size:12px;color:#D4C9A8;line-height:1.85;">${convContent}</div>
+    </div>` : '';
+
   const w = window.open('', '_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
-    <title>DNA Estratégico — Cápsula.Dev</title>
-    <style>
-      body{font-family:'Outfit',system-ui,sans-serif;background:#07080C;color:#E8E6F0;padding:2rem;max-width:800px;margin:0 auto;}
-      h1,h2{letter-spacing:-0.03em;}
-      .helix-card{border:1px solid #222;border-radius:8px;padding:1.5rem;margin-bottom:1rem;}
-      .helix-num{font-size:0.6rem;color:#666;font-family:monospace;text-transform:uppercase;letter-spacing:0.1em;}
-      .helix-title{font-size:0.75rem;color:#888;margin-bottom:0.75rem;}
-      .convergence-block{border:1px solid rgba(201,168,76,0.3);border-radius:8px;padding:1.5rem;margin-top:1.5rem;font-size:1rem;line-height:1.9;}
-      strong{color:#F0C96B;}
-    </style>
-  </head><body>
-    ${doc.innerHTML}
-  </body></html>`);
+  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+  <title>DNA Estratégico — ${nome} · Cápsula.Dev</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Outfit',sans-serif;background:#07080C;color:#E8E6F0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .page{width:794px;min-height:1123px;margin:0 auto;padding:44px 48px;background:#07080C;}
+    strong{color:#F0C96B;}
+    em{font-style:normal;color:#C9A84C;}
+    @media print{@page{margin:0;size:A4;}body{background:#07080C!important;}.page{width:100%;padding:32px 36px;}}
+  </style>
+</head><body>
+<div class="page">
+  <div style="height:3px;background:linear-gradient(90deg,${ACCENT},${ACCENT2},${ACCENT}00);border-radius:2px;margin-bottom:32px;"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:30px;height:30px;background:${ACCENT};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#07080C;">C</div>
+      <span style="font-size:15px;font-weight:700;letter-spacing:-0.02em;">Cápsula<span style="color:${ACCENT};">.</span>Dev</span>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${ACCENT};margin-bottom:3px;">// mapa estratégico pessoal · dna</div>
+      <div style="font-family:monospace;font-size:9px;color:#444;">EMITIDO EM ${data.toUpperCase()}</div>
+    </div>
+  </div>
+  <div style="background:linear-gradient(135deg,#111320 50%,rgba(201,168,76,0.06) 100%);border:1px solid rgba(255,255,255,0.07);border-left:3px solid ${ACCENT};border-radius:12px;padding:28px 32px;margin-bottom:24px;">
+    <div style="font-family:monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#555;margin-bottom:8px;">// sequenciamento estratégico · ${nome.toUpperCase()}</div>
+    <div style="font-size:42px;font-weight:900;letter-spacing:-0.04em;line-height:1;color:${ACCENT};margin-bottom:8px;">DNA Estratégico</div>
+    <div style="font-size:13px;color:#888;margin-bottom:8px;">${meta}</div>
+    <span style="display:inline-block;font-family:monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border:1px solid ${ACCENT}44;color:${ACCENT};border-radius:4px;">${badge}</span>
+  </div>
+  ${helicesHTML}
+  ${convHTML}
+  <div style="padding-top:18px;border-top:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;">
+    <p style="font-family:monospace;font-size:8px;color:#2A2A3A;letter-spacing:0.05em;">CÁPSULA DE DESENVOLVIMENTO · ENGENHARIA COMPORTAMENTAL · CONFIDENCIAL</p>
+    <span style="font-family:monospace;font-size:10px;font-weight:700;color:#2A2A3A;">Cápsula<span style="color:${ACCENT}55;">.</span>Dev</span>
+  </div>
+</div>
+<script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
+</body></html>`);
   w.document.close();
-  setTimeout(() => { w.focus(); w.print(); }, 500);
 }
 
 function logout() {

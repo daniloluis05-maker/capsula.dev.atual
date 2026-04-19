@@ -664,56 +664,70 @@ function generatePDF(){
   const nome = u.apelido || u.nome || 'Usuário';
   const data = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
   const scores = u.bigfive.scores;
+  const ACCENT = '#6C5FE6';
   const sorted = Object.keys(DIMS).map(k=>({...DIMS[k],score:scores[k]})).sort((a,b)=>b.score-a.score);
   const radarSvg = buildRadar(scores);
 
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Big Five — ${nome}</title>
-<style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,sans-serif;background:#07080C;color:#E8E6F0;-webkit-print-color-adjust:exact;print-color-adjust:exact;background-image:linear-gradient(rgba(108,95,230,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(108,95,230,0.04) 1px,transparent 1px);background-size:40px 40px;}
-.page{padding:36px;display:grid;grid-template-columns:1fr 200px;gap:20px;}
-.main{}.sidebar{}
-.header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.08);}
-.brand{font-size:13px;font-weight:700;color:#E8E6F0;}.brand span{color:#6C5FE6;}.date{font-size:9px;color:#6B6980;}
-.hero{background:#0D0F16;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:18px 22px;margin-bottom:14px;border-top:3px solid #6C5FE6;}
-.hero-tag{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;display:block;margin-bottom:4px;}
-.hero-title{font-size:26px;font-weight:800;color:#6C5FE6;margin-bottom:3px;}
-.hero-sub{font-size:11px;color:#aaa;}
-.dim-row{display:flex;align-items:center;gap:10px;background:#0D0F16;border:1px solid rgba(255,255,255,0.06);border-radius:7px;padding:10px 14px;margin-bottom:6px;}
-.dim-row.top{border-top:2px solid;}
-.dim-icon{font-size:13px;flex-shrink:0;}
-.dim-info{flex:1;}
-.dim-name{font-size:12px;font-weight:700;}
-.dim-desc{font-size:9.5px;color:#aaa;margin-top:1px;}
-.bar-track{height:3px;background:#181C28;border-radius:100px;overflow:hidden;margin-top:5px;}
-.bar-fill{height:100%;border-radius:100px;}
-.dim-pct{font-size:13px;font-weight:800;min-width:36px;text-align:right;}
-.insight{background:#0D0F16;border:1px solid rgba(108,95,230,0.25);border-radius:8px;padding:14px;margin-top:12px;border-top:2px solid #6C5FE6;}
-.insight-label{font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:#6C5FE6;margin-bottom:7px;display:block;}
-.insight p{font-size:10.5px;color:#C0BECE;line-height:1.6;}
-.radar-box{background:#0D0F16;border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:12px;}
-.radar-label{font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:#6B6980;margin-bottom:8px;display:block;text-align:center;}
-.footer{grid-column:1/-1;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;}
-.footer p{font-size:9px;color:#353448;}
-@media print{body{background:#07080C!important;}@page{size:A4;margin:0;}.page{padding:24px;}}</style>
-</head><body><div class="page">
-<div class="header"><div class="brand">Cápsula<span>.</span>Dev — Engenharia Comportamental</div><div class="date">Big Five OCEAN — ${data}</div></div>
-<div class="main">
-<div class="hero"><span class="hero-tag">// perfil de personalidade · ${nome.toUpperCase()}</span><div class="hero-title">Big Five — OCEAN</div><div class="hero-sub">Modelo psicométrico mais validado da psicologia da personalidade (BFI — John & Srivastava, 1999)</div></div>
-${sorted.map((d,i)=>`<div class="dim-row ${i===0?'top':''}" style="${i===0?`border-top-color:${d.color};`:''}">
-  <span class="dim-icon">${d.icon}</span>
-  <div class="dim-info">
-    <div class="dim-name" style="color:${d.color}">${d.name}</div>
-    <div class="dim-desc">${(d.score>=50?d.hi:d.lo).split('.')[0]}.</div>
-    <div class="bar-track"><div class="bar-fill" style="width:${d.score}%;background:${d.color};"></div></div>
+  const dimsHTML = sorted.map((d,i)=>`
+    <div style="display:flex;align-items:center;gap:12px;background:#0D0F16;border:1px solid ${i===0?`${d.color}33`:'rgba(255,255,255,0.06)'};border-radius:9px;padding:13px 16px;margin-bottom:8px;${i===0?`border-left:2px solid ${d.color};`:''} position:relative;overflow:hidden;">
+      ${i===0?`<div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,${d.color}44,transparent);"></div>`:''}
+      <span style="font-size:18px;flex-shrink:0;">${d.icon}</span>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:700;color:${d.color};margin-bottom:2px;">${d.name}</div>
+        <div style="font-size:10px;color:#777;">${(d.score>=50?d.hi:d.lo).split('.')[0]}.</div>
+        <div style="height:3px;background:#181C28;border-radius:100px;overflow:hidden;margin-top:7px;">
+          <div style="width:${d.score}%;height:100%;background:linear-gradient(90deg,${d.color},${d.color}CC);border-radius:100px;"></div>
+        </div>
+      </div>
+      <span style="font-family:monospace;font-size:15px;font-weight:800;color:${d.color};min-width:40px;text-align:right;">${d.score}%</span>
+    </div>`).join('');
+
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Big Five OCEAN — ${nome} · Cápsula.Dev</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:#07080C;color:#E8E6F0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.page{width:794px;min-height:1123px;margin:0 auto;padding:44px 48px;background:#07080C;}
+@media print{@page{margin:0;size:A4;}body{background:#07080C!important;}.page{width:100%;padding:32px 36px;}}
+</style></head><body>
+<div class="page">
+  <div style="height:3px;background:linear-gradient(90deg,${ACCENT},${ACCENT}00);border-radius:2px;margin-bottom:32px;"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:30px;height:30px;background:${ACCENT};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;">C</div>
+      <span style="font-size:15px;font-weight:700;letter-spacing:-0.02em;">Cápsula<span style="color:${ACCENT};">.</span>Dev</span>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${ACCENT};margin-bottom:3px;">// perfil de personalidade · ocean</div>
+      <div style="font-family:monospace;font-size:9px;color:#444;">EMITIDO EM ${data.toUpperCase()}</div>
+    </div>
   </div>
-  <span class="dim-pct" style="color:${d.color}">${d.score}%</span>
-</div>`).join('')}
-<div class="insight"><span class="insight-label">✦ ANÁLISE DO PERFIL</span><p>${getInsight(scores).replace(/<[^>]+>/g,'')}</p></div>
+  <!-- hero + radar lado a lado -->
+  <div style="display:grid;grid-template-columns:1fr 220px;gap:16px;margin-bottom:20px;">
+    <div style="background:linear-gradient(135deg,#111320 60%,${ACCENT}0A 100%);border:1px solid rgba(255,255,255,0.07);border-left:3px solid ${ACCENT};border-radius:12px;padding:28px 32px;">
+      <div style="font-family:monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#555;margin-bottom:8px;">// perfil de personalidade · ${nome.toUpperCase()}</div>
+      <div style="font-size:38px;font-weight:900;letter-spacing:-0.04em;line-height:1;color:${ACCENT};margin-bottom:8px;">Big Five — OCEAN</div>
+      <div style="font-size:12px;color:#888;line-height:1.5;">Modelo psicométrico mais validado da psicologia da personalidade (BFI — John & Srivastava, 1999)</div>
+    </div>
+    <div style="background:#0D0F16;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+      <div style="font-family:monospace;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:#555;margin-bottom:10px;text-align:center;">// mapa pentagonal</div>
+      ${radarSvg}
+    </div>
+  </div>
+  <!-- dimensões -->
+  <div style="margin-bottom:18px;">${dimsHTML}</div>
+  <!-- análise -->
+  <div style="background:#0D0F16;border:1px solid rgba(108,95,230,0.2);border-radius:10px;padding:18px 22px;margin-bottom:20px;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${ACCENT},${ACCENT}00);"></div>
+    <div style="font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${ACCENT};margin-bottom:8px;">✦ ANÁLISE DO PERFIL</div>
+    <p style="font-size:12px;color:#C0BECE;line-height:1.7;">${getInsight(scores).replace(/<[^>]+>/g,'')}</p>
+  </div>
+  <div style="padding-top:18px;border-top:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;">
+    <p style="font-family:monospace;font-size:8px;color:#2A2A3A;letter-spacing:0.05em;">CÁPSULA DE DESENVOLVIMENTO · ENGENHARIA COMPORTAMENTAL · CONFIDENCIAL</p>
+    <span style="font-family:monospace;font-size:10px;font-weight:700;color:#2A2A3A;">Cápsula<span style="color:${ACCENT}55;">.</span>Dev</span>
+  </div>
 </div>
-<div class="sidebar">
-  <div class="radar-box"><span class="radar-label">// mapa pentagonal</span>${radarSvg}</div>
-</div>
-<div class="footer"><p>// CÁPSULA DE DESENVOLVIMENTO · CONFIDENCIAL</p><p>capsuladedesenvolvimento.com.br</p></div>
-</div></body></html>`;
+</body></html>`;
 
   _imprimirPDF(html);
 }
