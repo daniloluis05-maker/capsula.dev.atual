@@ -687,32 +687,26 @@ function showResult(){
 
 document.addEventListener('DOMContentLoaded', function(){
   try{
-    // ── AUTO-REDIRECT se teste já foi feito ──────────────────
-    try {
-      var _u = capsulaDB.lsGetUser() || {};
-      if (_u.pearson && _u.pearson.completedAt) {
-        var u = _u;
-        // Restaura scores salvos
-      var _saved = u.pearson;
-      // scores é var global no pearson – reconstruir a partir dos dados salvos
-      // showResult() usa calcScores() que lê answers[], mas se já temos scores salvos
-      // sobrescrevemos calcScores temporariamente
-      if (_saved.scores) {
-        window._savedPearsonScores = _saved.scores;
-        var _origCalc = window.calcScores;
-        window.calcScores = function() { return window._savedPearsonScores; };
-        showResult();
-        window.calcScores = _origCalc;
-      }
-      }
-    } catch(_e) { console.warn('[redirect]', _e); }
-    // ─────────────────────────────────────────────────────────
-
     const u = (capsulaDB.lsGetUser() || {});
     if(!u.nome && !u.apelido && !u.email) window.location.href = 'index.html';
     if(!u.uid){ u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); try{ capsulaDB.lsSetUser(u); }catch(_){} }
   }catch(e){}
 });
+</script>
+<script>
+(function() {
+  try {
+    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+    if (!raw) return;
+    var u = JSON.parse(raw);
+    if (!u.pearson || !u.pearson.completedAt || !u.pearson.scores) return;
+    var saved = u.pearson.scores;
+    var orig = window.calcScores;
+    window.calcScores = function() { return saved; };
+    showResult();
+    window.calcScores = orig;
+  } catch(e) { console.warn('[pearson redirect]', e); }
+})();
 </script>
 </body>
 </html>

@@ -1376,22 +1376,6 @@ function initPage() {
     capsulaDB.lsSetRaw('capsula_user', sessionStorage.getItem('capsula_user'));
   }
 
-
-
-    // ── AUTO-REDIRECT se teste já foi feito ──────────────────
-    try {
-      var _u = capsulaDB.lsGetUser() || {};
-      if (_u.disc && _u.disc.completedAt) {
-        var u = _u;
-        // Restaura scores DISC
-      if (u.disc.scores) {
-        scores = u.disc.scores;
-        showResult();
-      }
-      }
-    } catch(_e) { console.warn('[redirect]', _e); }
-    // ─────────────────────────────────────────────────────────
-
   // Exibe nome na intro
   const nome = getNomeExibido(userData);
   const greeting = document.getElementById('disc-greeting');
@@ -1658,5 +1642,17 @@ function showCopyToast(msg) {
 }
 .ob-btn-start:hover { box-shadow: 0 0 50px rgba(108,95,230,0.55); transform: translateY(-1px); opacity: 0.9; }
 </style>
+<script>
+(function() {
+  try {
+    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+    if (!raw) return;
+    var u = JSON.parse(raw);
+    if (!u.disc || !u.disc.completedAt || !u.disc.scores) return;
+    scores = u.disc.scores;
+    showResult();
+  } catch(e) { console.warn('[disc redirect]', e); }
+})();
+</script>
 </body>
 </html>

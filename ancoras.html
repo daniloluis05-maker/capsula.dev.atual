@@ -337,21 +337,7 @@ function showResult(){
 }
 
 // Proteção de rota
-document.addEventListener('DOMContentLoaded',function(){try{
-    // ── AUTO-REDIRECT se teste já foi feito ──────────────────
-    try {
-      var _u = capsulaDB.lsGetUser() || {};
-      if (_u.ancoras && _u.ancoras.completedAt) {
-        var u = _u;
-        // Restaura scores Âncoras
-      if (u.ancoras.scores) {
-        scores = u.ancoras.scores;
-        showResult();
-      }
-      }
-    } catch(_e) { console.warn('[redirect]', _e); }
-    // ─────────────────────────────────────────────────────────
-const u=(capsulaDB.lsGetUser() || {});if(!u.nome&&!u.apelido&&!u.email)window.location.href='index.html';if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}}catch(e){}});
+document.addEventListener('DOMContentLoaded',function(){try{const u=(capsulaDB.lsGetUser() || {});if(!u.nome&&!u.apelido&&!u.email)window.location.href='index.html';if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}}catch(e){}});
 
 function generatePDF(){
   const u=(capsulaDB.lsGetUser()||{});
@@ -432,6 +418,18 @@ function _imprimirPDF(html){
   doc.open();doc.write(html);doc.close();
   iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='ancoras-carreira.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
 }
+</script>
+<script>
+(function() {
+  try {
+    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+    if (!raw) return;
+    var u = JSON.parse(raw);
+    if (!u.ancoras || !u.ancoras.completedAt || !u.ancoras.scores) return;
+    scores = u.ancoras.scores;
+    showResult();
+  } catch(e) { console.warn('[ancoras redirect]', e); }
+})();
 </script>
 </body>
 </html>
