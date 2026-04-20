@@ -20,7 +20,7 @@
 <link rel="preload" href="https://fonts.gstatic.com/s/outfit/v11/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC0C4G-EiAou6Y.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -406,15 +406,15 @@ function generatePDF(){
     const items=filled.map(v=>`
       <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:7px;">
         <span style="width:5px;height:5px;border-radius:50%;background:${q.color};margin-top:6px;flex-shrink:0;display:block;box-shadow:0 0 5px ${q.color}66;"></span>
-        <span style="font-size:11.5px;color:#C0BECE;line-height:1.6;">${v}</span>
-      </div>`).join('') || '<span style="font-family:monospace;font-size:10px;color:#353448;">// não respondido</span>';
+        <span style="font-size:11.5px;color:#4A4460;line-height:1.6;">${v}</span>
+      </div>`).join('') || '<span style="font-family:monospace;font-size:10px;color:#C4BFD8;">// não respondido</span>';
     return `
-      <div style="background:#0D0F16;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:18px 20px;position:relative;overflow:hidden;">
+      <div style="background:rgba(255,255,255,0.75);border:1px solid rgba(108,95,230,0.15);border-radius:10px;padding:18px 20px;position:relative;overflow:hidden;">
         <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${q.color},${q.color}00);"></div>
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(108,95,230,0.1);">
           <div style="width:30px;height:30px;border-radius:7px;background:${q.color}18;border:1px solid ${q.color}44;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">${q.icon}</div>
           <div>
-            <div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:#555;margin-bottom:2px;">${q.label||q.name.toUpperCase()}</div>
+            <div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:#9990BB;margin-bottom:2px;">${q.label||q.name.toUpperCase()}</div>
             <div style="font-size:13px;font-weight:700;color:${q.color};">${q.name}</div>
           </div>
         </div>
@@ -423,35 +423,35 @@ function generatePDF(){
   }).join('');
 
   const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Ikigai — ${nome} · Cápsula.Dev</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Outfit',sans-serif;background:#07080C;color:#E8E6F0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-.page{width:794px;min-height:1123px;margin:0 auto;padding:44px 48px;background:#07080C;position:relative;}
+body{font-family:'Syne',sans-serif;background:#EDEAF7;color:#1A1726;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.page{width:794px;min-height:1123px;margin:0 auto;padding:44px 48px;background:#EDEAF7;position:relative;}
 .accent-bar{height:3px;background:linear-gradient(90deg,${ACCENT},${ACCENT}00);border-radius:2px;margin-bottom:32px;}
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;}
 .brand{display:flex;align-items:center;gap:10px;}
 .brand-cube{width:30px;height:30px;background:${ACCENT};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;}
-.brand-name{font-size:15px;font-weight:700;letter-spacing:-0.02em;color:#E4E2F0;}
+.brand-name{font-size:15px;font-weight:700;letter-spacing:-0.02em;color:#1A1726;}
 .brand-name em{color:${ACCENT};font-style:normal;}
 .header-right{text-align:right;}
 .header-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${ACCENT};margin-bottom:3px;}
-.header-date{font-family:'Space Mono',monospace;font-size:9px;color:#444;}
-.hero{background:linear-gradient(135deg,#111320 60%,${ACCENT}0A 100%);border:1px solid rgba(255,255,255,0.07);border-left:3px solid ${ACCENT};border-radius:12px;padding:28px 32px;margin-bottom:20px;}
-.hero-eyebrow{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#555;margin-bottom:8px;}
-.hero-title{font-size:42px;font-weight:900;letter-spacing:-0.04em;line-height:1;color:${ACCENT};margin-bottom:8px;}
-.hero-sub{font-size:13px;color:#888;line-height:1.5;}
+.header-date{font-family:'Space Mono',monospace;font-size:9px;color:#9990BB;}
+.hero{background:linear-gradient(135deg,#111320 60%,${ACCENT}0A 100%);border:1px solid rgba(108,95,230,0.15);border-left:3px solid ${ACCENT};border-radius:12px;padding:28px 32px;margin-bottom:20px;}
+.hero-eyebrow{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#9990BB;margin-bottom:8px;}
+.hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:48px;letter-spacing:-0.03em;line-height:0.9;color:#1A1726;--ignore:${ACCENT};margin-bottom:8px;}
+.hero-sub{font-size:13px;color:#6B6485;line-height:1.5;}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
-.center-block{background:#0D0F16;border:1px solid rgba(232,96,58,0.2);border-radius:10px;padding:20px 24px;margin-bottom:20px;text-align:center;position:relative;overflow:hidden;}
+.center-block{background:rgba(255,255,255,0.75);border:1px solid rgba(232,96,58,0.2);border-radius:10px;padding:20px 24px;margin-bottom:20px;text-align:center;position:relative;overflow:hidden;}
 .center-block::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:2px;background:${ACCENT};border-radius:0 0 2px 2px;}
 .center-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${ACCENT};margin-bottom:8px;display:block;}
 .center-title{font-size:16px;font-weight:700;margin-bottom:6px;}
-.center-text{font-size:12px;color:#888;line-height:1.65;}
-.footer{margin-top:auto;padding-top:18px;border-top:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;}
-.footer p{font-family:'Space Mono',monospace;font-size:8px;color:#2A2A3A;letter-spacing:0.05em;}
-.footer-brand{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#2A2A3A;}
+.center-text{font-size:12px;color:#6B6485;line-height:1.65;}
+.footer{margin-top:auto;padding-top:18px;border-top:1px solid rgba(108,95,230,0.1);display:flex;justify-content:space-between;align-items:center;}
+.footer p{font-family:'Space Mono',monospace;font-size:8px;color:#C4BFD8;letter-spacing:0.05em;}
+.footer-brand{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#C4BFD8;}
 .footer-brand em{color:${ACCENT}55;font-style:normal;}
-@media print{@page{margin:0;size:A4;}body{background:#07080C!important;}.page{width:100%;padding:32px 36px;}}
+@media print{@page{margin:0;size:A4;}body{background:#EDEAF7!important;}.page{width:100%;padding:32px 36px;}}
 </style></head><body>
 <div class="page">
   <div class="accent-bar"></div>

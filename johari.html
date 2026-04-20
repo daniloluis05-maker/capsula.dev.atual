@@ -20,7 +20,7 @@
 <link rel="preload" href="https://fonts.gstatic.com/s/outfit/v11/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC0C4G-EiAou6Y.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -385,15 +385,15 @@ function generatePDF(){
   const panesHTML=panes.map(p=>{
     const chips = p.items.length>0
       ? `<div style="display:flex;flex-wrap:wrap;gap:5px;">${p.items.map(a=>`<span style="font-size:9.5px;padding:3px 9px;border-radius:100px;border:1px solid ${p.color}44;color:${p.color};font-weight:500;">${a}</span>`).join('')}</div>`
-      : `<span style="font-family:monospace;font-size:10px;color:#353448;">${p.empty||'// nenhum traço'}</span>`;
+      : `<span style="font-family:monospace;font-size:10px;color:#C4BFD8;">${p.empty||'// nenhum traço'}</span>`;
     return `
       <div style="background:${p.highlight?`rgba(27,168,212,0.05)`:'#0D0F16'};border:1px solid ${p.highlight?`${p.color}33`:'rgba(255,255,255,0.07)'};border-radius:10px;padding:16px 18px;position:relative;overflow:hidden;">
         <div style="position:absolute;top:0;left:0;bottom:0;width:2px;background:${p.color};"></div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.06);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(108,95,230,0.1);">
           <div style="width:8px;height:8px;border-radius:50%;background:${p.color};flex-shrink:0;box-shadow:0 0 6px ${p.color}88;"></div>
           <div>
             <div style="font-size:12px;font-weight:700;color:${p.color};">${p.title}</div>
-            <div style="font-family:monospace;font-size:8px;color:#555;margin-top:1px;">${p.desc}</div>
+            <div style="font-family:monospace;font-size:8px;color:#9990BB;margin-top:1px;">${p.desc}</div>
           </div>
         </div>
         ${chips}
@@ -405,12 +405,12 @@ function generatePDF(){
     : `Compartilhe mais sobre você para ampliar sua Área Aberta e fortalecer conexões.`;
 
   const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Janela de Johari — ${nome} · Cápsula.Dev</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Outfit',sans-serif;background:#07080C;color:#E8E6F0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-.page{width:794px;min-height:1123px;margin:0 auto;padding:44px 48px;background:#07080C;}
-@media print{@page{margin:0;size:A4;}body{background:#07080C!important;}.page{width:100%;padding:32px 36px;}}
+body{font-family:'Syne',sans-serif;background:#EDEAF7;color:#1A1726;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.page{width:794px;min-height:1123px;margin:0 auto;padding:44px 48px;background:#EDEAF7;}
+@media print{@page{margin:0;size:A4;}body{background:#EDEAF7!important;}.page{width:100%;padding:32px 36px;}}
 </style></head><body>
 <div class="page">
   <!-- accent bar -->
@@ -423,29 +423,29 @@ body{font-family:'Outfit',sans-serif;background:#07080C;color:#E8E6F0;-webkit-pr
     </div>
     <div style="text-align:right;">
       <div style="font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${ACCENT};margin-bottom:3px;">// autopercepção · johari</div>
-      <div style="font-family:monospace;font-size:9px;color:#444;">EMITIDO EM ${data.toUpperCase()}</div>
+      <div style="font-family:monospace;font-size:9px;color:#9990BB;">EMITIDO EM ${data.toUpperCase()}</div>
     </div>
   </div>
   <!-- hero -->
-  <div style="background:linear-gradient(135deg,#111320 60%,${ACCENT}0A 100%);border:1px solid rgba(255,255,255,0.07);border-left:3px solid ${ACCENT};border-radius:12px;padding:28px 32px;margin-bottom:20px;">
-    <div style="font-family:monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#555;margin-bottom:8px;">// autopercepção · ${nome.toUpperCase()}</div>
-    <div style="font-size:42px;font-weight:900;letter-spacing:-0.04em;line-height:1;color:${ACCENT};margin-bottom:8px;">Janela de Johari</div>
-    <div style="font-size:13px;color:#888;">Como você se vê e como os outros te percebem.</div>
+  <div style="background:linear-gradient(135deg,#111320 60%,${ACCENT}0A 100%);border:1px solid rgba(108,95,230,0.15);border-left:3px solid ${ACCENT};border-radius:12px;padding:28px 32px;margin-bottom:20px;">
+    <div style="font-family:monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#9990BB;margin-bottom:8px;">// autopercepção · ${nome.toUpperCase()}</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:48px;letter-spacing:-0.03em;line-height:0.9;color:#1A1726;--ignore:${ACCENT};margin-bottom:8px;">Janela de Johari</div>
+    <div style="font-size:13px;color:#6B6485;">Como você se vê e como os outros te percebem.</div>
   </div>
   <!-- 4 panes -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
     ${panesHTML}
   </div>
   <!-- insight -->
-  <div style="background:#0D0F16;border:1px solid rgba(27,168,212,0.2);border-radius:10px;padding:18px 22px;margin-bottom:20px;position:relative;overflow:hidden;">
+  <div style="background:rgba(255,255,255,0.75);border:1px solid rgba(27,168,212,0.2);border-radius:10px;padding:18px 22px;margin-bottom:20px;position:relative;overflow:hidden;">
     <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${ACCENT},${ACCENT}00);"></div>
     <div style="font-family:monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:${ACCENT};margin-bottom:8px;">✦ MAIOR OPORTUNIDADE DE DESENVOLVIMENTO</div>
-    <p style="font-size:12px;color:#C0BECE;line-height:1.7;">Área Aberta: <strong style="color:#E4E2F0;">${aberto.length} traços</strong>. Área Cega: <strong style="color:#E8603A;">${cego.length} traços</strong>. Área Oculta: <strong style="color:#6C5FE6;">${oculto.length} traços</strong>. ${insightText}</p>
+    <p style="font-size:12px;color:#4A4460;line-height:1.7;">Área Aberta: <strong style="color:#1A1726;">${aberto.length} traços</strong>. Área Cega: <strong style="color:#E8603A;">${cego.length} traços</strong>. Área Oculta: <strong style="color:#6C5FE6;">${oculto.length} traços</strong>. ${insightText}</p>
   </div>
   <!-- footer -->
-  <div style="padding-top:18px;border-top:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;">
-    <p style="font-family:monospace;font-size:8px;color:#2A2A3A;letter-spacing:0.05em;">CÁPSULA DE DESENVOLVIMENTO · ENGENHARIA COMPORTAMENTAL · CONFIDENCIAL</p>
-    <span style="font-family:monospace;font-size:10px;font-weight:700;color:#2A2A3A;">Cápsula<span style="color:${ACCENT}55;">.</span>Dev</span>
+  <div style="padding-top:18px;border-top:1px solid rgba(108,95,230,0.1);display:flex;justify-content:space-between;align-items:center;">
+    <p style="font-family:monospace;font-size:8px;color:#C4BFD8;letter-spacing:0.05em;">CÁPSULA DE DESENVOLVIMENTO · ENGENHARIA COMPORTAMENTAL · CONFIDENCIAL</p>
+    <span style="font-family:monospace;font-size:10px;font-weight:700;color:#C4BFD8;">Cápsula<span style="color:${ACCENT}55;">.</span>Dev</span>
   </div>
 </div>
 </body></html>`;
