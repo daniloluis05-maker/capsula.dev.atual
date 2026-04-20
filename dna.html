@@ -245,6 +245,7 @@ body::before{content:'';position:fixed;inset:0;background-image:
         <a class="nav-item" href="ancoras.html"><span class="nav-icon">⚓</span>Âncoras</a>
         <a class="nav-item" href="johari.html"><span class="nav-icon">🪟</span>Johari</a>
         <a class="nav-item" href="bigfive.html"><span class="nav-icon">🧠</span>Big Five</a>
+        <a class="nav-item" href="pearson.html"><span class="nav-icon">🏛️</span>Pearson-Marr</a>
       </div>
       <div class="nav-section">
         <span class="nav-label">Conta</span>
@@ -283,7 +284,7 @@ body::before{content:'';position:fixed;inset:0;background-image:
     <div class="req-gate" id="req-gate">
       <div class="req-gate-title">// pré-requisitos de sequenciamento</div>
       <h2>Matrizes necessárias para o DNA</h2>
-      <p>Para gerar seu DNA Estratégico com máxima precisão, complete pelo menos 4 das 6 matrizes abaixo. As hélices de análise cruzarão automaticamente todos os dados disponíveis.</p>
+      <p>Para gerar seu DNA Estratégico com máxima precisão, complete pelo menos 4 das 7 matrizes abaixo. As hélices de análise cruzarão automaticamente todos os dados disponíveis.</p>
       <div class="req-grid" id="req-grid"></div>
     </div>
 
@@ -370,7 +371,7 @@ body::before{content:'';position:fixed;inset:0;background-image:
     <div class="insuff-data" id="insuff-data">
       <div class="insuff-icon">🧬</div>
       <div class="insuff-title">Dados insuficientes para sequenciamento</div>
-      <p class="insuff-text">Complete pelo menos 4 das 6 matrizes (DISC, SOAR, Ikigai, Âncoras, Johari, Big Five) para gerar seu DNA Estratégico com precisão diagnóstica.</p>
+      <p class="insuff-text">Complete pelo menos 4 das 7 matrizes (DISC, SOAR, Ikigai, Âncoras, Johari, Big Five, Pearson-Marr) para gerar seu DNA Estratégico com precisão diagnóstica.</p>
       <br>
       <button class="btn-generate" onclick="window.location.href='dashboard.html'" style="margin:0 auto;">
         Voltar ao Dashboard
@@ -447,6 +448,7 @@ function renderRequirements(u) {
     { key:'ancoras', icon:'⚓', label:'Âncoras',      done: !!(u.ancoras && u.ancoras.completedAt) },
     { key:'johari',  icon:'🪟', label:'Johari',       done: !!(u.johari && u.johari.completedAt) },
     { key:'bigfive', icon:'🧠', label:'Big Five',     done: !!(u.bigfive && u.bigfive.completedAt) },
+    { key:'pearson', icon:'🏛️', label:'Pearson-Marr', done: !!(u.pearson && u.pearson.completedAt) },
   ];
 
   const completedCount = matrices.filter(m => m.done).length;
@@ -468,7 +470,7 @@ function renderRequirements(u) {
   if (completedCount < 3) {
     btn.disabled = true;
     document.getElementById('insuff-data').classList.add('visible');
-    gate.querySelector('h2').textContent = `Apenas ${completedCount}/6 matrizes completas`;
+    gate.querySelector('h2').textContent = `Apenas ${completedCount}/7 matrizes completas`;
   }
 }
 
@@ -542,6 +544,7 @@ function buildPayload(u) {
   const johari = u.johari || {};
   const soar = u.soar?.answers || {};
   const ikigai = u.ikigai?.answers || {};
+  const pearson = u.pearson || {};
 
   // Extract Ikigai text from answers object
   const ikigaiTexto = Object.values(ikigai).flatMap(v => typeof v === 'object' ? Object.values(v) : [v]).filter(Boolean).join(' | ');
@@ -572,8 +575,13 @@ function buildPayload(u) {
         forcas: soarForcas,
         aspiracoes: soarAspiracoes,
       },
+      pearson_marr: {
+        arquetipo_dominante: pearson.topArchetype || '',
+        arquetipo_dominante_nome: pearson.topArchetypeName || '',
+        scores: pearson.scores || {},
+      },
     },
-    _completedCount: [u.disc, u.soar, u.ikigai, u.ancoras, u.johari, u.bigfive].filter(m => m && m.completedAt).length,
+    _completedCount: [u.disc, u.soar, u.ikigai, u.ancoras, u.johari, u.bigfive, u.pearson].filter(m => m && m.completedAt).length,
   };
 }
 
@@ -644,24 +652,40 @@ ESTRUTURA DE RESPOSTA OBRIGATÓRIA (JSON puro, sem markdown, sem backticks):
 
 LÓGICA DAS HÉLICES (aplique cruzamentos disponíveis):
 
-HÉLICE 1 — Arquitetura do Ser (DISC + Big Five Conscienciosidade):
+HÉLICE 1 — Arquitetura do Ser (DISC + Big Five Conscienciosidade + Pearson-Marr):
 - Se DISC.C > 80 e BigFive.C > 70: "Arquiteto de Sistemas"
 - Se DISC.I > 80 e BigFive.E > 70: "Catalisador Social"  
 - Se DISC.D > 70: orientação a resultados, decisão rápida
 - Se DISC.S > 70: construtor de consenso, lealdade estrutural
 - Cruce com abertura (O) do Big Five para camada de inovação
+- Se pearson_marr.arquetipo_dominante estiver disponível: adicione a dimensão arquetípica profunda ao perfil
+  · Guerreiro/Governante + DISC.D: liderança por força e estrutura
+  · Mago/Sábio + DISC.C: pensamento sistêmico com rigor analítico
+  · Criador/Buscador + BigFive.O alto: perfil de inovação com fundamento identitário
+  · Amante/Prestativo + DISC.S: cuidado como força produtiva, não fraqueza
 
-HÉLICE 2 — Reator de Impulso (Âncoras + Ikigai):
+HÉLICE 2 — Reator de Impulso (Âncoras + Ikigai + Pearson-Marr grupo):
 - Busque palavras-chave no Ikigai que validem a Âncora principal
 - Se Âncora = "Autonomia/Empreendimento" + Ikigai cita "liberdade/independência": foco em empreendedorismo
 - Se Âncora = "Segurança/Estabilidade": estruturas previsíveis, aversão ao risco
 - Se Âncora = "Desafio/Competência": busca por maestria técnica
 - Se Âncora = "Serviço/Dedicação": foco em impacto em pessoas
+- Valide o grupo arquetípico do Pearson-Marr contra a Âncora:
+  · Grupo "Ego" (Inocente, Guerreiro, Governante) tende a validar âncoras de poder e construção
+  · Grupo "Alma" (Órfão, Prestativo, Amante) tende a validar âncoras de serviço e pertencimento
+  · Grupo "Self" (Destruidor, Criador, Mago) tende a validar âncoras de desafio e autonomia criativa
+  · Grupo "Liberdade" (Buscador, Sábio, Bobo) tende a validar âncoras de autonomia e estilo de vida
 
-HÉLICE 3 — Projeção de Performance (SOAR + Johari Área Cega):
+HÉLICE 3 — Projeção de Performance (SOAR + Johari Área Cega + Pearson-Marr sombra):
 - Identifique se o que o usuário quer (SOAR.aspiracoes) é impedido pelo que não vê em si mesmo (johari.cego)
 - Aponte a vantagem competitiva real vs. o gap crítico
 - Não suavize: seja preciso sobre o ponto cego sem ser cruel
+- Se pearson_marr disponível: cada arquétipo tem uma "sombra" — o risco de excesso:
+  · Guerreiro em excesso → rigidez, incapacidade de ceder
+  · Prestativo em excesso → autoanulação, ressentimento silencioso
+  · Mago em excesso → arrogância, desconexão da realidade operacional
+  · Governante em excesso → controle obsessivo, dificuldade de delegar
+  · Buscador em excesso → incapacidade de se comprometer, fuga disfarçada de busca
 
 HÉLICE 4 — Código de Convergência (SEM TEMPLATE):
 - Leia TODOS os dados e escreva uma síntese de 4-5 linhas que nenhum outro profissional receberia
