@@ -876,7 +876,7 @@ function initPage() {
   );
 
   // Guard: sem usuário cadastrado → volta para index
-  if (!userData || (!userData.nome && !userData.apelido && !userData.email)) {
+  if (!userData || (!userData.nome && !userData.apelido && !userData.email && !(userData.soar && userData.soar.completedAt))) {
     window.location.href = 'index.html';
     return;
   }
