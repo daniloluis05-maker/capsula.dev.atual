@@ -364,7 +364,23 @@ function showResult(){
 }
 
 // Proteção de rota
-document.addEventListener('DOMContentLoaded',function(){try{const u=(capsulaDB.lsGetUser() || {});if(!u.nome&&!u.apelido&&!u.email)window.location.href='index.html';if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}}catch(e){}});
+document.addEventListener('DOMContentLoaded',function(){try{
+    // ── AUTO-REDIRECT se teste já foi feito ──────────────────
+    try {
+      var _u = capsulaDB.lsGetUser() || {};
+      if (_u.johari && _u.johari.completedAt) {
+        var u = _u;
+        // Restaura dados Johari
+      var _j = u.johari;
+      if (_j.self && _j.others) {
+        selfSelected = new Set(_j.self);
+        othersSelected = new Set(_j.others);
+        showResult();
+      }
+      }
+    } catch(_e) { console.warn('[redirect]', _e); }
+    // ─────────────────────────────────────────────────────────
+const u=(capsulaDB.lsGetUser() || {});if(!u.nome&&!u.apelido&&!u.email)window.location.href='index.html';if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}}catch(e){}});
 
 function generatePDF(){
   const u=(capsulaDB.lsGetUser() || {});

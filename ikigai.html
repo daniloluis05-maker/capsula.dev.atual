@@ -386,6 +386,20 @@ function showResult(){
 // Restaura rascunho e proteção de rota
 document.addEventListener('DOMContentLoaded', function(){
   try{
+    // ── AUTO-REDIRECT se teste já foi feito ──────────────────
+    try {
+      var _u = capsulaDB.lsGetUser() || {};
+      if (_u.ikigai && _u.ikigai.completedAt) {
+        var u = _u;
+        // Restaura answers Ikigai
+      if (u.ikigai.answers) {
+        answers = u.ikigai.answers;
+        showResult();
+      }
+      }
+    } catch(_e) { console.warn('[redirect]', _e); }
+    // ─────────────────────────────────────────────────────────
+
     const u=(capsulaDB.lsGetUser() || {});
     if(u.ikigai_draft)answers=u.ikigai_draft;
     // Proteção de rota

@@ -881,6 +881,21 @@ function initPage() {
     return;
   }
 
+    // ── AUTO-REDIRECT se teste já foi feito ──────────────────
+    try {
+      var _u = capsulaDB.lsGetUser() || {};
+      if (_u.soar && _u.soar.completedAt) {
+        var u = _u;
+        // Restaura answers SOAR
+      if (u.soar.answers) {
+        answers = u.soar.answers;
+        showResult();
+      }
+      }
+    } catch(_e) { console.warn('[redirect]', _e); }
+    // ─────────────────────────────────────────────────────────
+
+
   // Auto-heal: garante que uid sempre existe
   if (!userData.uid) {
     userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);

@@ -1376,6 +1376,22 @@ function initPage() {
     capsulaDB.lsSetRaw('capsula_user', sessionStorage.getItem('capsula_user'));
   }
 
+
+
+    // ── AUTO-REDIRECT se teste já foi feito ──────────────────
+    try {
+      var _u = capsulaDB.lsGetUser() || {};
+      if (_u.disc && _u.disc.completedAt) {
+        var u = _u;
+        // Restaura scores DISC
+      if (u.disc.scores) {
+        scores = u.disc.scores;
+        showResult();
+      }
+      }
+    } catch(_e) { console.warn('[redirect]', _e); }
+    // ─────────────────────────────────────────────────────────
+
   // Exibe nome na intro
   const nome = getNomeExibido(userData);
   const greeting = document.getElementById('disc-greeting');

@@ -745,6 +745,20 @@ function _imprimirPDF(html){
 // ── Proteção de rota
 document.addEventListener('DOMContentLoaded', function(){
   try{
+    // ── AUTO-REDIRECT se teste já foi feito ──────────────────
+    try {
+      var _u = capsulaDB.lsGetUser() || {};
+      if (_u.bigfive && _u.bigfive.completedAt) {
+        var u = _u;
+        // Restaura scores Big Five
+      if (u.bigfive.scores) {
+        scores = u.bigfive.scores;
+        showResult();
+      }
+      }
+    } catch(_e) { console.warn('[redirect]', _e); }
+    // ─────────────────────────────────────────────────────────
+
     const u = (capsulaDB.lsGetUser() || {});
     if(!u.nome && !u.apelido && !u.email) window.location.href = 'index.html';
     // Auto-heal uid
