@@ -8,13 +8,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Mapeie suas Forças, Oportunidades, Aspirações e Resultados. Construa sua visão estratégica pessoal com a análise SOAR.">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.groq.com;">
-<title>Análise SOAR | Cápsula de Desenvolvimento</title>
+<title>Análise SOAR | Sistema Gnosis</title>
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://capsula.dev/soar.html">
-<meta property="og:title" content="Análise SOAR | Cápsula de Desenvolvimento">
+<meta property="og:url" content="https://sistemagnosis.com.br/soar.html">
+<meta property="og:title" content="Análise SOAR | Sistema Gnosis">
 <meta property="og:description" content="Mapeie suas Forças, Oportunidades, Aspirações e Resultados. Construa sua visão estratégica pessoal.">
 <link rel="stylesheet" href="css/capsula.css">
-<link rel="canonical" href="https://capsula.dev/soar.html">
+<link rel="canonical" href="https://sistemagnosis.com.br/soar.html">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
 <link rel="preload" href="https://fonts.gstatic.com/s/outfit/v11/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC0C4G-EiAou6Y.woff2" as="font" type="font/woff2" crossorigin>
@@ -316,7 +316,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <script src="js/config.js"></script>
   <script src="js/db.js"></script>
   <script src="js/ui.js" defer></script>
-<meta property="og:image" content="https://capsula.dev/apple-touch-icon.png">
+<meta property="og:image" content="https://sistemagnosis.com.br/apple-touch-icon.png">
 </head>
 <body>
 <div class="orb orb-1"></div>
@@ -374,8 +374,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 <div class="page" id="page-form">
   <nav aria-label="Navegação principal" class="form-nav">
     <a href="dashboard.html" class="form-logo">
-      <div class="form-logo-mark">C</div>
-      Cápsula<span>.</span>Dev
+      <div class="form-logo-mark">G</div>
+      Sistema <span>Gnosis</span>
     </a>
     <div class="form-progress-wrap">
       <div class="form-progress-track">
@@ -806,14 +806,14 @@ function generatePDF() {
 
   const w = window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
-  <meta charset="UTF-8"><title>Análise SOAR — ${nome} · Cápsula.Dev</title>
+  <meta charset="UTF-8"><title>Análise SOAR — ${nome} · Sistema Gnosis</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>${_css}</style></head><body>
 <div class="page">
   <div class="bg-grid"></div><div class="bg-orb1"></div><div class="bg-orb2"></div>
   <div class="content">
     <div class="header">
-      <div class="brand"><div class="brand-cube">C</div><span class="brand-name">Cápsula<em>.</em>Dev</span></div>
+      <div class="brand"><div class="brand-cube">G</div><span class="brand-name">Sistema <em>Gnosis</em></span></div>
       <div class="header-meta">
         <div class="header-tag">// análise soar · relatório</div>
         <div class="header-date">${data.toUpperCase()}</div>
@@ -841,7 +841,7 @@ function generatePDF() {
         <div class="footer-dot"></div><span class="footer-text">CÁPSULA DE DESENVOLVIMENTO</span>
         <div class="footer-dot"></div><span class="footer-text">RELATÓRIO CONFIDENCIAL · © ${new Date().getFullYear()}</span>
       </div>
-      <div class="footer-brand">Cápsula<em>.</em>Dev</div>
+      <div class="footer-brand">Sistema <em>Gnosis</em></div>
     </div>
   </div>
 </div>
@@ -857,7 +857,7 @@ function shareResult() {
   const totalFilled = QUADRANTS.reduce((acc, q) => {
     return acc + Object.values(answers[q.key] || {}).filter(v => v && v.length > 0).length;
   }, 0);
-  const text = `Concluí minha Análise SOAR na Cápsula de Desenvolvimento — ${totalFilled} respostas estratégicas mapeadas. Descubra o seu em capsulededesenvolvimento.com.br`;
+  const text = `Concluí minha Análise SOAR no Sistema Gnosis — ${totalFilled} respostas estratégicas mapeadas. Descubra o seu em sistemagnosis.com.br`;
   if (navigator.share) {
     navigator.share({ title: 'Minha Análise SOAR', text });
   } else {
