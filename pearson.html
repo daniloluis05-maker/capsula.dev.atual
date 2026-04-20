@@ -157,8 +157,19 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .meta-item{padding:0.75rem 1rem;}
   .dominant-card::before{display:none;}
 }
+/* ── PDF SALVO ── */
+.pdf-saved-banner{display:none;align-items:center;justify-content:space-between;gap:1rem;background:rgba(46,196,160,0.07);border:1px solid rgba(46,196,160,0.25);border-radius:10px;padding:0.9rem 1.25rem;margin:1.5rem auto 0;max-width:720px;width:90%;flex-wrap:wrap;}
+.pdf-saved-banner.visible{display:flex;}
+.pdf-saved-info{display:flex;align-items:center;gap:0.75rem;}
+.pdf-saved-icon{font-size:1.2rem;}
+.pdf-saved-text{font-size:0.8rem;color:var(--text);}
+.pdf-saved-text strong{color:#2EC4A0;font-weight:600;}
+.pdf-saved-text span{font-family:var(--mono);font-size:0.62rem;color:var(--muted);display:block;margin-top:0.15rem;}
+.btn-download-pdf{background:#2EC4A0;border:none;color:#021a14;padding:0.5rem 1.1rem;border-radius:5px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all 0.2s;white-space:nowrap;}
+.btn-download-pdf:hover{filter:brightness(1.1);transform:translateY(-1px);}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/db.js"></script>
   <script src="js/ui.js" defer></script>
@@ -231,7 +242,20 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
     <div class="result-actions">
       <a href="dashboard.html" class="btn-dashboard">Ver meu Dashboard →</a>
+      <button class="btn-outline" onclick="exportPDF()">⬇ Baixar PDF</button>
       <button class="btn-outline" onclick="startQuiz()">↺ Refazer</button>
+    </div>
+
+    <!-- Banner PDF salvo -->
+    <div class="pdf-saved-banner" id="pdf-saved-banner">
+      <div class="pdf-saved-info">
+        <div class="pdf-saved-icon">📄</div>
+        <div class="pdf-saved-text">
+          <strong>PDF do último resultado salvo</strong>
+          <span id="pdf-saved-date">—</span>
+        </div>
+      </div>
+      <button class="btn-download-pdf" onclick="downloadSavedPDF()">⬇ Baixar PDF</button>
     </div>
   </div>
 </div>
@@ -600,6 +624,7 @@ function showResult(){
   card.style.borderColor = topArch.color + '40';
   card.style.background = `linear-gradient(135deg,${topArch.color}0A,rgba(155,89,182,0.04))`;
   document.getElementById('dominant-name').textContent = topArch.name;
+  document.getElementById('dominant-name').dataset.archKey = topKey;
   document.getElementById('dominant-name').style.color = topArch.color;
   document.getElementById('dominant-theme').textContent = `// ${topArch.theme.toUpperCase()}`;
   document.getElementById('dominant-desc').textContent = topArch.hi;
@@ -683,6 +708,9 @@ function showResult(){
     if(idx >= 0){ perfis[idx].pearson = u.pearson; capsulaDB.lsSetUsers(perfis); }
   } catch(e) {}
   if(window.capsulaDB && u.email){ capsulaDB.saveUser(u).catch(e => console.warn('[pearson] sync:', e)); }
+
+  // Auto-gerar e salvar PDF
+  setTimeout(() => { try{ exportPDF(); }catch(e){ console.warn('[pearson] auto-PDF:', e); } }, 500);
 }
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -691,7 +719,201 @@ document.addEventListener('DOMContentLoaded', function(){
     if(!u.nome && !u.apelido && !u.email) window.location.href = 'index.html';
     if(!u.uid){ u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); try{ capsulaDB.lsSetUser(u); }catch(_){} }
   }catch(e){}
+  updateSavedBanner();
 });
+
+// ══════════════════════════════════════
+// PDF — jsPDF
+// ══════════════════════════════════════
+function stripHtml(html){
+  const d = document.createElement('div'); d.innerHTML = html || ''; return d.textContent || d.innerText || '';
+}
+
+function exportPDF(){
+  if(typeof window.jspdf === 'undefined'){ alert('jsPDF não carregado. Verifique sua conexão.'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+
+  const PW=210, PH=297, ML=16, MR=16, MT=16;
+  const CW = PW - ML - MR;
+
+  const GOLD=[201,168,76], PURPLE=[155,89,182], TEAL=[46,196,160];
+  const BG=[7,8,12], SURFACE=[18,21,32], MUTED=[107,105,128], TEXT=[232,230,240];
+  const GROUP_RGB={ ego:[232,96,58], soul:[46,196,160], self:[155,89,182], drive:[27,168,212] };
+
+  const topKey   = document.getElementById('dominant-name')?.dataset?.archKey || '';
+  const topArch  = ARCHETYPES[topKey] || {};
+  const domName  = document.getElementById('dominant-name')?.textContent || '—';
+  const domTheme = document.getElementById('dominant-theme')?.textContent || '';
+  const domDesc  = document.getElementById('dominant-desc')?.textContent || '';
+  const domBadge = document.getElementById('dominant-badge')?.textContent || '';
+  const resultSub= document.getElementById('result-sub')?.textContent || '';
+  const insightEl= document.getElementById('insight-box');
+  const insightTxt = insightEl ? stripHtml(insightEl.innerHTML) : '';
+
+  const u = (capsulaDB.lsGetUser() || {});
+  const nome = u.apelido || u.nome || 'Usuário';
+  const dataStr = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+
+  let y = MT;
+
+  // BG
+  doc.setFillColor(...BG); doc.rect(0,0,PW,PH,'F');
+
+  // Top bar
+  doc.setFillColor(...GOLD); doc.rect(ML, y, CW*0.5, 1.2, 'F');
+  doc.setFillColor(...PURPLE); doc.rect(ML+CW*0.5, y, CW*0.25, 1.2, 'F');
+  y += 6;
+
+  // Logo + data
+  doc.setFillColor(...GOLD); doc.roundedRect(ML, y, 7, 7, 1, 1, 'F');
+  doc.setFontSize(6); doc.setFont('helvetica','bold'); doc.setTextColor(7,8,12);
+  doc.text('C', ML+3.5, y+4.8, {align:'center'});
+  doc.setFontSize(10); doc.setFont('helvetica','bold'); doc.setTextColor(...TEXT);
+  doc.text('Cápsula.Dev', ML+10, y+5.5);
+  doc.setFontSize(7); doc.setFont('helvetica','normal'); doc.setTextColor(...MUTED);
+  doc.text('EMITIDO EM ' + dataStr.toUpperCase(), PW-MR, y+5.5, {align:'right'});
+  y += 14;
+
+  // Title block
+  doc.setFillColor(17,19,32); doc.roundedRect(ML, y, CW, 26, 2, 2, 'F');
+  doc.setDrawColor(...GOLD); doc.setLineWidth(0.6);
+  doc.line(ML, y, ML, y+26); doc.setLineWidth(0.1);
+  doc.setFontSize(7); doc.setFont('helvetica','normal'); doc.setTextColor(...MUTED);
+  doc.text('// ARQUÉTIPOS DE PEARSON-MARR · ' + nome.toUpperCase(), ML+5, y+6);
+  doc.setFontSize(18); doc.setFont('helvetica','bold'); doc.setTextColor(...GOLD);
+  doc.text('Matriz de Arquétipos', ML+5, y+15);
+  doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(...MUTED);
+  doc.text(resultSub, ML+5, y+22);
+  y += 32;
+
+  // Dominant archetype card
+  const archColorHex = topArch.color || '#C9A84C';
+  const archGroup = topArch.group || 'ego';
+  const archRGB = GROUP_RGB[archGroup] || GOLD;
+
+  doc.setFillColor(22,18,12); doc.roundedRect(ML, y, CW, 46, 2, 2, 'F');
+  doc.setDrawColor(...archRGB); doc.setLineWidth(0.4);
+  doc.roundedRect(ML, y, CW, 46, 2, 2, 'S'); doc.setLineWidth(0.1);
+
+  doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(...archRGB);
+  doc.text('ARQUÉTIPO DOMINANTE', ML+6, y+7);
+
+  doc.setFontSize(16); doc.setFont('helvetica','bold'); doc.setTextColor(...archRGB);
+  doc.text(domName, ML+6, y+16);
+
+  doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.setTextColor(...MUTED);
+  doc.text(domTheme.replace('// ',''), ML+6, y+22);
+
+  doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(...TEXT);
+  const descLines = doc.splitTextToSize(domDesc, CW-12);
+  doc.text(descLines.slice(0,4), ML+6, y+28, {lineHeightFactor:1.5});
+
+  doc.setDrawColor(...archRGB); doc.setLineWidth(0.2);
+  doc.roundedRect(ML+6, y+40, domBadge.length*2.2, 4, 0.5, 0.5, 'S');
+  doc.setFontSize(6); doc.setTextColor(...archRGB);
+  doc.text(domBadge, ML+8, y+43);
+  y += 52;
+
+  // Scores list
+  const scores = (capsulaDB.lsGetUser()||{}).pearson?.scores || {};
+  const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+
+  doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(...GOLD);
+  doc.text('RANKING DOS 12 ARQUÉTIPOS', ML, y);
+  y += 5;
+
+  sorted.forEach(([k, score], i) => {
+    const a = ARCHETYPES[k];
+    if(!a) return;
+    const gr = GROUP_RGB[a.group] || GOLD;
+    const barW = ((score/100) * (CW-45));
+
+    doc.setFillColor(18,21,32); doc.roundedRect(ML, y, CW, 9, 1, 1, 'F');
+    if(i===0){ doc.setDrawColor(...gr); doc.setLineWidth(0.3); doc.roundedRect(ML, y, CW, 9, 1, 1, 'S'); doc.setLineWidth(0.1); }
+
+    doc.setFontSize(8); doc.setFont('helvetica', i===0?'bold':'normal'); doc.setTextColor(...(i===0?gr:TEXT));
+    doc.text(`${a.icon} ${a.name}`, ML+3, y+6);
+    doc.setFontSize(7); doc.setTextColor(...MUTED);
+    doc.text(a.groupName, ML+42, y+6);
+
+    // Bar
+    doc.setFillColor(30,33,48); doc.roundedRect(ML+70, y+3, CW-80, 3, 1, 1, 'F');
+    doc.setFillColor(...gr); doc.roundedRect(ML+70, y+3, barW*(CW-80)/(CW-45), 3, 1, 1, 'F');
+
+    doc.setFontSize(7.5); doc.setFont('helvetica','bold'); doc.setTextColor(...(i===0?gr:MUTED));
+    doc.text(score+'%', PW-MR, y+6, {align:'right'});
+
+    y += 11;
+    if(y > PH-30){ doc.addPage(); doc.setFillColor(...BG); doc.rect(0,0,PW,PH,'F'); y = MT; }
+  });
+
+  y += 4;
+
+  // Insight box
+  if(insightTxt){
+    doc.setFontSize(8.5);
+    const lines = doc.splitTextToSize(insightTxt.replace(/\n+/g,' '), CW-12);
+    const bH = 16 + lines.length*4.2;
+    if(y + bH > PH-18){ doc.addPage(); doc.setFillColor(...BG); doc.rect(0,0,PW,PH,'F'); y=MT; }
+    doc.setFillColor(18,21,32); doc.roundedRect(ML, y, CW, bH, 2, 2, 'F');
+    doc.setDrawColor(...GOLD); doc.setLineWidth(0.2); doc.line(ML, y+8, ML+CW, y+8); doc.setLineWidth(0.1);
+    doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(...GOLD);
+    doc.text('✦ ANÁLISE DO PERFIL ARQUETÍPICO', ML+5, y+6);
+    doc.setFontSize(8.2); doc.setFont('helvetica','normal'); doc.setTextColor(...TEXT);
+    doc.text(lines, ML+5, y+13, {lineHeightFactor:1.5});
+    y += bH + 4;
+  }
+
+  // Footer
+  doc.setDrawColor(42,42,58); doc.setLineWidth(0.2);
+  doc.line(ML, PH-10, PW-MR, PH-10);
+  doc.setFontSize(6); doc.setFont('helvetica','normal'); doc.setTextColor(42,42,58);
+  doc.text('CÁPSULA DE DESENVOLVIMENTO · ARQUÉTIPOS PEARSON-MARR · CONFIDENCIAL', ML, PH-7);
+  doc.text('Cápsula.Dev', PW-MR, PH-7, {align:'right'});
+
+  // Save to localStorage
+  const safeName = nome.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'').toLowerCase();
+  const filename  = `arquetipos-pearson-${safeName}.pdf`;
+  try{
+    const base64 = doc.output('datauristring');
+    const now = new Date();
+    localStorage.setItem('capsula_pearson_pdf', JSON.stringify({
+      base64, filename, nome,
+      savedAt: now.toISOString(),
+      label: 'Gerado em ' + now.toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'}) + ' às ' + now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+    }));
+    updateSavedBanner();
+  }catch(e){ console.warn('[pearson] PDF save:', e); }
+
+  doc.save(filename);
+}
+
+function updateSavedBanner(){
+  try{
+    const raw = localStorage.getItem('capsula_pearson_pdf');
+    if(!raw) return;
+    const info = JSON.parse(raw);
+    const banner = document.getElementById('pdf-saved-banner');
+    const dateEl = document.getElementById('pdf-saved-date');
+    if(banner) banner.classList.add('visible');
+    if(dateEl) dateEl.textContent = info.label || '';
+  }catch(_){}
+}
+
+function downloadSavedPDF(){
+  try{
+    const raw = localStorage.getItem('capsula_pearson_pdf');
+    if(!raw){ alert('Nenhum PDF salvo encontrado.'); return; }
+    const info = JSON.parse(raw);
+    const link = document.createElement('a');
+    link.href = info.base64;
+    link.download = info.filename || 'arquetipos-pearson.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }catch(e){ alert('Erro ao baixar PDF: ' + e.message); }
+}
 </script>
 </body>
 </html>
