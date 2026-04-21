@@ -160,6 +160,12 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .mobile-user{display:flex;align-items:center;gap:0.5rem;}
 .mobile-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--I),var(--C));display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;}
 @media(max-width:1024px){.shell{grid-template-columns:1fr;}.sidebar{display:none;}.mobile-nav{display:block;}.mobile-topbar{display:flex;}.main{padding:1.25rem 1.25rem 6rem;}.stats-row{grid-template-columns:repeat(2,1fr);}.bottom-grid{grid-template-columns:1fr;}}
+
+.matrix-card.card-wide{grid-column:span 2;}
+.matrix-card.card-tall{grid-row:span 2;}
+.matrix-card.card-featured{grid-column:span 2;background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border-left:2px solid var(--card-accent,var(--accent));}
+.matrix-card.card-featured::after{display:none;}
+@media(max-width:860px){.matrix-card.card-wide,.matrix-card.card-featured{grid-column:1/-1;}.matrix-card.card-tall{grid-row:auto;}}
 @media(max-width:600px){.stats-row{grid-template-columns:1fr 1fr;}.matrices-grid{grid-template-columns:1fr;}}
 </style>
 <meta property="og:image" content="https://sistemagnosis.com.br/apple-touch-icon.png">
@@ -190,7 +196,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <a class="nav-item active" href="dashboard.html"><span class="nav-icon">⬡</span>Dashboard</a>
         <a class="nav-item" href="disc.html"><span class="nav-icon">🎯</span>DISC</a>
         <a class="nav-item" href="soar.html"><span class="nav-icon">🧭</span>SOAR</a>
-        <a class="nav-item" href="#resultados" onclick="scrollToSection('resultados')"><span class="nav-icon">◎</span>Resultados</a>
+        <a class="nav-item" href="#resultados" onclick="scrollToSection('resultados')"><span class="nav-icon">◎</span>Insights de Performance</a>
         <a class="nav-item" href="tci.html"><span class="nav-icon">🧬</span>Temperamento TCI</a>
         <a class="nav-item" href="dna.html" style="border:1px solid rgba(201,168,76,0.2);color:#C9A84C;background:rgba(201,168,76,0.06);"><span class="nav-icon">🧬</span>DNA Estratégico</a>
       </div>
@@ -219,14 +225,14 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <div class="topbar-date" id="greeting-date">—</div>
       </div>
       <div class="topbar-actions">
-        <button class="btn-ghost" onclick="exportarDados()">↓ Exportar</button>
+        <button class="btn-ghost" onclick="exportarDados()">↓ Exportar dados</button>
         <button class="btn-accent" onclick="novaMatriz()">+ Nova Matriz</button>
       </div>
     </div>
 
     <div class="stats-row">
       <div class="stat-card" style="--stat-color:var(--I)">
-        <span class="stat-tag">Matrizes Concluídas</span>
+        <span class="stat-tag">Diagnósticos Concluídos</span>
         <div class="stat-val" id="stat-matrizes">0</div>
         <div class="stat-sub">de 2 disponíveis</div>
       </div>
@@ -321,7 +327,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         </div>
       </div>
 
-      <div class="matrix-card" style="--card-accent:var(--I)" onclick="window.location.href='bigfive.html'">
+      <div class="matrix-card card-wide" style="--card-accent:var(--I)" onclick="window.location.href='bigfive.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(108,95,230,0.1);border:1px solid rgba(108,95,230,0.18);">🧠</div>
         </div>
@@ -334,7 +340,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         </div>
       </div>
 
-      <div class="matrix-card" style="--card-accent:#C9A84C" onclick="window.location.href='pearson.html'">
+      <div class="matrix-card card-featured" style="--card-accent:#C9A84C" onclick="window.location.href='pearson.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);">🏛️</div>
         </div>
@@ -372,7 +378,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <h3>DNA Estratégico — Sua Assinatura Comportamental</h3>
         <p>Motor de análise sintética que cruza DISC, Big Five, Âncoras, Johari, Ikigai e SOAR para gerar um diagnóstico ultra-personalizado. Não é um relatório — é o seu mapa genético profissional.</p>
         <div class="card-foot">
-          <span class="card-status" id="dna-status" style="color:#C9A84C;">Pronto para sequenciar</span>
+          <span class="card-status" id="dna-status" style="color:#C9A84C;">Iniciar sequenciamento</span>
           <span class="card-arrow">→</span>
         </div>
       </div>

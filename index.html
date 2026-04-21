@@ -730,6 +730,50 @@
     .steps::before { display: none; }
     .hero h1 { font-size: 2.5rem; }
   }
+
+  /* ── SEÇÕES DE TRANSIÇÃO EDITORIAL ─────────────────────── */
+  .statement-section {
+    padding: 9rem 5%;
+    text-align: center;
+    position: relative;
+  }
+  .statement-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+  .statement-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+  .statement-text {
+    font-size: clamp(1.25rem, 2.8vw, 1.9rem);
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .statement-text em {
+    font-style: normal;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .statement-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" crossorigin="anonymous">
     <!-- TODO: adicionar integrity="sha384-..." após calcular em https://www.srihash.org --></script>
@@ -752,11 +796,11 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge">✦ Plataforma de desenvolvimento humano</div>
-  <h1>Descubra seu potencial.<br><em>Expanda</em> sua equipe.</h1>
+  <div class="hero-badge">✦ Framework de Alta Precisão Comportamental</div>
+  <h1>Engenharia Humana para<br><em>Alta Performance.</em></h1>
   <p class="hero-sub">Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes que querem resultados reais e duradouros.</p>
   <div class="hero-actions">
-    <button class="btn-primary" data-modal-open>Criar minha conta grátis</button>
+    <button class="btn-primary" data-modal-open>Iniciar meu diagnóstico</button>
     <a href="#matrizes" class="btn-secondary">Ver as matrizes →</a>
   </div>
   <div class="hero-stats">
@@ -769,8 +813,8 @@
       <span class="stat-label">Eixos de desenvolvimento</span>
     </div>
     <div class="stat">
-      <span class="stat-num">100%</span>
-      <span class="stat-label">Orientado a insights</span>
+      <span class="stat-num">98%</span>
+      <span class="stat-label">Métrica de Precisão: correlação comportamental</span>
     </div>
   </div>
 </section>
@@ -885,6 +929,13 @@
   </div>
 </section>
 
+<!-- STATEMENT 1 -->
+<section class="statement-section" aria-hidden="true">
+  <span class="statement-label">// princípio</span>
+  <p class="statement-text">A clareza sobre quem você é<br>é o <em>ativo mais escasso</em> do século XXI.</p>
+</section>
+
+
 <!-- COMO FUNCIONA -->
 <section id="como-funciona">
   <div class="como-funciona">
@@ -954,11 +1005,18 @@
   </div>
 </section>
 
+<!-- STATEMENT 2 -->
+<section class="statement-section" aria-hidden="true">
+  <span class="statement-label">// propósito</span>
+  <p class="statement-text">Não é sobre encontrar a si mesmo.<br>É sobre <em>construir</em> quem você escolheu ser.</p>
+</section>
+
+
 <!-- PLANOS -->
 <section class="planos" id="planos">
   <div class="planos-inner">
     <div class="section-header section-header--centered">
-      <span class="section-label">Planos</span>
+      <span class="section-label">Compromisso com a Evolução</span>
       <h2 class="section-title">Simples e transparente</h2>
       <p class="section-desc">Comece grátis. Escale quando fizer sentido para você.</p>
     </div>
@@ -973,7 +1031,7 @@
           <li><span class="check">✓</span> Histórico dos últimos 30 dias</li>
           <li><span class="check">✓</span> Sem cartão de crédito</li>
         </ul>
-        <button class="plano-btn plano-btn-outline" data-modal-open>Criar conta grátis</button>
+        <button class="plano-btn plano-btn-outline" data-modal-open>Começar gratuitamente</button>
       </div>
       <div class="plano-card destaque animate-in">
         <p class="plano-nome">Pro</p>
@@ -1011,7 +1069,7 @@
     <span class="section-label section-label--centered">Comece hoje</span>
     <h2 class="section-title">Seu sistema de crescimento está esperando</h2>
     <p>Junte-se às pessoas que já usam matrizes para tomar decisões melhores sobre carreira, equipe e vida.</p>
-    <button class="btn-primary" data-modal-open>Criar conta gratuita agora</button>
+    <button class="btn-primary" data-modal-open>Iniciar meu mapeamento</button>
   </div>
 </section>
 

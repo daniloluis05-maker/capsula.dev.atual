@@ -752,7 +752,7 @@ body::before {
         Ver meu Dashboard →
       </button>
       <button class="btn-share" onclick="generatePDF()" style="background:var(--surface);border:1px solid var(--border2);color:var(--text);">
-        ↓ Baixar PDF
+        ↓ Exportar Relatório
       </button>
       <button class="btn-share" onclick="shareResult()">
         ↗ Compartilhar
@@ -1411,17 +1411,17 @@ function generatePDF() {
     let svg='';
     [0.25,0.5,0.75,1].forEach(r=>{
       const pts=angles.map(a=>`${cx+R*r*Math.cos(a)},${cy+R*r*Math.sin(a)}`).join(' ');
-      svg+=`<polygon points="${pts}" fill="none" stroke="rgba(108,95,230,0.15)" stroke-width="1"/>`;
+      svg+=`<polygon points="${pts}" fill="none" stroke="rgba(108,95,230,0.1)" stroke-width="0.5"/>`;
     });
     angles.forEach(a=>{
-      svg+=`<line x1="${cx}" y1="${cy}" x2="${cx+R*Math.cos(a)}" y2="${cy+R*Math.sin(a)}" stroke="rgba(108,95,230,0.12)" stroke-width="1"/>`;
+      svg+=`<line x1="${cx}" y1="${cy}" x2="${cx+R*Math.cos(a)}" y2="${cy+R*Math.sin(a)}" stroke="rgba(108,95,230,0.07)" stroke-width="0.5"/>`;
     });
     const pts=dims.map((d,i)=>{ const r=(sc[d]||0)/100; return `${cx+R*r*Math.cos(angles[i])},${cy+R*r*Math.sin(angles[i])}`; });
-    svg+=`<polygon points="${pts.join(' ')}" fill="${accentColor}18" stroke="${accentColor}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    svg+=`<polygon points="${pts.join(' ')}" fill="${accentColor}18" stroke="${accentColor}" stroke-width="1.5" stroke-linejoin="round"/>`;
     dims.forEach((d,i)=>{
       const r=(sc[d]||0)/100;
       const px=cx+R*r*Math.cos(angles[i]); const py=cy+R*r*Math.sin(angles[i]);
-      svg+=`<circle cx="${px}" cy="${py}" r="5" fill="${dimColors[d]}" stroke="${dimColors[d]}44" stroke-width="4"/>`;
+      svg+=`<circle cx="${px}" cy="${py}" r="4" fill="var(--bg,#07080C)" stroke="${dimColors[d]}" stroke-width="1.5"/>`;
       const lx=cx+(R+22)*Math.cos(angles[i]); const ly=cy+(R+22)*Math.sin(angles[i]);
       svg+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-family="monospace" font-size="14" font-weight="700" fill="${dimColors[d]}">${d}</text>`;
     });
