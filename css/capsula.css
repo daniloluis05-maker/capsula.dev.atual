@@ -67,7 +67,7 @@ a { color: var(--accent); }
 /* ── Cards ───────────────────────────────────────────────── */
 .card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1.5rem;
+  border-radius: var(--radius); padding: 2rem;
 }
 
 /* ── Inputs ──────────────────────────────────────────────── */
