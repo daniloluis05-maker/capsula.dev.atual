@@ -200,6 +200,128 @@
   function lsGetUsers()      { return lsGet('capsula_users') || []; }
   function lsSetUsers(arr)   { return lsSet('capsula_users', arr); }
 
+  // ── Supabase Auth ───────────────────────────────────────────
+
+  async function authSignUp(email, password, nome, objetivo) {
+    const db = getDB();
+    if (!db) return { data: null, error: 'offline' };
+
+    const { data, error } = await db.auth.signUp({
+      email: email.toLowerCase().trim(),
+      password,
+      options: { data: { nome, objetivo } },
+    });
+
+    if (error) return { data: null, error };
+
+    if (data.user) {
+      const userData = {
+        uid: data.user.id,
+        nome,
+        email: email.toLowerCase().trim(),
+        objetivo,
+        criado_em: new Date().toISOString(),
+      };
+      await saveUser(userData);
+      // session=null quando confirmação de e-mail está ativa
+      return { data: userData, session: data.session, confirmEmail: !data.session, error: null };
+    }
+
+    return { data: null, error: 'user_not_created' };
+  }
+
+  async function authSignIn(email, password) {
+    const db = getDB();
+    if (!db) return { data: null, error: 'offline' };
+
+    const { data, error } = await db.auth.signInWithPassword({
+      email: email.toLowerCase().trim(),
+      password,
+    });
+
+    if (error) return { data: null, error };
+
+    const { data: profile } = await findUserByEmail(email);
+
+    if (profile) {
+      profile.uid = data.user.id;
+      return { data: profile, session: data.session, error: null };
+    }
+
+    // Perfil não existe ainda — cria com dados do Auth
+    const basicProfile = {
+      uid: data.user.id,
+      nome: data.user.user_metadata?.nome || email.split('@')[0],
+      email: email.toLowerCase().trim(),
+      objetivo: data.user.user_metadata?.objetivo || '',
+      criado_em: data.user.created_at || new Date().toISOString(),
+    };
+    await saveUser(basicProfile);
+    return { data: basicProfile, session: data.session, error: null };
+  }
+
+  async function authSignInWithGoogle() {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+
+    const callbackUrl = window.location.origin + '/auth-callback.html';
+    const { data, error } = await db.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: callbackUrl },
+    });
+
+    return { data, error };
+  }
+
+  async function authGetSession() {
+    const db = getDB();
+    if (!db) return { session: null };
+    const { data: { session } } = await db.auth.getSession();
+    return { session };
+  }
+
+  async function authSignOut() {
+    const db = getDB();
+    if (!db) return;
+    await db.auth.signOut();
+  }
+
+  async function authLoadUserProfile(user) {
+    const { data: profile } = await findUserByEmail(user.email);
+
+    if (profile) {
+      profile.uid = user.id;
+      return profile;
+    }
+
+    // Cria perfil a partir dos metadados do Auth (usado no fluxo Google)
+    const nome = user.user_metadata?.full_name
+      || user.user_metadata?.nome
+      || user.email.split('@')[0];
+
+    const basicProfile = {
+      uid: user.id,
+      nome,
+      email: user.email.toLowerCase(),
+      objetivo: user.user_metadata?.objetivo || '',
+      criado_em: user.created_at || new Date().toISOString(),
+    };
+    await saveUser(basicProfile);
+    return basicProfile;
+  }
+
+  async function authResetPassword(email) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+
+    const redirectTo = window.location.origin + '/auth-callback.html?type=recovery';
+    const { error } = await db.auth.resetPasswordForEmail(
+      email.toLowerCase().trim(),
+      { redirectTo }
+    );
+    return { error };
+  }
+
   // ── Exporta para escopo global ──────────────────────────────
   window.capsulaDB = {
     getDB,
@@ -207,6 +329,14 @@
     findUserByEmail,
     syncMatrizes,
     migrateLocalToSupabase,
+    // Supabase Auth
+    authSignUp,
+    authSignIn,
+    authSignInWithGoogle,
+    authGetSession,
+    authSignOut,
+    authLoadUserProfile,
+    authResetPassword,
     // localStorage seguro
     lsGet,
     lsGetRaw,

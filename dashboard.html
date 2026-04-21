@@ -491,37 +491,46 @@ function initDate(){
   document.getElementById('greeting-date').textContent=`${s} · ${dias[now.getDay()]}, ${now.getDate()} de ${meses[now.getMonth()]}`;
 }
 
-function loadUser(){
-  // Lê sempre do localStorage (fonte primária de progresso)
+async function loadUser(){
   const lsRaw = localStorage.getItem('capsula_user');
   const ssRaw = sessionStorage.getItem('capsula_user');
-  // Novo usuário: flag gravada pelo cadastro OU veio só pelo sessionStorage
-  const isNew = sessionStorage.getItem('capsula_is_new_user') === '1' || (!!ssRaw && !lsRaw);
+  const isNew = sessionStorage.getItem('capsula_is_new_user') === '1';
 
-  const raw = lsRaw || ssRaw;
+  // Caminho rápido: dados locais existem → carrega sem aguardar Auth
+  if (!lsRaw && !ssRaw) {
+    // Sem dados locais → verifica se há sessão Supabase Auth ativa
+    let authUser = null;
+    try {
+      const { session } = await capsulaDB.authGetSession();
+      if (session) authUser = session.user;
+    } catch(e) { console.warn('[dashboard] authGetSession:', e); }
 
-  if (!raw) {
-    window.location.href = 'index.html';
-    return;
+    if (!authUser) {
+      window.location.href = 'index.html';
+      return;
+    }
+    // Sessão Auth existe mas sem localStorage → cria perfil local
+    try {
+      const profile = await capsulaDB.authLoadUserProfile(authUser);
+      capsulaDB.lsSetUser(profile);
+    } catch(e) { console.warn('[dashboard] loadProfile:', e); }
   }
 
   // Sincroniza sessionStorage → localStorage se necessário
-  if (ssRaw && !lsRaw) {
-    capsulaDB.lsSetRaw('capsula_user', ssRaw);
-  }
+  if (ssRaw && !lsRaw) capsulaDB.lsSetRaw('capsula_user', ssRaw);
 
-  // Consome a flag de novo usuário (mostrar toast só uma vez)
   if (isNew) sessionStorage.removeItem('capsula_is_new_user');
 
-  const u = JSON.parse(raw);
+  const finalRaw = localStorage.getItem('capsula_user') || ssRaw;
+  if (!finalRaw) { window.location.href = 'index.html'; return; }
+
+  const u = JSON.parse(finalRaw);
   applyUser(u.nome, u.apelido);
 
   if (isNew) showToast(u.apelido || (u.nome ? u.nome.split(' ')[0] : 'Usuário'));
 
-  // Carrega estado completo das matrizes do localStorage
   loadMatrixState((capsulaDB.lsGetUser() || {}));
 
-  // Calcula dias ativo com base em criado_em (salvo no cadastro)
   if (u.criado_em) {
     const criado = new Date(u.criado_em);
     const dias = Math.max(1, Math.ceil((Date.now() - criado.getTime()) / (1000*60*60*24)));
@@ -532,10 +541,7 @@ function loadUser(){
   // ── Sincroniza com Supabase em background ──────────────────
   if (u.email) {
     capsulaDB.migrateLocalToSupabase(u.email).then(merged => {
-      // Se houve mesclagem com dados do banco, recarrega o estado das matrizes
-      if (merged) {
-        loadMatrixState(merged);
-      }
+      if (merged) loadMatrixState(merged);
     }).catch(e => console.warn('[dashboard] sync Supabase:', e));
   }
 }
@@ -636,25 +642,23 @@ function showToast(nome){
   setTimeout(()=>t.classList.remove('show'),5000);
 }
 
-function logout(){
-  // Limpa dados do usuário ativo (preserva lista de perfis do device)
+async function logout(){
   try {
-    // Remove soar_draft e ikigai_draft do objeto antes de apagar
     const raw = localStorage.getItem('capsula_user');
     if (raw) {
       const u = JSON.parse(raw);
-      // Limpa rascunhos vinculados ao usuário
       delete u.soar_draft;
       delete u.ikigai_draft;
-      // Atualiza o perfil na lista capsula_users antes de remover o ativo
       const perfis = capsulaDB.lsGetUsers();
       const idx = perfis.findIndex(p => (u.uid && p.uid === u.uid) || p.email === u.email);
       if (idx >= 0) { perfis[idx] = u; capsulaDB.lsSetUsers(perfis); }
     }
   } catch(e) {}
+  // Encerra sessão Supabase Auth
+  try { await capsulaDB.authSignOut(); } catch(e) { console.warn('[logout] signOut:', e); }
   sessionStorage.removeItem('capsula_user');
   localStorage.removeItem('capsula_user');
-  window.location.href='index.html';
+  window.location.href = 'index.html';
 }
 
 document.addEventListener("DOMContentLoaded", function() { if(typeof capsulaDB !== "undefined") { db = capsulaDB.getDB(); } initDate(); loadUser(); });

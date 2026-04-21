@@ -633,6 +633,67 @@
   .success-msg h3 { font-family: var(--serif); font-size: 1.4rem; margin-bottom: 0.4rem; }
   .success-msg p { color: var(--muted); font-size: 0.9rem; }
 
+  /* Auth: botão Google */
+  .btn-google {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: #fff;
+    color: #1f1f1f;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s;
+    margin-bottom: 0.25rem;
+  }
+  .btn-google:hover { background: #f8f8f8; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+  .btn-google:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-google svg { flex-shrink: 0; }
+
+  /* Separador "ou" */
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1rem 0;
+    color: var(--muted2);
+    font-size: 0.8rem;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-hover);
+  }
+
+  /* Link discreto (esqueci a senha, voltar) */
+  .link-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.15s;
+  }
+  .link-btn:hover { color: var(--accent); }
+
+  /* Alinhamento da linha "esqueci a senha" */
+  .forgot-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+  }
+
   .section-label--centered { text-align: center; display: block; }
 
   /* Animação de entrada via classe — não manipulada via JS inline */
@@ -935,6 +996,14 @@
     <div id="form-content">
       <h2 id="modal-title" style="margin-top:0.5rem">Criar sua conta</h2>
       <p>Comece gratuitamente. Sem cartão de crédito.</p>
+
+      <button class="btn-google" id="signup-google-btn" type="button">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+        Continuar com Google
+      </button>
+
+      <div class="auth-divider"><span>ou</span></div>
+
       <div class="form-group">
         <label for="nome">Seu nome</label>
         <input type="text" id="nome" placeholder="Como prefere ser chamado(a)?" autocomplete="name" />
@@ -942,6 +1011,10 @@
       <div class="form-group">
         <label for="email">E-mail</label>
         <input type="email" id="email" placeholder="seu@email.com" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
       </div>
       <div class="form-group">
         <label for="objetivo">Seu objetivo principal</label>
@@ -960,12 +1033,40 @@
     <!-- ── LOGIN ── -->
     <div id="login-content" style="display:none">
       <h2 style="margin-top:0.5rem">Acessar minha conta</h2>
-      <p>Entre com o e-mail usado no cadastro.</p>
+
+      <button class="btn-google" id="login-google-btn" type="button">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+        Continuar com Google
+      </button>
+
+      <div class="auth-divider"><span>ou</span></div>
+
       <div class="form-group">
         <label for="login-email">E-mail</label>
         <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email" />
       </div>
+      <div class="form-group">
+        <label for="login-senha">Senha</label>
+        <input type="password" id="login-senha" placeholder="Sua senha" autocomplete="current-password" />
+      </div>
+      <div class="forgot-row">
+        <button class="link-btn" id="forgot-password-btn" type="button">Esqueci minha senha</button>
+      </div>
       <button class="form-submit" id="login-submit-btn" type="button">Entrar →</button>
+    </div>
+
+    <!-- ── RECUPERAR SENHA ── -->
+    <div id="forgot-content" style="display:none">
+      <h2 style="margin-top:0.5rem">Recuperar senha</h2>
+      <p>Enviaremos um link de redefinição para seu e-mail.</p>
+      <div class="form-group">
+        <label for="forgot-email">E-mail</label>
+        <input type="email" id="forgot-email" placeholder="seu@email.com" autocomplete="email" />
+      </div>
+      <button class="form-submit" id="forgot-submit-btn" type="button">Enviar link →</button>
+      <div style="text-align:center;margin-top:0.75rem">
+        <button class="link-btn" id="back-to-login-btn" type="button">← Voltar ao login</button>
+      </div>
     </div>
 
     <!-- ── SUCESSO CADASTRO ── -->
@@ -975,6 +1076,13 @@
       <p>Redirecionando para seu dashboard…</p>
     </div>
 
+    <!-- ── CONFIRMAR E-MAIL ── -->
+    <div class="success-msg" id="confirm-email-msg" aria-live="polite" style="display:none">
+      <span class="check-big">✉</span>
+      <h3>Confirme seu e-mail</h3>
+      <p>Enviamos um link de confirmação. Acesse seu e-mail e clique no link para ativar sua conta.</p>
+    </div>
+
     <!-- ── SUCESSO LOGIN ── -->
     <div class="success-msg" id="login-success-msg" aria-live="polite" style="display:none">
       <span class="check-big">✓</span>
@@ -982,8 +1090,15 @@
       <p>Redirecionando para seu dashboard…</p>
     </div>
 
-    <!-- ── ERRO LOGIN ── -->
-    <div id="login-error" style="display:none;color:#c0392b;font-size:0.9rem;margin-top:0.5rem;text-align:center"></div>
+    <!-- ── SUCESSO RECUPERAÇÃO ── -->
+    <div class="success-msg" id="forgot-success-msg" aria-live="polite" style="display:none">
+      <span class="check-big">✉</span>
+      <h3>Link enviado!</h3>
+      <p>Verifique sua caixa de entrada e siga as instruções.</p>
+    </div>
+
+    <!-- ── ERRO GERAL ── -->
+    <div id="login-error" style="display:none;color:#e05252;font-size:0.88rem;margin-top:0.75rem;text-align:center;padding:0.6rem;background:rgba(224,82,82,0.1);border-radius:6px;border:1px solid rgba(224,82,82,0.25)"></div>
   </div>
 </div>
 
@@ -992,16 +1107,33 @@
   const modal            = document.getElementById('modal');
   const formContent      = document.getElementById('form-content');
   const loginContent     = document.getElementById('login-content');
+  const forgotContent    = document.getElementById('forgot-content');
   const successMsg       = document.getElementById('success-msg');
+  const confirmEmailMsg  = document.getElementById('confirm-email-msg');
   const loginSuccessMsg  = document.getElementById('login-success-msg');
+  const forgotSuccessMsg = document.getElementById('forgot-success-msg');
   const loginError       = document.getElementById('login-error');
 
+  const ALL_PANELS = [formContent, loginContent, forgotContent, successMsg, confirmEmailMsg, loginSuccessMsg, forgotSuccessMsg];
+
   function showPanel(name) {
-    formContent.style.display     = name === 'signup'        ? 'block' : 'none';
-    loginContent.style.display    = name === 'login'         ? 'block' : 'none';
-    successMsg.style.display      = name === 'success'       ? 'block' : 'none';
-    loginSuccessMsg.style.display = name === 'loginSuccess'  ? 'block' : 'none';
-    loginError.style.display      = 'none';
+    ALL_PANELS.forEach(p => { if (p) p.style.display = 'none'; });
+    loginError.style.display = 'none';
+    const map = {
+      signup:        formContent,
+      login:         loginContent,
+      forgot:        forgotContent,
+      success:       successMsg,
+      confirmEmail:  confirmEmailMsg,
+      loginSuccess:  loginSuccessMsg,
+      forgotSuccess: forgotSuccessMsg,
+    };
+    if (map[name]) map[name].style.display = 'block';
+  }
+
+  function showError(msg) {
+    loginError.textContent = msg;
+    loginError.style.display = 'block';
   }
 
   function openModal(tab) {
@@ -1059,6 +1191,7 @@
 
   function showFieldError(id, msg) {
     const input = document.getElementById(id);
+    if (!input) return;
     input.classList.add('input--error');
     let err = input.parentElement.querySelector('.field-error');
     if (!err) {
@@ -1071,10 +1204,23 @@
 
   function clearFieldErrors() {
     document.querySelectorAll('.field-error').forEach(e => e.remove());
-    ['nome', 'email', 'objetivo', 'login-email'].forEach(id => {
+    ['nome', 'email', 'senha', 'objetivo', 'login-email', 'login-senha', 'forgot-email'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.classList.remove('input--error');
     });
+  }
+
+  // Persiste dados do usuário no localStorage após auth bem-sucedida
+  function persistUserLocally(userData) {
+    try {
+      const userDataStr = JSON.stringify(userData);
+      capsulaDB.lsSetRaw('capsula_user', userDataStr);
+      let users = [];
+      try { users = capsulaDB.lsGetUsers(); } catch(_) {}
+      const idx = users.findIndex(u => u.email === userData.email);
+      if (idx >= 0) users[idx] = userData; else users.push(userData);
+      capsulaDB.lsSetUsers(users);
+    } catch(e) { console.warn('[auth] localStorage indisponível:', e); }
   }
 
   // ── Cadastro ──────────────────────────────────────────────────
@@ -1083,17 +1229,21 @@
   document.getElementById('form-submit-btn').addEventListener('click', async () => {
     if (isSubmitting) return;
     clearFieldErrors();
+    loginError.style.display = 'none';
 
     const nome     = document.getElementById('nome').value.trim();
     const email    = document.getElementById('email').value.trim();
+    const senha    = document.getElementById('senha').value;
     const objetivo = document.getElementById('objetivo').value;
     let valid = true;
 
-    if (!nome)                  { showFieldError('nome',    'Informe seu nome.');                        valid = false; }
-    else if (nome.length < 2)   { showFieldError('nome',    'Nome muito curto.');                        valid = false; }
-    if (!email)                 { showFieldError('email',   'Informe seu e-mail.');                      valid = false; }
-    else if (!validateEmail(email)) { showFieldError('email', 'E-mail inválido. Ex: voce@dominio.com'); valid = false; }
-    if (!objetivo)              { showFieldError('objetivo','Selecione um objetivo.');                   valid = false; }
+    if (!nome)                     { showFieldError('nome',    'Informe seu nome.');                       valid = false; }
+    else if (nome.length < 2)      { showFieldError('nome',    'Nome muito curto.');                       valid = false; }
+    if (!email)                    { showFieldError('email',   'Informe seu e-mail.');                     valid = false; }
+    else if (!validateEmail(email)){ showFieldError('email',   'E-mail inválido. Ex: voce@dominio.com');   valid = false; }
+    if (!senha)                    { showFieldError('senha',   'Crie uma senha.');                         valid = false; }
+    else if (senha.length < 6)     { showFieldError('senha',   'A senha precisa ter no mínimo 6 caracteres.'); valid = false; }
+    if (!objetivo)                 { showFieldError('objetivo','Selecione um objetivo.');                  valid = false; }
     if (!valid) return;
 
     isSubmitting = true;
@@ -1101,34 +1251,39 @@
     btn.disabled = true;
     btn.textContent = 'Criando conta...';
 
-    const uid = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
-    const userData = { uid, nome, email, objetivo, criado_em: new Date().toISOString() };
-
-    // 1. Salva no localStorage E sessionStorage (imediato, funciona offline)
-    // sessionStorage sinaliza ao dashboard que é um usuário recém-cadastrado
     try {
-      const userDataStr = JSON.stringify(userData);
-      capsulaDB.lsSetRaw('capsula_user', userDataStr);
-      sessionStorage.setItem('capsula_user', userDataStr);
-      sessionStorage.setItem('capsula_is_new_user', '1'); // flag de novo cadastro
-      let users = [];
-      try { users = capsulaDB.lsGetUsers(); } catch(_) {}
-      const idx = users.findIndex(u => u.email === email);
-      if (idx >= 0) users[idx] = userData; else users.push(userData);
-      capsulaDB.lsSetUsers(users);
-    } catch(e) { console.warn('localStorage indisponível:', e); }
+      const { data, session, confirmEmail, error } = await capsulaDB.authSignUp(email, senha, nome, objetivo);
 
-    // 2. Persiste no Supabase (não bloqueia o fluxo se falhar)
-    try {
-      const { error } = await capsulaDB.saveUser(userData);
-      if (error && error !== 'offline') console.warn('[cadastro] Supabase:', error);
-    } catch(e) { console.warn('[cadastro] Supabase exception:', e); }
+      if (error) {
+        const msgs = {
+          'User already registered': 'Este e-mail já está cadastrado. Faça login.',
+          'Password should be at least 6 characters': 'A senha precisa ter no mínimo 6 caracteres.',
+        };
+        showError(msgs[error.message] || (error.message || 'Erro ao criar conta. Tente novamente.'));
+        return;
+      }
 
-    isSubmitting = false;
-    btn.disabled = false;
-    btn.textContent = 'Criar conta grátis →';
-    showPanel('success');
-    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+      if (confirmEmail) {
+        // Supabase exige confirmação de e-mail
+        showPanel('confirmEmail');
+        return;
+      }
+
+      // Cadastro e login imediatos
+      if (data) {
+        sessionStorage.setItem('capsula_is_new_user', '1');
+        persistUserLocally(data);
+        showPanel('success');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+      }
+    } catch(e) {
+      console.error('[cadastro]', e);
+      showError('Erro inesperado. Tente novamente.');
+    } finally {
+      isSubmitting = false;
+      btn.disabled = false;
+      btn.textContent = 'Criar conta grátis →';
+    }
   });
 
   // ── Login ─────────────────────────────────────────────────────
@@ -1140,63 +1295,107 @@
     loginError.style.display = 'none';
 
     const email = document.getElementById('login-email').value.trim();
-    if (!email)                { showFieldError('login-email', 'Informe seu e-mail.'); return; }
-    if (!validateEmail(email)) { showFieldError('login-email', 'E-mail inválido.');    return; }
+    const senha = document.getElementById('login-senha').value;
+
+    if (!email)                    { showFieldError('login-email', 'Informe seu e-mail.'); return; }
+    if (!validateEmail(email))     { showFieldError('login-email', 'E-mail inválido.');    return; }
+    if (!senha)                    { showFieldError('login-senha', 'Informe sua senha.');  return; }
 
     isLoggingIn = true;
     const btn = document.getElementById('login-submit-btn');
     btn.disabled = true;
     btn.textContent = 'Entrando...';
 
-    let user = null;
-
-    // 1. Tenta buscar no Supabase (fonte de verdade)
     try {
-      const { data, error } = await capsulaDB.findUserByEmail(email);
-      if (!error && data) user = data;
-    } catch(e) { console.warn('[login] Supabase exception:', e); }
+      const { data, error } = await capsulaDB.authSignIn(email, senha);
 
-    // 2. Fallback: busca no localStorage (caso offline ou ainda não migrado)
-    if (!user) {
-      try {
-        const users = capsulaDB.lsGetUsers();
-        user = users.find(u => u.email === email) || null;
-      } catch(_) {}
-    }
-
-    isLoggingIn = false;
-    btn.disabled = false;
-    btn.textContent = 'Entrar →';
-
-    if (!user) {
-      loginError.textContent = 'E-mail não encontrado. Crie sua conta primeiro.';
-      loginError.style.display = 'block';
-      return;
-    }
-
-    // Restaura sessão local — garante que uid seja preservado
-    try {
-      // Se o usuário do Supabase não trouxer uid, recupera do local ou gera um novo
-      if (!user.uid) {
-        try {
-          const localUsers = capsulaDB.lsGetUsers();
-          const localUser = localUsers.find(u => u.email === email);
-          user.uid = (localUser && localUser.uid) || (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
-        } catch(_) {
-          user.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
-        }
+      if (error) {
+        const msgs = {
+          'Invalid login credentials': 'E-mail ou senha incorretos.',
+          'Email not confirmed': 'Confirme seu e-mail antes de fazer login.',
+        };
+        showError(msgs[error.message] || (error.message || 'Erro ao entrar. Verifique suas credenciais.'));
+        return;
       }
-      capsulaDB.lsSetUser(user);
-      // Atualiza lista local também
-      let users = [];
-      try { users = capsulaDB.lsGetUsers(); } catch(_) {}
-      const idx = users.findIndex(u => u.email === email);
-      if (idx >= 0) users[idx] = user; else users.push(user);
-      capsulaDB.lsSetUsers(users);
-    } catch(_) {}
 
-    showPanel('loginSuccess');
-    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+      if (data) {
+        persistUserLocally(data);
+        showPanel('loginSuccess');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+      }
+    } catch(e) {
+      console.error('[login]', e);
+      showError('Erro inesperado. Tente novamente.');
+    } finally {
+      isLoggingIn = false;
+      btn.disabled = false;
+      btn.textContent = 'Entrar →';
+    }
+  });
+
+  // ── Enter submete os formulários ──────────────────────────────
+  document.getElementById('login-senha').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('login-submit-btn').click();
+  });
+  document.getElementById('senha').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('form-submit-btn').click();
+  });
+
+  // ── Google OAuth ──────────────────────────────────────────────
+  async function handleGoogleAuth(btnId) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = true;
+    btn.textContent = 'Redirecionando...';
+    try {
+      const { error } = await capsulaDB.authSignInWithGoogle();
+      if (error) {
+        showError(error.message || 'Erro ao iniciar login com Google.');
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg> Continuar com Google';
+      }
+      // Se sem erro, o browser já redirecionou — não há mais nada a fazer aqui
+    } catch(e) {
+      console.error('[google-auth]', e);
+      showError('Erro ao conectar com Google.');
+      btn.disabled = false;
+    }
+  }
+
+  document.getElementById('signup-google-btn').addEventListener('click', () => handleGoogleAuth('signup-google-btn'));
+  document.getElementById('login-google-btn').addEventListener('click',  () => handleGoogleAuth('login-google-btn'));
+
+  // ── Recuperar senha ───────────────────────────────────────────
+  document.getElementById('forgot-password-btn').addEventListener('click', () => {
+    const email = document.getElementById('login-email').value.trim();
+    showPanel('forgot');
+    if (email) document.getElementById('forgot-email').value = email;
+  });
+
+  document.getElementById('back-to-login-btn').addEventListener('click', () => showPanel('login'));
+
+  document.getElementById('forgot-submit-btn').addEventListener('click', async () => {
+    clearFieldErrors();
+    const email = document.getElementById('forgot-email').value.trim();
+    if (!email)                { showFieldError('forgot-email', 'Informe seu e-mail.'); return; }
+    if (!validateEmail(email)) { showFieldError('forgot-email', 'E-mail inválido.');    return; }
+
+    const btn = document.getElementById('forgot-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    try {
+      const { error } = await capsulaDB.authResetPassword(email);
+      if (error) {
+        showError(error.message || 'Erro ao enviar e-mail. Tente novamente.');
+      } else {
+        showPanel('forgotSuccess');
+      }
+    } catch(e) {
+      showError('Erro inesperado. Tente novamente.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Enviar link →';
+    }
   });
 
   // ── Animações de entrada via IntersectionObserver ─────────────
