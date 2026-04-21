@@ -191,6 +191,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <a class="nav-item" href="disc.html"><span class="nav-icon">🎯</span>DISC</a>
         <a class="nav-item" href="soar.html"><span class="nav-icon">🧭</span>SOAR</a>
         <a class="nav-item" href="#resultados" onclick="scrollToSection('resultados')"><span class="nav-icon">◎</span>Resultados</a>
+        <a class="nav-item" href="tci.html"><span class="nav-icon">🧬</span>Temperamento TCI</a>
         <a class="nav-item" href="dna.html" style="border:1px solid rgba(201,168,76,0.2);color:#C9A84C;background:rgba(201,168,76,0.06);"><span class="nav-icon">🧬</span>DNA Estratégico</a>
       </div>
       <div class="nav-section">
@@ -355,6 +356,13 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <span class="section-note">Gerado por IA · 4 Hélices</span>
     </div>
     <div class="matrices-grid" style="margin-bottom:2.25rem;">
+      <div class="matrix-card" style="--card-accent:#7000FF" onclick="window.location.href='tci.html'">
+        <div class="card-icon">🧬</div>
+        <h3>Temperamento TCI</h3>
+        <p>Sua assinatura neuroquímica inata. 4 dimensões de base biológica: Busca de Novidade, Esquiva de Danos, Dependência de Recompensa e Persistência.</p>
+        <div class="card-meta"><span class="card-status" id="tci-status">Não iniciado</span><span class="card-time">~15 min</span></div>
+        <span class="card-arrow">→</span>
+      </div>
       <div class="matrix-card" style="--card-accent:#C9A84C;grid-column:1/-1;" onclick="window.location.href='dna.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15);font-size:1.2rem;">🧬</div>
@@ -556,8 +564,9 @@ function loadMatrixState(userData){
   const johariDone=!!(userData.johari&&userData.johari.completedAt);
   const bigfiveDone=!!(userData.bigfive&&userData.bigfive.completedAt);
   const pearsonDone=!!(userData.pearson&&userData.pearson.completedAt);
+  const tciDone=!!(userData.tci&&userData.tci.completedAt);
 
-  const total=[discDone,soarDone,ikigaiDone,ancorasDone,johariDone,bigfiveDone,pearsonDone].filter(Boolean).length;
+  const total=[discDone,soarDone,ikigaiDone,ancorasDone,johariDone,bigfiveDone,pearsonDone,tciDone].filter(Boolean).length;
   document.getElementById('stat-matrizes').textContent=total;
   document.getElementById('stat-insights').textContent=total;
   if(total>0){
@@ -578,6 +587,7 @@ function loadMatrixState(userData){
   setStatus('johari-status',johariDone);
   setStatus('bigfive-status',bigfiveDone);
   setStatus('pearson-status',pearsonDone);
+  setStatus('tci-status',tciDone);
 
   // Progresso
   const discP=discDone?100:0;
@@ -596,6 +606,7 @@ function loadMatrixState(userData){
   if(johariDone)activities.push({icon:'🪟',label:'Janela de Johari concluída',date:userData.johari.completedAt,color:'var(--C)'});
   if(bigfiveDone)activities.push({icon:'🧠',label:'Big Five — OCEAN concluído',date:userData.bigfive.completedAt,color:'var(--I)'});
   if(pearsonDone)activities.push({icon:'🏛️',label:'Arquétipos Pearson-Marr concluídos',date:userData.pearson.completedAt,color:'#C9A84C'});
+  if(tciDone)activities.push({icon:'🧬',label:'Temperamento TCI mapeado',date:userData.tci.completedAt,color:'#7000FF'});
   if(userData.dna&&userData.dna.generatedAt){const dnaEl=document.getElementById('dna-status');if(dnaEl){dnaEl.textContent='DNA gerado · '+new Date(userData.dna.generatedAt).toLocaleDateString('pt-BR');}activities.push({icon:'🧬',label:'DNA Estratégico gerado',date:userData.dna.generatedAt,color:'#C9A84C'});}
 
   if(activities.length>0){

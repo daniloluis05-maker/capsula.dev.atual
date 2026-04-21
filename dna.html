@@ -492,6 +492,7 @@ function renderRequirements(u) {
     { key:'johari',  icon:'🪟', label:'Johari',       done: !!(u.johari && u.johari.completedAt) },
     { key:'bigfive', icon:'🧠', label:'Big Five',     done: !!(u.bigfive && u.bigfive.completedAt) },
     { key:'pearson', icon:'🏛️', label:'Pearson-Marr', done: !!(u.pearson && u.pearson.completedAt) },
+    { key:'tci',    icon:'🧬', label:'Temperamento TCI', done: !!(u.tci && u.tci.completedAt) },
   ];
   const completedCount = matrices.filter(m => m.done).length;
   const grid = document.getElementById('req-grid');
@@ -588,6 +589,7 @@ function buildPayload(u) {
   const soar    = u.soar?.answers   || {};
   const ikigai  = u.ikigai?.answers || {};
   const pearson = u.pearson         || {};
+  const tci     = u.tci             || {};
 
   const ikigaiTexto = Object.values(ikigai)
     .flatMap(v => typeof v === 'object' ? Object.values(v) : [v])
@@ -619,13 +621,19 @@ function buildPayload(u) {
       },
       ikigai: { texto_bruto: ikigaiTexto },
       soar: { forcas: soarForcas, aspiracoes: soarAspiracoes },
+      tci: {
+        busca_novidade: tci.scores?.BN || null,
+        esquiva_danos:  tci.scores?.ED || null,
+        dep_recompensa: tci.scores?.DR || null,
+        persistencia:   tci.scores?.PE || null,
+      },
       pearson_marr: {
         arquetipo_dominante:      pearson.topArchetype     || '',
         arquetipo_dominante_nome: pearson.topArchetypeName || '',
         scores: pearson.scores || {},
       },
     },
-    _completedCount: [u.disc, u.soar, u.ikigai, u.ancoras, u.johari, u.bigfive, u.pearson]
+    _completedCount: [u.disc, u.soar, u.ikigai, u.ancoras, u.johari, u.bigfive, u.pearson, u.tci]
       .filter(m => m && m.completedAt).length,
   };
 }
@@ -674,6 +682,11 @@ RESPOSTA OBRIGATÓRIA — JSON puro, sem markdown, sem backticks:
   "assinatura": "Frase de impacto 1-2 linhas que define a essência. Começa com 🧬 ou ⬡.",
   "keywords": ["palavra1","palavra2","palavra3","palavra4","palavra5"]
 }
+
+TCI (quando disponível):
+BN alto + DISC.D → iniciativa vs impulsividade. ED alto + BigFive.N alto → risco de paralisia.
+DR alto → valida Âncoras de Serviço/Gestão. PE alto + DISC.C → perfeccionismo estrutural.
+Inclua base neuroquímica na Hélice 1 e Zona de Risco quando TCI presente.
 
 LÓGICA DE CRUZAMENTO:
 
