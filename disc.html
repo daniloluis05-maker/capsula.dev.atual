@@ -1479,10 +1479,16 @@ function generatePDF() {
     .brand-name em{color:${accentColor};font-style:normal;}
     .hd-meta{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:0.09em;color:#5A7399;text-align:right;}
     /* USER */
-    .user-row{display:flex;align-items:baseline;gap:14px;margin-bottom:5px;}
-    .user-name{font-size:44px;font-weight:800;color:#1E3A5F;letter-spacing:-0.03em;line-height:1;}
-    .user-badge{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;background:${accentColor}1A;border:1px solid ${accentColor}44;color:${accentColor};padding:3px 10px;border-radius:3px;}
-    .divider{height:1.5px;background:#C5D3E8;margin:14px 0 18px;}
+    .user-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+    .user-name{font-size:20px;font-weight:700;color:#1E3A5F;letter-spacing:-0.01em;line-height:1;}
+    .user-sub{font-family:'Space Mono',monospace;font-size:7px;color:#5A7399;letter-spacing:0.08em;margin-top:3px;}
+    .result-hero{display:flex;align-items:center;gap:14px;}
+    .result-label{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:#5A7399;margin-bottom:4px;text-align:right;}
+    .result-title{font-size:30px;font-weight:800;color:${accentColor};letter-spacing:-0.02em;line-height:1;text-align:right;}
+    .result-code{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:0.1em;color:#1E3A5F;margin-top:3px;text-align:right;}
+    .result-pct{font-family:'Space Mono',monospace;font-size:30px;font-weight:700;color:#1E3A5F;letter-spacing:-0.02em;background:${accentColor}12;border:1.5px solid ${accentColor}33;padding:8px 18px;border-radius:6px;line-height:1;white-space:nowrap;}
+    .result-pct span{font-size:12px;color:#5A7399;font-weight:400;}
+    .divider{height:1.5px;background:#C5D3E8;margin:12px 0 16px;}
     /* PANELS */
     .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
     .panel{background:#fff;border:1px solid #D0DCF0;border-radius:10px;padding:16px 18px;}
@@ -1520,8 +1526,18 @@ function generatePDF() {
 
   <!-- USER STRIP -->
   <div class="user-row">
-    <span class="user-name">${nome.split(' ')[0].toUpperCase()}</span>
-    <span class="user-badge">▸ PERFIL ${profile.code} · ${scores[dominant]}%</span>
+    <div>
+      <div class="user-name">${nome.toUpperCase()}</div>
+      <div class="user-sub">// análise comportamental · ${data.toUpperCase()}</div>
+    </div>
+    <div class="result-hero">
+      <div>
+        <div class="result-label">Perfil dominante</div>
+        <div class="result-title">${profile.title}</div>
+        <div class="result-code">${profile.code}</div>
+      </div>
+      <div class="result-pct">${scores[dominant]}<span>%</span></div>
+    </div>
   </div>
   <div class="divider"></div>
 
