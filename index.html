@@ -280,10 +280,11 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 2rem;
-    transition: all 0.25s;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.35), 0 1px 3px rgba(0,0,0,0.2);
   }
   .matrix-card::before {
     content: '';
@@ -293,18 +294,34 @@
     border-radius: 3px 3px 0 0;
     background: var(--card-accent, var(--accent));
     opacity: 0;
-    transition: opacity 0.25s;
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .matrix-card:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+  .matrix-card:hover {
+    border-color: rgba(124,111,247,0.4);
+    transform: translateY(-3px);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.4),
+      0 0 0 1px rgba(124,111,247,0.15),
+      0 4px 16px rgba(124,111,247,0.12);
+  }
   .matrix-card:hover::before { opacity: 1; }
 
   .card-icon {
     width: 44px; height: 44px;
     border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.25rem;
     margin-bottom: 1rem;
-    background: rgba(124,111,247,0.12);
+    background: rgba(124,111,247,0.10);
+    border: 1px solid rgba(124,111,247,0.22);
+  }
+  .card-icon svg {
+    width: 20px; height: 20px;
+    stroke: var(--card-icon-color, var(--accent));
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
   }
   .matrix-card h3 {
     font-size: 1rem;
@@ -431,6 +448,10 @@
   .plano-card.destaque {
     border-color: var(--accent);
     position: relative;
+    box-shadow:
+      0 0 0 1px rgba(124,111,247,0.30),
+      0 8px 32px rgba(124,111,247,0.18),
+      0 2px 8px rgba(0,0,0,0.40);
   }
   .plano-card.destaque::before {
     content: 'MAIS POPULAR';
@@ -773,37 +794,49 @@
 
     <div class="tab-panel active" id="tab-individual">
       <div class="matrix-card animate-in" style="--card-accent: #7C6FF7;">
-        <div class="card-icon">🧠</div>
+        <div class="card-icon" style="--card-icon-color:#7C6FF7; background:rgba(124,111,247,0.10); border-color:rgba(124,111,247,0.22);">
+          <svg viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+        </div>
         <h3>DISC</h3>
         <p>Mapeie seu perfil comportamental em 4 dimensões: Dominância, Influência, Estabilidade e Conformidade.</p>
         <span class="card-tag">Personalidade</span>
       </div>
       <div class="matrix-card animate-in" style="--card-accent: #4FC9A0;">
-        <div class="card-icon">⭐</div>
+        <div class="card-icon" style="--card-icon-color:#4FC9A0; background:rgba(79,201,160,0.10); border-color:rgba(79,201,160,0.22);">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        </div>
         <h3>SOAR</h3>
         <p>Identifique suas Forças, Oportunidades, Aspirações e Resultados para uma visão estratégica pessoal.</p>
         <span class="card-tag">Estratégia pessoal</span>
       </div>
       <div class="matrix-card animate-in" style="--card-accent: #F4845F;">
-        <div class="card-icon">🌀</div>
+        <div class="card-icon" style="--card-icon-color:#F4845F; background:rgba(244,132,95,0.10); border-color:rgba(244,132,95,0.22);">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        </div>
         <h3>Enneagrama</h3>
         <p>Explore os 9 tipos de personalidade e compreenda suas motivações mais profundas e pontos cegos.</p>
         <span class="card-tag">Motivação</span>
       </div>
       <div class="matrix-card animate-in" style="--card-accent: #7C6FF7;">
-        <div class="card-icon">🪟</div>
+        <div class="card-icon" style="--card-icon-color:#7C6FF7; background:rgba(124,111,247,0.10); border-color:rgba(124,111,247,0.22);">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+        </div>
         <h3>Janela de Johari</h3>
         <p>Entenda a diferença entre como você se vê e como os outros te percebem. Poderoso para líderes.</p>
         <span class="card-tag">Autopercepção</span>
       </div>
       <div class="matrix-card animate-in" style="--card-accent: #4FC9A0;">
-        <div class="card-icon">⚓</div>
+        <div class="card-icon" style="--card-icon-color:#4FC9A0; background:rgba(79,201,160,0.10); border-color:rgba(79,201,160,0.22);">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>
+        </div>
         <h3>Âncoras de Carreira</h3>
         <p>Descubra o que você realmente não abre mão na sua vida profissional — o seu núcleo de carreira.</p>
         <span class="card-tag">Propósito</span>
       </div>
       <div class="matrix-card animate-in" style="--card-accent: #F4845F;">
-        <div class="card-icon">☯</div>
+        <div class="card-icon" style="--card-icon-color:#F4845F; background:rgba(244,132,95,0.10); border-color:rgba(244,132,95,0.22);">
+          <svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="6"/><circle cx="15" cy="9" r="6"/><circle cx="12" cy="15" r="6"/></svg>
+        </div>
         <h3>Ikigai</h3>
         <p>Encontre a intersecção entre o que você ama, o que sabe fazer, o que o mundo precisa e o que te paga.</p>
         <span class="card-tag">Propósito de vida</span>
@@ -812,31 +845,41 @@
 
     <div class="tab-panel" id="tab-equipe">
       <div class="matrix-card animate-in" style="--card-accent: #4FC9A0;">
-        <div class="card-icon">📋</div>
+        <div class="card-icon" style="--card-icon-color:#4FC9A0; background:rgba(79,201,160,0.10); border-color:rgba(79,201,160,0.22);">
+          <svg viewBox="0 0 24 24"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><polyline points="4 6 5 7 7 5"/><polyline points="4 12 5 13 7 11"/><polyline points="4 18 5 19 7 17"/></svg>
+        </div>
         <h3>5W2H</h3>
         <p>Planejamento de ação completo: o quê, por quê, onde, quando, quem, como e quanto custa.</p>
         <span class="card-tag">Planejamento</span>
       </div>
       <div class="matrix-card animate-in" style="--card-accent: #7C6FF7;">
-        <div class="card-icon">📊</div>
+        <div class="card-icon" style="--card-icon-color:#7C6FF7; background:rgba(124,111,247,0.10); border-color:rgba(124,111,247,0.22);">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
         <h3>Matriz RACI</h3>
         <p>Defina com clareza quem é Responsável, Autoridade, Consultado e Informado em cada processo.</p>
         <span class="card-tag">Papéis e responsabilidades</span>
       </div>
       <div class="matrix-card animate-in" style="--card-accent: #F4845F;">
-        <div class="card-icon">⏱</div>
+        <div class="card-icon" style="--card-icon-color:#F4845F; background:rgba(244,132,95,0.10); border-color:rgba(244,132,95,0.22);">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        </div>
         <h3>Matriz de Eisenhower</h3>
         <p>Priorize tarefas da equipe separando o urgente do importante para maximizar o foco coletivo.</p>
         <span class="card-tag">Gestão do tempo</span>
       </div>
       <div class="matrix-card animate-in" style="--card-accent: #4FC9A0;">
-        <div class="card-icon">🔷</div>
+        <div class="card-icon" style="--card-icon-color:#4FC9A0; background:rgba(79,201,160,0.10); border-color:rgba(79,201,160,0.22);">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+        </div>
         <h3>Matriz SWOT</h3>
         <p>Analise as Forças, Fraquezas, Oportunidades e Ameaças da sua equipe com clareza estratégica.</p>
         <span class="card-tag">Análise estratégica</span>
       </div>
       <div class="matrix-card animate-in" style="--card-accent: #7C6FF7;">
-        <div class="card-icon">💬</div>
+        <div class="card-icon" style="--card-icon-color:#7C6FF7; background:rgba(124,111,247,0.10); border-color:rgba(124,111,247,0.22);">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg>
+        </div>
         <h3>Feedback Canvas</h3>
         <p>Estruture sessões de feedback coletivo de forma visual, segura e orientada ao crescimento.</p>
         <span class="card-tag">Cultura de feedback</span>
