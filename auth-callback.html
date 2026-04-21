@@ -96,14 +96,14 @@
     const user = session.user;
 
     if (isRecovery) {
-      // Sessão de recovery — vai para dashboard que pode exibir form de nova senha
-      // (implementação futura; por ora apenas autentica)
-      titleEl.textContent = 'Senha redefinida!';
-      msgEl.textContent   = 'Redirecionando…';
-    } else {
-      titleEl.textContent = 'Bem-vindo(a)!';
-      msgEl.textContent   = 'Carregando seu perfil…';
+      titleEl.textContent = 'Link verificado!';
+      msgEl.textContent   = 'Redirecionando para redefinição de senha…';
+      setTimeout(() => { window.location.href = 'reset-password.html'; }, 800);
+      return;
     }
+
+    titleEl.textContent = 'Bem-vindo(a)!';
+    msgEl.textContent   = 'Carregando seu perfil…';
 
     // Carrega ou cria o perfil na tabela usuarios
     const profile = await capsulaDB.authLoadUserProfile(user);
@@ -112,7 +112,6 @@
     try {
       const profileStr = JSON.stringify(profile);
       localStorage.setItem('capsula_user', profileStr);
-      // Atualiza lista de perfis
       let users = [];
       try {
         const raw = localStorage.getItem('capsula_users');
