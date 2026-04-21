@@ -1,149 +1,185 @@
-/* ─────────────────────────────────────────────────────────────
-   capsula.dev · css/capsula.css
-   Estilos compartilhados entre todas as páginas.
-   Inclua ANTES dos estilos específicos de cada página.
-───────────────────────────────────────────────────────────── */
+/* LÚMINA - Framework de Alta Precisão Comportamental
+   Manual de Identidade Visual v1.0
+   Estética: Minimalista-Tecnológica / Onyx & Slate
+*/
 
-/* Reset */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* Variáveis globais */
 :root {
-  --bg:       #0a0a0f;
-  --surface:  #13131a;
-  --border:   rgba(255,255,255,0.08);
-  --text:     #e8e8f0;
-  --muted:    rgba(232,232,240,0.45);
-  --accent:   #7c6af7;
-  --success:  #4caf87;
-  --warning:  #e8603a;
-  --radius:   12px;
-  --shadow:   0 4px 24px rgba(0,0,0,0.4);
+    /* Paleta Principal */
+    --bg-dark: #020617;        /* Slate-950 */
+    --bg-card: rgba(15, 23, 42, 0.6); /* Slate-900 com transparência */
+    --accent-cyan: #06b6d4;    /* Ciano Elétrico */
+    --accent-cyan-glow: rgba(6, 182, 212, 0.3);
+    --text-primary: #f8fafc;   /* Slate-50 */
+    --text-secondary: #94a3b8; /* Slate-400 */
+    --border-subtle: rgba(51, 65, 85, 0.4);
+    
+    /* Transições */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Tipografia base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-  font-family: 'Outfit', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(124,106,247,0.3); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(124,106,247,0.6); }
+/* --- Layout de Precisão (Grid Assimétrico) --- */
+.grid-premium {
+    display: grid;
+    grid-template-cols: 1.4fr 0.6fr;
+    gap: 4rem;
+    align-items: center;
+}
 
-/* Botões base */
-button { cursor: pointer; font-family: inherit; }
+@media (max-width: 768px) {
+    .grid-premium {
+        grid-template-cols: 1fr;
+    }
+}
 
-/* Links */
-a { color: var(--accent); }
+/* --- Componentes Glassmorphism --- */
+.glass-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.05);
+    transition: var(--transition-smooth);
+}
+
+.glass-card:hover {
+    border-color: var(--accent-cyan-glow);
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.1), 
+                inset 0 1px 1px 0 rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+/* --- Tipografia e Microcopy --- */
+h1, h2, h3 {
+    letter-spacing: -0.04em;
+    font-weight: 800;
+}
+
+.font-data {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    letter-spacing: -0.02em;
+}
+
+.badge-tech {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--accent-cyan);
+    background: rgba(6, 182, 212, 0.05);
+    border: 1px solid var(--accent-cyan-glow);
+    border-radius: 100px;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Botões Executivos --- */
+.btn-primary {
+    background-color: #ffffff;
+    color: #020617;
+    padding: 1.25rem 2.5rem;
+    border-radius: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.8rem;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-cyan);
+    transform: scale(1.02);
+    box-shadow: 0 15px 30px rgba(6, 182, 212, 0.2);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: #ffffff;
+    padding: 1.25rem 2.5rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.8rem;
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #ffffff;
+}
+
+/* --- Estilização de Gráficos (Dashboard) --- */
+.chart-container {
+    position: relative;
+    width: 100%;
+    filter: drop-shadow(0 0 15px rgba(6, 182, 212, 0.1));
+}
+
+/* Sidebar do Dashboard */
+.sidebar {
+    width: 260px;
+    background: var(--bg-dark);
+    border-right: 1px solid var(--border-subtle);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    transition: var(--transition-smooth);
+    font-size: 0.9rem;
+}
+
+.nav-link:hover, .nav-link.active {
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--accent-cyan);
+    border: 1px solid var(--accent-cyan-glow);
+}
 
 /* Utilitários */
-.sr-only {
-  position: absolute; width: 1px; height: 1px;
-  padding: 0; margin: -1px; overflow: hidden;
-  clip: rect(0,0,0,0); border: 0;
+.respiro-executivo {
+    padding: 150px 0;
+    text-align: center;
 }
 
-/* ── Botões compartilhados ───────────────────────────────── */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: var(--radius);
-  font-family: inherit; font-size: 0.9rem; font-weight: 600;
-  border: none; cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none; line-height: 1;
-}
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-primary  { background: var(--accent); color: #fff; }
-.btn-primary:hover:not(:disabled) { opacity: 0.88; }
-.btn-ghost    { background: transparent; color: var(--text); border: 1px solid var(--border); }
-.btn-ghost:hover:not(:disabled) { background: rgba(255,255,255,0.05); }
-.btn-danger   { background: var(--warning); color: #fff; }
-
-/* ── Cards ───────────────────────────────────────────────── */
-.card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 2rem;
-}
-
-/* ── Inputs ──────────────────────────────────────────────── */
-input[type="text"], input[type="email"], textarea, select {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 8px; color: var(--text); font-family: inherit;
-  font-size: 0.95rem; padding: 0.65rem 1rem; width: 100%;
-  transition: border-color 0.2s;
-}
-input[type="text"]:focus, input[type="email"]:focus,
-textarea:focus, select:focus {
-  outline: none; border-color: var(--accent);
-}
-
-/* ── Preload de fonte: evita FOUT ────────────────────────── */
-/* (preload declarado via <link> no HTML de cada página)     */
-
-/* ── Animação de fade-in ─────────────────────────────────── */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.fade-in { animation: fadeIn 0.4s ease forwards; }
-
-/* ── Design "Mítico" — Cards de Matriz ───────────────────── */
-.matriz-card,
-.card-disc, .card-soar, .card-ikigai,
-[class*="matriz-"] {
-  border-radius: 4px !important;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.18) !important;
-}
-
-/* Tipografia técnica para títulos de matriz */
-.matriz-title,
-.card-matrix-title {
-  font-family: 'Roboto Mono', 'Space Mono', monospace;
-}
-
-/* ── Engenharia de PDF — @media print ────────────────────── */
-@media print {
-  /* Ocultar elementos desnecessários */
-  nav, .sidebar, .cta-buttons, .no-print,
-  .nav-cta, .btn-primary, .btn-secondary,
-  .hero-actions, footer, .cta-final-section,
-  [data-modal-open] { display: none !important; }
-
-  /* Cores para clareza e economia de tinta */
-  body { background: white; color: black; font-size: 11pt; }
-
-  /* Azuis vibrantes → marinho/cinza escuro */
-  :root {
-    --accent: #1a237e;
-    --accent2: #00695c;
-    --text:   #111;
-    --muted:  #444;
-    --bg:     #fff;
-    --surface: #f5f5f5;
-  }
-
-  /* Regras de quebra de página */
-  .matriz-container,
-  .plano-card,
-  .card {
-    page-break-inside: avoid;
-    margin-bottom: 20mm;
-  }
-
-  /* Títulos em PDF */
-  h1, h2, h3 { color: #000; page-break-after: avoid; }
-
-  /* Unidades físicas */
-  .page-container {
-    width: 210mm;
-    padding: 15mm;
-  }
-
-  /* SVGs nítidos na impressão */
-  svg { shape-rendering: geometricPrecision; }
+.text-gradient {
+    background: linear-gradient(to right, #ffffff, #64748b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
