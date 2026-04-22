@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
+<head>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Mapeie suas Forças, Oportunidades, Aspirações e Resultados. Construa sua visão estratégica pessoal com a análise SOAR.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.groq.com;">
+<title>Análise SOAR | Sistema Gnosis</title>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sistemagnosis.com.br/soar.html">
+<meta property="og:title" content="Análise SOAR | Sistema Gnosis">
+<meta property="og:description" content="Mapeie suas Forças, Oportunidades, Aspirações e Resultados. Construa sua visão estratégica pessoal.">
+<link rel="stylesheet" href="css/capsula.css">
+<link rel="canonical" href="https://sistemagnosis.com.br/soar.html">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+<link rel="preload" href="https://fonts.gstatic.com/s/outfit/v11/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC0C4G-EiAou6Y.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#07080C;--bg2:#0D0F16;--surface:#121520;--surface2:#181C28;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --D:#E8603A;--I:#6C5FE6;--S:#2EC4A0;--C:#1BA8D4;
+  --accent:#6C5FE6;--text:#E8E6F0;--muted:#6B6980;--muted2:#353448;
+  --mono:'Space Mono',monospace;--sans:'Outfit',system-ui,sans-serif;
+  /* SOAR quadrant colors */
+  --soar-S:#6C5FE6;
+  --soar-O:#2EC4A0;
+  --soar-A:#E8603A;
+  --soar-R:#1BA8D4;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(108,95,230,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,95,230,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+.orb-1{width:500px;height:500px;background:#6C5FE6;opacity:0.07;top:-200px;left:-100px;}
+.orb-2{width:350px;height:350px;background:#2EC4A0;opacity:0.05;bottom:-100px;right:-80px;}
+
+/* PAGE SYSTEM */
+.page{display:none;position:relative;z-index:1;}
+.page.active{display:flex;flex-direction:column;min-height:100vh;}
+
+/* ══════════════════
+   INTRO PAGE
+══════════════════ */
+.intro-page{
+  align-items:center;justify-content:center;
+  text-align:center;padding:5rem 2rem 4rem;
+}
+.intro-back-link{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  font-family:var(--mono);font-size:0.72rem;font-weight:400;
+  color:var(--muted);text-decoration:none;
+  border:1px solid var(--border2);padding:0.4rem 0.9rem;
+  border-radius:6px;margin-bottom:2.5rem;
+  transition:all 0.2s;letter-spacing:0.04em;
+}
+.intro-back-link:hover{color:var(--text);border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.03);}
+.intro-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:rgba(108,95,230,0.1);border:1px solid rgba(108,95,230,0.25);
+  color:var(--accent);font-family:var(--mono);
+  font-size:0.62rem;font-weight:400;letter-spacing:0.12em;text-transform:uppercase;
+  padding:0.35rem 0.9rem;border-radius:4px;margin-bottom:2rem;
+  animation:fadeUp 0.6s ease both;
+}
+.intro-page h1{
+  font-family:var(--sans);font-size:clamp(2.2rem,5.5vw,4rem);
+  font-weight:800;line-height:1.08;letter-spacing:-0.03em;
+  max-width:680px;margin:0 auto 1.25rem;
+  animation:fadeUp 0.6s 0.1s ease both;
+}
+.intro-page h1 .accent{color:var(--accent);}
+.intro-sub{
+  color:var(--muted);font-size:0.95rem;max-width:500px;
+  margin:0 auto 3rem;line-height:1.75;
+  animation:fadeUp 0.6s 0.2s ease both;
+}
+.soar-pillars{
+  display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;
+  margin-bottom:3rem;animation:fadeUp 0.6s 0.3s ease both;
+}
+.soar-pill{
+  display:flex;align-items:center;gap:0.6rem;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:6px;padding:0.55rem 1rem;font-size:0.82rem;font-weight:600;
+}
+.soar-dot{width:7px;height:7px;border-radius:50%;box-shadow:0 0 8px currentColor;}
+.intro-meta{
+  display:flex;gap:0;border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;margin:0 auto 3rem;max-width:380px;
+  animation:fadeUp 0.6s 0.4s ease both;
+}
+.meta-item{
+  padding:1.1rem 1.75rem;text-align:center;
+  border-right:1px solid var(--border);background:var(--surface);flex:1;
+}
+.meta-item:last-child{border-right:none;}
+.meta-val{font-family:var(--mono);font-size:1.3rem;font-weight:700;display:block;letter-spacing:-0.02em;}
+.meta-label{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.2rem;display:block;}
+.btn-start{
+  display:inline-flex;align-items:center;gap:0.6rem;
+  background:var(--accent);color:#fff;border:none;
+  padding:0.9rem 2.25rem;border-radius:7px;
+  font-size:0.9rem;font-weight:700;font-family:var(--sans);
+  cursor:pointer;transition:all 0.25s;
+  box-shadow:0 0 30px rgba(108,95,230,0.35);
+  animation:fadeUp 0.6s 0.5s ease both;
+}
+.btn-start:hover{opacity:0.88;transform:translateY(-2px);box-shadow:0 0 50px rgba(108,95,230,0.5);}
+.intro-note{margin-top:1.25rem;font-family:var(--mono);font-size:0.65rem;color:var(--muted2);animation:fadeUp 0.6s 0.6s ease both;}
+
+/* ══════════════════
+   FORM PAGE
+══════════════════ */
+.form-nav{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 5%;
+  background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.form-logo{
+  font-family:var(--sans);font-size:0.95rem;font-weight:700;
+  color:var(--text);text-decoration:none;display:flex;align-items:center;gap:0.5rem;
+}
+.form-logo-mark{width:24px;height:24px;background:var(--accent);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:#fff;}
+.form-logo span{color:var(--accent);}
+.form-progress-wrap{flex:1;max-width:360px;margin:0 2rem;}
+.form-progress-track{height:3px;background:var(--border);border-radius:100px;overflow:hidden;}
+.form-progress-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--accent),var(--S));transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 0 10px rgba(108,95,230,0.5);}
+.form-counter{font-family:var(--mono);font-size:0.6rem;color:var(--muted);text-align:center;margin-top:0.4rem;letter-spacing:0.06em;}
+.btn-back{
+  background:transparent;border:1px solid var(--border2);
+  color:var(--muted);padding:0.45rem 0.9rem;
+  border-radius:6px;font-family:var(--mono);font-size:0.72rem;
+  cursor:pointer;transition:all 0.2s;
+}
+.btn-back:hover{border-color:var(--accent);color:var(--text);}
+
+.form-body{
+  flex:1;display:flex;align-items:flex-start;justify-content:center;
+  padding:3rem 5% 5rem;
+}
+.form-container{width:100%;max-width:760px;}
+.quadrant-header{
+  display:flex;align-items:center;gap:1rem;margin-bottom:2rem;
+  padding-bottom:1.5rem;border-bottom:1px solid var(--border);
+}
+.quadrant-badge{
+  width:44px;height:44px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;font-family:var(--mono);font-size:1.1rem;font-weight:800;
+  color:#fff;flex-shrink:0;
+}
+.quadrant-info{}
+.quadrant-label{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.2rem;display:block;}
+.quadrant-title{font-size:1.2rem;font-weight:700;letter-spacing:-0.02em;}
+.quadrant-subtitle{font-size:0.8rem;color:var(--muted);margin-top:0.15rem;}
+
+.questions-list{display:flex;flex-direction:column;gap:1.5rem;margin-bottom:2.5rem;}
+.question-item{}
+.question-prompt{
+  font-size:0.85rem;color:var(--muted);margin-bottom:0.5rem;font-weight:500;
+  display:flex;gap:0.5rem;align-items:flex-start;
+}
+.q-num{font-family:var(--mono);font-size:0.6rem;color:var(--q-color);margin-top:0.15rem;flex-shrink:0;}
+.question-input{
+  width:100%;background:var(--surface);border:1px solid var(--border2);
+  border-radius:8px;color:var(--text);font-family:var(--sans);
+  font-size:0.88rem;padding:0.85rem 1rem;outline:none;
+  transition:border-color 0.2s;resize:vertical;min-height:80px;line-height:1.6;
+}
+.question-input:focus{border-color:var(--q-color,var(--accent));}
+.question-input::placeholder{color:var(--muted2);}
+.char-count{font-family:var(--mono);font-size:0.6rem;color:var(--muted2);text-align:right;margin-top:0.3rem;}
+
+.form-actions{display:flex;justify-content:space-between;align-items:center;padding-top:1.5rem;border-top:1px solid var(--border);}
+.form-hint{font-family:var(--mono);font-size:0.62rem;color:var(--muted2);}
+.btn-next{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:var(--q-color,var(--accent));color:#fff;border:none;
+  padding:0.8rem 1.75rem;border-radius:7px;
+  font-size:0.88rem;font-weight:700;font-family:var(--sans);
+  cursor:pointer;transition:all 0.2s;
+  opacity:0.35;pointer-events:none;
+}
+.btn-next.ready{opacity:1;pointer-events:all;}
+.btn-next.ready:hover{opacity:0.88;transform:translateY(-1px);}
+
+/* ══════════════════
+   RESULT PAGE
+══════════════════ */
+.result-page{
+  align-items:center;padding:5rem 5% 6rem;flex-direction:column;
+}
+.result-eyebrow{
+  font-family:var(--mono);font-size:0.6rem;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;
+  animation:fadeUp 0.5s ease both;
+}
+.result-title{
+  font-size:clamp(2rem,5vw,3.2rem);font-weight:800;
+  letter-spacing:-0.03em;text-align:center;margin-bottom:0.5rem;
+  animation:fadeUp 0.5s 0.1s ease both;
+}
+.result-title .accent{color:var(--accent);}
+.result-sub{
+  color:var(--muted);font-size:0.9rem;text-align:center;
+  margin-bottom:3rem;animation:fadeUp 0.5s 0.15s ease both;
+}
+
+/* SOAR GRID */
+.soar-result-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1px;background:var(--border);border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;
+  width:100%;max-width:860px;margin-bottom:2.5rem;
+  animation:fadeUp 0.5s 0.2s ease both;
+}
+.soar-quadrant{background:var(--surface);padding:2rem;}
+.soar-quadrant:nth-child(2){background:var(--surface2);}
+.soar-quadrant:nth-child(3){background:var(--surface2);}
+.soar-q-head{
+  display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;
+  padding-bottom:1rem;border-bottom:1px solid var(--border);
+}
+.soar-q-icon{
+  width:34px;height:34px;border-radius:7px;display:flex;
+  align-items:center;justify-content:center;font-family:var(--mono);
+  font-size:0.85rem;font-weight:800;color:#fff;flex-shrink:0;
+}
+.soar-q-label{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.15rem;display:block;}
+.soar-q-name{font-size:0.92rem;font-weight:700;letter-spacing:-0.01em;}
+.soar-answers{display:flex;flex-direction:column;gap:0.6rem;}
+.soar-answer-item{
+  display:flex;gap:0.6rem;align-items:flex-start;
+  font-size:0.82rem;color:var(--text);line-height:1.55;
+}
+.soar-answer-bullet{
+  width:5px;height:5px;border-radius:50%;
+  margin-top:0.45rem;flex-shrink:0;
+}
+.soar-answer-empty{font-size:0.78rem;color:var(--muted2);font-family:var(--mono);}
+
+/* INSIGHTS */
+.insights-card{
+  width:100%;max-width:860px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:2rem;margin-bottom:2rem;
+  position:relative;overflow:hidden;
+  animation:fadeUp 0.5s 0.3s ease both;
+}
+.insights-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--S));
+}
+.insights-label{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1.25rem;display:block;}
+.insights-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.insight-item{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;padding:1rem 1.1rem;
+}
+.insight-tag{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.35rem;display:block;}
+.insight-text{font-size:0.82rem;color:var(--text);line-height:1.6;}
+
+/* ACTIONS */
+.result-actions{
+  display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;
+  animation:fadeUp 0.5s 0.4s ease both;
+}
+.btn-dashboard{
+  background:var(--accent);color:#fff;border:none;
+  padding:0.85rem 2rem;border-radius:7px;
+  font-size:0.88rem;font-weight:700;font-family:var(--sans);
+  cursor:pointer;transition:all 0.2s;
+  box-shadow:0 0 20px rgba(108,95,230,0.3);
+  text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;
+}
+.btn-dashboard:hover{opacity:0.88;transform:translateY(-1px);box-shadow:0 0 35px rgba(108,95,230,0.45);}
+.btn-share{
+  background:transparent;color:var(--text);
+  border:1px solid var(--border2);
+  padding:0.85rem 2rem;border-radius:7px;
+  font-size:0.88rem;font-weight:600;font-family:var(--sans);
+  cursor:pointer;transition:all 0.2s;
+}
+.btn-share:hover{border-color:var(--accent);color:var(--accent);}
+.btn-redo{
+  background:transparent;color:var(--muted);
+  border:1px solid var(--border);
+  padding:0.85rem 1.5rem;border-radius:7px;
+  font-size:0.82rem;font-weight:500;font-family:var(--sans);
+  cursor:pointer;transition:all 0.2s;
+}
+.btn-redo:hover{border-color:var(--border2);color:var(--text);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* MOBILE */
+@media(max-width:768px){
+  .soar-result-grid{grid-template-columns:1fr;}
+  .soar-quadrant:nth-child(2){background:var(--surface);}
+  .soar-quadrant:nth-child(3){background:var(--surface);}
+  .insights-grid{grid-template-columns:1fr;}
+  .form-progress-wrap{max-width:160px;margin:0 0.75rem;}
+  .intro-meta{flex-wrap:wrap;}
+}
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/ui.js" defer></script>
+<meta property="og:image" content="https://sistemagnosis.com.br/apple-touch-icon.png">
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- PAGE 1: INTRO -->
+<div class="page active" id="page-intro">
+  <div class="intro-page">
+    <a href="dashboard.html" class="intro-back-link">← Voltar ao Dashboard</a>
+    <div class="intro-badge">🧭 Estratégia Pessoal</div>
+    <p class="intro-greeting" id="soar-greeting" style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;display:none;">// análise de <span class="js-user-name"></span></p>
+    <h1>Sua visão de<br><span class="accent">longo prazo</span> em dados.</h1>
+    <p class="intro-sub">
+      A análise SOAR mapeia suas Forças, Oportunidades, Aspirações e Resultados —
+      construindo sua estratégia pessoal com clareza e intenção.
+    </p>
+    <div class="soar-pillars">
+      <div class="soar-pill">
+        <span class="soar-dot" style="color:var(--soar-S);background:var(--soar-S)"></span>
+        <span style="color:var(--soar-S)">S</span> Strengths
+      </div>
+      <div class="soar-pill">
+        <span class="soar-dot" style="color:var(--soar-O);background:var(--soar-O)"></span>
+        <span style="color:var(--soar-O)">O</span> Opportunities
+      </div>
+      <div class="soar-pill">
+        <span class="soar-dot" style="color:var(--soar-A);background:var(--soar-A)"></span>
+        <span style="color:var(--soar-A)">A</span> Aspirations
+      </div>
+      <div class="soar-pill">
+        <span class="soar-dot" style="color:var(--soar-R);background:var(--soar-R)"></span>
+        <span style="color:var(--soar-R)">R</span> Results
+      </div>
+    </div>
+    <div class="intro-meta">
+      <div class="meta-item">
+        <span class="meta-val">16</span>
+        <span class="meta-label">Perguntas</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-val">~12</span>
+        <span class="meta-label">Minutos</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-val">4</span>
+        <span class="meta-label">Quadrantes</span>
+      </div>
+    </div>
+    <button class="btn-start" onclick="startForm()">Iniciar análise →</button>
+    <p class="intro-note">Respostas abertas. Seja honesto e específico para melhores insights.</p>
+  </div>
+</div>
+
+<!-- PAGE 2: FORM -->
+<div class="page" id="page-form">
+  <nav aria-label="Navegação principal" class="form-nav">
+    <a href="dashboard.html" class="form-logo">
+      <div class="form-logo-mark">G</div>
+      Sistema <span>Gnosis</span>
+    </a>
+    <div class="form-progress-wrap">
+      <div class="form-progress-track">
+        <div class="form-progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <div class="form-counter" id="form-counter">Quadrante 1 de 4</div>
+    </div>
+    <button class="btn-back" onclick="goBack()">← Voltar</button>
+  </nav>
+  <div class="form-body">
+    <div class="form-container" id="form-container">
+      <!-- injetado por JS -->
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3: RESULT -->
+<div class="page" id="page-result">
+
+  <!-- Nav de retorno — FIX CRÍTICO 2 -->
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);">
+    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;transition:all 0.2s;" onmouseover="this.style.color='var(--text)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border2)'">← Dashboard</a>
+    <span style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);">// resultado · soar</span>
+    <button onclick="generatePDF()" style="font-family:var(--mono);font-size:0.7rem;background:transparent;color:var(--muted);border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='var(--text)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border2)'">↓ PDF</button>
+  </nav>
+
+  <div class="result-page">
+    <div class="result-eyebrow">Sua Análise SOAR</div>
+    <div class="result-title">Mapa <span class="accent">Estratégico</span> Pessoal</div>
+    <div class="result-sub">Seus quatro quadrantes mapeados. Use como guia para decisões de carreira e vida.</div>
+
+    <div class="soar-result-grid" id="soar-result-grid">
+      <!-- injetado por JS -->
+    </div>
+
+    <div class="insights-card" id="insights-card">
+      <!-- injetado por JS -->
+    </div>
+
+    <div class="result-actions">
+      <a href="dashboard.html" class="btn-dashboard">Ver meu Dashboard →</a>
+      <button class="btn-share" onclick="generatePDF()" style="background:var(--surface);border:1px solid var(--border2);color:var(--text);">↓ Exportar Relatório</button>
+      <button class="btn-share" onclick="shareResult()">↗ Compartilhar diagnóstico</button>
+      <button class="btn-redo" onclick="resetForm()">↺ Refazer análise</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// DEFINIÇÃO DOS QUADRANTES SOAR
+// ══════════════════════════════════════
+const QUADRANTS = [
+  {
+    key: 'S',
+    label: 'Strengths',
+    name: 'Forças',
+    subtitle: 'O que você faz excepcionalmente bem',
+    color: '#6C5FE6',
+    colorVar: 'var(--soar-S)',
+    icon: 'S',
+    questions: [
+      { id: 'S1', prompt: 'Quais habilidades ou talentos as pessoas ao seu redor mais reconhecem em você?', placeholder: 'Ex: comunicação clara, capacidade analítica, liderança em momentos de crise...' },
+      { id: 'S2', prompt: 'Em que tipo de tarefa ou projeto você se sente naturalmente mais competente e confiante?', placeholder: 'Ex: resolução de problemas complexos, criação de conexões entre pessoas...' },
+      { id: 'S3', prompt: 'Quais conquistas do seu passado você considera que mostram seu maior potencial?', placeholder: 'Ex: um projeto que liderou com sucesso, uma meta difícil que atingiu...' },
+      { id: 'S4', prompt: 'Que recursos únicos (conhecimento, rede, experiências) você possui que poucos têm?', placeholder: 'Ex: experiência em dois mercados diferentes, fluência em idiomas, rede internacional...' },
+    ]
+  },
+  {
+    key: 'O',
+    label: 'Opportunities',
+    name: 'Oportunidades',
+    subtitle: 'O que o ambiente oferece para você explorar',
+    color: '#2EC4A0',
+    colorVar: 'var(--soar-O)',
+    icon: 'O',
+    questions: [
+      { id: 'O1', prompt: 'Quais tendências no seu setor ou mercado você poderia aproveitar nos próximos 2-3 anos?', placeholder: 'Ex: crescimento de IA, demanda por profissionais de produto, expansão de mercados...' },
+      { id: 'O2', prompt: 'Existe alguma lacuna ou necessidade não atendida no seu campo que você poderia preencher?', placeholder: 'Ex: falta de profissionais com combinação de habilidades técnicas e comportamentais...' },
+      { id: 'O3', prompt: 'Que conexões ou relacionamentos profissionais poderiam abrir novas portas para você?', placeholder: 'Ex: mentores em potencial, comunidades específicas, eventos do setor...' },
+      { id: 'O4', prompt: 'Quais recursos ou ferramentas disponíveis você ainda não está aproveitando ao máximo?', placeholder: 'Ex: plataformas de aprendizado, programas de certificação, redes profissionais...' },
+    ]
+  },
+  {
+    key: 'A',
+    label: 'Aspirations',
+    name: 'Aspirações',
+    subtitle: 'O que você deseja alcançar e quem quer ser',
+    color: '#E8603A',
+    colorVar: 'var(--soar-A)',
+    icon: 'A',
+    questions: [
+      { id: 'A1', prompt: 'Qual é a sua visão de vida ideal daqui a 5 anos? Descreva com o máximo de detalhe.', placeholder: 'Ex: liderando minha própria empresa, vivendo em outra cidade, com equilíbrio profissional e pessoal...' },
+      { id: 'A2', prompt: 'Qual impacto você quer causar no mundo ou na vida das pessoas ao seu redor?', placeholder: 'Ex: ajudar profissionais a encontrarem seu propósito, construir soluções que facilitem a vida de quem empreende...' },
+      { id: 'A3', prompt: 'Que tipo de profissional ou líder você aspira se tornar? Quais valores guiam essa visão?', placeholder: 'Ex: um líder que inspira pelo exemplo, que equilibra performance com cuidado genuíno pelas pessoas...' },
+      { id: 'A4', prompt: 'Se o dinheiro e o tempo não fossem obstáculos, em que você passaria seus dias?', placeholder: 'Ex: criando, ensinando, construindo projetos com impacto social, explorando novas culturas...' },
+    ]
+  },
+  {
+    key: 'R',
+    label: 'Results',
+    name: 'Resultados',
+    subtitle: 'As metas concretas que você quer alcançar',
+    color: '#1BA8D4',
+    colorVar: 'var(--soar-R)',
+    icon: 'R',
+    questions: [
+      { id: 'R1', prompt: 'Qual é o resultado mais importante que você quer alcançar nos próximos 12 meses?', placeholder: 'Ex: conseguir uma promoção, lançar um produto, completar uma certificação, mudar de área...' },
+      { id: 'R2', prompt: 'Como você vai medir que teve sucesso no que se propôs? Quais são os indicadores concretos?', placeholder: 'Ex: receita mensal acima de X, equipe de Y pessoas, feedback positivo de Z clientes...' },
+      { id: 'R3', prompt: 'Que hábito ou comportamento você precisa desenvolver para alcançar seus objetivos?', placeholder: 'Ex: consistência em estudar 1h por dia, fazer networking ativo toda semana...' },
+      { id: 'R4', prompt: 'Quais obstáculos você já prevê e como pretende superá-los?', placeholder: 'Ex: falta de tempo → vou delegar X; insegurança → vou buscar mentoria em Y...' },
+    ]
+  }
+];
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let currentQ = 0; // quadrant index 0-3
+let answers  = { S: {}, O: {}, A: {}, R: {} };
+let _isLoadingExisting = false;
+
+
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function startForm() {
+  currentQ = 0;
+  answers  = { S: {}, O: {}, A: {}, R: {} };
+  showPage('page-form');
+  renderQuadrant(0);
+}
+
+function goBack() {
+  if (currentQ === 0) {
+    showPage('page-intro');
+  } else {
+    saveCurrentAnswers();
+    currentQ--;
+    renderQuadrant(currentQ);
+  }
+}
+
+function resetForm() {
+  answers = { S: {}, O: {}, A: {}, R: {} };
+  startForm();
+}
+
+// ══════════════════════════════════════
+// RENDER QUADRANT
+// ══════════════════════════════════════
+function renderQuadrant(idx) {
+  const q   = QUADRANTS[idx];
+  const pct = Math.round((idx / QUADRANTS.length) * 100);
+
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('form-counter').textContent  = `Quadrante ${idx + 1} de ${QUADRANTS.length}`;
+
+  const saved = answers[q.key] || {};
+
+  const questionsHTML = q.questions.map((question, qi) => `
+    <div class="question-item">
+      <div class="question-prompt" style="--q-color:${q.color}">
+        <span class="q-num">${String(qi + 1).padStart(2,'0')}</span>
+        ${question.prompt}
+      </div>
+      <textarea
+        class="question-input"
+        id="q-${question.id}"
+        placeholder="${question.placeholder}"
+        maxlength="400"
+        aria-label="${question.prompt}"
+        oninput="onInputChange()"
+        style="--q-color:${q.color}"
+      >${saved[question.id] || ''}</textarea>
+      <div class="char-count" id="cc-${question.id}">${(saved[question.id] || '').length}/400</div>
+    </div>
+  `).join('');
+
+  const isLast   = idx === QUADRANTS.length - 1;
+  const hasAny   = Object.values(saved).some(v => v && v.trim().length > 0);
+
+  document.getElementById('form-container').innerHTML = `
+    <div class="quadrant-header">
+      <div class="quadrant-badge" style="background:${q.color}">${q.icon}</div>
+      <div class="quadrant-info">
+        <span class="quadrant-label">${q.label}</span>
+        <div class="quadrant-title">${q.name}</div>
+        <div class="quadrant-subtitle">${q.subtitle}</div>
+      </div>
+    </div>
+    <div class="questions-list">
+      ${questionsHTML}
+    </div>
+    <div class="form-actions">
+      <span class="form-hint">Preencha ao menos uma resposta para continuar</span>
+      <button class="btn-next ${hasAny ? 'ready' : ''}" id="btn-next" onclick="nextQuadrant()" style="background:${q.color}">
+        ${isLast ? 'Ver meu resultado →' : 'Próximo quadrante →'}
+      </button>
+    </div>
+  `;
+
+  // Attach char-count listeners
+  q.questions.forEach(question => {
+    const el = document.getElementById(`q-${question.id}`);
+    if (el) {
+      el.addEventListener('input', () => {
+        const cc = document.getElementById(`cc-${question.id}`);
+        if (cc) cc.textContent = `${el.value.length}/400`;
+        onInputChange();
+      });
+    }
+  });
+}
+
+// ══════════════════════════════════════
+// INPUT CHANGE — habilita botão
+// ══════════════════════════════════════
+function onInputChange() {
+  const q    = QUADRANTS[currentQ];
+  const hasAny = q.questions.some(question => {
+    const el = document.getElementById(`q-${question.id}`);
+    return el && el.value.trim().length > 0;
+  });
+  const btn = document.getElementById('btn-next');
+  if (btn) {
+    btn.classList.toggle('ready', hasAny);
+  }
+}
+
+// ══════════════════════════════════════
+// SAVE + NEXT
+// ══════════════════════════════════════
+function saveCurrentAnswers() {
+  const q = QUADRANTS[currentQ];
+  q.questions.forEach(question => {
+    const el = document.getElementById(`q-${question.id}`);
+    if (el) answers[q.key][question.id] = el.value.trim();
+  });
+  autosaveDraft();
+}
+
+function nextQuadrant() {
+  saveCurrentAnswers();
+  currentQ++;
+  if (currentQ >= QUADRANTS.length) {
+    showResult();
+  } else {
+    renderQuadrant(currentQ);
+    window.scrollTo(0, 0);
+  }
+}
+
+// ══════════════════════════════════════
+// SHOW RESULT
+// ══════════════════════════════════════
+function showResult() {
+  showPage('page-result');
+
+  // Build soar grid
+  const gridHTML = QUADRANTS.map(q => {
+    const qAnswers = answers[q.key] || {};
+    const filled   = Object.values(qAnswers).filter(v => v && v.length > 0);
+    const answersHTML = filled.length > 0
+      ? filled.map(v => `
+          <div class="soar-answer-item">
+            <div class="soar-answer-bullet" style="background:${q.color}"></div>
+            <span>${v}</span>
+          </div>
+        `).join('')
+      : `<div class="soar-answer-empty">Não respondido</div>`;
+
+    return `
+      <div class="soar-quadrant">
+        <div class="soar-q-head">
+          <div class="soar-q-icon" style="background:${q.color}">${q.icon}</div>
+          <div>
+            <span class="soar-q-label">${q.label}</span>
+            <div class="soar-q-name">${q.name}</div>
+          </div>
+        </div>
+        <div class="soar-answers">${answersHTML}</div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('soar-result-grid').innerHTML = gridHTML;
+
+  // Build insights
+  const totalFilled = QUADRANTS.reduce((acc, q) => {
+    return acc + Object.values(answers[q.key] || {}).filter(v => v && v.length > 0).length;
+  }, 0);
+  const completionPct = Math.round((totalFilled / 16) * 100);
+
+  const insights = generateInsights();
+
+  document.getElementById('insights-card').innerHTML = `
+    <span class="insights-label">Síntese Estratégica</span>
+    <div class="insights-grid">
+      ${insights.map(ins => `
+        <div class="insight-item">
+          <span class="insight-tag">${ins.label}</span>
+          <div class="insight-text">${ins.text}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  // Save to localStorage
+  const userData = (capsulaDB.lsGetUser() || {});
+  if (!userData.uid) {
+    userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+  }
+  userData.soar  = { answers, completionPct, completedAt: new Date().toISOString() };
+  capsulaDB.lsSetUser(userData);
+  try {
+    const _ud = (capsulaDB.lsGetUser() || {});
+    delete _ud.soar_draft;
+    capsulaDB.lsSetUser(_ud);
+  } catch(e) {}
+
+  // ── FIX CRÍTICO 1: Sincroniza resultado no array capsula_users[] ──
+  try {
+    const perfis = capsulaDB.lsGetUsers();
+    const idx = perfis.findIndex(function(p) { return p.uid === userData.uid; });
+    if (idx >= 0) {
+      perfis[idx].soar = userData.soar;
+      capsulaDB.lsSetUsers(perfis);
+    }
+  } catch(e) { /* silencioso */ }
+  // Sync Supabase
+  if(window.capsulaDB && userData.email){ capsulaDB.saveUser(userData).catch(e => console.warn('[soar] sync:', e)); }
+}
+
+// ══════════════════════════════════════
+// GENERATE INSIGHTS
+// ══════════════════════════════════════
+function generateInsights() {
+  const s = Object.values(answers.S || {}).filter(v => v).join(' ');
+  const o = Object.values(answers.O || {}).filter(v => v).join(' ');
+  const a = Object.values(answers.A || {}).filter(v => v).join(' ');
+  const r = Object.values(answers.R || {}).filter(v => v).join(' ');
+
+  const insights = [];
+
+  if (s && a) {
+    insights.push({
+      label: 'Alavancagem (S + A)',
+      text: 'Suas forças são o combustível para suas aspirações. Use o que você já sabe fazer bem como ponto de partida para o que deseja conquistar.'
+    });
+  }
+  if (o && r) {
+    insights.push({
+      label: 'Plano de Ação (O + R)',
+      text: 'As oportunidades identificadas se conectam diretamente aos resultados que você quer. Priorize as que têm maior alinhamento com suas metas de curto prazo.'
+    });
+  }
+  if (s && o) {
+    insights.push({
+      label: 'Vantagem Competitiva (S + O)',
+      text: 'A combinação das suas forças únicas com as oportunidades do mercado define onde você tem maior potencial de diferenciação.'
+    });
+  }
+  if (a && r) {
+    insights.push({
+      label: 'Visão de Futuro (A + R)',
+      text: 'Suas aspirações de longo prazo e seus resultados esperados estão mapeados. O próximo passo é definir os marcos que ligam onde você está a onde quer chegar.'
+    });
+  }
+
+  // Always have at least 2 insights
+  if (insights.length < 2) {
+    insights.push({
+      label: 'Próximo Passo',
+      text: 'Com sua análise SOAR concluída, revise seus quadrantes regularmente. O autoconhecimento estratégico é mais valioso quando revisitado e atualizado.'
+    });
+  }
+
+  return insights.slice(0, 4);
+}
+
+// ══════════════════════════════════════
+// GENERATE PDF — SOAR Blueprint
+// ══════════════════════════════════════
+// ── UTILITÁRIO: nome de exibição ──────────────────────────────
+function getNomeExibido(userData) {
+  if (!userData) return 'Usuário';
+  if (userData.apelido && userData.apelido.trim()) return userData.apelido.trim();
+  if (userData.nome && userData.nome.trim()) return userData.nome.trim();
+  return 'Usuário';
+}
+
+function generatePDF() {
+  const user = (capsulaDB.lsGetUser() || {});
+  const nome = getNomeExibido(user);
+  const data = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
+  const ACCENT = '#6C5FE6';
+
+  const _gnCss = '*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page{width:794px;min-height:1123px;margin:0 auto;padding:40px 48px;background:#f8fafc;}.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:20px;border-bottom:2px solid #000;margin-bottom:28px;}.brand{display:flex;align-items:center;gap:10px;}.brand-name{font-size:17px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:GNOSIS_ACCENT;font-style:italic;font-weight:300;}.header-meta{font-family:'Space Mono',monospace;font-size:8px;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;text-align:right;line-height:1.9;}.result-box{background:#fafafa;border:1px solid #000;padding:28px 32px;margin-bottom:24px;position:relative;}.result-box-label{position:absolute;top:-10px;left:20px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:8px;padding:2px 10px;text-transform:uppercase;letter-spacing:0.2em;}.result-eyebrow{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:6px;color:GNOSIS_ACCENT;}.result-title{font-family:'Inter',sans-serif;font-size:50px;font-weight:900;text-transform:uppercase;letter-spacing:-0.05em;line-height:1;}.bars-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px;}.bar-item{border:1px solid #e4e4e7;padding:12px;background:#fff;}.bar-item.dim{opacity:0.4;}.bar-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.bar-pct{font-size:22px;font-weight:900;}.bar-track{height:4px;background:#f1f5f9;border-radius:2px;margin-top:6px;overflow:hidden;}.bar-fill{height:100%;border-radius:2px;}.blueprint-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}.blueprint-item{border:1px solid #e4e4e7;padding:14px 16px;background:#fff;}.blueprint-item.full{grid-column:1/-1;}.item-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.item-value{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-style:italic;}.item-text{font-size:11px;line-height:1.75;color:#333;}.rank-item{display:flex;align-items:center;gap:12px;border:1px solid #e4e4e7;padding:11px 15px;margin-bottom:7px;background:#fff;}.rank-item.top{border-color:#000;border-left:3px solid GNOSIS_ACCENT;}.rank-num{font-family:'Space Mono',monospace;font-size:9px;color:#a1a1aa;min-width:22px;}.rank-icon{font-size:18px;}.rank-name{font-size:13px;font-weight:700;flex:1;}.rank-meta{font-size:10px;color:#71717a;margin-top:2px;}.rank-score{font-family:'Space Mono',monospace;font-size:9px;color:#71717a;white-space:nowrap;}.rank-dots{display:flex;gap:3px;}.insight-box{background:#fff;border:1px solid #000;padding:20px 24px;margin-bottom:14px;}.insight-label{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:GNOSIS_ACCENT;margin-bottom:10px;display:flex;align-items:center;gap:8px;}.insight-label::before{content:'';display:inline-block;width:20px;height:2px;background:GNOSIS_ACCENT;border-radius:2px;}.insight-text{font-size:11px;color:#444;line-height:1.8;}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}.chip{font-family:'Space Mono',monospace;font-size:8px;padding:4px 10px;border:1px solid GNOSIS_ACCENT;color:GNOSIS_ACCENT;letter-spacing:0.08em;text-transform:uppercase;}.quad-card{background:#fff;padding:16px 18px;border:1px solid #e4e4e7;overflow:hidden;}.footer{padding-top:14px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:24px;}.footer-left{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}.footer-right{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:#000;}@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;padding:28px 36px;}}'.split('GNOSIS_ACCENT').join(ACCENT);
+
+  const quadrantsHTML = QUADRANTS.map(q => {
+    const filled = Object.values(answers[q.key]||{}).filter(v=>v&&v.trim().length>0);
+    const itemsHTML = filled.length > 0
+      ? filled.map(v=>`<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:7px;"><span style="width:5px;height:5px;border-radius:50%;background:${q.color};margin-top:6px;flex-shrink:0;display:block;"></span><span style="font-size:11px;color:#333;line-height:1.65;">${v}</span></div>`).join('')
+      : '<span style="font-family:monospace;font-size:10px;color:#a1a1aa;">// não respondido</span>';
+    return `<div class="quad-card" style="border-top:2px solid ${q.color};">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #f1f5f9;">
+        <div style="width:28px;height:28px;border-radius:6px;background:${q.color}15;border:1px solid ${q.color}40;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:13px;font-weight:800;color:${q.color};">${q.icon}</div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:7px;letter-spacing:0.1em;text-transform:uppercase;color:#71717a;">${q.label}</div>
+          <div style="font-size:13px;font-weight:700;color:#000;">${q.name}</div>
+        </div>
+      </div>
+      ${itemsHTML}
+    </div>`;
+  }).join('');
+
+  const insights = generateInsights();
+  const insightsHTML = insights.map(ins=>
+    `<div class="blueprint-item">
+      <span class="item-tag">${ins.label}</span>
+      <p class="item-text">${ins.text}</p>
+    </div>`
+  ).join('');
+
+  _imprimirPDF(`<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8"><title>Análise SOAR — ${nome} · Sistema Gnosis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>${_gnCss}</style></head><body><div class="page">
+  <div class="header">
+    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="32" height="32"><path d="M85 50C85 69.33 69.33 85 50 85C30.67 85 15 69.33 15 50C15 30.67 30.67 15 50 15C59.66 15 68.38 18.91 74.72 25.22" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><path d="M85 50H55" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="50" r="4" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
+    <div class="header-meta">Módulo: Análise SOAR<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
+  </div>
+  <div class="result-box">
+    <div class="result-box-label">Resultado_Diagnóstico_SOAR</div>
+    <div style="text-align:center;">
+      <div class="result-eyebrow" style="color:${ACCENT};">Perfil_Vetor_Estratégico</div>
+      <div class="result-title" style="color:${ACCENT};">ANÁLISE SOAR</div>
+      <div style="margin-top:8px;font-size:12px;color:#71717a;font-family:'Space Mono',monospace;">Forças · Oportunidades · Aspirações · Resultados</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">${quadrantsHTML}</div>
+  <div class="insight-box" style="margin-top:14px;">
+    <div class="insight-label">Síntese_Estratégica</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">${insightsHTML}</div>
+  </div>
+  <div class="footer"><span class="footer-left">SISTEMA GNOSIS // ENGENHARIA COMPORTAMENTAL // CONFIDENCIAL</span><span class="footer-right">sistemagnosis.com.br</span></div>
+  </div>
+  <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
+  </body></html>\`);
+}
+
+// ══════════════════════════════════════
+// SHARE
+// ══════════════════════════════════════
+function shareResult() {
+  const totalFilled = QUADRANTS.reduce((acc, q) => {
+    return acc + Object.values(answers[q.key] || {}).filter(v => v && v.length > 0).length;
+  }, 0);
+  const text = `Concluí minha Análise SOAR no Sistema Gnosis — ${totalFilled} respostas estratégicas mapeadas. Descubra o seu em sistemagnosis.com.br`;
+  if (navigator.share) {
+    navigator.share({ title: 'Minha Análise SOAR', text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => showCopyToast('Link copiado! Cole onde quiser.'));
+  }
+}
+
+// ══════════════════════════════════════
+// INICIALIZAÇÃO DA PÁGINA
+// ══════════════════════════════════════
+function initPage() {
+  const userData = JSON.parse(
+    localStorage.getItem('capsula_user') ||
+    sessionStorage.getItem('capsula_user') ||
+    'null'
+  );
+
+  // Guard: sem usuário cadastrado → volta para index
+  if (!userData || (!userData.nome && !userData.apelido && !userData.email && !(userData.soar && userData.soar.completedAt))) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // Auto-heal: garante que uid sempre existe
+  if (!userData.uid) {
+    userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+    try { capsulaDB.lsSetUser(userData); } catch(_) {}
+  }
+
+  // Exibe nome do usuário na intro
+  const nome = getNomeExibido(userData);
+  const greeting = document.getElementById('soar-greeting');
+  if (greeting) {
+    greeting.style.display = 'block';
+    greeting.querySelector('.js-user-name').textContent = nome;
+  }
+
+  // Restaura rascunho salvo, se houver
+  const _u = (capsulaDB.lsGetUser() || {});
+  const draft = _u.soar_draft || null;
+  if (draft) {
+    try {
+      const saved = draft;
+      answers = saved;
+    } catch(e) {}
+  }
+}
+
+// Auto-save rascunho a cada mudança + feedback visual
+function autosaveDraft() {
+  try {
+    const u = (capsulaDB.lsGetUser() || {});
+    u.soar_draft = answers;
+    capsulaDB.lsSetUser(u);
+    // Feedback visual sutil no contador
+    const counter = document.getElementById('form-counter');
+    if (counter) {
+      const original = counter.textContent;
+      counter.textContent = '✓ salvo automaticamente';
+      counter.style.color = 'var(--S)';
+      clearTimeout(window._draftFeedbackTimer);
+      window._draftFeedbackTimer = setTimeout(function() {
+        counter.textContent = original;
+        counter.style.color = '';
+      }, 1800);
+    }
+  } catch(e) {}
+}
+
+function showCopyToast(msg) {
+  let t = document.getElementById('_copy-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = '_copy-toast';
+    t.style.cssText = 'position:fixed;bottom:2rem;right:2rem;background:var(--surface2,#1e1e1e);border:1px solid var(--border2,#333);border-radius:8px;padding:0.75rem 1.1rem;font-size:0.82rem;color:var(--text,#fff);z-index:9999;opacity:0;transform:translateY(12px);transition:opacity 0.25s,transform 0.25s;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = '✓  ' + msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateY(0)';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(12px)'; }, 2800);
+}
+
+function _imprimirPDF(html){
+  var old=document.getElementById('_pdf_frame');if(old)old.remove();
+  var iframe=document.createElement('iframe');iframe.id='_pdf_frame';
+  iframe.setAttribute('style','position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;border:none;');
+  document.body.appendChild(iframe);
+  var doc=iframe.contentDocument||iframe.contentWindow.document;
+  doc.open();doc.write(html);doc.close();
+  iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='soar-resultado.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
+}
+document.addEventListener('DOMContentLoaded', initPage);
+</script>
+<script>
+(function() {
+  try {
+    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+    if (!raw) return;
+    var u = JSON.parse(raw);
+    if (!u.soar || !u.soar.completedAt || !u.soar.answers) return;
+    answers = u.soar.answers;
+    _isLoadingExisting = true;
+    showResult();
+  } catch(e) { console.warn('[soar redirect]', e); }
+})();
+</script>
+</body>
+</html>

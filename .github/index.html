@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
+<head>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.groq.com;">
+<title>Sistema Gnosis | Matrizes de Alta Performance</title>
+
+<!-- SEO -->
+<meta name="description" content="Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes. DISC, Ikigai, SOAR, SWOT, RACI e mais. Comece grátis.">
+<meta name="robots" content="index, follow">
+<link rel="stylesheet" href="css/capsula.css">
+<link rel="canonical" href="https://sistemagnosis.com.br/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sistemagnosis.com.br/">
+<meta property="og:title" content="Sistema Gnosis | Matrizes de Alta Performance">
+<meta property="og:description" content="Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes. Comece grátis.">
+<meta property="og:image" content="https://sistemagnosis.com.br/og-image.png">
+<meta property="og:locale" content="pt_BR">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sistema Gnosis | Matrizes de Alta Performance">
+<meta name="twitter:description" content="Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes. Comece grátis.">
+<meta name="twitter:image" content="https://sistemagnosis.com.br/og-image.png">
+
+<!-- Fonte otimizada (não bloqueante) -->
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"></noscript>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0A0A0F;
+    --surface: #111118;
+    --surface2: #16161F;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.15);
+    --accent: #7C6FF7;
+    --accent2: #4FC9A0;
+    --accent3: #F4845F;
+    --text: #F0EEF8;
+    --muted: #8B899E;
+    --muted2: #5A5870;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'Outfit', system-ui, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 5%;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.4rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: opacity 0.2s;
+    text-decoration: none;
+  }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 7rem 5% 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(124,111,247,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(124,111,247,0.12);
+    border: 1px solid rgba(124,111,247,0.3);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 2rem;
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    max-width: 900px;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero-sub {
+    color: var(--muted);
+    font-size: 1.15rem;
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 1rem 2.2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border-hover);
+    padding: 1rem 2.2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 4rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    border-top: 1px solid var(--border);
+    padding-top: 2.5rem;
+    width: 100%;
+    max-width: 700px;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 2rem;
+    color: var(--text);
+    display: block;
+  }
+  .stat-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+
+  /* SECTION BASE */
+  section { padding: min(8rem, 10vw) 8%; }
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  .section-desc {
+    color: var(--muted);
+    font-size: 1.05rem;
+    max-width: 520px;
+    line-height: 1.7;
+  }
+  .section-header { margin-bottom: 4rem; }
+
+  /* MATRIZES */
+  .matrizes { background: var(--surface); }
+  .matrizes-container { max-width: 1200px; margin: 0 auto; }
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+    background: rgba(255,255,255,0.04);
+    padding: 0.35rem;
+    border-radius: 10px;
+    width: fit-content;
+  }
+  .tab-btn {
+    padding: 0.6rem 1.4rem;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 7px;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    background: var(--accent);
+    color: #fff;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
+
+  .matrix-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2.5rem;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.35), 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .matrix-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: var(--card-accent, var(--accent));
+    opacity: 0;
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .matrix-card:hover {
+    border-color: rgba(124,111,247,0.4);
+    transform: translateY(-3px);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.4),
+      0 0 0 1px rgba(124,111,247,0.15),
+      0 4px 16px rgba(124,111,247,0.12);
+  }
+  .matrix-card:hover::before { opacity: 1; }
+
+  .card-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1rem;
+    background: rgba(124,111,247,0.10);
+    border: 1px solid rgba(124,111,247,0.22);
+  }
+  .card-icon svg {
+    width: 20px; height: 20px;
+    stroke: var(--card-icon-color, var(--accent));
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+  .matrix-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+  .matrix-card p {
+    font-size: 0.875rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  .card-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.65rem;
+    border-radius: 100px;
+    background: rgba(124,111,247,0.12);
+    color: var(--accent);
+  }
+
+  /* COMO FUNCIONA */
+  .como-funciona { max-width: 1100px; margin: 0 auto; }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0;
+    position: relative;
+    margin-top: 3rem;
+  }
+  .steps::before {
+    content: '';
+    position: absolute;
+    top: 2.5rem;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), var(--border), transparent);
+  }
+  .step { padding: 1.5rem; text-align: center; }
+  .step-num {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border-hover);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    color: var(--accent);
+    position: relative;
+    z-index: 1;
+  }
+  .step h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; }
+  .step p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+  /* EIXOS */
+  .eixos-section { background: var(--surface); padding: min(8rem, 10vw) 8%; }
+  .eixos-inner { max-width: 1100px; margin: 0 auto; }
+  .eixos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  .eixo-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .eixo-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: var(--eixo-color, rgba(124,111,247,0.08));
+  }
+  .eixo-card.team { --eixo-color: rgba(79,201,160,0.08); }
+  .eixo-title {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    margin-bottom: 0.35rem;
+  }
+  .eixo-title--team { color: var(--accent2); }
+  .eixo-subtitle { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; }
+  .eixo-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+  .eixo-list li {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .eixo-list li::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: 0.45rem;
+    flex-shrink: 0;
+  }
+  .eixo-card.team .eixo-list li::before { background: var(--accent2); }
+
+  /* PLANOS */
+  .planos { background: var(--surface); }
+  .planos-inner { max-width: 1000px; margin: 0 auto; }
+  .planos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+  .plano-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem;
+    border-color: var(--accent);
+    position: relative;
+    box-shadow:
+      0 0 0 1px rgba(124,111,247,0.30),
+      0 8px 32px rgba(124,111,247,0.18),
+      0 2px 8px rgba(0,0,0,0.40);
+  }
+  .plano-card.destaque::before {
+    content: 'MAIS POPULAR';
+    position: absolute;
+    top: -1px; left: 50%; transform: translateX(-50%);
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.85rem;
+    border-radius: 0 0 6px 6px;
+  }
+  .plano-nome { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+  .plano-preco {
+    font-family: var(--serif);
+    font-size: 2.5rem;
+    line-height: 1;
+    margin-bottom: 0.35rem;
+  }
+  .plano-preco span { font-size: 1rem; color: var(--muted); font-family: var(--sans); font-weight: 400; }
+  .plano-desc { font-size: 0.875rem; color: var(--muted); margin-bottom: 1.5rem; }
+  .plano-features { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
+  .plano-features li {
+    display: flex; gap: 0.65rem;
+    font-size: 0.875rem; color: var(--muted);
+  }
+  .plano-features li .check {
+    color: var(--accent2);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .plano-btn {
+    display: block;
+    text-align: center;
+    padding: 0.85rem;
+    border-radius: 8px;
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .plano-btn-outline {
+    background: transparent;
+    border: 1px solid var(--border-hover);
+    color: var(--text);
+  }
+  .plano-btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .plano-btn-filled {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+  }
+  .plano-btn-filled:hover { opacity: 0.85; }
+
+  /* CTA FINAL */
+  .cta-final-section { text-align: center; padding: 7rem 8%; }
+  .cta-final {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .cta-final .section-title { font-size: clamp(2rem, 4vw, 3.2rem); }
+  .cta-final p { color: var(--muted); margin: 1rem 0 2.5rem; font-size: 1.05rem; }
+
+  /* Seções com section-label centralizado */
+  .section-header--centered { text-align: center; margin: 0 auto 0; }
+  .section-header--centered .section-label { text-align: center; display: block; }
+  .section-header--centered .section-desc { margin: 0 auto; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .footer-logo {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .footer-logo span { color: var(--accent); }
+  footer p { font-size: 0.8rem; color: var(--muted2); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface2);
+    border: 1px solid var(--border-hover);
+    border-radius: 16px;
+    padding: 2.5rem;
+    max-width: 480px;
+    width: 100%;
+    position: relative;
+  }
+  .modal-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--border, #e5e7eb);
+    margin-bottom: 1.2rem;
+  }
+  .modal-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 0.6rem 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--muted, #6b7280);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color .2s, border-color .2s;
+  }
+  .modal-tab.active {
+    color: var(--accent, #6366f1);
+    border-bottom-color: var(--accent, #6366f1);
+  }
+  .modal-close {
+    position: absolute;
+    top: 1.25rem; right: 1.25rem;
+    background: none; border: none;
+    color: var(--muted); cursor: pointer;
+    font-size: 1.5rem; line-height: 1;
+  }
+  .modal h2 { font-family: var(--serif); font-size: 1.6rem; margin-bottom: 0.4rem; }
+  .modal p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .form-group { margin-bottom: 1rem; }
+  .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-bottom: 0.4rem; letter-spacing: 0.05em; }
+  .form-group input, .form-group select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border-hover);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+  .form-group select option { background: var(--surface2); }
+  .form-group input.input--error,
+  .form-group select.input--error { border-color: var(--accent3); }
+  .field-error {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--accent3);
+    margin-top: 0.3rem;
+  }
+  .form-submit {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.9rem;
+    font-family: var(--sans);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: opacity 0.2s;
+  }
+  .form-submit:hover { opacity: 0.85; }
+  .form-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .form-terms {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--muted2);
+    margin-top: 1rem;
+  }
+  .success-msg {
+    display: none;
+    text-align: center;
+    padding: 1rem 0;
+  }
+  .success-msg .check-big { font-size: 2.5rem; margin-bottom: 0.75rem; display: block; }
+  .success-msg h3 { font-family: var(--serif); font-size: 1.4rem; margin-bottom: 0.4rem; }
+  .success-msg p { color: var(--muted); font-size: 0.9rem; }
+
+  /* Auth: botão Google */
+  .btn-google {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: #fff;
+    color: #1f1f1f;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s;
+    margin-bottom: 0.25rem;
+  }
+  .btn-google:hover { background: #f8f8f8; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+  .btn-google:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-google svg { flex-shrink: 0; }
+
+  /* Separador "ou" */
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1rem 0;
+    color: var(--muted2);
+    font-size: 0.8rem;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-hover);
+  }
+
+  /* Link discreto (esqueci a senha, voltar) */
+  .link-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.15s;
+  }
+  .link-btn:hover { color: var(--accent); }
+
+  /* Alinhamento da linha "esqueci a senha" */
+  .forgot-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-label--centered { text-align: center; display: block; }
+
+  /* Animação de entrada via classe — não manipulada via JS inline */
+  .animate-in {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .animate-in.is-visible {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 5%; }
+    .nav-links { display: none; }
+    .eixos-grid { grid-template-columns: 1fr; }
+    .steps::before { display: none; }
+    .hero h1 { font-size: 2.5rem; }
+  }
+
+  /* ── SEÇÕES DE TRANSIÇÃO EDITORIAL ─────────────────────── */
+  .statement-section {
+    padding: 9rem 5%;
+    text-align: center;
+    position: relative;
+  }
+  .statement-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+  .statement-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+  .statement-text {
+    font-size: clamp(1.25rem, 2.8vw, 1.9rem);
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .statement-text em {
+    font-style: normal;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .statement-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" crossorigin="anonymous">
+    <!-- TODO: adicionar integrity="sha384-..." após calcular em https://www.srihash.org --></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+  <script src="js/ui.js"></script>
+</head>
+<body>
+
+<!-- NAVEGAÇÃO -->
+<nav aria-label="Navegação principal">
+  <a href="#" class="nav-logo">Sistema <span>Gnosis</span></a>
+  <ul class="nav-links">
+    <li><a href="#matrizes">Matrizes</a></li>
+    <li><a href="#como-funciona">Como funciona</a></li>
+    <li><a href="#planos">Planos</a></li>
+  </ul>
+  <button class="nav-cta" data-modal-open>Começar agora</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">✦ Framework de Alta Precisão Comportamental</div>
+  <h1>Engenharia Humana para<br><em>Alta Performance.</em></h1>
+  <p class="hero-sub">Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes que querem resultados reais e duradouros.</p>
+  <div class="hero-actions">
+    <button class="btn-primary" data-modal-open>Iniciar meu diagnóstico</button>
+    <a href="#matrizes" class="btn-secondary">Ver as matrizes →</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">8+</span>
+      <span class="stat-label">Matrizes disponíveis</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">2</span>
+      <span class="stat-label">Eixos de desenvolvimento</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">98%</span>
+      <span class="stat-label">Métrica de Precisão: correlação comportamental</span>
+    </div>
+  </div>
+</section>
+
+<!-- MATRIZES -->
+<section class="matrizes" id="matrizes">
+  <div class="matrizes-container">
+    <div class="section-header">
+      <span class="section-label">Ferramentas</span>
+      <h2 class="section-title">Matrizes para cada<br>etapa do crescimento</h2>
+      <p class="section-desc">Dois eixos complementares — um para o indivíduo, outro para equipes — com metodologias comprovadas.</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="individual">Eixo Individual</button>
+      <button class="tab-btn" data-tab="equipe">Eixo de Equipe</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-individual">
+      <div class="matrix-card animate-in" style="--card-accent: #7C6FF7;">
+        <div class="card-icon" style="--card-icon-color:#7C6FF7; background:rgba(124,111,247,0.10); border-color:rgba(124,111,247,0.22);">
+          <svg viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+        </div>
+        <h3>DISC</h3>
+        <p>Mapeie seu perfil comportamental em 4 dimensões: Dominância, Influência, Estabilidade e Conformidade.</p>
+        <span class="card-tag">Personalidade</span>
+      </div>
+      <div class="matrix-card animate-in" style="--card-accent: #4FC9A0;">
+        <div class="card-icon" style="--card-icon-color:#4FC9A0; background:rgba(79,201,160,0.10); border-color:rgba(79,201,160,0.22);">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        </div>
+        <h3>SOAR</h3>
+        <p>Identifique suas Forças, Oportunidades, Aspirações e Resultados para uma visão estratégica pessoal.</p>
+        <span class="card-tag">Estratégia pessoal</span>
+      </div>
+      <div class="matrix-card animate-in" style="--card-accent: #F4845F;">
+        <div class="card-icon" style="--card-icon-color:#F4845F; background:rgba(244,132,95,0.10); border-color:rgba(244,132,95,0.22);">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        </div>
+        <h3>Enneagrama</h3>
+        <p>Explore os 9 tipos de personalidade e compreenda suas motivações mais profundas e pontos cegos.</p>
+        <span class="card-tag">Motivação</span>
+      </div>
+      <div class="matrix-card animate-in" style="--card-accent: #7C6FF7;">
+        <div class="card-icon" style="--card-icon-color:#7C6FF7; background:rgba(124,111,247,0.10); border-color:rgba(124,111,247,0.22);">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+        </div>
+        <h3>Janela de Johari</h3>
+        <p>Entenda a diferença entre como você se vê e como os outros te percebem. Poderoso para líderes.</p>
+        <span class="card-tag">Autopercepção</span>
+      </div>
+      <div class="matrix-card animate-in" style="--card-accent: #4FC9A0;">
+        <div class="card-icon" style="--card-icon-color:#4FC9A0; background:rgba(79,201,160,0.10); border-color:rgba(79,201,160,0.22);">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>
+        </div>
+        <h3>Âncoras de Carreira</h3>
+        <p>Descubra o que você realmente não abre mão na sua vida profissional — o seu núcleo de carreira.</p>
+        <span class="card-tag">Propósito</span>
+      </div>
+      <div class="matrix-card animate-in" style="--card-accent: #F4845F;">
+        <div class="card-icon" style="--card-icon-color:#F4845F; background:rgba(244,132,95,0.10); border-color:rgba(244,132,95,0.22);">
+          <svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="6"/><circle cx="15" cy="9" r="6"/><circle cx="12" cy="15" r="6"/></svg>
+        </div>
+        <h3>Ikigai</h3>
+        <p>Encontre a intersecção entre o que você ama, o que sabe fazer, o que o mundo precisa e o que te paga.</p>
+        <span class="card-tag">Propósito de vida</span>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-equipe">
+      <div class="matrix-card animate-in" style="--card-accent: #4FC9A0;">
+        <div class="card-icon" style="--card-icon-color:#4FC9A0; background:rgba(79,201,160,0.10); border-color:rgba(79,201,160,0.22);">
+          <svg viewBox="0 0 24 24"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><polyline points="4 6 5 7 7 5"/><polyline points="4 12 5 13 7 11"/><polyline points="4 18 5 19 7 17"/></svg>
+        </div>
+        <h3>5W2H</h3>
+        <p>Planejamento de ação completo: o quê, por quê, onde, quando, quem, como e quanto custa.</p>
+        <span class="card-tag">Planejamento</span>
+      </div>
+      <div class="matrix-card animate-in" style="--card-accent: #7C6FF7;">
+        <div class="card-icon" style="--card-icon-color:#7C6FF7; background:rgba(124,111,247,0.10); border-color:rgba(124,111,247,0.22);">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3>Matriz RACI</h3>
+        <p>Defina com clareza quem é Responsável, Autoridade, Consultado e Informado em cada processo.</p>
+        <span class="card-tag">Papéis e responsabilidades</span>
+      </div>
+      <div class="matrix-card animate-in" style="--card-accent: #F4845F;">
+        <div class="card-icon" style="--card-icon-color:#F4845F; background:rgba(244,132,95,0.10); border-color:rgba(244,132,95,0.22);">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        </div>
+        <h3>Matriz de Eisenhower</h3>
+        <p>Priorize tarefas da equipe separando o urgente do importante para maximizar o foco coletivo.</p>
+        <span class="card-tag">Gestão do tempo</span>
+      </div>
+      <div class="matrix-card animate-in" style="--card-accent: #4FC9A0;">
+        <div class="card-icon" style="--card-icon-color:#4FC9A0; background:rgba(79,201,160,0.10); border-color:rgba(79,201,160,0.22);">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+        </div>
+        <h3>Matriz SWOT</h3>
+        <p>Analise as Forças, Fraquezas, Oportunidades e Ameaças da sua equipe com clareza estratégica.</p>
+        <span class="card-tag">Análise estratégica</span>
+      </div>
+      <div class="matrix-card animate-in" style="--card-accent: #7C6FF7;">
+        <div class="card-icon" style="--card-icon-color:#7C6FF7; background:rgba(124,111,247,0.10); border-color:rgba(124,111,247,0.22);">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg>
+        </div>
+        <h3>Feedback Canvas</h3>
+        <p>Estruture sessões de feedback coletivo de forma visual, segura e orientada ao crescimento.</p>
+        <span class="card-tag">Cultura de feedback</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATEMENT 1 -->
+<section class="statement-section" aria-hidden="true">
+  <span class="statement-label">// princípio</span>
+  <p class="statement-text">A clareza sobre quem você é<br>é o <em>ativo mais escasso</em> do século XXI.</p>
+</section>
+
+
+<!-- COMO FUNCIONA -->
+<section id="como-funciona">
+  <div class="como-funciona">
+    <div class="section-header section-header--centered">
+      <span class="section-label">Processo</span>
+      <h2 class="section-title">Como o Sistema Gnosis funciona</h2>
+      <p class="section-desc">Do acesso ao insight em minutos. Sem complicação.</p>
+    </div>
+    <div class="steps">
+      <div class="step animate-in">
+        <div class="step-num">1</div>
+        <h4>Crie sua conta</h4>
+        <p>Cadastro gratuito em menos de 2 minutos. Sem cartão de crédito.</p>
+      </div>
+      <div class="step animate-in">
+        <div class="step-num">2</div>
+        <h4>Escolha uma matriz</h4>
+        <p>Selecione pelo eixo individual ou de equipe conforme seu objetivo.</p>
+      </div>
+      <div class="step animate-in">
+        <div class="step-num">3</div>
+        <h4>Preencha guiado</h4>
+        <p>Interface passo a passo, sem sobrecarregar. Salva automaticamente.</p>
+      </div>
+      <div class="step animate-in">
+        <div class="step-num">4</div>
+        <h4>Receba seus insights</h4>
+        <p>Gráficos e análises detalhadas com seus resultados prontos para explorar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EIXOS -->
+<section class="eixos-section">
+  <div class="eixos-inner">
+    <div class="section-header">
+      <span class="section-label">Arquitetura</span>
+      <h2 class="section-title">Dois eixos,<br>um sistema</h2>
+    </div>
+    <div class="eixos-grid">
+      <div class="eixo-card animate-in">
+        <h3 class="eixo-title">Eixo Individual</h3>
+        <p class="eixo-subtitle">Matrizes de identificação e autoconhecimento</p>
+        <ul class="eixo-list">
+          <li>Perfil comportamental detalhado via DISC</li>
+          <li>Mapeamento de forças e aspirações com SOAR</li>
+          <li>Identificação das âncoras de carreira</li>
+          <li>Clareza sobre propósito de vida com Ikigai</li>
+          <li>Autopercepção e feedback com Janela de Johari</li>
+          <li>Histórico de evolução ao longo do tempo</li>
+        </ul>
+      </div>
+      <div class="eixo-card team animate-in">
+        <h3 class="eixo-title eixo-title--team">Eixo de Equipe</h3>
+        <p class="eixo-subtitle">Matrizes de desenvolvimento e performance coletiva</p>
+        <ul class="eixo-list">
+          <li>Planejamento estruturado com 5W2H</li>
+          <li>Definição de papéis clara com RACI</li>
+          <li>Priorização coletiva via Eisenhower</li>
+          <li>Análise estratégica do time com SWOT</li>
+          <li>Cultura de feedback com o Feedback Canvas</li>
+          <li>Gestão multi-equipe para empresas (CNPJ)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATEMENT 2 -->
+<section class="statement-section" aria-hidden="true">
+  <span class="statement-label">// propósito</span>
+  <p class="statement-text">Não é sobre encontrar a si mesmo.<br>É sobre <em>construir</em> quem você escolheu ser.</p>
+</section>
+
+
+<!-- PLANOS -->
+<section class="planos" id="planos">
+  <div class="planos-inner">
+    <div class="section-header section-header--centered">
+      <span class="section-label">Compromisso com a Evolução</span>
+      <h2 class="section-title">Simples e transparente</h2>
+      <p class="section-desc">Comece grátis. Escale quando fizer sentido para você.</p>
+    </div>
+    <div class="planos-grid">
+      <div class="plano-card animate-in">
+        <p class="plano-nome">Gratuito</p>
+        <div class="plano-preco">R$0<span>/mês</span></div>
+        <p class="plano-desc">Para você começar a se descobrir agora.</p>
+        <ul class="plano-features">
+          <li><span class="check">✓</span> 2 matrizes individuais</li>
+          <li><span class="check">✓</span> Resultados em texto</li>
+          <li><span class="check">✓</span> Histórico dos últimos 30 dias</li>
+          <li><span class="check">✓</span> Sem cartão de crédito</li>
+        </ul>
+        <button class="plano-btn plano-btn-outline" data-modal-open>Começar gratuitamente</button>
+      </div>
+      <div class="plano-card destaque animate-in">
+        <p class="plano-nome">Pro</p>
+        <div class="plano-preco">R$39<span>/mês</span></div>
+        <p class="plano-desc">Para profissionais que levam o desenvolvimento a sério.</p>
+        <ul class="plano-features">
+          <li><span class="check">✓</span> Todas as matrizes individuais</li>
+          <li><span class="check">✓</span> Gráficos de radar (DISC/SOAR)</li>
+          <li><span class="check">✓</span> Download em PDF</li>
+          <li><span class="check">✓</span> Histórico completo</li>
+          <li><span class="check">✓</span> Comparação de evolução</li>
+        </ul>
+        <button class="plano-btn plano-btn-filled" data-modal-open>Assinar Pro</button>
+      </div>
+      <div class="plano-card animate-in">
+        <p class="plano-nome">Empresa</p>
+        <div class="plano-preco">R$149<span>/mês</span></div>
+        <p class="plano-desc">Para líderes que querem desenvolver suas equipes.</p>
+        <ul class="plano-features">
+          <li><span class="check">✓</span> Tudo do Pro</li>
+          <li><span class="check">✓</span> Matrizes de equipe</li>
+          <li><span class="check">✓</span> Gestão de até 20 membros</li>
+          <li><span class="check">✓</span> Relatórios coletivos</li>
+          <li><span class="check">✓</span> Faturamento por CNPJ</li>
+        </ul>
+        <button class="plano-btn plano-btn-outline" data-modal-open>Falar com time</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final-section">
+  <div class="cta-final">
+    <span class="section-label section-label--centered">Comece hoje</span>
+    <h2 class="section-title">Seu sistema de crescimento está esperando</h2>
+    <p>Junte-se às pessoas que já usam matrizes para tomar decisões melhores sobre carreira, equipe e vida.</p>
+    <button class="btn-primary" data-modal-open>Iniciar meu mapeamento</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo">Sistema <span>Gnosis</span></a>
+  <p>© 2025 Sistema Gnosis. Todos os direitos reservados.</p>
+</footer>
+
+<!-- MODAL DE CADASTRO -->
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <button class="modal-close" id="modal-close-btn" aria-label="Fechar modal">×</button>
+
+    <!-- Modal tabs -->
+    <div class="modal-tabs" id="modal-tabs">
+      <button class="modal-tab active" id="tab-signup" type="button">Criar conta</button>
+      <button class="modal-tab" id="tab-login" type="button">Já tenho conta</button>
+    </div>
+
+    <!-- ── CADASTRO ── -->
+    <div id="form-content">
+      <h2 id="modal-title" style="margin-top:0.5rem">Criar sua conta</h2>
+      <p>Comece gratuitamente. Sem cartão de crédito.</p>
+
+      <button class="btn-google" id="signup-google-btn" type="button">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+        Continuar com Google
+      </button>
+
+      <div class="auth-divider"><span>ou</span></div>
+
+      <div class="form-group">
+        <label for="nome">Seu nome</label>
+        <input type="text" id="nome" placeholder="Como prefere ser chamado(a)?" autocomplete="name" />
+      </div>
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" placeholder="seu@email.com" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+      </div>
+      <div class="form-group">
+        <label for="objetivo">Seu objetivo principal</label>
+        <select id="objetivo">
+          <option value="">Selecione...</option>
+          <option value="individual">Autoconhecimento e carreira</option>
+          <option value="lider">Desenvolver minha equipe</option>
+          <option value="empresa">Gestão de múltiplas equipes</option>
+          <option value="outro">Outro</option>
+        </select>
+      </div>
+      <button class="form-submit" id="form-submit-btn" type="button">Criar conta grátis →</button>
+      <p class="form-terms">Ao criar sua conta, você concorda com os Termos de Uso e Política de Privacidade.</p>
+    </div>
+
+    <!-- ── LOGIN ── -->
+    <div id="login-content" style="display:none">
+      <h2 style="margin-top:0.5rem">Acessar minha conta</h2>
+
+      <button class="btn-google" id="login-google-btn" type="button">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+        Continuar com Google
+      </button>
+
+      <div class="auth-divider"><span>ou</span></div>
+
+      <div class="form-group">
+        <label for="login-email">E-mail</label>
+        <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="login-senha">Senha</label>
+        <input type="password" id="login-senha" placeholder="Sua senha" autocomplete="current-password" />
+      </div>
+      <div class="forgot-row">
+        <button class="link-btn" id="forgot-password-btn" type="button">Esqueci minha senha</button>
+      </div>
+      <button class="form-submit" id="login-submit-btn" type="button">Entrar →</button>
+    </div>
+
+    <!-- ── RECUPERAR SENHA ── -->
+    <div id="forgot-content" style="display:none">
+      <h2 style="margin-top:0.5rem">Recuperar senha</h2>
+      <p>Enviaremos um link de redefinição para seu e-mail.</p>
+      <div class="form-group">
+        <label for="forgot-email">E-mail</label>
+        <input type="email" id="forgot-email" placeholder="seu@email.com" autocomplete="email" />
+      </div>
+      <button class="form-submit" id="forgot-submit-btn" type="button">Enviar link →</button>
+      <div style="text-align:center;margin-top:0.75rem">
+        <button class="link-btn" id="back-to-login-btn" type="button">← Voltar ao login</button>
+      </div>
+    </div>
+
+    <!-- ── SUCESSO CADASTRO ── -->
+    <div class="success-msg" id="success-msg" aria-live="polite">
+      <span class="check-big">✓</span>
+      <h3>Conta criada com sucesso!</h3>
+      <p>Redirecionando para seu dashboard…</p>
+    </div>
+
+    <!-- ── CONFIRMAR E-MAIL ── -->
+    <div class="success-msg" id="confirm-email-msg" aria-live="polite" style="display:none">
+      <span class="check-big">✉</span>
+      <h3>Confirme seu e-mail</h3>
+      <p>Enviamos um link de confirmação. Acesse seu e-mail e clique no link para ativar sua conta.</p>
+    </div>
+
+    <!-- ── SUCESSO LOGIN ── -->
+    <div class="success-msg" id="login-success-msg" aria-live="polite" style="display:none">
+      <span class="check-big">✓</span>
+      <h3>Bem-vindo(a) de volta!</h3>
+      <p>Redirecionando para seu dashboard…</p>
+    </div>
+
+    <!-- ── SUCESSO RECUPERAÇÃO ── -->
+    <div class="success-msg" id="forgot-success-msg" aria-live="polite" style="display:none">
+      <span class="check-big">✉</span>
+      <h3>Link enviado!</h3>
+      <p>Verifique sua caixa de entrada e siga as instruções.</p>
+    </div>
+
+    <!-- ── ERRO GERAL ── -->
+    <div id="login-error" style="display:none;color:#e05252;font-size:0.88rem;margin-top:0.75rem;text-align:center;padding:0.6rem;background:rgba(224,82,82,0.1);border-radius:6px;border:1px solid rgba(224,82,82,0.25)"></div>
+  </div>
+</div>
+
+<script>
+  // ── Modal ─────────────────────────────────────────────────────
+  const modal            = document.getElementById('modal');
+  const formContent      = document.getElementById('form-content');
+  const loginContent     = document.getElementById('login-content');
+  const forgotContent    = document.getElementById('forgot-content');
+  const successMsg       = document.getElementById('success-msg');
+  const confirmEmailMsg  = document.getElementById('confirm-email-msg');
+  const loginSuccessMsg  = document.getElementById('login-success-msg');
+  const forgotSuccessMsg = document.getElementById('forgot-success-msg');
+  const loginError       = document.getElementById('login-error');
+
+  const ALL_PANELS = [formContent, loginContent, forgotContent, successMsg, confirmEmailMsg, loginSuccessMsg, forgotSuccessMsg];
+
+  function showPanel(name) {
+    ALL_PANELS.forEach(p => { if (p) p.style.display = 'none'; });
+    loginError.style.display = 'none';
+    const map = {
+      signup:        formContent,
+      login:         loginContent,
+      forgot:        forgotContent,
+      success:       successMsg,
+      confirmEmail:  confirmEmailMsg,
+      loginSuccess:  loginSuccessMsg,
+      forgotSuccess: forgotSuccessMsg,
+    };
+    if (map[name]) map[name].style.display = 'block';
+  }
+
+  function showError(msg) {
+    loginError.textContent = msg;
+    loginError.style.display = 'block';
+  }
+
+  function openModal(tab) {
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    switchModalTab(tab || 'signup');
+    document.getElementById('modal-close-btn').focus();
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => {
+      switchModalTab('signup');
+      clearFieldErrors();
+    }, 300);
+  }
+
+  function switchModalTab(tab) {
+    document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    showPanel(tab);
+  }
+
+  // Modal-tab buttons
+  document.getElementById('tab-signup').addEventListener('click', () => switchModalTab('signup'));
+  document.getElementById('tab-login').addEventListener('click', () => switchModalTab('login'));
+
+  // Delegação: qualquer botão com [data-modal-open] abre o modal
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-modal-open]')) openModal('signup');
+  });
+
+  document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+
+  // ── Tabs da página (Eixo Individual / Equipe) ─────────────────
+  document.querySelector('.tabs').addEventListener('click', (e) => {
+    const btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+  });
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+  }
+
+  function showFieldError(id, msg) {
+    const input = document.getElementById(id);
+    if (!input) return;
+    input.classList.add('input--error');
+    let err = input.parentElement.querySelector('.field-error');
+    if (!err) {
+      err = document.createElement('span');
+      err.className = 'field-error';
+      input.parentElement.appendChild(err);
+    }
+    err.textContent = msg;
+  }
+
+  function clearFieldErrors() {
+    document.querySelectorAll('.field-error').forEach(e => e.remove());
+    ['nome', 'email', 'senha', 'objetivo', 'login-email', 'login-senha', 'forgot-email'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('input--error');
+    });
+  }
+
+  // Persiste dados do usuário no localStorage após auth bem-sucedida
+  function persistUserLocally(userData) {
+    try {
+      const userDataStr = JSON.stringify(userData);
+      capsulaDB.lsSetRaw('capsula_user', userDataStr);
+      let users = [];
+      try { users = capsulaDB.lsGetUsers(); } catch(_) {}
+      const idx = users.findIndex(u => u.email === userData.email);
+      if (idx >= 0) users[idx] = userData; else users.push(userData);
+      capsulaDB.lsSetUsers(users);
+    } catch(e) { console.warn('[auth] localStorage indisponível:', e); }
+  }
+
+  // ── Cadastro ──────────────────────────────────────────────────
+  let isSubmitting = false;
+
+  document.getElementById('form-submit-btn').addEventListener('click', async () => {
+    if (isSubmitting) return;
+    clearFieldErrors();
+    loginError.style.display = 'none';
+
+    const nome     = document.getElementById('nome').value.trim();
+    const email    = document.getElementById('email').value.trim();
+    const senha    = document.getElementById('senha').value;
+    const objetivo = document.getElementById('objetivo').value;
+    let valid = true;
+
+    if (!nome)                     { showFieldError('nome',    'Informe seu nome.');                       valid = false; }
+    else if (nome.length < 2)      { showFieldError('nome',    'Nome muito curto.');                       valid = false; }
+    if (!email)                    { showFieldError('email',   'Informe seu e-mail.');                     valid = false; }
+    else if (!validateEmail(email)){ showFieldError('email',   'E-mail inválido. Ex: voce@dominio.com');   valid = false; }
+    if (!senha)                    { showFieldError('senha',   'Crie uma senha.');                         valid = false; }
+    else if (senha.length < 6)     { showFieldError('senha',   'A senha precisa ter no mínimo 6 caracteres.'); valid = false; }
+    if (!objetivo)                 { showFieldError('objetivo','Selecione um objetivo.');                  valid = false; }
+    if (!valid) return;
+
+    isSubmitting = true;
+    const btn = document.getElementById('form-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Criando conta...';
+
+    try {
+      const { data, session, confirmEmail, error } = await capsulaDB.authSignUp(email, senha, nome, objetivo);
+
+      if (error) {
+        const msgs = {
+          'User already registered': 'Este e-mail já está cadastrado. Faça login.',
+          'Password should be at least 6 characters': 'A senha precisa ter no mínimo 6 caracteres.',
+        };
+        showError(msgs[error.message] || (error.message || 'Erro ao criar conta. Tente novamente.'));
+        return;
+      }
+
+      if (confirmEmail) {
+        // Supabase exige confirmação de e-mail
+        showPanel('confirmEmail');
+        return;
+      }
+
+      // Cadastro e login imediatos
+      if (data) {
+        sessionStorage.setItem('capsula_is_new_user', '1');
+        persistUserLocally(data);
+        showPanel('success');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+      }
+    } catch(e) {
+      console.error('[cadastro]', e);
+      showError('Erro inesperado. Tente novamente.');
+    } finally {
+      isSubmitting = false;
+      btn.disabled = false;
+      btn.textContent = 'Criar conta grátis →';
+    }
+  });
+
+  // ── Login ─────────────────────────────────────────────────────
+  let isLoggingIn = false;
+
+  document.getElementById('login-submit-btn').addEventListener('click', async () => {
+    if (isLoggingIn) return;
+    clearFieldErrors();
+    loginError.style.display = 'none';
+
+    const email = document.getElementById('login-email').value.trim();
+    const senha = document.getElementById('login-senha').value;
+
+    if (!email)                    { showFieldError('login-email', 'Informe seu e-mail.'); return; }
+    if (!validateEmail(email))     { showFieldError('login-email', 'E-mail inválido.');    return; }
+    if (!senha)                    { showFieldError('login-senha', 'Informe sua senha.');  return; }
+
+    isLoggingIn = true;
+    const btn = document.getElementById('login-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Entrando...';
+
+    try {
+      const { data, error } = await capsulaDB.authSignIn(email, senha);
+
+      if (error) {
+        const msgs = {
+          'Invalid login credentials': 'E-mail ou senha incorretos.',
+          'Email not confirmed': 'Confirme seu e-mail antes de fazer login.',
+        };
+        showError(msgs[error.message] || (error.message || 'Erro ao entrar. Verifique suas credenciais.'));
+        return;
+      }
+
+      if (data) {
+        persistUserLocally(data);
+        showPanel('loginSuccess');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+      }
+    } catch(e) {
+      console.error('[login]', e);
+      showError('Erro inesperado. Tente novamente.');
+    } finally {
+      isLoggingIn = false;
+      btn.disabled = false;
+      btn.textContent = 'Entrar →';
+    }
+  });
+
+  // ── Enter submete os formulários ──────────────────────────────
+  document.getElementById('login-senha').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('login-submit-btn').click();
+  });
+  document.getElementById('senha').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('form-submit-btn').click();
+  });
+
+  // ── Google OAuth ──────────────────────────────────────────────
+  async function handleGoogleAuth(btnId) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = true;
+    btn.textContent = 'Redirecionando...';
+    try {
+      const { error } = await capsulaDB.authSignInWithGoogle();
+      if (error) {
+        showError(error.message || 'Erro ao iniciar login com Google.');
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg> Continuar com Google';
+      }
+      // Se sem erro, o browser já redirecionou — não há mais nada a fazer aqui
+    } catch(e) {
+      console.error('[google-auth]', e);
+      showError('Erro ao conectar com Google.');
+      btn.disabled = false;
+    }
+  }
+
+  document.getElementById('signup-google-btn').addEventListener('click', () => handleGoogleAuth('signup-google-btn'));
+  document.getElementById('login-google-btn').addEventListener('click',  () => handleGoogleAuth('login-google-btn'));
+
+  // ── Recuperar senha ───────────────────────────────────────────
+  document.getElementById('forgot-password-btn').addEventListener('click', () => {
+    const email = document.getElementById('login-email').value.trim();
+    showPanel('forgot');
+    if (email) document.getElementById('forgot-email').value = email;
+  });
+
+  document.getElementById('back-to-login-btn').addEventListener('click', () => showPanel('login'));
+
+  document.getElementById('forgot-submit-btn').addEventListener('click', async () => {
+    clearFieldErrors();
+    const email = document.getElementById('forgot-email').value.trim();
+    if (!email)                { showFieldError('forgot-email', 'Informe seu e-mail.'); return; }
+    if (!validateEmail(email)) { showFieldError('forgot-email', 'E-mail inválido.');    return; }
+
+    const btn = document.getElementById('forgot-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    try {
+      const { error } = await capsulaDB.authResetPassword(email);
+      if (error) {
+        showError(error.message || 'Erro ao enviar e-mail. Tente novamente.');
+      } else {
+        showPanel('forgotSuccess');
+      }
+    } catch(e) {
+      showError('Erro inesperado. Tente novamente.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Enviar link →';
+    }
+  });
+
+  // ── Animações de entrada via IntersectionObserver ─────────────
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

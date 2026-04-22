@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
+<head>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Descubra seu perfil comportamental DISC. Dominância, Influência, Estabilidade e Conformidade em dados precisos.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.groq.com;">
+<title>Perfil DISC | Sistema Gnosis</title>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sistemagnosis.com.br/disc.html">
+<meta property="og:title" content="Perfil DISC | Sistema Gnosis">
+<meta property="og:description" content="Descubra seu perfil comportamental DISC. Dominância, Influência, Estabilidade e Conformidade em dados precisos.">
+<link rel="stylesheet" href="css/capsula.css">
+<link rel="canonical" href="https://sistemagnosis.com.br/disc.html">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+<link rel="preload" href="https://fonts.gstatic.com/s/outfit/v11/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC0C4G-EiAou6Y.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
+<!-- Supabase JS (Auth + DB) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+  <script src="js/ui.js" defer></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:#07080C; --bg2:#0D0F16; --surface:#121520; --surface2:#181C28;
+  --border:rgba(255,255,255,0.06); --border2:rgba(255,255,255,0.11);
+  --D:#E8603A; --I:#6C5FE6; --S:#2EC4A0; --C:#1BA8D4;
+  --accent:#6C5FE6; --text:#E8E6F0; --muted:#6B6980; --muted2:#353448;
+  --mono:'Space Mono',monospace; --sans:'Outfit',system-ui,sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── GRID BG ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(124,111,247,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,111,247,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none; z-index: 0;
+}
+
+/* ── ORB ── */
+.orb {
+  position: fixed; border-radius: 50%;
+  filter: blur(90px); pointer-events: none; z-index: 0; opacity: 0.12;
+}
+.orb-1 { width:500px;height:500px;background:#7C6FF7;top:-200px;left:-100px;animation:drift1 14s ease-in-out infinite alternate;}
+.orb-2 { width:300px;height:300px;background:#FF6B35;bottom:-80px;right:-60px;animation:drift2 17s ease-in-out infinite alternate;}
+@keyframes drift1{from{transform:translate(0,0)}to{transform:translate(40px,50px)}}
+@keyframes drift2{from{transform:translate(0,0)}to{transform:translate(-30px,-40px)}}
+
+/* ── PAGES ── */
+.page { display: none; position: relative; z-index: 1; }
+.page.active { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ══════════════════════════════════════
+   INTRO PAGE
+══════════════════════════════════════ */
+.intro-page {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.intro-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(108,95,230,0.1);
+  border: 1px solid rgba(108,95,230,0.25);
+  color: var(--accent);
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 0.4rem 1rem; border-radius: 100px;
+  margin-bottom: 2.5rem;
+  animation: fadeUp 0.6s ease both;
+}
+
+.intro-page h1 {
+  font-family: var(--sans);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  max-width: 700px;
+  margin: 0 auto 1.5rem;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.intro-page h1 em { font-style: normal; color: var(--accent); }
+
+.intro-sub {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 520px;
+  margin: 0 auto 3rem;
+  line-height: 1.7;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+
+.disc-preview {
+  display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 3rem;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.disc-pill {
+  display: flex; align-items: center; gap: 0.6rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.82rem; font-weight: 600;
+}
+.disc-pill .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.intro-meta {
+  display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 3rem;
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+.meta-item { text-align: center; }
+.meta-num {
+  font-family: var(--sans);
+  font-size: 1.5rem; font-weight: 800; color: var(--text);
+  display: block;
+}
+.meta-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+.btn-start {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  background: var(--accent);
+  color: #fff; border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 7px;
+  font-size: 0.95rem; font-weight: 700;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 0 30px rgba(108,95,230,0.35);
+  animation: fadeUp 0.6s 0.5s ease both;
+  letter-spacing: -0.01em;
+}
+.btn-start:hover { box-shadow: 0 0 50px rgba(108,95,230,0.55); transform: translateY(-2px); opacity: 0.9; }
+
+.intro-note {
+  margin-top: 1.5rem;
+  font-size: 0.78rem; color: var(--muted2);
+  animation: fadeUp 0.6s 0.6s ease both;
+}
+
+/* ══════════════════════════════════════
+   QUIZ PAGE
+══════════════════════════════════════ */
+.quiz-page {
+  flex-direction: column;
+  padding: 0;
+}
+
+/* TOP NAV */
+.quiz-nav {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 5%;
+  background: rgba(6,6,8,0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.quiz-logo {
+  font-family: var(--sans);
+  font-size: 1rem; font-weight: 800;
+  color: var(--text); text-decoration: none;
+}
+.quiz-logo span { color: var(--accent); }
+
+.quiz-progress-wrap { flex: 1; max-width: 400px; margin: 0 2rem; }
+.quiz-progress-track {
+  height: 3px; background: var(--border);
+  border-radius: 100px; overflow: hidden;
+}
+.quiz-progress-fill {
+  height: 100%; border-radius: 100px;
+  background: linear-gradient(90deg, var(--accent), var(--C));
+  transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 0 10px rgba(108,95,230,0.5);
+}
+.quiz-counter {
+  font-family: var(--mono);
+  font-size: 0.62rem; color: var(--muted);
+  text-align: center; margin-top: 0.5rem;
+  letter-spacing: 0.08em;
+}
+
+.btn-back {
+  background: transparent; border: 1px solid var(--border2);
+  color: var(--muted); padding: 0.5rem 1rem;
+  border-radius: 6px; font-size: 0.78rem; font-weight: 500;
+  cursor: pointer; font-family: var(--mono); letter-spacing: 0.04em;
+  transition: all 0.2s;
+}
+.btn-back:hover { border-color: var(--accent); color: var(--text); }
+
+/* QUESTION AREA */
+.quiz-body {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  padding: 4rem 5%;
+  min-height: calc(100vh - 80px);
+}
+
+.question-card {
+  max-width: 680px; width: 100%;
+  text-align: center;
+  animation: questionIn 0.4s ease both;
+}
+@keyframes questionIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.q-category {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--q-color, var(--D));
+  margin-bottom: 1.5rem;
+  background: rgba(108,95,230,0.06);
+  border: 1px solid rgba(108,95,230,0.18);
+  padding: 0.3rem 0.85rem; border-radius: 4px;
+}
+.q-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 6px currentColor; }
+
+.question-text {
+  font-family: var(--sans);
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin-bottom: 3.5rem;
+  color: var(--text);
+}
+
+/* SCALE */
+.scale-wrap { margin-bottom: 2rem; }
+
+.scale-labels {
+  display: flex; justify-content: space-between;
+  margin-bottom: 1.25rem;
+  font-size: 0.75rem; color: rgba(255,255,255,0.55); font-weight: 500;
+}
+
+.scale-buttons {
+  display: flex; gap: 0.75rem; justify-content: center; align-items: center;
+}
+
+.scale-btn {
+  border: 2px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.04);
+  border-radius: 50%; cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  flex-shrink: 0;
+}
+/* Tamanhos crescentes — espelho */
+.scale-btn[data-val="1"] { width: 40px; height: 40px; }
+.scale-btn[data-val="2"] { width: 48px; height: 48px; }
+.scale-btn[data-val="3"] { width: 54px; height: 54px; }
+.scale-btn[data-val="4"] { width: 48px; height: 48px; }
+.scale-btn[data-val="5"] { width: 40px; height: 40px; }
+
+.intro-back-link {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.78rem; font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  margin-bottom: 2rem;
+  transition: all 0.2s;
+  font-family: var(--sans);
+}
+.intro-back-link:hover {
+  color: var(--text);
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.04);
+}
+
+.scale-btn::after {
+  content: '';
+  position: absolute; inset: 50%; transform: translate(-50%,-50%);
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transition: all 0.2s;
+}
+
+.scale-btn:hover {
+  border-color: var(--q-color, var(--D));
+  background: rgba(255,107,53,0.06);
+  transform: scale(1.08);
+}
+.scale-btn:hover::after { background: var(--q-color, var(--D)); }
+
+.scale-btn.selected {
+  border-color: var(--q-color, var(--D));
+  background: rgba(255,107,53,0.12);
+  box-shadow: 0 0 20px rgba(255,107,53,0.25);
+}
+.scale-btn.selected::after {
+  background: var(--q-color, var(--D));
+  box-shadow: 0 0 10px var(--q-color, var(--D));
+  inset: unset; width: 50%; height: 50%;
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+}
+
+.scale-hint {
+  font-size: 0.75rem; color: var(--muted);
+  margin-top: 1rem;
+  min-height: 1.2em;
+  transition: all 0.2s;
+}
+
+/* NAV BUTTONS */
+.quiz-actions {
+  display: flex; gap: 1rem; justify-content: center; margin-top: 2.5rem;
+}
+.btn-next {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--q-color, var(--accent));
+  color: #fff; border: none;
+  padding: 0.85rem 2rem; border-radius: 7px;
+  font-size: 0.9rem; font-weight: 700;
+  font-family: var(--sans);
+  cursor: pointer; transition: all 0.25s;
+  box-shadow: 0 0 20px rgba(108,95,230,0.25);
+  opacity: 0.35; pointer-events: none;
+}
+.btn-next.ready { opacity: 1; pointer-events: all; }
+.btn-next.ready:hover { box-shadow: 0 0 35px rgba(108,95,230,0.45); transform: translateY(-1px); }
+
+/* SECTION TRANSITION */
+.section-transition {
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s;
+  flex-direction: column; gap: 1rem; text-align: center;
+}
+.section-transition.show { opacity: 1; pointer-events: all; }
+.transition-icon { font-size: 3rem; }
+.transition-label {
+  font-family: var(--sans);
+  font-size: 1.5rem; font-weight: 800;
+  color: var(--text);
+}
+.transition-sub { font-size: 0.875rem; color: var(--muted); }
+
+/* ══════════════════════════════════════
+   RESULT PAGE
+══════════════════════════════════════ */
+.result-page {
+  align-items: center;
+  padding: 5rem 5%;
+  flex-direction: column;
+}
+
+.result-eyebrow {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 0.75rem;
+  animation: fadeUp 0.5s ease both;
+}
+
+.result-title {
+  font-family: var(--sans);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 800; letter-spacing: -0.03em;
+  text-align: center; margin-bottom: 0.5rem;
+  animation: fadeUp 0.5s 0.1s ease both;
+}
+
+.result-archetype {
+  font-size: 1rem; color: var(--muted);
+  text-align: center; margin-bottom: 3rem;
+  animation: fadeUp 0.5s 0.15s ease both;
+}
+.result-archetype strong { color: var(--text); }
+
+/* DNA CARD */
+.dna-card {
+  width: 100%; max-width: 600px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  position: relative; overflow: hidden;
+  animation: fadeUp 0.5s 0.2s ease both;
+}
+.dna-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--result-gradient, linear-gradient(90deg, var(--accent), var(--C)));
+}
+.dna-card-label {
+  font-family: var(--mono);
+  font-size: 0.6rem; font-weight: 400; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 1.75rem;
+}
+
+/* RADAR SVG */
+.radar-wrap {
+  display: flex; justify-content: center;
+  margin-bottom: 2rem;
+}
+
+/* BARS */
+.disc-bars { display: flex; flex-direction: column; gap: 1rem; }
+.bar-row { display: flex; align-items: center; gap: 1rem; }
+.bar-letter {
+  font-family: var(--sans);
+  font-size: 1rem; font-weight: 800; width: 20px; text-align: center;
+}
+.bar-track {
+  flex: 1; height: 8px; background: rgba(255,255,255,0.06);
+  border-radius: 100px; overflow: hidden;
+}
+.bar-fill {
+  height: 100%; border-radius: 100px;
+  transition: width 1.2s cubic-bezier(0.34,1.56,0.64,1) 0.3s;
+}
+.bar-pct {
+  font-size: 0.82rem; font-weight: 600; width: 40px; text-align: right;
+  color: var(--muted);
+}
+
+/* TRAITS */
+.traits-wrap {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;
+  margin-top: 1.5rem;
+}
+.trait-tag {
+  font-size: 0.75rem; font-weight: 600;
+  padding: 0.3rem 0.8rem; border-radius: 100px;
+  border: 1px solid var(--tag-color);
+  color: var(--tag-color);
+  background: rgba(255,255,255,0.03);
+}
+
+/* PROFILE BLOCKS */
+.profile-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; width: 100%; max-width: 600px;
+  margin-bottom: 2rem;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+  animation: fadeUp 0.5s 0.3s ease both;
+}
+.profile-block {
+  background: var(--surface); padding: 1.5rem;
+}
+.profile-block h4 {
+  font-family: var(--mono);
+  font-size: 0.58rem; font-weight: 400; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+.profile-block p { font-size: 0.82rem; color: var(--text); line-height: 1.65; }
+.profile-block ul { padding-left: 1rem; }
+.profile-block li { font-size: 0.82rem; color: var(--muted); line-height: 1.8; }
+
+/* ACTIONS */
+.result-actions {
+  display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+  animation: fadeUp 0.5s 0.4s ease both;
+}
+.btn-dashboard {
+  background: var(--accent); color: #fff; border: none;
+  padding: 0.85rem 2rem; border-radius: 7px;
+  font-size: 0.9rem; font-weight: 700;
+  font-family: var(--sans); cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 0 20px rgba(108,95,230,0.3);
+  text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.btn-dashboard:hover { box-shadow: 0 0 35px rgba(108,95,230,0.5); transform: translateY(-1px); opacity: 0.9; }
+
+.btn-share {
+  background: transparent; color: var(--text);
+  border: 1px solid var(--border2);
+  padding: 0.85rem 2rem; border-radius: 7px;
+  font-size: 0.9rem; font-weight: 600;
+  font-family: var(--sans); cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-share:hover { border-color: var(--accent); color: var(--accent); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════
+   MOBILE BOTTOM NAV
+══════════════════════════════════════ */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(6,6,8,0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));
+}
+.mobile-bottom-nav ul {
+  display: flex; list-style: none;
+  justify-content: space-around; align-items: center;
+  margin: 0; padding: 0;
+}
+.mobile-bottom-nav li a, .mobile-bottom-nav li button {
+  display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
+  color: var(--muted); text-decoration: none;
+  font-size: 0.6rem; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 0.4rem 1rem;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--sans);
+  transition: color 0.2s;
+}
+.mobile-bottom-nav li a:hover, .mobile-bottom-nav li button:hover { color: var(--text); }
+.mobile-bottom-nav li a.active { color: var(--accent); }
+.mobile-bottom-nav .nav-icon { font-size: 1.2rem; line-height: 1; }
+
+@media (max-width: 1024px) {
+  .mobile-bottom-nav { display: block; }
+  /* Garante que o conteúdo não fique atrás do bottom nav */
+  .page.active { padding-bottom: 70px; }
+  .quiz-body { padding-bottom: 5rem; }
+  .result-page { padding-bottom: 6rem; }
+  /* Profile grid vira 1 coluna em telas pequenas */
+  .profile-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .intro-page { padding: 3rem 1.5rem 2rem; }
+  .disc-preview { gap: 0.5rem; }
+  .disc-pill { font-size: 0.75rem; padding: 0.4rem 0.8rem; }
+  .intro-meta { gap: 1.5rem; }
+  .quiz-progress-wrap { max-width: 180px; margin: 0 0.75rem; }
+  .dna-card { padding: 1.5rem; }
+}
+</style>
+<meta property="og:image" content="https://sistemagnosis.com.br/apple-touch-icon.png">
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- ══════════════════════════════════════
+     ONBOARDING WIZARD (primeiro acesso)
+══════════════════════════════════════ -->
+<div class="onboarding-overlay" id="onboarding-overlay">
+  <div class="onboarding-modal">
+    <!-- Step 1 -->
+    <div class="onboarding-step active" id="ob-step-1">
+      <div class="ob-icon">⬡</div>
+      <h2>Bem-vindo à<br><em>Sistema Gnosis</em></h2>
+      <p>Uma plataforma de autoconhecimento com 8 matrizes comportamentais. Cada avaliação revela um lado diferente de quem você é.</p>
+      <div class="ob-dots">
+        <span class="ob-dot active"></span>
+        <span class="ob-dot"></span>
+        <span class="ob-dot"></span>
+      </div>
+      <button class="ob-btn-next" onclick="obNext(2)">Continuar →</button>
+    </div>
+    <!-- Step 2 -->
+    <div class="onboarding-step" id="ob-step-2">
+      <div class="ob-icon">🧬</div>
+      <h2>Comece pelo<br><em>Perfil DISC</em></h2>
+      <p>O DISC é a porta de entrada ideal. Em ~8 minutos, você descobre como age sob pressão, como decide e como se comunica.</p>
+      <div class="ob-meta">
+        <div class="ob-meta-item"><span>24</span><small>Afirmações</small></div>
+        <div class="ob-meta-item"><span>~8min</span><small>Duração</small></div>
+        <div class="ob-meta-item"><span>4</span><small>Dimensões</small></div>
+      </div>
+      <div class="ob-dots">
+        <span class="ob-dot"></span>
+        <span class="ob-dot active"></span>
+        <span class="ob-dot"></span>
+      </div>
+      <button class="ob-btn-next" onclick="obNext(3)">Próximo →</button>
+    </div>
+    <!-- Step 3 -->
+    <div class="onboarding-step" id="ob-step-3">
+      <div class="ob-icon">📊</div>
+      <h2>Seu progresso<br><em>fica salvo</em></h2>
+      <p>Ao concluir, seu resultado é salvo no seu perfil. Você pode retomar de onde parou e comparar evolução ao longo do tempo.</p>
+      <div class="ob-dots">
+        <span class="ob-dot"></span>
+        <span class="ob-dot"></span>
+        <span class="ob-dot active"></span>
+      </div>
+      <button class="ob-btn-start" onclick="obFinish()">Começar minha jornada →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 1: INTRO
+══════════════════════════════════════ -->
+<div class="page active" id="page-intro">
+  <div class="intro-page">
+
+    <a href="dashboard.html" class="intro-back-link">← Voltar ao Dashboard</a>
+
+    <div class="intro-badge">🧬 DNA Comportamental</div>
+
+    <p class="intro-greeting" id="disc-greeting" style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;display:none;">// avaliação de <span class="js-user-name"></span></p>
+    <h1>Descubra seu<br><em>Perfil DISC</em></h1>
+
+    <p class="intro-sub">
+      24 afirmações. 8 minutos. Resultado imediato.<br>
+      Descubra como você se comporta, decide e se comunica — e use isso a seu favor.
+    </p>
+
+    <div class="disc-preview">
+      <div class="disc-pill">
+        <span class="dot" style="color:var(--D)"></span>
+        <span style="color:var(--D)">D</span> Dominância
+      </div>
+      <div class="disc-pill">
+        <span class="dot" style="color:var(--I)"></span>
+        <span style="color:var(--I)">I</span> Influência
+      </div>
+      <div class="disc-pill">
+        <span class="dot" style="color:var(--S)"></span>
+        <span style="color:var(--S)">S</span> Estabilidade
+      </div>
+      <div class="disc-pill">
+        <span class="dot" style="color:var(--C)"></span>
+        <span style="color:var(--C)">C</span> Conformidade
+      </div>
+    </div>
+
+    <div class="intro-meta">
+      <div class="meta-item">
+        <span class="meta-num">24</span>
+        <span class="meta-label">Afirmações</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-num">~8</span>
+        <span class="meta-label">Minutos</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-num">4</span>
+        <span class="meta-label">Dimensões</span>
+      </div>
+    </div>
+
+    <button class="btn-start" onclick="startQuiz()">
+      Iniciar avaliação →
+    </button>
+
+    <p class="intro-note">Sem certo ou errado. Responda com sinceridade e espontaneidade.</p>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 2: QUIZ
+══════════════════════════════════════ -->
+<div class="page" id="page-quiz">
+
+  <nav aria-label="Navegação principal" class="quiz-nav">
+    <a href="disc.html" class="quiz-logo">Sistema <span>Gnosis</span></a>
+    <div class="quiz-progress-wrap">
+      <div class="quiz-progress-track">
+        <div class="quiz-progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <div class="quiz-counter" id="q-counter">1 de 24</div>
+    </div>
+    <button class="btn-back" onclick="goBack()">← Voltar</button>
+  </nav>
+
+  <div class="quiz-body">
+    <div class="question-card" id="question-card">
+      <!-- injetado por JS -->
+    </div>
+  </div>
+
+</div>
+
+<!-- TRANSITION OVERLAY -->
+<div class="section-transition" id="section-transition">
+  <div class="transition-icon" id="t-icon">🎯</div>
+  <div class="transition-label" id="t-label">Dimensão: Influência</div>
+  <div class="transition-sub" id="t-sub">Como você se conecta e energiza as pessoas</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 3: RESULTADO
+══════════════════════════════════════ -->
+<div class="page" id="page-result">
+
+  <!-- Nav de retorno — FIX CRÍTICO 2 -->
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);">
+    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;transition:all 0.2s;" onmouseover="this.style.color='var(--text)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border2)'">← Dashboard</a>
+    <span style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);">// resultado · disc</span>
+    <button onclick="generatePDF()" style="font-family:var(--mono);font-size:0.7rem;background:transparent;color:var(--muted);border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='var(--text)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border2)'">↓ PDF</button>
+  </nav>
+
+  <div class="result-page">
+
+    <div class="result-eyebrow">Seu DNA Comportamental</div>
+    <div class="result-title" id="result-title">—</div>
+    <div class="result-archetype" id="result-archetype">—</div>
+
+    <div class="dna-card" id="dna-card">
+      <div class="dna-card-label">📊 Mapa de Dimensões</div>
+
+      <div class="disc-bars" id="disc-bars"></div>
+
+      <div class="traits-wrap" id="traits-wrap"></div>
+    </div>
+
+    <div class="profile-grid" id="profile-grid">
+      <!-- injetado por JS -->
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-dashboard" onclick="window.location.href='dashboard.html'">
+        Ver meu Dashboard →
+      </button>
+      <button class="btn-share" onclick="generatePDF()" style="background:var(--surface);border:1px solid var(--border2);color:var(--text);">
+        ↓ Baixar PDF
+      </button>
+      <button class="btn-share" onclick="shareResult()">
+        ↗ Compartilhar
+      </button>
+    </div>
+    <div id="sync-status" style="font-family:var(--mono,monospace);font-size:0.6rem;letter-spacing:0.08em;color:var(--muted,#666);text-align:center;margin-top:0.75rem;min-height:1rem;transition:opacity 0.3s;opacity:0;"></div>
+
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+  <ul>
+    <li>
+      <a href="dashboard.html" class="nav-icon-link">
+        <span class="nav-icon">🏠</span>
+        <span>Início</span>
+      </a>
+    </li>
+    <li>
+      <a href="disc.html" class="nav-icon-link active">
+        <span class="nav-icon">🧬</span>
+        <span>DISC</span>
+      </a>
+    </li>
+    <li>
+      <a href="dashboard.html#matrizes" class="nav-icon-link">
+        <span class="nav-icon">📊</span>
+        <span>Matrizes</span>
+      </a>
+    </li>
+    <li>
+      <a href="dashboard.html#perfil" class="nav-icon-link">
+        <span class="nav-icon">👤</span>
+        <span>Perfil</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<script>
+// ══════════════════════════════════════
+// BANCO DE QUESTÕES
+// 6 por dimensão (D, I, S, C) = 24 total
+// score: dimensão que a pergunta mede
+// reverse: se true, 5 pontos = baixa pontuação nessa dim
+// ══════════════════════════════════════
+const QUESTIONS = [
+  // ── DOMINÂNCIA (D) ──
+  {
+    dim: 'D', section: 'D',
+    text: 'Em situações de pressão, prefiro ser quem toma as decisões finais.',
+    color: 'var(--D)', colorHex: '#E8603A', label: 'Dominância',
+  },
+  {
+    dim: 'D', section: 'D',
+    text: 'Obstáculos me energizam — quanto maior o desafio, mais motivado(a) fico.',
+    color: 'var(--D)', colorHex: '#E8603A', label: 'Dominância',
+  },
+  {
+    dim: 'D', section: 'D',
+    text: 'Prefiro agir rápido e corrigir depois a ficar esperando todas as informações.',
+    color: 'var(--D)', colorHex: '#E8603A', label: 'Dominância',
+  },
+  {
+    dim: 'D', section: 'D',
+    text: 'Não tenho dificuldade em confrontar pessoas quando discordo de algo.',
+    color: 'var(--D)', colorHex: '#E8603A', label: 'Dominância',
+  },
+  {
+    dim: 'D', section: 'D',
+    text: 'Resultados e metas concretas importam mais para mim do que o processo.',
+    color: 'var(--D)', colorHex: '#E8603A', label: 'Dominância',
+  },
+  {
+    dim: 'D', section: 'D',
+    text: 'Prefiro liderar projetos do que participar como membro de uma equipe.',
+    color: 'var(--D)', colorHex: '#E8603A', label: 'Dominância',
+  },
+
+  // ── INFLUÊNCIA (I) ──
+  {
+    dim: 'I', section: 'I',
+    text: 'Ambientes sociais me energizam — quanto mais gente, melhor me sinto.',
+    color: 'var(--I)', colorHex: '#6C5FE6', label: 'Influência',
+  },
+  {
+    dim: 'I', section: 'I',
+    text: 'Tenho facilidade para convencer e entusiasmar as pessoas com minhas ideias.',
+    color: 'var(--I)', colorHex: '#6C5FE6', label: 'Influência',
+  },
+  {
+    dim: 'I', section: 'I',
+    text: 'Costumo ser o ponto de conexão do meu grupo — as pessoas me procuram para conversar.',
+    color: 'var(--I)', colorHex: '#6C5FE6', label: 'Influência',
+  },
+  {
+    dim: 'I', section: 'I',
+    text: 'Sinto-me confortável em falar em público ou apresentar ideias para grupos.',
+    color: 'var(--I)', colorHex: '#6C5FE6', label: 'Influência',
+  },
+  {
+    dim: 'I', section: 'I',
+    text: 'Prefiro criar o clima positivo do time a ficar focado(a) apenas nas tarefas.',
+    color: 'var(--I)', colorHex: '#6C5FE6', label: 'Influência',
+  },
+  {
+    dim: 'I', section: 'I',
+    text: 'Fico desconfortável quando o ambiente é tenso ou silencioso por muito tempo.',
+    color: 'var(--I)', colorHex: '#6C5FE6', label: 'Influência',
+  },
+
+  // ── ESTABILIDADE (S) ──
+  {
+    dim: 'S', section: 'S',
+    text: 'Prefiro rotinas e processos claros a ambientes de constante mudança.',
+    color: 'var(--S)', colorHex: '#2EC4A0', label: 'Estabilidade',
+  },
+  {
+    dim: 'S', section: 'S',
+    text: 'Para mim, a harmonia e o bem-estar do grupo valem mais do que vencer um debate.',
+    color: 'var(--S)', colorHex: '#2EC4A0', label: 'Estabilidade',
+  },
+  {
+    dim: 'S', section: 'S',
+    text: 'As pessoas ao meu redor me descrevem como alguém calmo(a) e confiável.',
+    color: 'var(--S)', colorHex: '#2EC4A0', label: 'Estabilidade',
+  },
+  {
+    dim: 'S', section: 'S',
+    text: 'Quando começo algo, tenho forte tendência a levar até o fim, mesmo que demore.',
+    color: 'var(--S)', colorHex: '#2EC4A0', label: 'Estabilidade',
+  },
+  {
+    dim: 'S', section: 'S',
+    text: 'Mudanças inesperadas me tiram do eixo — prefiro planejar com antecedência.',
+    color: 'var(--S)', colorHex: '#2EC4A0', label: 'Estabilidade',
+  },
+  {
+    dim: 'S', section: 'S',
+    text: 'Sou o tipo de pessoa que escuta os outros com atenção antes de dar minha opinião.',
+    color: 'var(--S)', colorHex: '#2EC4A0', label: 'Estabilidade',
+  },
+
+  // ── CONFORMIDADE (C) ──
+  {
+    dim: 'C', section: 'C',
+    text: 'Antes de agir, prefiro reunir o máximo de informações e analisar os dados disponíveis.',
+    color: 'var(--C)', colorHex: '#1BA8D4', label: 'Conformidade',
+  },
+  {
+    dim: 'C', section: 'C',
+    text: 'Erros e imprecisões me incomodam — gosto de entregar trabalhos impecáveis.',
+    color: 'var(--C)', colorHex: '#1BA8D4', label: 'Conformidade',
+  },
+  {
+    dim: 'C', section: 'C',
+    text: 'Sigo regras e procedimentos com rigor, mesmo quando poderiam ser ignorados.',
+    color: 'var(--C)', colorHex: '#1BA8D4', label: 'Conformidade',
+  },
+  {
+    dim: 'C', section: 'C',
+    text: 'Tenho dificuldade em tomar decisões importantes sem dados suficientes.',
+    color: 'var(--C)', colorHex: '#1BA8D4', label: 'Conformidade',
+  },
+  {
+    dim: 'C', section: 'C',
+    text: 'Costumo questionar ideias e propostas antes de aceitar — preciso entender o porquê.',
+    color: 'var(--C)', colorHex: '#1BA8D4', label: 'Conformidade',
+  },
+  {
+    dim: 'C', section: 'C',
+    text: 'Prefiro qualidade a velocidade — faço menos, mas faço direito.',
+    color: 'var(--C)', colorHex: '#1BA8D4', label: 'Conformidade',
+  },
+];
+
+const SECTION_TRANSITIONS = {
+  I: { icon: '🌟', label: 'Dimensão: Influência', sub: 'Como você se conecta e energiza as pessoas' },
+  S: { icon: '🌊', label: 'Dimensão: Estabilidade', sub: 'Como você mantém harmonia e constância' },
+  C: { icon: '🔬', label: 'Dimensão: Conformidade', sub: 'Como você processa informação e mantém padrões' },
+};
+
+const SCALE_HINTS = [
+  'Não me descreve de jeito nenhum',
+  'Me descreve muito pouco',
+  'Neutro — tanto faz',
+  'Me descreve bem',
+  'Me descreve perfeitamente',
+];
+
+// ══════════════════════════════════════
+// PERFIS DISC — descrições e traits
+// ══════════════════════════════════════
+const PROFILES = {
+  D: {
+    title: 'O Executor',
+    code: 'Dominância',
+    color: '#E8603A',
+    gradient: 'linear-gradient(90deg, #E8603A, #6C5FE6)',
+    archetype: 'Perfil <strong>Dominante</strong> — orientado a resultados e liderança direta',
+    traits: ['Decidido', 'Competitivo', 'Direto', 'Corajoso', 'Independente', 'Orientado a metas'],
+    strengths: 'Toma decisões rápidas, não tem medo de conflito, é natural em posições de liderança. Enfrenta desafios de frente e persiste até alcançar resultados.',
+    challenges: 'Pode parecer impaciente ou insensível. Tende a atropelar processos e pessoas em prol da velocidade. Precisa desenvolver escuta ativa.',
+    environment: 'Ambientes dinâmicos, com autonomia e metas claras. Detesta burocracia e reuniões improdutivas.',
+    communication: 'Direto ao ponto. Vá sem rodeios, seja objetivo e mostre resultados concretos.',
+  },
+  I: {
+    title: 'O Catalisador',
+    code: 'Influência',
+    color: '#6C5FE6',
+    gradient: 'linear-gradient(90deg, #6C5FE6, #1BA8D4)',
+    archetype: 'Perfil <strong>Influente</strong> — conectado, entusiasmado e persuasivo',
+    traits: ['Comunicativo', 'Entusiasmado', 'Persuasivo', 'Criativo', 'Otimista', 'Social'],
+    strengths: 'Inspira e motiva os outros naturalmente. Cria conexões rapidamente, tem facilidade para vender ideias e construir relacionamentos.',
+    challenges: 'Pode ser desorganizado, impulsivo e prometer mais do que entrega. Tende a evitar conversas difíceis e conflitos.',
+    environment: 'Ambientes colaborativos, criativos e com liberdade de expressão. Precisa de reconhecimento e interação constante.',
+    communication: 'Use entusiasmo, conte histórias. Fale sobre impacto nas pessoas, não apenas nos números.',
+  },
+  S: {
+    title: 'O Guardião',
+    code: 'Estabilidade',
+    color: '#2EC4A0',
+    gradient: 'linear-gradient(90deg, #2EC4A0, #1BA8D4)',
+    archetype: 'Perfil <strong>Estável</strong> — confiável, paciente e orientado ao grupo',
+    traits: ['Leal', 'Paciente', 'Confiável', 'Empático', 'Consistente', 'Colaborativo'],
+    strengths: 'É o pilar da equipe. Mantém a calma sob pressão, é leal e cumpre o que promete. Excelente mediador e ouvinte.',
+    challenges: 'Tem dificuldade com mudanças rápidas e pode ser excessivamente resistente a inovações. Tende a evitar conflitos ao custo de seu próprio bem-estar.',
+    environment: 'Ambientes estáveis, com clareza de expectativas, bom relacionamento e sentido de pertencimento.',
+    communication: 'Seja gentil e paciente. Explique o impacto nas pessoas, não apenas na tarefa. Dê tempo para processar.',
+  },
+  C: {
+    title: 'O Analista',
+    code: 'Conformidade',
+    color: '#1BA8D4',
+    gradient: 'linear-gradient(90deg, #1BA8D4, #6C5FE6)',
+    archetype: 'Perfil <strong>Conformista</strong> — analítico, preciso e orientado à qualidade',
+    traits: ['Analítico', 'Preciso', 'Lógico', 'Organizado', 'Criterioso', 'Detalhista'],
+    strengths: 'Entrega trabalhos de alta qualidade, identifica erros que outros ignoram, fundamenta decisões em dados. Excelente em planejamento e processos.',
+    challenges: 'Pode travar por excesso de análise (paralisia por análise). Tende a ser perfeccionista ao ponto de perder prazos e pode parecer frio ou distante.',
+    environment: 'Ambientes com processos claros, autonomia para aprofundar e padrões de qualidade bem definidos.',
+    communication: 'Use dados, lógica e evidências. Seja preciso e estruturado. Evite generalizações.',
+  },
+};
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let currentQ   = 0;
+let answers    = new Array(QUESTIONS.length).fill(null);
+let scores     = { D: 0, I: 0, S: 0, C: 0 };
+let _isLoadingExisting = false; // true quando carregando resultado já salvo
+
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function startQuiz() {
+  currentQ = 0;
+  answers  = new Array(QUESTIONS.length).fill(null);
+  showPage('page-quiz');
+  renderQuestion(0);
+}
+
+function goBack() {
+  if (currentQ === 0) {
+    showPage('page-intro');
+  } else {
+    currentQ--;
+    renderQuestion(currentQ);
+  }
+}
+
+// ══════════════════════════════════════
+// RENDER QUESTION
+// ══════════════════════════════════════
+function renderQuestion(idx) {
+  const q   = QUESTIONS[idx];
+  const pct = Math.round((idx / QUESTIONS.length) * 100);
+
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('q-counter').textContent = `${idx + 1} de ${QUESTIONS.length}`;
+
+  const card = document.getElementById('question-card');
+  card.style.animation = 'none';
+  card.offsetHeight; // reflow
+  card.style.animation = '';
+
+  const selected = answers[idx];
+
+  card.innerHTML = `
+    <div class="q-category" style="--q-color:${q.color}; background:${q.colorHex}18; border-color:${q.colorHex}40;">
+      <span class="q-dot" style="background:${q.color};box-shadow:0 0 6px ${q.color}"></span>
+      ${q.label}
+    </div>
+    <div class="question-text">${q.text}</div>
+    <div class="scale-wrap">
+      <div class="scale-labels">
+        <span>Não me descreve</span>
+        <span>Me descreve muito</span>
+      </div>
+      <div class="scale-buttons" style="--q-color:${q.color}">
+        ${[1,2,3,4,5].map(v => `
+          <button
+            class="scale-btn ${selected === v ? 'selected' : ''}"
+            data-val="${v}"
+            style="--q-color:${q.color}"
+            onclick="selectAnswer(${idx}, ${v})"
+            title="${SCALE_HINTS[v-1]}"
+          ></button>
+        `).join('')}
+      </div>
+      <div class="scale-hint" id="scale-hint">
+        ${selected ? SCALE_HINTS[selected - 1] : 'Selecione uma opção para continuar'}
+      </div>
+    </div>
+    <div class="quiz-actions">
+      <button
+        class="btn-next ${selected !== null ? 'ready' : ''}"
+        style="background:${q.color}; box-shadow:0 0 20px ${q.colorHex}40"
+        id="btn-next"
+        onclick="nextQuestion()"
+      >
+        ${idx === QUESTIONS.length - 1 ? 'Ver meu resultado →' : 'Próxima →'}
+      </button>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════
+// SELECT ANSWER
+// ══════════════════════════════════════
+function selectAnswer(idx, val) {
+  answers[idx] = val;
+
+  // Update visual
+  document.querySelectorAll('.scale-btn').forEach(btn => btn.classList.remove('selected'));
+  document.querySelector(`.scale-btn[data-val="${val}"]`).classList.add('selected');
+  document.getElementById('scale-hint').textContent = SCALE_HINTS[val - 1];
+
+  // Enable next
+  const btn = document.getElementById('btn-next');
+  if (btn) btn.classList.add('ready');
+
+  // Auto-advance after 600ms
+  clearTimeout(window._autoAdvance);
+  window._autoAdvance = setTimeout(() => nextQuestion(), 650);
+}
+
+// ══════════════════════════════════════
+// NEXT QUESTION
+// ══════════════════════════════════════
+function nextQuestion() {
+  if (answers[currentQ] === null) return;
+
+  // Check se muda de seção — mostrar transição
+  const currSection = QUESTIONS[currentQ].section;
+  const nextSection = currentQ + 1 < QUESTIONS.length ? QUESTIONS[currentQ + 1].section : null;
+
+  currentQ++;
+
+  if (currentQ >= QUESTIONS.length) {
+    calculateResults();
+    return;
+  }
+
+  if (nextSection && nextSection !== currSection && SECTION_TRANSITIONS[nextSection]) {
+    showSectionTransition(nextSection, () => renderQuestion(currentQ));
+  } else {
+    renderQuestion(currentQ);
+  }
+}
+
+// ══════════════════════════════════════
+// SECTION TRANSITION
+// ══════════════════════════════════════
+function showSectionTransition(section, callback) {
+  const t = SECTION_TRANSITIONS[section];
+  const el = document.getElementById('section-transition');
+  document.getElementById('t-icon').textContent  = t.icon;
+  document.getElementById('t-label').textContent = t.label;
+  document.getElementById('t-sub').textContent   = t.sub;
+  el.classList.add('show');
+  setTimeout(() => {
+    el.classList.remove('show');
+    callback();
+  }, 1800);
+}
+
+// ══════════════════════════════════════
+// CALCULATE RESULTS
+// ══════════════════════════════════════
+function calculateResults() {
+  scores = { D: 0, I: 0, S: 0, C: 0 };
+
+  QUESTIONS.forEach((q, i) => {
+    const val = answers[i] || 3;
+    scores[q.dim] += val;
+  });
+
+  // Normaliza para 0-100
+  const maxPossible = 6 * 5; // 6 perguntas * 5 pontos max
+  Object.keys(scores).forEach(k => {
+    scores[k] = Math.round((scores[k] / maxPossible) * 100);
+  });
+
+  showResult();
+}
+
+// ══════════════════════════════════════
+// SHOW RESULT
+// ══════════════════════════════════════
+async function showResult() {
+  showPage('page-result');
+
+  // Dominant dim
+  const dominant = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+  const profile  = PROFILES[dominant];
+
+  // Title
+  document.getElementById('result-title').textContent    = profile.title;
+  document.getElementById('result-archetype').innerHTML  = profile.archetype;
+
+  // Card gradient
+  document.getElementById('dna-card').style.setProperty('--result-gradient', profile.gradient);
+
+  // BARS
+  const barsEl = document.getElementById('disc-bars');
+  const order  = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+  barsEl.innerHTML = order.map(([dim, pct]) => `
+    <div class="bar-row">
+      <span class="bar-letter" style="color:${PROFILES[dim].color}">${dim}</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:0%; background:${PROFILES[dim].color}; box-shadow:0 0 8px ${PROFILES[dim].color};" data-pct="${pct}"></div>
+      </div>
+      <span class="bar-pct">${pct}%</span>
+    </div>
+  `).join('');
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }, 100);
+
+  // TRAITS
+  const traitsEl = document.getElementById('traits-wrap');
+  traitsEl.innerHTML = profile.traits.map(t => `
+    <span class="trait-tag" style="--tag-color:${profile.color}">${t}</span>
+  `).join('');
+
+  // PROFILE BLOCKS
+  document.getElementById('profile-grid').innerHTML = `
+    <div class="profile-block">
+      <h4>💪 Pontos Fortes</h4>
+      <p>${profile.strengths}</p>
+    </div>
+    <div class="profile-block">
+      <h4>⚡ Pontos de Atenção</h4>
+      <p>${profile.challenges}</p>
+    </div>
+    <div class="profile-block">
+      <h4>🏗️ Ambiente Ideal</h4>
+      <p>${profile.environment}</p>
+    </div>
+    <div class="profile-block">
+      <h4>💬 Como se Comunicar</h4>
+      <p>${profile.communication}</p>
+    </div>
+  `;
+
+  // Salva no localStorage ANTES de sincronizar com Supabase
+  // Fallback para sessionStorage caso o usuário venha direto do cadastro
+  const _rawUser = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || '{}';
+  const userData = JSON.parse(_rawUser);
+  if (!userData.uid) {
+    userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+  }
+  if (!_isLoadingExisting) {
+  userData.disc = { dominant, scores, completedAt: new Date().toISOString() };
+  capsulaDB.lsSetUser(userData);
+  try { sessionStorage.setItem('capsula_user', JSON.stringify(userData)); } catch(_) {}
+
+  // ── PERSISTÊNCIA: salva no Supabase com userData já atualizado ──
+  await saveResultToSupabase(userData);
+
+  // ── FIX CRÍTICO 1: Sincroniza resultado no array capsula_users[] ──
+  // Garante que trocar de perfil não apague o resultado
+  try {
+    const perfis = capsulaDB.lsGetUsers();
+    const idx = perfis.findIndex(function(p) { return p.uid === userData.uid; });
+    if (idx >= 0) {
+      perfis[idx].disc = userData.disc;
+      capsulaDB.lsSetUsers(perfis);
+    }
+  } catch(e) { /* silencioso */ }
+  } // end !_isLoadingExisting
+}
+
+// ══════════════════════════════════════
+// SUPABASE AUTH + PERSISTÊNCIA
+// ══════════════════════════════════════
+// #6: Cliente Supabase e helpers de auth centralizados em js/db.js → window.capsulaDB
+// getDB(), getSession(), loginWithMagicLink(), loginWithOAuth() disponíveis via window.capsulaDB
+
+// ── UTILITÁRIO: nome de exibição ──────────────────────────────
+function getNomeExibido(userData) {
+  if (!userData) return 'Usuário';
+  if (userData.apelido && userData.apelido.trim()) return userData.apelido.trim();
+  if (userData.nome && userData.nome.trim()) return userData.nome.trim();
+  return 'Usuário';
+}
+
+// Sincroniza resultado DISC no Supabase via capsulaDB.syncMatrizes
+async function saveResultToSupabase(userData) {
+  try {
+    if (!userData || !userData.email) {
+      console.warn('[Gnosis] Usuário sem e-mail — resultado salvo apenas localmente.');
+      setSyncStatus('Salvo localmente ✓');
+      return;
+    }
+
+    const { error } = await capsulaDB.saveUser(userData);
+
+    if (error && error !== 'offline') {
+      console.error('[Gnosis] Erro ao salvar resultado:', error.message || error);
+      setSyncStatus('Erro ao sincronizar resultado.', true);
+    } else {
+      setSyncStatus('Resultado sincronizado ✓');
+    }
+
+  } catch (err) {
+    if(window.capsulaUI) window.capsulaUI.toast('Erro ao salvar. Tente novamente.','error');
+    console.error('[Gnosis] saveResultToSupabase falhou:', err);
+    setSyncStatus('Erro ao sincronizar resultado.', true);
+  }
+}
+
+function setSyncStatus(msg, isError) {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color   = isError ? 'var(--danger, #e24b4a)' : 'var(--muted, #666)';
+  el.style.opacity = '1';
+  if (!isError) {
+    setTimeout(() => { el.style.opacity = '0'; }, 3000);
+  }
+}
+
+// Verifica autenticação ao carregar e escuta mudanças de sessão
+document.addEventListener('DOMContentLoaded', async () => {
+  const sb = capsulaDB.getDB();
+  if (!sb) return;
+
+  // Listener de auth: atualiza UI se necessário
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN') {
+      console.info('[Gnosis] Sessão iniciada:', session.user.email);
+    }
+    if (event === 'SIGNED_OUT') {
+      localStorage.removeItem('capsula_user');
+    }
+  });
+});
+
+// ══════════════════════════════════════
+// ONBOARDING WIZARD
+// ══════════════════════════════════════
+const OB_KEY = 'capsula_onboarding_done';
+
+function obInit() {
+  const _raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+  const _uid = _raw ? (JSON.parse(_raw).uid || '') : '';
+  const _key = OB_KEY + (_uid ? '_' + _uid : '');
+  const done = localStorage.getItem(_key);
+  if (!done) {
+    document.getElementById('onboarding-overlay').classList.add('show');
+  }
+}
+
+function obNext(step) {
+  document.querySelectorAll('.onboarding-step').forEach(s => s.classList.remove('active'));
+  document.getElementById(`ob-step-${step}`).classList.add('active');
+}
+
+function obFinish() {
+  const _raw2 = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+  const _uid2 = _raw2 ? (JSON.parse(_raw2).uid || '') : '';
+  const _key2 = OB_KEY + (_uid2 ? '_' + _uid2 : '');
+  localStorage.setItem(_key2, '1');
+  document.getElementById('onboarding-overlay').classList.remove('show');
+}
+
+// Inicia onboarding ao carregar a página
+
+// ══════════════════════════════════════
+// INICIALIZAÇÃO DA PÁGINA
+// ══════════════════════════════════════
+function initPage() {
+  const raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+  let userData = null;
+  try { userData = raw ? JSON.parse(raw) : null; } catch(_) {}
+
+  // Guard: sem usuário cadastrado → redireciona para cadastro
+  if (!userData) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // Auto-heal: garante que uid sempre existe
+  if (!userData.uid) {
+    userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+    try { capsulaDB.lsSetUser(userData); } catch(_) {}
+  }
+
+  // Sincroniza localStorage caso só exista em sessionStorage
+  if (!localStorage.getItem('capsula_user') && sessionStorage.getItem('capsula_user')) {
+    capsulaDB.lsSetRaw('capsula_user', sessionStorage.getItem('capsula_user'));
+  }
+
+  // Exibe nome na intro
+  const nome = getNomeExibido(userData);
+  const greeting = document.getElementById('disc-greeting');
+  if (greeting) {
+    greeting.style.display = 'block';
+    const span = greeting.querySelector('.js-user-name');
+    if (span) span.textContent = nome;
+  }
+
+  // Inicia onboarding se necessário
+  obInit();
+}
+
+document.addEventListener('DOMContentLoaded', initPage);
+
+// ══════════════════════════════════════
+// GENERATE PDF — DISC Blueprint v3
+// ══════════════════════════════════════
+function generatePDF() {
+  const dominant    = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+  const profile     = PROFILES[dominant];
+  const ACCENT      = profile.color;
+  const user        = (capsulaDB.lsGetUser() || {});
+  const nome        = getNomeExibido(user);
+  const data        = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
+  const dimNames    = {D:'Dominância',I:'Influência',S:'Estabilidade',C:'Conformidade'};
+  const dimColors   = {D:'#E8603A',I:'#6C5FE6',S:'#2EC4A0',C:'#1BA8D4'};
+  const motivMap    = {D:'Desafio e Autonomia',I:'Reconhecimento Social',S:'Segurança e Lealdade',C:'Precisão e Qualidade'};
+  const focoMap     = {D:'Resultados e Velocidade',I:'Pessoas e Entusiasmo',S:'Ritmo e Harmonia',C:'Dados e Processos'};
+
+  const _gnCss = '*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page{width:794px;min-height:1123px;margin:0 auto;padding:40px 48px;background:#f8fafc;}.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:20px;border-bottom:2px solid #000;margin-bottom:28px;}.brand{display:flex;align-items:center;gap:10px;}.brand-name{font-size:17px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:GNOSIS_ACCENT;font-style:italic;font-weight:300;}.header-meta{font-family:'Space Mono',monospace;font-size:8px;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;text-align:right;line-height:1.9;}.result-box{background:#fafafa;border:1px solid #000;padding:28px 32px;margin-bottom:24px;position:relative;}.result-box-label{position:absolute;top:-10px;left:20px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:8px;padding:2px 10px;text-transform:uppercase;letter-spacing:0.2em;}.result-eyebrow{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:6px;color:GNOSIS_ACCENT;}.result-title{font-family:'Inter',sans-serif;font-size:50px;font-weight:900;text-transform:uppercase;letter-spacing:-0.05em;line-height:1;}.bars-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px;}.bar-item{border:1px solid #e4e4e7;padding:12px;background:#fff;}.bar-item.dim{opacity:0.4;}.bar-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.bar-pct{font-size:22px;font-weight:900;}.bar-track{height:4px;background:#f1f5f9;border-radius:2px;margin-top:6px;overflow:hidden;}.bar-fill{height:100%;border-radius:2px;}.blueprint-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}.blueprint-item{border:1px solid #e4e4e7;padding:14px 16px;background:#fff;}.blueprint-item.full{grid-column:1/-1;}.item-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.item-value{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-style:italic;}.item-text{font-size:11px;line-height:1.75;color:#333;}.rank-item{display:flex;align-items:center;gap:12px;border:1px solid #e4e4e7;padding:11px 15px;margin-bottom:7px;background:#fff;}.rank-item.top{border-color:#000;border-left:3px solid GNOSIS_ACCENT;}.rank-num{font-family:'Space Mono',monospace;font-size:9px;color:#a1a1aa;min-width:22px;}.rank-icon{font-size:18px;}.rank-name{font-size:13px;font-weight:700;flex:1;}.rank-meta{font-size:10px;color:#71717a;margin-top:2px;}.rank-score{font-family:'Space Mono',monospace;font-size:9px;color:#71717a;white-space:nowrap;}.rank-dots{display:flex;gap:3px;}.insight-box{background:#fff;border:1px solid #000;padding:20px 24px;margin-bottom:14px;}.insight-label{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:GNOSIS_ACCENT;margin-bottom:10px;display:flex;align-items:center;gap:8px;}.insight-label::before{content:'';display:inline-block;width:20px;height:2px;background:GNOSIS_ACCENT;border-radius:2px;}.insight-text{font-size:11px;color:#444;line-height:1.8;}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}.chip{font-family:'Space Mono',monospace;font-size:8px;padding:4px 10px;border:1px solid GNOSIS_ACCENT;color:GNOSIS_ACCENT;letter-spacing:0.08em;text-transform:uppercase;}.quad-card{background:#fff;padding:16px 18px;border:1px solid #e4e4e7;overflow:hidden;}.footer{padding-top:14px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:24px;}.footer-left{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}.footer-right{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:#000;}@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;padding:28px 36px;}}'.split('GNOSIS_ACCENT').join(ACCENT);
+
+  const barsHTML = ['D','I','S','C'].map(dim => {
+    const pct = scores[dim] || 0; const col = dimColors[dim]; const isDom = dim === dominant;
+    return `<div class="bar-item${isDom ? '' : ' dim'}"><span class="bar-tag">${dimNames[dim]}</span><div class="bar-pct">${pct}%</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col};"></div></div></div>`;
+  }).join('');
+
+  const attrsHTML = profile.traits.map(t => `<span class="chip">${t}</span>`).join('');
+
+  _imprimirPDF(`<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8"><title>Perfil DISC — ${nome} · Sistema Gnosis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>${_gnCss}</style></head><body><div class="page">
+  <div class="header">
+    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="32" height="32"><path d="M85 50C85 69.33 69.33 85 50 85C30.67 85 15 69.33 15 50C15 30.67 30.67 15 50 15C59.66 15 68.38 18.91 74.72 25.22" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><path d="M85 50H55" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="50" r="4" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
+    <div class="header-meta">Módulo: Perfil DISC<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
+  </div>
+  <div class="result-box">
+    <div class="result-box-label">Resultado_Diagnóstico_DISC</div>
+    <div style="text-align:center;">
+      <div class="result-eyebrow" style="color:${ACCENT};">Perfil_Vetor_${profile.code}</div>
+      <div class="result-title" style="color:${ACCENT};">${profile.title.toUpperCase()}</div>
+      <div class="bars-grid">${barsHTML}</div>
+    </div>
+  </div>
+  <div class="blueprint-grid">
+    <div class="blueprint-item"><span class="item-tag">Foco_Primário</span><div class="item-value">${focoMap[dominant]}</div></div>
+    <div class="blueprint-item"><span class="item-tag">Motivador</span><div class="item-value">${motivMap[dominant]}</div></div>
+    <div class="blueprint-item full"><span class="item-tag">Arquitetura_Comportamental</span><p class="item-text">${profile.strengths}</p></div>
+    <div class="blueprint-item"><span class="item-tag">Pontos_de_Atenção</span><p class="item-text">${profile.challenges}</p></div>
+    <div class="blueprint-item"><span class="item-tag">Ambiente_Ideal</span><p class="item-text">${profile.environment}</p></div>
+    <div class="blueprint-item full"><span class="item-tag">Como_se_Comunicar</span><p class="item-text">${profile.communication}</p></div>
+  </div>
+  <div class="insight-box" style="margin-top:14px;">
+    <div class="insight-label">Matriz_de_Atributos</div>
+    <div class="chips">${attrsHTML}</div>
+  </div>
+  <div class="footer"><span class="footer-left">SISTEMA GNOSIS // ENGENHARIA COMPORTAMENTAL // CONFIDENCIAL</span><span class="footer-right">sistemagnosis.com.br</span></div>
+  </div>
+  <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
+  </body></html>\`);
+}
+
+function _imprimirPDF(html){
+  var old=document.getElementById('_pdf_frame');if(old)old.remove();
+  var iframe=document.createElement('iframe');iframe.id='_pdf_frame';
+  iframe.setAttribute('style','position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;border:none;');
+  document.body.appendChild(iframe);
+  var doc=iframe.contentDocument||iframe.contentWindow.document;
+  doc.open();doc.write(html);doc.close();
+  iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='disc-resultado.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
+}
+// ══════════════════════════════════════
+// SHARE
+// ══════════════════════════════════════
+function shareResult() {
+  const dominant = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+  const profile  = PROFILES[dominant];
+  const text     = `Meu perfil DISC no Sistema Gnosis: ${profile.title} (${profile.code} ${scores[dominant]}%) — Descubra o seu em sistemagnosis.com.br`;
+  if (navigator.share) {
+    navigator.share({ title: 'Meu Perfil DISC', text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => showCopyToast('Resultado copiado! Cole onde quiser.'));
+  }
+}
+
+function showCopyToast(msg) {
+  let t = document.getElementById('_copy-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = '_copy-toast';
+    t.style.cssText = 'position:fixed;bottom:2rem;right:2rem;background:var(--surface2,#1e1e1e);border:1px solid var(--border2,#333);border-radius:8px;padding:0.75rem 1.1rem;font-size:0.82rem;color:var(--text,#fff);z-index:9999;opacity:0;transform:translateY(12px);transition:opacity 0.25s,transform 0.25s;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = '✓  ' + msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateY(0)';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(12px)'; }, 2800);
+}
+</script>
+
+<style>
+/* ══════════════════════════════════════
+   ONBOARDING OVERLAY
+══════════════════════════════════════ */
+.onboarding-overlay {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(6,6,8,0.92);
+  backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s;
+}
+.onboarding-overlay.show { opacity: 1; pointer-events: all; }
+
+.onboarding-modal {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 2.5rem;
+  max-width: 420px; width: 100%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(108,95,230,0.12);
+}
+
+.onboarding-step { display: none; flex-direction: column; align-items: center; }
+.onboarding-step.active { display: flex; animation: fadeUp 0.4s ease both; }
+
+.ob-icon {
+  font-size: 2.5rem; margin-bottom: 1.25rem;
+  filter: drop-shadow(0 0 20px rgba(108,95,230,0.4));
+}
+
+.onboarding-modal h2 {
+  font-family: var(--sans);
+  font-size: 1.5rem; font-weight: 800;
+  letter-spacing: -0.025em; line-height: 1.15;
+  margin-bottom: 0.85rem;
+}
+.onboarding-modal h2 em { font-style: normal; color: var(--accent); }
+.onboarding-modal p {
+  color: var(--muted); font-size: 0.85rem; line-height: 1.7;
+  margin-bottom: 1.75rem;
+}
+
+.ob-meta {
+  display: flex; gap: 1rem; justify-content: center;
+  margin-bottom: 1.75rem;
+}
+.ob-meta-item {
+  display: flex; flex-direction: column; align-items: center;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.65rem 1rem;
+}
+.ob-meta-item span {
+  font-family: var(--mono); font-size: 1.2rem; font-weight: 700;
+  color: var(--accent);
+}
+.ob-meta-item small { font-family: var(--mono); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: 0.2rem; }
+
+.ob-dots { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem; }
+.ob-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--muted2); transition: all 0.3s;
+}
+.ob-dot.active { background: var(--accent); width: 20px; border-radius: 100px; box-shadow: 0 0 8px var(--accent); }
+
+.ob-btn-next, .ob-btn-start {
+  width: 100%; padding: 0.8rem;
+  border: none; border-radius: 7px;
+  font-family: var(--sans); font-size: 0.88rem; font-weight: 700;
+  cursor: pointer; transition: all 0.25s;
+}
+.ob-btn-next {
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--border2);
+}
+.ob-btn-next:hover { border-color: var(--accent); color: var(--accent); }
+
+.ob-btn-start {
+  background: var(--accent); color: #fff;
+  box-shadow: 0 0 30px rgba(108,95,230,0.35);
+}
+.ob-btn-start:hover { box-shadow: 0 0 50px rgba(108,95,230,0.55); transform: translateY(-1px); opacity: 0.9; }
+</style>
+<script>
+(function() {
+  try {
+    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+    if (!raw) return;
+    var u = JSON.parse(raw);
+    if (!u.disc || !u.disc.completedAt || !u.disc.scores) return;
+    scores = u.disc.scores;
+    _isLoadingExisting = true;
+    showResult();
+  } catch(e) { console.warn('[disc redirect]', e); }
+})();
+</script>
+</body>
+</html>

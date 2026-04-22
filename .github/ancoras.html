@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
+<head>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Descubra as 8 âncoras de carreira de Edgar Schein. Identifique o que você não abre mão na vida profissional e o que realmente te move.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.groq.com;">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sistemagnosis.com.br/ancoras.html">
+<meta property="og:title" content="Âncoras de Carreira | Sistema Gnosis">
+<meta property="og:description" content="Descubra as 8 âncoras de carreira de Edgar Schein. Identifique o que você não abre mão na vida profissional e o que realmente te move.">
+<link rel="stylesheet" href="css/capsula.css">
+<link rel="canonical" href="https://sistemagnosis.com.br/ancoras.html">
+<meta name="robots" content="noindex, nofollow">
+<title>Âncoras de Carreira | Sistema Gnosis</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+<link rel="preload" href="https://fonts.gstatic.com/s/outfit/v11/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC0C4G-EiAou6Y.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#07080C;--bg2:#0D0F16;--surface:#121520;--surface2:#181C28;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --accent:#2EC4A0;--text:#E8E6F0;--muted:#6B6980;--muted2:#353448;
+  --mono:'Space Mono',monospace;--sans:'Outfit',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(46,196,160,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(46,196,160,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+.orb-1{width:500px;height:500px;background:#2EC4A0;opacity:0.06;top:-150px;right:-100px;}
+.orb-2{width:350px;height:350px;background:#6C5FE6;opacity:0.05;bottom:-80px;left:-80px;}
+
+.page{display:none;position:relative;z-index:1;}
+.page.active{display:flex;flex-direction:column;min-height:100vh;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── INTRO ── */
+.intro-page{align-items:center;justify-content:center;text-align:center;padding:5rem 2rem;}
+.intro-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(46,196,160,0.1);border:1px solid rgba(46,196,160,0.25);color:var(--accent);font-family:var(--mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.35rem 0.9rem;border-radius:4px;margin-bottom:2rem;animation:fadeUp 0.6s ease both;}
+.intro-page h1{font-size:clamp(2.2rem,5.5vw,4rem);font-weight:800;line-height:1.08;letter-spacing:-0.03em;max-width:680px;margin:0 auto 1.25rem;animation:fadeUp 0.6s 0.1s ease both;}
+.intro-page h1 .accent{color:var(--accent);}
+.intro-sub{color:var(--muted);font-size:0.95rem;max-width:520px;margin:0 auto 2.5rem;line-height:1.75;animation:fadeUp 0.6s 0.2s ease both;}
+.intro-meta{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:0 auto 2.5rem;max-width:360px;animation:fadeUp 0.6s 0.3s ease both;}
+.meta-item{padding:1rem 1.5rem;text-align:center;border-right:1px solid var(--border);background:var(--surface);flex:1;}
+.meta-item:last-child{border-right:none;}
+.meta-val{font-family:var(--mono);font-size:1.2rem;font-weight:700;display:block;letter-spacing:-0.02em;}
+.meta-label{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.2rem;display:block;}
+.btn-start{display:inline-flex;align-items:center;gap:0.5rem;background:var(--accent);color:#fff;border:none;padding:0.9rem 2.25rem;border-radius:7px;font-size:0.9rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all 0.2s;animation:fadeUp 0.6s 0.4s ease both;}
+.btn-start:hover{opacity:0.88;transform:translateY(-2px);}
+.intro-note{margin-top:1.25rem;font-family:var(--mono);font-size:0.62rem;color:var(--muted2);animation:fadeUp 0.6s 0.5s ease both;}
+
+/* ── QUIZ NAV ── */
+.quiz-nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.quiz-logo{font-size:0.9rem;font-weight:700;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:0.4rem;}
+.quiz-logo-mark{width:22px;height:22px;background:#6C5FE6;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#fff;}
+.quiz-logo span{color:var(--accent);}
+.prog-wrap{flex:1;max-width:360px;margin:0 1.5rem;}
+.prog-track{height:3px;background:var(--surface2);border-radius:100px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:100px;background:var(--accent);transition:width 0.5s cubic-bezier(0.34,1.56,0.64,1);}
+.prog-label{font-family:var(--mono);font-size:0.6rem;color:var(--muted);text-align:center;margin-top:0.3rem;}
+.btn-back{background:transparent;border:1px solid var(--border2);color:var(--muted);padding:0.45rem 0.9rem;border-radius:5px;font-family:var(--mono);font-size:0.7rem;cursor:pointer;transition:all 0.2s;}
+.btn-back:hover{border-color:var(--accent);color:var(--text);}
+
+/* ── QUIZ BODY ── */
+.quiz-body{flex:1;display:flex;align-items:center;justify-content:center;padding:4rem 5%;min-height:calc(100vh - 70px);}
+.anchor-card{max-width:680px;width:100%;animation:slideIn 0.35s ease both;}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.anchor-tag{display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(46,196,160,0.3);background:rgba(46,196,160,0.08);padding:0.28rem 0.75rem;border-radius:3px;margin-bottom:1.5rem;}
+.anchor-icon{font-size:2rem;margin-bottom:1rem;display:block;}
+.anchor-name{font-size:clamp(1.5rem,3.5vw,2rem);font-weight:800;letter-spacing:-0.025em;margin-bottom:0.5rem;}
+.anchor-desc{color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:0.75rem;max-width:540px;}
+.anchor-example{font-family:var(--mono);font-size:0.72rem;color:var(--muted2);margin-bottom:2.5rem;}
+
+/* Escala 1-5 */
+.scale-label-row{display:flex;justify-content:space-between;margin-bottom:0.75rem;font-family:var(--mono);font-size:0.62rem;color:var(--muted);}
+.scale-btns{display:flex;gap:0.75rem;align-items:center;justify-content:center;margin-bottom:0.85rem;}
+.scale-btn{
+  border:1.5px solid var(--border2);background:transparent;
+  border-radius:50%;cursor:pointer;transition:all 0.18s;
+  position:relative;flex-shrink:0;
+}
+.scale-btn[data-val="1"]{width:40px;height:40px;}
+.scale-btn[data-val="2"]{width:48px;height:48px;}
+.scale-btn[data-val="3"]{width:54px;height:54px;}
+.scale-btn[data-val="4"]{width:48px;height:48px;}
+.scale-btn[data-val="5"]{width:40px;height:40px;}
+.scale-btn::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:var(--muted2);transition:all 0.18s;}
+.scale-btn:hover{border-color:var(--accent);background:rgba(46,196,160,0.06);}
+.scale-btn:hover::after{background:var(--accent);}
+.scale-btn.selected{border-color:var(--accent);background:rgba(46,196,160,0.1);}
+.scale-btn.selected::after{background:var(--accent);box-shadow:0 0 8px var(--accent);width:45%;height:45%;}
+.scale-hint{font-family:var(--mono);font-size:0.62rem;color:var(--muted2);text-align:center;min-height:1em;transition:all 0.2s;}
+
+.quiz-actions{margin-top:2rem;display:flex;justify-content:center;}
+.btn-next{display:inline-flex;align-items:center;gap:0.4rem;background:var(--accent);color:#fff;border:none;padding:0.8rem 1.75rem;border-radius:7px;font-size:0.9rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all 0.2s;opacity:0.3;pointer-events:none;}
+.btn-next.ready{opacity:1;pointer-events:all;}
+.btn-next.ready:hover{opacity:0.88;transform:translateY(-1px);}
+
+/* ── RESULTADO ── */
+.result-page{align-items:center;padding:5rem 5% 6rem;flex-direction:column;}
+.result-eyebrow{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;animation:fadeUp 0.5s ease both;}
+.result-title{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-0.03em;text-align:center;margin-bottom:0.5rem;animation:fadeUp 0.5s 0.1s ease both;}
+.result-title .accent{color:var(--accent);}
+.result-sub{color:var(--muted);font-size:0.9rem;text-align:center;margin-bottom:2.5rem;animation:fadeUp 0.5s 0.15s ease both;}
+
+.anchors-result{width:100%;max-width:720px;display:flex;flex-direction:column;gap:8px;margin-bottom:2rem;animation:fadeUp 0.5s 0.2s ease both;}
+.anchor-result-row{display:flex;align-items:center;gap:1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;transition:all 0.2s;}
+.anchor-result-row.top-1{border-color:var(--accent);background:rgba(46,196,160,0.08);}
+.anchor-result-row.top-2{border-color:rgba(46,196,160,0.4);}
+.anchor-result-row.top-3{border-color:rgba(46,196,160,0.2);}
+.anchor-rank{font-family:var(--mono);font-size:0.62rem;width:24px;color:var(--muted);flex-shrink:0;}
+.anchor-rank.gold{color:var(--accent);}
+.anchor-result-icon{font-size:1.2rem;flex-shrink:0;}
+.anchor-result-name{font-size:0.9rem;font-weight:700;flex:1;}
+.anchor-result-desc{font-size:0.75rem;color:var(--muted);margin-top:0.1rem;}
+.anchor-score-bar{display:flex;align-items:center;gap:0.5rem;}
+.bar-dots{display:flex;gap:3px;}
+.dot-filled{width:8px;height:8px;border-radius:50%;background:var(--accent);}
+.dot-empty{width:8px;height:8px;border-radius:50%;background:var(--muted2);}
+.score-num{font-family:var(--mono);font-size:0.65rem;color:var(--muted);width:20px;}
+
+/* Insight */
+.insight-box{width:100%;max-width:720px;background:var(--surface2);border:1px solid rgba(46,196,160,0.2);border-radius:10px;padding:1.75rem;margin-bottom:2rem;border-top:2px solid var(--accent);animation:fadeUp 0.5s 0.3s ease both;}
+.insight-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.75rem;display:block;}
+.insight-box p{font-size:0.88rem;color:var(--text);line-height:1.7;}
+
+.result-actions{display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;animation:fadeUp 0.5s 0.4s ease both;}
+.btn-dashboard{background:#6C5FE6;color:#fff;border:none;padding:0.85rem 2rem;border-radius:7px;font-size:0.88rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;}
+.btn-dashboard:hover{opacity:0.88;}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border2);padding:0.85rem 2rem;border-radius:7px;font-size:0.88rem;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all 0.2s;}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+
+@media(max-width:768px){.prog-wrap{max-width:150px;margin:0 0.75rem;}.anchor-score-bar{display:none;}.anchor-result-row{flex-wrap:wrap;}}
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/ui.js" defer></script>
+<meta property="og:image" content="https://sistemagnosis.com.br/apple-touch-icon.png">
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- INTRO -->
+<div class="page active" id="page-intro">
+  <div class="intro-page">
+    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;margin-bottom:2rem;">← Voltar ao Dashboard</a>
+    <div class="intro-badge">⚓ Propósito Profissional</div>
+    <h1>Suas <span class="accent">Âncoras</span><br>de Carreira</h1>
+    <p class="intro-sub">Edgar Schein identificou 8 âncoras que revelam o que você não abre mão na sua vida profissional. Avalie cada uma e descubra o que realmente te move.</p>
+    <div class="intro-meta">
+      <div class="meta-item"><span class="meta-val">08</span><span class="meta-label">Âncoras</span></div>
+      <div class="meta-item"><span class="meta-val">~5</span><span class="meta-label">Minutos</span></div>
+      <div class="meta-item"><span class="meta-val">Escala</span><span class="meta-label">1 a 5</span></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">Iniciar avaliação →</button>
+    <p class="intro-note">// escolha com base em como você realmente é, não como gostaria de ser</p>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="page" id="page-quiz">
+  <nav aria-label="Navegação principal" class="quiz-nav">
+    <a href="dashboard.html" class="quiz-logo"><div class="quiz-logo-mark">G</div>Sistema <span>Gnosis</span></a>
+    <div class="prog-wrap">
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="prog-label" id="prog-label">1 de 8</div>
+    </div>
+    <button class="btn-back" onclick="goBack()">← Voltar</button>
+  </nav>
+  <div class="quiz-body">
+    <div class="anchor-card" id="anchor-card"></div>
+  </div>
+</div>
+
+<!-- RESULTADO -->
+<div class="page" id="page-result">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);">
+    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;">← Dashboard</a>
+    <span style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);">// resultado · âncoras</span>
+    <button onclick="generatePDF()" style="font-family:var(--mono);font-size:0.7rem;background:transparent;color:var(--muted);border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;cursor:pointer;">↓ PDF</button>
+  </nav>
+  <div class="result-page">
+    <div class="result-eyebrow">Âncoras de Carreira</div>
+    <div class="result-title">Seu <span class="accent">Núcleo</span> Profissional</div>
+    <div class="result-sub">As âncoras mais altas revelam o que você não abre mão. As mais baixas mostram o que não é prioridade.</div>
+    <div class="anchors-result" id="anchors-result"></div>
+    <div class="insight-box" id="insight-box"></div>
+    <div class="result-actions">
+      <a href="dashboard.html" class="btn-dashboard">Ver meu Dashboard →</a>
+      <button class="btn-outline" onclick="generatePDF()">↓ Exportar Relatório</button>
+      <button class="btn-outline" onclick="startQuiz()">↺ Refazer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ANCHORS = [
+  {id:'tecnica', icon:'🔬', name:'Competência Técnica', color:'#1BA8D4',
+    desc:'Ser especialista e reconhecido pela excelência no que faz. Prefere profundidade a amplitude.',
+    example:'Ex: engenheiro sênior, médico especialista, designer expert, programador de nicho.',
+    insight:'Você se realiza sendo o melhor na sua área. Evite cargos generalistas que tirem você do seu domínio.'},
+  {id:'gestao', icon:'👥', name:'Competência em Gestão', color:'#E8603A',
+    desc:'Liderar pessoas, integrar esforços e ser responsável por resultados organizacionais.',
+    example:'Ex: diretor, gerente geral, CEO, líder de equipe multidisciplinar.',
+    insight:'Você precisa de autoridade e influência. Busque posições de liderança com visibilidade e impacto.'},
+  {id:'autonomia', icon:'🦅', name:'Autonomia e Independência', color:'#6C5FE6',
+    desc:'Fazer as coisas do seu jeito, no seu tempo, com o mínimo de restrições externas.',
+    example:'Ex: freelancer, consultor independente, empreendedor solo, especialista autônomo.',
+    insight:'Ambientes corporativos rígidos vão te frustrar. Priorize flexibilidade e controle sobre sua agenda.'},
+  {id:'seguranca', icon:'🛡️', name:'Segurança e Estabilidade', color:'#2EC4A0',
+    desc:'Ter emprego seguro, benefícios, previsibilidade e lealdade de longo prazo.',
+    example:'Ex: funcionário público, empresa grande com plano de carreira, multinacional estável.',
+    insight:'Estabilidade é seu combustível. Evite startups de alto risco e ambientes voláteis sem estrutura.'},
+  {id:'empreendedor', icon:'🚀', name:'Criatividade Empreendedora', color:'#E8603A',
+    desc:'Criar algo do zero — produto, empresa, processo — que seja reconhecidamente seu.',
+    example:'Ex: fundador de startup, intraempreendedor, criador de produto, inovador corporativo.',
+    insight:'Você precisa construir. Funções de execução pura sem espaço para criar vão te entediar rapidamente.'},
+  {id:'servico', icon:'🤝', name:'Serviço e Dedicação', color:'#2EC4A0',
+    desc:'Trabalhar por uma causa que vale a pena — impacto social, ambiental ou humano.',
+    example:'Ex: ONGs, saúde, educação, empresas com propósito claro de impacto positivo.',
+    insight:'Seu trabalho precisa ter significado além do financeiro. Salário alto sem propósito te esvaziará.'},
+  {id:'desafio', icon:'⚡', name:'Desafio Puro', color:'#E8603A',
+    desc:'Superar obstáculos impossíveis, competir e vencer problemas extremamente difíceis.',
+    example:'Ex: vendas complexas, turnaround de empresas, consultor de crise, atleta de alta performance.',
+    insight:'Você precisa de problemas difíceis. Rotinas previsíveis drenam sua energia e motivação.'},
+  {id:'estilo', icon:'⚖️', name:'Estilo de Vida Integrado', color:'#1BA8D4',
+    desc:'Integrar carreira, família e interesses pessoais sem sacrificar nenhum pelo outro.',
+    example:'Ex: trabalho remoto, horário flexível, empresa com cultura de bem-estar e life balance.',
+    insight:'Equilíbrio é inegociável para você. Culturas de "sempre disponível" vão comprometer sua saúde.'},
+];
+
+const HINTS = ['Não me representa','Me representa pouco','Neutro','Me representa bem','Me representa muito'];
+let currentA = 0;
+let scores = {};
+let _isLoadingExisting = false;
+
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+
+function startQuiz(){currentA=0;scores={};showPage('page-quiz');renderAnchor(0);}
+
+function goBack(){if(currentA===0)showPage('page-intro');else{currentA--;renderAnchor(currentA);}}
+
+function renderAnchor(idx){
+  const a=ANCHORS[idx];
+  const pct=Math.round((idx/ANCHORS.length)*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-label').textContent=`${idx+1} de ${ANCHORS.length}`;
+  const sel=scores[a.id]||null;
+  const card=document.getElementById('anchor-card');
+  card.style.animation='none';card.offsetHeight;card.style.animation='';
+  card.innerHTML=`
+    <div class="anchor-tag"><span style="background:${a.color};width:6px;height:6px;border-radius:50%;display:inline-block;"></span>${a.name}</div>
+    <span class="anchor-icon">${a.icon}</span>
+    <div class="anchor-name" style="color:${a.color}">${a.name}</div>
+    <div class="anchor-desc">${a.desc}</div>
+    <div class="anchor-example" style="color:${a.color}88">${a.example}</div>
+    <div class="scale-label-row"><span>Não me representa</span><span>Me representa muito</span></div>
+    <div class="scale-btns">
+      ${[1,2,3,4,5].map(v=>`
+        <button class="scale-btn ${sel===v?'selected':''}" data-val="${v}"
+          style="--ac:${a.color}" onclick="selectScore('${a.id}',${v},${idx})"
+          title="${HINTS[v-1]}"></button>
+      `).join('')}
+    </div>
+    <div class="scale-hint" id="scale-hint">${sel?HINTS[sel-1]:'// toque para avaliar'}</div>
+    <div class="quiz-actions">
+      <button class="btn-next ${sel?'ready':''}" id="btn-next" style="background:${a.color}" onclick="nextAnchor()">
+        ${idx===ANCHORS.length-1?'Ver meu resultado →':'Próxima âncora →'}
+      </button>
+    </div>
+  `;
+}
+
+function selectScore(id,val,idx){
+  scores[id]=val;
+  document.querySelectorAll('.scale-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelector(`.scale-btn[data-val="${val}"]`).classList.add('selected');
+  document.getElementById('scale-hint').textContent=HINTS[val-1];
+  document.getElementById('btn-next').classList.add('ready');
+  clearTimeout(window._autoNext);
+  window._autoNext=setTimeout(()=>nextAnchor(),700);
+}
+
+function nextAnchor(){
+  if(!scores[ANCHORS[currentA].id])return;
+  currentA++;
+  if(currentA>=ANCHORS.length)showResult();
+  else renderAnchor(currentA);
+}
+
+function showResult(){
+  showPage('page-result');
+  // Ordena âncoras por score
+  const ranked=[...ANCHORS].map(a=>({...a,score:scores[a.id]||0})).sort((a,b)=>b.score-a.score);
+  const top=ranked[0];
+
+  // Renderiza lista
+  document.getElementById('anchors-result').innerHTML=ranked.map((a,i)=>{
+    const cls=i===0?'top-1':i===1?'top-2':i===2?'top-3':'';
+    const dots=Array.from({length:5},(_,d)=>d<a.score?`<span class="dot-filled" style="background:${a.color}"></span>`:`<span class="dot-empty"></span>`).join('');
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}º`;
+    return `
+      <div class="anchor-result-row ${cls}">
+        <span class="anchor-rank ${i===0?'gold':''}">${medal}</span>
+        <span class="anchor-result-icon">${a.icon}</span>
+        <div style="flex:1;">
+          <div class="anchor-result-name">${a.name}</div>
+          <div class="anchor-result-desc">${a.desc.split('.')[0]}.</div>
+        </div>
+        <div class="anchor-score-bar"><div class="bar-dots">${dots}</div><span class="score-num">${a.score}/5</span></div>
+      </div>`;
+  }).join('');
+
+  // Insight da âncora principal
+  document.getElementById('insight-box').innerHTML=`
+    <span class="insight-label">✦ SUA ÂNCORA PRINCIPAL · ${top.icon} ${top.name.toUpperCase()}</span>
+    <p>${top.insight} <br><br>Âncoras secundárias que também importam para você: <strong>${ranked[1].name}</strong> e <strong>${ranked[2].name}</strong>. Busque ambientes que honrem pelo menos suas 3 âncoras mais altas.</p>
+  `;
+
+  // Salva
+  const u=(capsulaDB.lsGetUser() || {});
+  if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}
+  u.ancoras={scores,topAnchor:top.id,completedAt:new Date().toISOString()};
+  capsulaDB.lsSetUser(u);
+  try{sessionStorage.setItem('capsula_user',JSON.stringify(u));}catch(_){}
+  try{const perfis=capsulaDB.lsGetUsers();const idx=perfis.findIndex(p=>p.uid===u.uid);if(idx>=0){perfis[idx].ancoras=u.ancoras;capsulaDB.lsSetUsers(perfis);}}catch(e){}
+  // Sync Supabase
+  if(window.capsulaDB && u.email){ capsulaDB.saveUser(u).catch(function(e){ console.warn('[ancoras] sync:', e); }); }
+}
+
+// Proteção de rota
+document.addEventListener('DOMContentLoaded',function(){try{const u=(capsulaDB.lsGetUser() || {});if(!u.nome&&!u.apelido&&!u.email&&!(u.ancoras&&u.ancoras.completedAt))window.location.href='index.html';if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}}catch(e){}});
+
+function generatePDF(){
+  const u=(capsulaDB.lsGetUser()||{});
+  const nome=u.apelido||u.nome||'Usuário';
+  const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  const ACCENT='#2EC4A0';
+  const ranked=[...ANCHORS].map(a=>({...a,score:scores[a.id]||0})).sort((a,b)=>b.score-a.score);
+
+  const _gnCss = '*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page{width:794px;min-height:1123px;margin:0 auto;padding:40px 48px;background:#f8fafc;}.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:20px;border-bottom:2px solid #000;margin-bottom:28px;}.brand{display:flex;align-items:center;gap:10px;}.brand-name{font-size:17px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:GNOSIS_ACCENT;font-style:italic;font-weight:300;}.header-meta{font-family:'Space Mono',monospace;font-size:8px;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;text-align:right;line-height:1.9;}.result-box{background:#fafafa;border:1px solid #000;padding:28px 32px;margin-bottom:24px;position:relative;}.result-box-label{position:absolute;top:-10px;left:20px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:8px;padding:2px 10px;text-transform:uppercase;letter-spacing:0.2em;}.result-eyebrow{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:6px;color:GNOSIS_ACCENT;}.result-title{font-family:'Inter',sans-serif;font-size:50px;font-weight:900;text-transform:uppercase;letter-spacing:-0.05em;line-height:1;}.bars-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px;}.bar-item{border:1px solid #e4e4e7;padding:12px;background:#fff;}.bar-item.dim{opacity:0.4;}.bar-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.bar-pct{font-size:22px;font-weight:900;}.bar-track{height:4px;background:#f1f5f9;border-radius:2px;margin-top:6px;overflow:hidden;}.bar-fill{height:100%;border-radius:2px;}.blueprint-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}.blueprint-item{border:1px solid #e4e4e7;padding:14px 16px;background:#fff;}.blueprint-item.full{grid-column:1/-1;}.item-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.item-value{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-style:italic;}.item-text{font-size:11px;line-height:1.75;color:#333;}.rank-item{display:flex;align-items:center;gap:12px;border:1px solid #e4e4e7;padding:11px 15px;margin-bottom:7px;background:#fff;}.rank-item.top{border-color:#000;border-left:3px solid GNOSIS_ACCENT;}.rank-num{font-family:'Space Mono',monospace;font-size:9px;color:#a1a1aa;min-width:22px;}.rank-icon{font-size:18px;}.rank-name{font-size:13px;font-weight:700;flex:1;}.rank-meta{font-size:10px;color:#71717a;margin-top:2px;}.rank-score{font-family:'Space Mono',monospace;font-size:9px;color:#71717a;white-space:nowrap;}.rank-dots{display:flex;gap:3px;}.insight-box{background:#fff;border:1px solid #000;padding:20px 24px;margin-bottom:14px;}.insight-label{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:GNOSIS_ACCENT;margin-bottom:10px;display:flex;align-items:center;gap:8px;}.insight-label::before{content:'';display:inline-block;width:20px;height:2px;background:GNOSIS_ACCENT;border-radius:2px;}.insight-text{font-size:11px;color:#444;line-height:1.8;}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}.chip{font-family:'Space Mono',monospace;font-size:8px;padding:4px 10px;border:1px solid GNOSIS_ACCENT;color:GNOSIS_ACCENT;letter-spacing:0.08em;text-transform:uppercase;}.quad-card{background:#fff;padding:16px 18px;border:1px solid #e4e4e7;overflow:hidden;}.footer{padding-top:14px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:24px;}.footer-left{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}.footer-right{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:#000;}@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;padding:28px 36px;}}'.split('GNOSIS_ACCENT').join(ACCENT);
+
+  const rankHTML=ranked.map((a,i)=>{
+    const isTop=i===0;
+    const dots=Array.from({length:5},(_,d)=>
+      `<span style="width:8px;height:8px;border-radius:50%;background:${d<a.score?a.color:'#e4e4e7'};display:inline-block;"></span>`
+    ).join('');
+    return `<div class="rank-item${isTop?' top':''}">
+      <span class="rank-num">#${i+1}</span>
+      <span class="rank-icon">${a.icon}</span>
+      <div style="flex:1;">
+        <div class="rank-name" style="color:${isTop?a.color:'#000'};">${a.name}</div>
+        <div class="rank-meta">${a.desc.split('.')[0]}.</div>
+      </div>
+      <div class="rank-dots">${dots}</div>
+      <span class="rank-score">${a.score}/5</span>
+    </div>`;
+  }).join('');
+
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8"><title>Âncoras de Carreira — ${nome} · Sistema Gnosis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>${_gnCss}</style></head><body><div class="page">
+  <div class="header">
+    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="32" height="32"><path d="M85 50C85 69.33 69.33 85 50 85C30.67 85 15 69.33 15 50C15 30.67 30.67 15 50 15C59.66 15 68.38 18.91 74.72 25.22" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><path d="M85 50H55" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="50" r="4" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
+    <div class="header-meta">Módulo: Âncoras de Carreira<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
+  </div>
+  <div class="result-box">
+    <div class="result-box-label">Resultado_Diagnóstico_Âncoras</div>
+    <div style="text-align:center;">
+      <div class="result-eyebrow" style="color:${ACCENT};">Perfil_Vetor_Profissional</div>
+      <div class="result-title" style="color:${ACCENT};">${ranked[0].name.toUpperCase()}</div>
+      <div style="margin-top:12px;font-size:12px;color:#71717a;font-family:'Space Mono',monospace;">${ranked.length} dimensões mapeadas</div>
+    </div>
+  </div>
+  <div style="margin-top:8px;">${rankHTML}</div>
+  <div class="insight-box" style="margin-top:16px;">
+    <div class="insight-label">Âncora_Principal · ${ranked[0].icon} ${ranked[0].name.toUpperCase()}</div>
+    <p class="insight-text">${ranked[0].insight}</p>
+  </div>
+  <div class="blueprint-grid">
+    <div class="blueprint-item"><span class="item-tag">2ª Âncora</span><div class="item-value">${ranked[1]?.name || '—'}</div></div>
+    <div class="blueprint-item"><span class="item-tag">3ª Âncora</span><div class="item-value">${ranked[2]?.name || '—'}</div></div>
+  </div>
+  <div class="footer"><span class="footer-left">SISTEMA GNOSIS // ENGENHARIA COMPORTAMENTAL // CONFIDENCIAL</span><span class="footer-right">sistemagnosis.com.br</span></div>
+  </div>
+  <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
+  </body></html>\`);
+  w.document.close();
+}
+
+function _imprimirPDF(html){
+  var old=document.getElementById('_pdf_frame');if(old)old.remove();
+  var iframe=document.createElement('iframe');iframe.id='_pdf_frame';
+  iframe.setAttribute('style','position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;border:none;');
+  document.body.appendChild(iframe);
+  var doc=iframe.contentDocument||iframe.contentWindow.document;
+  doc.open();doc.write(html);doc.close();
+  iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='ancoras-carreira.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
+}
+</script>
+<script>
+(function() {
+  try {
+    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+    if (!raw) return;
+    var u = JSON.parse(raw);
+    if (!u.ancoras || !u.ancoras.completedAt || !u.ancoras.scores) return;
+    scores = u.ancoras.scores;
+    _isLoadingExisting = true;
+    showResult();
+  } catch(e) { console.warn('[ancoras redirect]', e); }
+})();
+</script>
+</body>
+</html>

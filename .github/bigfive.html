@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
+<head>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="O modelo psicométrico mais validado da ciência. Descubra seus 5 traços fundamentais: Abertura, Conscienciosidade, Extroversão, Amabilidade e Neuroticismo.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.groq.com;">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sistemagnosis.com.br/bigfive.html">
+<meta property="og:title" content="Big Five (OCEAN) | Sistema Gnosis">
+<meta property="og:description" content="O modelo psicométrico mais validado da ciência da personalidade. Descubra seus 5 traços fundamentais: Abertura, Conscienciosidade, Extroversão, Amabilidade e Neuroticismo.">
+<link rel="stylesheet" href="css/capsula.css">
+<link rel="canonical" href="https://sistemagnosis.com.br/bigfive.html">
+<meta name="robots" content="noindex, nofollow">
+<title>Big Five (OCEAN) | Sistema Gnosis</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+<link rel="preload" href="https://fonts.gstatic.com/s/outfit/v11/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC0C4G-EiAou6Y.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#07080C;--bg2:#0D0F16;--surface:#121520;--surface2:#181C28;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --accent:#6C5FE6;--text:#E8E6F0;--muted:#6B6980;--muted2:#353448;
+  --mono:'Space Mono',monospace;--sans:'Outfit',system-ui,sans-serif;
+  --O:#E8603A;--C:#6C5FE6;--E:#1BA8D4;--A:#2EC4A0;--N:#9B59B6;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(108,95,230,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,95,230,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+.orb-1{width:500px;height:500px;background:#6C5FE6;opacity:0.07;top:-150px;left:-100px;}
+.orb-2{width:350px;height:350px;background:#E8603A;opacity:0.04;bottom:-80px;right:-80px;}
+
+.page{display:none;position:relative;z-index:1;}
+.page.active{display:flex;flex-direction:column;min-height:100vh;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── INTRO ── */
+.intro-page{align-items:center;justify-content:center;text-align:center;padding:5rem 2rem;}
+.intro-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(108,95,230,0.1);border:1px solid rgba(108,95,230,0.25);color:var(--accent);font-family:var(--mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.35rem 0.9rem;border-radius:4px;margin-bottom:2rem;animation:fadeUp 0.6s ease both;}
+.intro-page h1{font-size:clamp(2.2rem,5.5vw,4rem);font-weight:800;line-height:1.08;letter-spacing:-0.03em;max-width:680px;margin:0 auto 1.25rem;animation:fadeUp 0.6s 0.1s ease both;}
+.intro-page h1 .accent{color:var(--accent);}
+.intro-sub{color:var(--muted);font-size:0.95rem;max-width:520px;margin:0 auto 2.5rem;line-height:1.75;animation:fadeUp 0.6s 0.2s ease both;}
+.intro-meta{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:0 auto 2.5rem;max-width:360px;animation:fadeUp 0.6s 0.3s ease both;}
+.meta-item{padding:1rem 1.5rem;text-align:center;border-right:1px solid var(--border);background:var(--surface);flex:1;}
+.meta-item:last-child{border-right:none;}
+.meta-val{font-family:var(--mono);font-size:1.2rem;font-weight:700;display:block;letter-spacing:-0.02em;}
+.meta-label{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.2rem;display:block;}
+.btn-start{display:inline-flex;align-items:center;gap:0.5rem;background:var(--accent);color:#fff;border:none;padding:0.9rem 2.25rem;border-radius:7px;font-size:0.9rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all 0.2s;animation:fadeUp 0.6s 0.4s ease both;}
+.btn-start:hover{opacity:0.88;transform:translateY(-2px);}
+.intro-note{margin-top:1.25rem;font-family:var(--mono);font-size:0.62rem;color:var(--muted2);animation:fadeUp 0.6s 0.5s ease both;}
+
+/* Dimensões intro */
+.dims-row{display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center;margin-bottom:2.5rem;animation:fadeUp 0.6s 0.25s ease both;}
+.dim-pill{display:flex;align-items:center;gap:0.4rem;padding:0.4rem 0.85rem;border-radius:30px;font-size:0.75rem;font-weight:600;border:1px solid;}
+
+/* ── QUIZ NAV ── */
+.quiz-nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.quiz-logo{font-size:0.9rem;font-weight:700;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:0.4rem;}
+.quiz-logo-mark{width:22px;height:22px;background:#6C5FE6;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#fff;}
+.quiz-logo span{color:var(--accent);}
+.prog-wrap{flex:1;max-width:360px;margin:0 1.5rem;}
+.prog-track{height:3px;background:var(--surface2);border-radius:100px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:100px;background:var(--accent);transition:width 0.5s cubic-bezier(0.34,1.56,0.64,1);}
+.prog-label{font-family:var(--mono);font-size:0.6rem;color:var(--muted);text-align:center;margin-top:0.3rem;}
+.btn-back{background:transparent;border:1px solid var(--border2);color:var(--muted);padding:0.45rem 0.9rem;border-radius:5px;font-family:var(--mono);font-size:0.7rem;cursor:pointer;transition:all 0.2s;}
+.btn-back:hover{border-color:var(--accent);color:var(--text);}
+
+/* ── QUIZ BODY ── */
+.quiz-body{flex:1;display:flex;align-items:center;justify-content:center;padding:4rem 5%;min-height:calc(100vh - 70px);}
+.question-card{max-width:680px;width:100%;animation:slideIn 0.35s ease both;}
+
+.dim-tag{display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;border:1px solid;background:transparent;padding:0.28rem 0.75rem;border-radius:3px;margin-bottom:1.5rem;}
+.question-num{font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-bottom:0.75rem;display:block;}
+.question-text{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:800;letter-spacing:-0.025em;line-height:1.2;margin-bottom:0.6rem;}
+.question-note{font-family:var(--mono);font-size:0.7rem;color:var(--muted2);margin-bottom:2.5rem;}
+.reverse-badge{display:inline-flex;align-items:center;gap:0.3rem;font-family:var(--mono);font-size:0.56rem;letter-spacing:0.08em;text-transform:uppercase;background:rgba(155,89,182,0.1);border:1px solid rgba(155,89,182,0.3);color:#9B59B6;padding:0.2rem 0.55rem;border-radius:3px;margin-left:0.5rem;vertical-align:middle;}
+
+/* Escala Likert */
+.scale-label-row{display:flex;justify-content:space-between;margin-bottom:0.75rem;font-family:var(--mono);font-size:0.62rem;color:var(--muted);}
+.scale-btns{display:flex;gap:0.75rem;align-items:center;justify-content:center;margin-bottom:0.85rem;}
+.scale-btn{border:1.5px solid var(--border2);background:transparent;border-radius:50%;cursor:pointer;transition:all 0.18s;position:relative;flex-shrink:0;}
+.scale-btn[data-val="1"]{width:40px;height:40px;}
+.scale-btn[data-val="2"]{width:46px;height:46px;}
+.scale-btn[data-val="3"]{width:52px;height:52px;}
+.scale-btn[data-val="4"]{width:46px;height:46px;}
+.scale-btn[data-val="5"]{width:40px;height:40px;}
+.scale-btn::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:var(--muted2);transition:all 0.18s;}
+.scale-btn:hover::after{background:var(--q-color,var(--accent));}
+.scale-btn.selected{border-color:var(--q-color,var(--accent));background:rgba(108,95,230,0.08);}
+.scale-btn.selected::after{background:var(--q-color,var(--accent));box-shadow:0 0 8px var(--q-color,var(--accent));width:45%;height:45%;}
+.scale-hint{font-family:var(--mono);font-size:0.62rem;color:var(--muted2);text-align:center;min-height:1em;transition:all 0.2s;}
+
+.quiz-actions{margin-top:2rem;display:flex;justify-content:center;}
+.btn-next{display:inline-flex;align-items:center;gap:0.4rem;background:var(--accent);color:#fff;border:none;padding:0.8rem 1.75rem;border-radius:7px;font-size:0.9rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all 0.2s;opacity:0.3;pointer-events:none;}
+.btn-next.ready{opacity:1;pointer-events:all;}
+.btn-next.ready:hover{opacity:0.88;transform:translateY(-1px);}
+
+/* ── RESULTADO ── */
+.result-page{align-items:center;padding:5rem 5% 6rem;flex-direction:column;}
+.result-eyebrow{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;animation:fadeUp 0.5s ease both;}
+.result-title{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-0.03em;text-align:center;margin-bottom:0.5rem;animation:fadeUp 0.5s 0.1s ease both;}
+.result-title .accent{color:var(--accent);}
+.result-sub{color:var(--muted);font-size:0.9rem;text-align:center;max-width:540px;margin-bottom:3rem;line-height:1.7;animation:fadeUp 0.5s 0.15s ease both;}
+
+/* Gráfico de radar SVG */
+.radar-wrap{width:100%;max-width:520px;margin-bottom:2.5rem;animation:fadeUp 0.5s 0.2s ease both;}
+.radar-wrap svg{width:100%;height:auto;}
+
+/* Cards de dimensão */
+.dims-result{width:100%;max-width:720px;display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;animation:fadeUp 0.5s 0.25s ease both;}
+.dim-result-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.5rem;display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:start;}
+.dim-result-card.highlight{border-color:rgba(108,95,230,0.3);background:rgba(108,95,230,0.05);}
+.dim-icon-wrap{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0;}
+.dim-result-name{font-size:0.9rem;font-weight:700;margin-bottom:0.2rem;}
+.dim-result-label{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.5rem;}
+.dim-result-desc{font-size:0.78rem;color:var(--muted);line-height:1.65;}
+.dim-score-col{text-align:right;min-width:54px;}
+.dim-score-val{font-family:var(--mono);font-size:1.4rem;font-weight:700;display:block;line-height:1;}
+.dim-score-max{font-family:var(--mono);font-size:0.58rem;color:var(--muted);display:block;margin-bottom:0.5rem;}
+.dim-bar-vert{width:4px;height:40px;background:var(--surface2);border-radius:100px;overflow:hidden;margin-left:auto;}
+.dim-bar-fill{width:100%;border-radius:100px;transition:height 1.2s cubic-bezier(0.34,1.56,0.64,1);}
+
+/* Barra horizontal de score */
+.score-bar-row{display:flex;align-items:center;gap:0.6rem;margin-top:0.5rem;}
+.score-bar-track{flex:1;height:3px;background:var(--surface2);border-radius:100px;overflow:hidden;}
+.score-bar-fill{height:100%;border-radius:100px;transition:width 1.2s cubic-bezier(0.34,1.56,0.64,1);}
+.score-pct{font-family:var(--mono);font-size:0.6rem;color:var(--muted);width:32px;text-align:right;}
+
+/* Insight box */
+.insight-box{width:100%;max-width:720px;background:var(--surface2);border:1px solid rgba(108,95,230,0.2);border-radius:10px;padding:1.75rem;margin-bottom:2rem;border-top:2px solid var(--accent);animation:fadeUp 0.5s 0.35s ease both;}
+.insight-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.75rem;display:block;}
+.insight-box p{font-size:0.88rem;color:var(--text);line-height:1.75;}
+
+/* Combinação com DISC */
+.combo-box{width:100%;max-width:720px;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:1.5rem;margin-bottom:2rem;animation:fadeUp 0.5s 0.4s ease both;}
+.combo-label{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;display:block;}
+.combo-content{font-size:0.85rem;color:var(--text);line-height:1.7;}
+.combo-content strong{color:var(--accent);}
+
+.result-actions{display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;animation:fadeUp 0.5s 0.45s ease both;}
+.btn-dashboard{background:#6C5FE6;color:#fff;border:none;padding:0.85rem 2rem;border-radius:7px;font-size:0.88rem;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;}
+.btn-dashboard:hover{opacity:0.88;}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border2);padding:0.85rem 2rem;border-radius:7px;font-size:0.88rem;font-weight:600;font-family:var(--sans);cursor:pointer;transition:all 0.2s;}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+
+@media(max-width:768px){
+  .prog-wrap{max-width:150px;margin:0 0.75rem;}
+  .dim-result-card{grid-template-columns:auto 1fr;grid-template-rows:auto auto;}
+  .dim-score-col{display:none;}
+  .meta-item{padding:0.75rem 1rem;}
+}
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/ui.js" defer></script>
+<meta property="og:image" content="https://sistemagnosis.com.br/apple-touch-icon.png">
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- ══ INTRO ══ -->
+<div class="page active" id="page-intro">
+  <div class="intro-page">
+    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;margin-bottom:2rem;">← Voltar ao Dashboard</a>
+    <div class="intro-badge">🧠 Psicometria Científica</div>
+    <h1>Seus <span class="accent">5 Traços</span><br>de Personalidade</h1>
+    <p class="intro-sub">O Big Five (OCEAN) é o modelo de personalidade mais validado pela psicologia científica. Diferente do DISC — que mede comportamento situacional — o Big Five mede traços estáveis de personalidade.</p>
+    <div class="dims-row">
+      <div class="dim-pill" style="color:var(--O);border-color:rgba(232,96,58,0.35);background:rgba(232,96,58,0.07);">🔭 Abertura</div>
+      <div class="dim-pill" style="color:var(--C);border-color:rgba(108,95,230,0.35);background:rgba(108,95,230,0.07);">📋 Conscienciosidade</div>
+      <div class="dim-pill" style="color:var(--E);border-color:rgba(27,168,212,0.35);background:rgba(27,168,212,0.07);">⚡ Extroversão</div>
+      <div class="dim-pill" style="color:var(--A);border-color:rgba(46,196,160,0.35);background:rgba(46,196,160,0.07);">🤝 Amabilidade</div>
+      <div class="dim-pill" style="color:var(--N);border-color:rgba(155,89,182,0.35);background:rgba(155,89,182,0.07);">🌊 Neuroticismo</div>
+    </div>
+    <div class="intro-meta">
+      <div class="meta-item"><span class="meta-val">44</span><span class="meta-label">Afirmações</span></div>
+      <div class="meta-item"><span class="meta-val">~8</span><span class="meta-label">Minutos</span></div>
+      <div class="meta-item"><span class="meta-val">BFI</span><span class="meta-label">Escala validada</span></div>
+      <div class="meta-item"><span class="meta-val">5</span><span class="meta-label">Dimensões</span></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">Iniciar avaliação →</button>
+    <p class="intro-note">// responda como você realmente é, não como gostaria de ser</p>
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div class="page" id="page-quiz">
+  <nav aria-label="Navegação principal" class="quiz-nav">
+    <a href="dashboard.html" class="quiz-logo"><div class="quiz-logo-mark">G</div>Sistema <span>Gnosis</span></a>
+    <div class="prog-wrap">
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="prog-label" id="prog-label">1 de 44</div>
+    </div>
+    <button class="btn-back" onclick="goBack()">← Voltar</button>
+  </nav>
+  <div class="quiz-body">
+    <div class="question-card" id="question-card"></div>
+  </div>
+</div>
+
+<!-- ══ RESULTADO ══ -->
+<div class="page" id="page-result">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);">
+    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;">← Dashboard</a>
+    <span style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);">// resultado · big five</span>
+    <button onclick="generatePDF()" style="font-family:var(--mono);font-size:0.7rem;background:transparent;color:var(--muted);border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;cursor:pointer;">↓ PDF</button>
+  </nav>
+  <div class="result-page">
+    <div class="result-eyebrow">Big Five — OCEAN</div>
+    <div class="result-title">Seu <span class="accent">Perfil</span> de Personalidade</div>
+    <div class="result-sub" id="result-sub">Baseado no Big Five Inventory (BFI) — o instrumento psicométrico mais replicado da psicologia da personalidade.</div>
+
+    <!-- Radar SVG -->
+    <div class="radar-wrap" id="radar-wrap"></div>
+
+    <!-- Cards de dimensão -->
+    <div class="dims-result" id="dims-result"></div>
+
+    <!-- Insight integrado -->
+    <div class="insight-box" id="insight-box"></div>
+
+    <!-- Cruzamento com DISC (se disponível) -->
+    <div class="combo-box" id="combo-box" style="display:none;"></div>
+
+    <div class="result-actions">
+      <a href="dashboard.html" class="btn-dashboard">Ver meu Dashboard →</a>
+      <button class="btn-outline" onclick="generatePDF()">↓ Exportar Relatório</button>
+      <button class="btn-outline" onclick="startQuiz()">↺ Refazer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// DADOS: BFI — 44 itens validados
+// Fonte: John, O. P., & Srivastava, S. (1999)
+// ══════════════════════════════════════
+
+// Dimensões
+const DIMS = {
+  O: { key:'O', name:'Abertura',           short:'Abertura à Experiência', icon:'🔭', color:'#E8603A',
+       hi:'Criativo, curioso, aberto a novas ideias e experiências. Aprecia arte, imaginação e variedade.',
+       lo:'Prático, convencional e focado no concreto. Prefere rotinas e o que já conhece.' },
+  C: { key:'C', name:'Conscienciosidade',  short:'Conscienciosidade',       icon:'📋', color:'#6C5FE6',
+       hi:'Organizado, disciplinado e orientado a metas. Cumpre prazos e planeja com antecedência.',
+       lo:'Flexível, espontâneo e menos orientado a regras. Pode ter dificuldade com organização.' },
+  E: { key:'E', name:'Extroversão',        short:'Extroversão',             icon:'⚡', color:'#1BA8D4',
+       hi:'Energético, sociável e assertivo. Se revigora no contato com pessoas e ambientes estimulantes.',
+       lo:'Reservado, introspectivo e reflexivo. Prefere ambientes calmos e interações mais profundas.' },
+  A: { key:'A', name:'Amabilidade',        short:'Amabilidade',             icon:'🤝', color:'#2EC4A0',
+       hi:'Cooperativo, empático e confiante nas pessoas. Evita conflitos e valoriza harmonia.',
+       lo:'Direto, competitivo e cético. Prioriza objetivos sobre harmonia social.' },
+  N: { key:'N', name:'Neuroticismo',       short:'Neuroticismo',            icon:'🌊', color:'#9B59B6',
+       hi:'Sensível ao estresse e propenso a emoções negativas como ansiedade ou irritação.',
+       lo:'Emocionalmente estável e resiliente. Lida bem com pressão e raramente se abala.' },
+};
+
+// 44 questões do BFI (John & Srivastava, 1999) — traduzidas e adaptadas
+// reverse:true = item reverso (score = 6 - resposta)
+const QUESTIONS = [
+  // Extroversão (E)
+  {dim:'E', text:'Me considero alguém que é conversador e sociável.',          reverse:false},
+  {dim:'E', text:'Me considero alguém que é reservado.',                        reverse:true },
+  {dim:'E', text:'Me considero alguém que é cheio(a) de energia.',             reverse:false},
+  {dim:'E', text:'Me considero alguém que gera muito entusiasmo.',             reverse:false},
+  {dim:'E', text:'Me considero alguém que tende a ser quieto(a).',             reverse:true },
+  {dim:'E', text:'Me considero alguém que é assertivo(a) e não tem medo de se posicionar.', reverse:false},
+  {dim:'E', text:'Me considero alguém que é às vezes tímido(a) e inibido(a).', reverse:true },
+  {dim:'E', text:'Me considero alguém que prefere deixar os outros tomarem a liderança.', reverse:true},
+
+  // Amabilidade (A)
+  {dim:'A', text:'Me considero alguém que tende a encontrar defeitos nos outros.', reverse:true },
+  {dim:'A', text:'Me considero alguém que é prestativo(a) e não egoísta com os outros.', reverse:false},
+  {dim:'A', text:'Me considero alguém que começa brigas com os outros.',        reverse:true },
+  {dim:'A', text:'Me considero alguém que tem um coração gentil e bondoso.',   reverse:false},
+  {dim:'A', text:'Me considero alguém que às vezes é rude com os outros.',     reverse:true },
+  {dim:'A', text:'Me considero alguém que é cooperativo(a) e trabalha bem com os outros.', reverse:false},
+  {dim:'A', text:'Me considero alguém que pode ser frio(a) e distante.',       reverse:true },
+  {dim:'A', text:'Me considero alguém que considera os sentimentos dos outros.', reverse:false},
+  {dim:'A', text:'Me considero alguém que às vezes é desrespeitoso(a).',       reverse:true },
+
+  // Conscienciosidade (C)
+  {dim:'C', text:'Me considero alguém que faz um trabalho cuidadoso.',         reverse:false},
+  {dim:'C', text:'Me considero alguém que pode ser descuidado(a).',            reverse:true },
+  {dim:'C', text:'Me considero alguém que é um(a) trabalhador(a) confiável.', reverse:false},
+  {dim:'C', text:'Me considero alguém que tende a ser desorganizado(a).',      reverse:true },
+  {dim:'C', text:'Me considero alguém que tende a ser preguiçoso(a).',         reverse:true },
+  {dim:'C', text:'Me considero alguém que persevera até a tarefa estar concluída.', reverse:false},
+  {dim:'C', text:'Me considero alguém que faz planos e os segue.',             reverse:false},
+  {dim:'C', text:'Me considero alguém que se distrai facilmente.',             reverse:true },
+  {dim:'C', text:'Me considero alguém que é eficiente e busca o que precisa ser feito.', reverse:false},
+
+  // Neuroticismo (N)
+  {dim:'N', text:'Me considero alguém que fica deprimido(a) e melancólico(a) com facilidade.', reverse:false},
+  {dim:'N', text:'Me considero alguém que é relaxado(a) e lida bem com o estresse.', reverse:true },
+  {dim:'N', text:'Me considero alguém que pode ser tenso(a).',                 reverse:false},
+  {dim:'N', text:'Me considero alguém que se preocupa muito.',                 reverse:false},
+  {dim:'N', text:'Me considero alguém que é emocionalmente estável e não se abala com facilidade.', reverse:true},
+  {dim:'N', text:'Me considero alguém que pode ficar temperamental.',          reverse:false},
+  {dim:'N', text:'Me considero alguém que permanece calmo(a) em situações tensas.', reverse:true},
+  {dim:'N', text:'Me considero alguém que fica nervoso(a) com facilidade.',   reverse:false},
+
+  // Abertura (O)
+  {dim:'O', text:'Me considero alguém que é original e gera novas ideias.',   reverse:false},
+  {dim:'O', text:'Me considero alguém que é curioso(a) sobre muitas coisas.', reverse:false},
+  {dim:'O', text:'Me considero alguém que é inventivo(a).',                   reverse:false},
+  {dim:'O', text:'Me considero alguém que valoriza experiências artísticas e estéticas.', reverse:false},
+  {dim:'O', text:'Me considero alguém que tem imaginação ativa e vívida.',    reverse:false},
+  {dim:'O', text:'Me considero alguém que é sofisticado(a) em arte, música ou literatura.', reverse:false},
+  {dim:'O', text:'Me considero alguém que prefere trabalhar com rotinas em vez de variações.', reverse:true},
+  {dim:'O', text:'Me considero alguém que gosta de refletir e brincar com ideias.', reverse:false},
+  {dim:'O', text:'Me considero alguém que tem poucos interesses artísticos.',  reverse:true},
+  {dim:'O', text:'Me considero alguém que é engenhoso(a) e pensa profundamente nas coisas.', reverse:false},
+];
+
+const HINTS = ['Discordo totalmente','Discordo','Neutro','Concordo','Concordo totalmente'];
+
+let currentQ = 0;
+let answers = []; // array de 44 posições, valores 1-5
+let _isLoadingExisting = false;
+
+// ── Navegação de páginas
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── Iniciar quiz
+function startQuiz(){
+  currentQ = 0;
+  answers = new Array(44).fill(null);
+  showPage('page-quiz');
+  renderQuestion(0);
+}
+
+function goBack(){
+  if(currentQ === 0) showPage('page-intro');
+  else { currentQ--; renderQuestion(currentQ); }
+}
+
+// ── Renderiza pergunta
+function renderQuestion(idx){
+  const q = QUESTIONS[idx];
+  const dim = DIMS[q.dim];
+  const pct = Math.round((idx / QUESTIONS.length) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = `${idx + 1} de ${QUESTIONS.length}`;
+
+  const sel = answers[idx];
+  const card = document.getElementById('question-card');
+  card.style.animation = 'none'; card.offsetHeight; card.style.animation = '';
+
+  card.innerHTML = `
+    <div class="dim-tag" style="color:${dim.color};border-color:${dim.color}44;background:${dim.color}11;">
+      <span style="background:${dim.color};width:6px;height:6px;border-radius:50%;display:inline-block;"></span>
+      ${dim.short}${q.reverse ? '<span class="reverse-badge">↺ reversa</span>' : ''}
+    </div>
+    <span class="question-num">// pergunta ${idx + 1} de ${QUESTIONS.length}</span>
+    <div class="question-text">${q.text}</div>
+    <div class="scale-label-row"><span>Discordo totalmente</span><span>Concordo totalmente</span></div>
+    <div class="scale-btns">
+      ${[1,2,3,4,5].map(v=>`
+        <button class="scale-btn ${sel===v?'selected':''}" data-val="${v}"
+          style="--q-color:${dim.color};${sel===v?`border-color:${dim.color};background:${dim.color}15;`:''}"
+          onclick="selectAnswer(${idx},${v})"
+          title="${HINTS[v-1]}"></button>
+      `).join('')}
+    </div>
+    <div class="scale-hint" id="scale-hint">${sel ? HINTS[sel-1] : '// toque para avaliar'}</div>
+    <div class="quiz-actions">
+      <button class="btn-next ${sel!==null?'ready':''}" id="btn-next"
+        style="background:${dim.color}"
+        onclick="nextQuestion()">
+        ${idx === QUESTIONS.length - 1 ? 'Ver meu resultado →' : 'Próxima →'}
+      </button>
+    </div>
+  `;
+}
+
+function selectAnswer(idx, val){
+  answers[idx] = val;
+  document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
+  const selBtn = document.querySelector(`.scale-btn[data-val="${val}"]`);
+  const dim = DIMS[QUESTIONS[idx].dim];
+  selBtn.classList.add('selected');
+  selBtn.style.borderColor = dim.color;
+  selBtn.style.background = dim.color + '15';
+  document.getElementById('scale-hint').textContent = HINTS[val - 1];
+  document.getElementById('btn-next').classList.add('ready');
+  clearTimeout(window._autoNext);
+  window._autoNext = setTimeout(() => nextQuestion(), 700);
+}
+
+function nextQuestion(){
+  if(answers[currentQ] === null) return;
+  currentQ++;
+  if(currentQ >= QUESTIONS.length) showResult();
+  else renderQuestion(currentQ);
+}
+
+// ══════════════════════════════════════
+// CÁLCULO DOS SCORES
+// ══════════════════════════════════════
+function calcScores(){
+  const raw = {O:[], C:[], E:[], A:[], N:[]};
+  QUESTIONS.forEach((q, i) => {
+    let val = answers[i] || 3;
+    if(q.reverse) val = 6 - val; // inversão dos itens reversos
+    raw[q.dim].push(val);
+  });
+  // Média por dimensão → percentual (1–5 vira 0–100)
+  const scores = {};
+  Object.keys(raw).forEach(dim => {
+    const mean = raw[dim].reduce((a,b)=>a+b,0) / raw[dim].length;
+    scores[dim] = Math.round(((mean - 1) / 4) * 100);
+  });
+  return scores;
+}
+
+// ══════════════════════════════════════
+// RADAR SVG
+// ══════════════════════════════════════
+function buildRadar(scores){
+  const cx = 200, cy = 200, r = 150;
+  const dims = ['O','C','E','A','N'];
+  const labels = ['Abertura','Conscienciosidade','Extroversão','Amabilidade','Neuroticismo'];
+  const colors = dims.map(d => DIMS[d].color);
+  const n = dims.length;
+
+  function pt(i, pct, radius){
+    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+    const dist = (pct / 100) * radius;
+    return { x: cx + dist * Math.cos(angle), y: cy + dist * Math.sin(angle) };
+  }
+
+  // Grades
+  let gridSvg = '';
+  [20,40,60,80,100].forEach(pct => {
+    const pts = dims.map((_,i) => pt(i, pct, r));
+    gridSvg += `<polygon points="${pts.map(p=>`${p.x},${p.y}`).join(' ')}"
+      fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>`;
+  });
+
+  // Eixos
+  let axesSvg = dims.map((_,i) => {
+    const p = pt(i, 100, r);
+    return `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>`;
+  }).join('');
+
+  // Polígono de dados
+  const dataPts = dims.map((d,i) => pt(i, scores[d], r));
+  const polyPoints = dataPts.map(p=>`${p.x},${p.y}`).join(' ');
+
+  // Gradiente fill
+  let gradSvg = `<defs>
+    <linearGradient id="radarGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6C5FE6" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#1BA8D4" stop-opacity="0.15"/>
+    </linearGradient>
+  </defs>`;
+
+  // Pontos coloridos
+  let dotsSvg = dataPts.map((p, i) => `
+    <circle cx="${p.x}" cy="${p.y}" r="4" fill="#07080C" stroke="${colors[i]}" stroke-width="1.5"/>
+  `).join('');
+
+  // Labels
+  let labelsSvg = dims.map((d, i) => {
+    const p = pt(i, 118, r);
+    const score = scores[d];
+    const anchor = p.x < cx - 5 ? 'end' : p.x > cx + 5 ? 'start' : 'middle';
+    return `
+      <text x="${p.x}" y="${p.y - 6}" text-anchor="${anchor}" font-family="Space Mono,monospace"
+        font-size="9" fill="${colors[i]}" font-weight="700" letter-spacing="0.05em">${labels[i].toUpperCase()}</text>
+      <text x="${p.x}" y="${p.y + 8}" text-anchor="${anchor}" font-family="Space Mono,monospace"
+        font-size="11" fill="${colors[i]}" font-weight="700">${score}%</text>
+    `;
+  }).join('');
+
+  return `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    ${gradSvg}
+    ${gridSvg}
+    ${axesSvg}
+    <polygon points="${polyPoints}" fill="url(#radarGrad)" stroke="#6C5FE6" stroke-width="1.5" stroke-opacity="0.8"/>
+    ${dotsSvg}
+    ${labelsSvg}
+  </svg>`;
+}
+
+// ══════════════════════════════════════
+// INSIGHTS
+// ══════════════════════════════════════
+function getInsight(scores){
+  const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const highest = sorted[0];
+  const lowest = sorted[sorted.length-1];
+  const dimH = DIMS[highest[0]];
+  const dimL = DIMS[lowest[0]];
+
+  let text = `<strong>Seu traço dominante é ${dimH.name} (${highest[1]}%)</strong>. ${dimH.hi}`;
+  text += `<br><br>`;
+  text += `Seu traço menos prevalente é <strong>${dimL.name} (${lowest[1]}%)</strong>. ${dimL.lo}`;
+  text += `<br><br>`;
+
+  // Combos notáveis
+  if(scores.C >= 65 && scores.O >= 65)
+    text += '✦ <em>Alta Conscienciosidade + Alta Abertura</em>: você combina execução disciplinada com pensamento criativo — perfil raro e muito valorizado em funções de liderança e inovação.';
+  else if(scores.E >= 65 && scores.A >= 65)
+    text += '✦ <em>Alta Extroversão + Alta Amabilidade</em>: você tem um perfil naturalmente voltado para pessoas. Ambientes colaborativos e funções de relacionamento tendem a energizar você.';
+  else if(scores.N >= 65 && scores.C >= 65)
+    text += '✦ <em>Alta Conscienciosidade + Alto Neuroticismo</em>: você é perfeccionista e detalhista. Use a organização como ferramenta para gerenciar a ansiedade — listas, rotinas e metas claras são seus aliados.';
+  else if(scores.N <= 35)
+    text += '✦ <em>Baixo Neuroticismo</em>: você tem estabilidade emocional acima da média. É um ativo valioso em ambientes de alta pressão e na gestão de crises.';
+  else if(scores.O >= 70)
+    text += '✦ <em>Abertura muito alta</em>: você pensa fora do convencional com naturalidade. Ambientes que valorizam inovação e diversidade de perspectivas tendem a ser os mais satisfatórios.';
+  else
+    text += '✦ Seu perfil é equilibrado entre as dimensões. Isso indica adaptabilidade — você transita bem entre diferentes contextos e estilos de trabalho.';
+
+  return text;
+}
+
+// Cruzamento com DISC (se o usuário já fez)
+function getDiscCombo(scores){
+  const u = (capsulaDB.lsGetUser() || {});
+  if(!u.disc || !u.disc.dominant) return null;
+  const disc = u.disc.dominant; // D, I, S ou C
+
+  const combos = {
+    D: {
+      label: 'DISC Dominância + Big Five',
+      text: `Seu perfil DISC de <strong>Dominância (D)</strong> combinado com Big Five sugere uma personalidade orientada a resultados. ${
+        scores.C >= 60 ? 'Sua alta Conscienciosidade reforça a orientação a metas — você não só lidera, como executa.' :
+        scores.O >= 60 ? 'Sua abertura à experiência adiciona criatividade à liderança direta — você tem perfil de líder inovador.' :
+        'Atenção ao equilíbrio: dominância alta com amabilidade mais baixa pode gerar fricção em contextos colaborativos.'
+      }`
+    },
+    I: {
+      label: 'DISC Influência + Big Five',
+      text: `Seu perfil DISC de <strong>Influência (I)</strong> combinado com Big Five confirma uma orientação natural para pessoas. ${
+        scores.E >= 60 ? 'Alta Extroversão + Influência = presença marcante e capacidade real de inspirar grupos.' :
+        scores.A >= 60 ? 'Sua Amabilidade reforça o charme interpessoal e gera relações de confiança duradouras.' :
+        'O Big Five revela camadas adicionais além da aparência social — use esse autoconhecimento para liderar com autenticidade.'
+      }`
+    },
+    S: {
+      label: 'DISC Estabilidade + Big Five',
+      text: `Seu perfil DISC de <strong>Estabilidade (S)</strong> combinado com Big Five evidencia consistência e confiabilidade. ${
+        scores.A >= 60 ? 'Alta Amabilidade confirma que você é o "cimento" de equipes — mantém harmonia e coesão.' :
+        scores.C >= 60 ? 'Conscienciosidade + Estabilidade = execução confiável e qualidade acima da média.' :
+        'O Big Five mostra que sua estabilidade tem fundamento em traços de personalidade sólidos, não apenas comportamentais.'
+      }`
+    },
+    C: {
+      label: 'DISC Conformidade + Big Five',
+      text: `Seu perfil DISC de <strong>Conformidade (C)</strong> combinado com Big Five reforça o perfil analítico. ${
+        scores.C >= 60 ? 'Alta Conscienciosidade + Conformidade = rigor técnico e atenção ao detalhe acima da média. Ideal para funções que exigem precisão.' :
+        scores.O >= 60 ? 'Abertura + Conformidade é uma combinação curiosa — você é detalhista, mas também criativo. Perfil forte para P&D e design de sistemas.' :
+        'Atenção para não cair em paralisia por análise: use o perfeccionismo como qualidade, não como bloqueio.'
+      }`
+    }
+  };
+  return combos[disc] || null;
+}
+
+// ══════════════════════════════════════
+// EXIBIÇÃO DO RESULTADO
+// ══════════════════════════════════════
+function showResult(){
+  showPage('page-result');
+  const scores = calcScores();
+
+  // Radar
+  document.getElementById('radar-wrap').innerHTML = buildRadar(scores);
+
+  // Anima as barras após render
+  setTimeout(() => {
+    document.querySelectorAll('.score-bar-fill[data-pct]').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }, 150);
+
+  // Ordenar por score desc
+  const sorted = Object.keys(DIMS).map(k => ({...DIMS[k], score: scores[k]})).sort((a,b)=>b.score-a.score);
+
+  // Cards de dimensão
+  document.getElementById('dims-result').innerHTML = sorted.map((d, i) => `
+    <div class="dim-result-card ${i === 0 ? 'highlight' : ''}" style="${i===0?`border-color:${d.color}44;background:${d.color}08;`:''}">
+      <div class="dim-icon-wrap" style="background:${d.color}15;border:1px solid ${d.color}33;">${d.icon}</div>
+      <div>
+        <div class="dim-result-name">${d.name}</div>
+        <div class="dim-result-label" style="color:${d.color}">${d.score >= 60 ? 'Alto' : d.score >= 40 ? 'Médio' : 'Baixo'} · ${d.score}%</div>
+        <div class="score-bar-row">
+          <div class="score-bar-track">
+            <div class="score-bar-fill" data-pct="${d.score}" style="width:0%;background:${d.color};"></div>
+          </div>
+          <span class="score-pct">${d.score}%</span>
+        </div>
+        <div class="dim-result-desc">${d.score >= 50 ? d.hi : d.lo}</div>
+      </div>
+      <div class="dim-score-col">
+        <span class="dim-score-val" style="color:${d.color}">${d.score}</span>
+        <span class="dim-score-max">/ 100</span>
+      </div>
+    </div>
+  `).join('');
+
+  // Anima barras
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      document.querySelectorAll('.score-bar-fill[data-pct]').forEach(el => {
+        el.style.width = el.dataset.pct + '%';
+      });
+    }, 100);
+  });
+
+  // Insight
+  document.getElementById('insight-box').innerHTML = `
+    <span class="insight-label">✦ ANÁLISE DO SEU PERFIL OCEAN</span>
+    <p>${getInsight(scores)}</p>
+  `;
+
+  // Combo com DISC
+  const combo = getDiscCombo(scores);
+  if(combo){
+    const comboBox = document.getElementById('combo-box');
+    comboBox.style.display = 'block';
+    comboBox.innerHTML = `
+      <span class="combo-label">✦ CRUZAMENTO COM SEU PERFIL DISC</span>
+      <div class="combo-content">${combo.text}</div>
+    `;
+  }
+
+  // Salva no localStorage
+  if (!_isLoadingExisting) {
+  const u = (capsulaDB.lsGetUser() || {});
+  if (!u.uid) { u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); }
+  u.bigfive = { scores, completedAt: new Date().toISOString() };
+  capsulaDB.lsSetUser(u);
+  try { sessionStorage.setItem('capsula_user', JSON.stringify(u)); } catch(_) {}
+  try {
+    const perfis = capsulaDB.lsGetUsers();
+    const idx = perfis.findIndex(p => p.uid === u.uid);
+    if(idx >= 0){ perfis[idx].bigfive = u.bigfive; capsulaDB.lsSetUsers(perfis); }
+  } catch(e) {}
+  // Sync Supabase
+  if(window.capsulaDB && u.email){ capsulaDB.saveUser(u).catch(e => console.warn('[bigfive] sync:', e)); }
+  } // end !_isLoadingExisting
+}
+
+// ══════════════════════════════════════
+// PDF
+// ══════════════════════════════════════
+function generatePDF(){
+  const u = (capsulaDB.lsGetUser() || {});
+  if(!u.bigfive) return;
+  const nome = u.apelido || u.nome || 'Usuário';
+  const data = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  const scores = u.bigfive.scores;
+  const ACCENT = '#6C5FE6';
+  const sorted = Object.keys(DIMS).map(k=>({...DIMS[k],score:scores[k],key:k})).sort((a,b)=>b.score-a.score);
+  const dominant = sorted[0];
+
+  const _gnCss = '*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page{width:794px;min-height:1123px;margin:0 auto;padding:40px 48px;background:#f8fafc;}.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:20px;border-bottom:2px solid #000;margin-bottom:28px;}.brand{display:flex;align-items:center;gap:10px;}.brand-name{font-size:17px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:GNOSIS_ACCENT;font-style:italic;font-weight:300;}.header-meta{font-family:'Space Mono',monospace;font-size:8px;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;text-align:right;line-height:1.9;}.result-box{background:#fafafa;border:1px solid #000;padding:28px 32px;margin-bottom:24px;position:relative;}.result-box-label{position:absolute;top:-10px;left:20px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:8px;padding:2px 10px;text-transform:uppercase;letter-spacing:0.2em;}.result-eyebrow{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:6px;color:GNOSIS_ACCENT;}.result-title{font-family:'Inter',sans-serif;font-size:50px;font-weight:900;text-transform:uppercase;letter-spacing:-0.05em;line-height:1;}.bars-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px;}.bar-item{border:1px solid #e4e4e7;padding:12px;background:#fff;}.bar-item.dim{opacity:0.4;}.bar-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.bar-pct{font-size:22px;font-weight:900;}.bar-track{height:4px;background:#f1f5f9;border-radius:2px;margin-top:6px;overflow:hidden;}.bar-fill{height:100%;border-radius:2px;}.blueprint-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}.blueprint-item{border:1px solid #e4e4e7;padding:14px 16px;background:#fff;}.blueprint-item.full{grid-column:1/-1;}.item-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.item-value{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-style:italic;}.item-text{font-size:11px;line-height:1.75;color:#333;}.rank-item{display:flex;align-items:center;gap:12px;border:1px solid #e4e4e7;padding:11px 15px;margin-bottom:7px;background:#fff;}.rank-item.top{border-color:#000;border-left:3px solid GNOSIS_ACCENT;}.rank-num{font-family:'Space Mono',monospace;font-size:9px;color:#a1a1aa;min-width:22px;}.rank-icon{font-size:18px;}.rank-name{font-size:13px;font-weight:700;flex:1;}.rank-meta{font-size:10px;color:#71717a;margin-top:2px;}.rank-score{font-family:'Space Mono',monospace;font-size:9px;color:#71717a;white-space:nowrap;}.rank-dots{display:flex;gap:3px;}.insight-box{background:#fff;border:1px solid #000;padding:20px 24px;margin-bottom:14px;}.insight-label{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:GNOSIS_ACCENT;margin-bottom:10px;display:flex;align-items:center;gap:8px;}.insight-label::before{content:'';display:inline-block;width:20px;height:2px;background:GNOSIS_ACCENT;border-radius:2px;}.insight-text{font-size:11px;color:#444;line-height:1.8;}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}.chip{font-family:'Space Mono',monospace;font-size:8px;padding:4px 10px;border:1px solid GNOSIS_ACCENT;color:GNOSIS_ACCENT;letter-spacing:0.08em;text-transform:uppercase;}.quad-card{background:#fff;padding:16px 18px;border:1px solid #e4e4e7;overflow:hidden;}.footer{padding-top:14px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:24px;}.footer-left{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}.footer-right{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:#000;}@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;padding:28px 36px;}}'.split('GNOSIS_ACCENT').join(ACCENT);
+
+  const barsHTML = ['O','C','E','A','N'].map(k => {
+    const d = DIMS[k]; const pct = scores[k] || 0; const isDom = k === dominant.key;
+    return `<div class="bar-item${isDom?'':' dim'}"><span class="bar-tag">${d.name}</span><div class="bar-pct" style="color:${d.color};">${pct}%</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${d.color};"></div></div></div>`;
+  }).join('');
+
+  const dimsHTML = sorted.map((d,i)=>
+    `<div class="blueprint-item${i===0?' full':''}">
+      <span class="item-tag" style="color:${d.color};">${d.icon} ${d.name}</span>
+      <p class="item-text">${(d.score>=50?d.hi:d.lo).split('.')[0]}.</p>
+    </div>`
+  ).join('');
+
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8"><title>Big Five OCEAN — ${nome} · Sistema Gnosis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>${_gnCss}</style></head><body><div class="page">
+  <div class="header">
+    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="32" height="32"><path d="M85 50C85 69.33 69.33 85 50 85C30.67 85 15 69.33 15 50C15 30.67 30.67 15 50 15C59.66 15 68.38 18.91 74.72 25.22" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><path d="M85 50H55" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="50" r="4" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
+    <div class="header-meta">Módulo: Big Five OCEAN<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
+  </div>
+  <div class="result-box">
+    <div class="result-box-label">Resultado_Diagnóstico_BigFive</div>
+    <div style="text-align:center;">
+      <div class="result-eyebrow" style="color:${dominant.color};">Perfil_Vetor_Personalidade</div>
+      <div class="result-title" style="color:${dominant.color};">${dominant.icon} ${dominant.name.toUpperCase()}</div>
+      <div class="bars-grid" style="grid-template-columns:repeat(5,1fr);">${barsHTML}</div>
+    </div>
+  </div>
+  <div class="blueprint-grid">${dimsHTML}</div>
+  <div class="insight-box" style="margin-top:14px;">
+    <div class="insight-label">Análise_do_Perfil OCEAN</div>
+    <p class="insight-text">${getInsight(scores).replace(/<[^>]+>/g,'')}</p>
+  </div>
+  <div class="footer"><span class="footer-left">SISTEMA GNOSIS // ENGENHARIA COMPORTAMENTAL // CONFIDENCIAL</span><span class="footer-right">sistemagnosis.com.br</span></div>
+  </div>
+  <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
+  </body></html>\`);
+  w.document.close();
+}
+
+function _imprimirPDF(html){
+  var old=document.getElementById('_pdf_frame');if(old)old.remove();
+  var iframe=document.createElement('iframe');iframe.id='_pdf_frame';
+  iframe.setAttribute('style','position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;border:none;');
+  document.body.appendChild(iframe);
+  var doc=iframe.contentDocument||iframe.contentWindow.document;
+  doc.open();doc.write(html);doc.close();
+  iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='bigfive-ocean.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
+}
+
+// ── Proteção de rota
+document.addEventListener('DOMContentLoaded', function(){
+  try{
+    const u = (capsulaDB.lsGetUser() || {});
+    if(!u.nome && !u.apelido && !u.email && !(u.bigfive && u.bigfive.completedAt)) window.location.href = 'index.html';
+    // Auto-heal uid
+    if(!u.uid){ u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2); try{capsulaDB.lsSetUser(u);}catch(_){} }
+    // Restaura rascunho (caso tenha saído no meio)
+    if(u.bigfive_draft) answers = u.bigfive_draft;
+  } catch(e) {}
+});
+</script>
+<script>
+(function() {
+  try {
+    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+    if (!raw) return;
+    var u = JSON.parse(raw);
+    if (!u.bigfive || !u.bigfive.completedAt || !u.bigfive.scores) return;
+    var saved = u.bigfive.scores;
+    var orig = window.calcScores;
+    window.calcScores = function() { return saved; };
+    _isLoadingExisting = true;
+    showResult();
+    window.calcScores = orig;
+  } catch(e) { console.warn('[bigfive redirect]', e); }
+})();
+</script>
+</body>
+</html>

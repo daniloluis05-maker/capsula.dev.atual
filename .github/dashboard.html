@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
+<head>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Seu painel de engenharia comportamental. Acompanhe seu progresso e acesse suas matrizes no Sistema Gnosis.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.groq.com;">
+<title>Dashboard | Sistema Gnosis</title>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sistemagnosis.com.br/dashboard.html">
+<meta property="og:title" content="Dashboard | Sistema Gnosis">
+<meta property="og:description" content="Seu painel de engenharia comportamental. Acompanhe seu progresso e acesse suas matrizes.">
+<link rel="stylesheet" href="css/capsula.css">
+<link rel="canonical" href="https://sistemagnosis.com.br/dashboard.html">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+<link rel="preload" href="https://fonts.gstatic.com/s/outfit/v11/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC0C4G-EiAou6Y.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+  <script src="js/ui.js" defer></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#07080C;--bg2:#0D0F16;--surface:#121520;--surface2:#181C28;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --D:#E8603A;--I:#6C5FE6;--S:#2EC4A0;--C:#1BA8D4;
+  --accent:#6C5FE6;--text:#E8E6F0;--muted:#6B6980;--muted2:#353448;
+  --mono:'Space Mono',monospace;--sans:'Outfit',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(108,95,230,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,95,230,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+.orb-1{width:500px;height:500px;background:#6C5FE6;opacity:0.06;top:-150px;left:-100px;}
+.orb-2{width:300px;height:300px;background:#E8603A;opacity:0.04;bottom:-80px;right:-80px;}
+
+.shell{position:relative;z-index:1;display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:1.75rem 1.25rem;border-right:1px solid var(--border);background:rgba(7,8,12,0.85);backdrop-filter:blur(20px);}
+.logo{font-family:var(--sans);font-size:0.95rem;font-weight:700;color:var(--text);text-decoration:none;letter-spacing:-0.01em;display:flex;align-items:center;gap:0.5rem;margin-bottom:2.5rem;}
+.logo-mark{width:26px;height:26px;background:var(--accent);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:800;color:#fff;}
+.logo span{color:var(--accent);}
+.nav-section{margin-bottom:1.75rem;}
+.nav-label{font-family:var(--mono);font-size:0.52rem;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted2);padding:0 0.65rem;margin-bottom:0.5rem;display:block;}
+.nav-item{display:flex;align-items:center;gap:0.65rem;padding:0.55rem 0.65rem;border-radius:6px;color:var(--muted);text-decoration:none;font-size:0.82rem;font-weight:500;cursor:pointer;border:none;background:transparent;width:100%;transition:all 0.15s;font-family:var(--sans);}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:rgba(108,95,230,0.12);color:var(--accent);border:1px solid rgba(108,95,230,0.18);}
+.nav-icon{font-size:0.82rem;width:18px;text-align:center;opacity:0.7;}
+.sidebar-footer{margin-top:auto;padding-top:1.25rem;border-top:1px solid var(--border);}
+.user-pill{display:flex;align-items:center;gap:0.65rem;padding:0.65rem;border-radius:8px;background:var(--surface);border:1px solid var(--border);}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--I),var(--C));display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;flex-shrink:0;}
+.user-name{font-size:0.78rem;font-weight:600;color:var(--text);}
+.user-plan{font-family:var(--mono);font-size:0.56rem;color:var(--S);margin-top:0.1rem;letter-spacing:0.06em;}
+
+/* MAIN */
+.main{padding:2.75rem 3rem;overflow-y:auto;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2.25rem;}
+.topbar-eyebrow{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:0.3rem;display:block;}
+.topbar h1{font-size:1.6rem;font-weight:700;letter-spacing:-0.025em;}
+.topbar h1 span{color:var(--accent);}
+.topbar-date{font-size:0.72rem;color:var(--muted);margin-top:0.25rem;font-family:var(--mono);}
+.topbar-actions{display:flex;gap:0.65rem;align-items:center;}
+.btn-ghost{background:var(--surface);border:1px solid var(--border2);color:var(--muted);padding:0.5rem 1rem;border-radius:5px;font-size:0.78rem;font-weight:500;cursor:pointer;font-family:var(--sans);transition:all 0.15s;}
+.btn-ghost:hover{border-color:var(--accent);color:var(--text);}
+.btn-accent{background:var(--accent);border:none;color:#fff;padding:0.5rem 1.1rem;border-radius:5px;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:var(--sans);transition:opacity 0.15s;}
+.btn-accent:hover{opacity:0.85;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:2.25rem;}
+.stat-card{background:var(--surface);padding:1.5rem 2rem;position:relative;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--stat-color,var(--accent));}
+.stat-tag{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;display:block;}
+.stat-val{font-size:1.75rem;font-weight:800;letter-spacing:-0.03em;line-height:1;}
+.stat-sub{font-size:0.68rem;color:var(--muted);margin-top:0.3rem;font-family:var(--mono);}
+.stat-sub.action{color:var(--D);cursor:pointer;}
+.stat-sub.action:hover{color:var(--text);}
+
+/* SECTION HEADER */
+.section-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1rem;}
+.section-eyebrow{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:0.3rem;display:block;}
+.section-header h2{font-size:0.95rem;font-weight:700;letter-spacing:-0.01em;}
+.section-note{font-family:var(--mono);font-size:0.6rem;color:var(--muted);}
+
+/* MATRIX CARDS */
+.matrices-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:2.25rem;}
+.matrix-card{background:var(--surface);padding:2rem;cursor:pointer;position:relative;transition:background 0.15s;animation:fadeUp 0.4s ease both;}
+.matrix-card:hover{background:var(--surface2);}
+.matrix-card::after{content:'';position:absolute;top:0;left:0;bottom:0;width:2px;background:var(--card-accent,var(--accent));opacity:0;transition:opacity 0.15s;}
+.matrix-card:not(.locked):hover::after{opacity:1;}
+.matrix-card.locked{opacity:0.4;cursor:not-allowed;}
+.matrix-card.locked:hover{background:var(--surface);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.matrix-card:nth-child(1){animation-delay:0.05s}
+.matrix-card:nth-child(2){animation-delay:0.1s}
+.matrix-card:nth-child(3){animation-delay:0.15s}
+.matrix-card:nth-child(4){animation-delay:0.2s}
+.matrix-card:nth-child(5){animation-delay:0.25s}
+
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;}
+.card-glyph{width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.lock-badge{font-family:var(--mono);font-size:0.52rem;letter-spacing:0.1em;background:var(--surface2);border:1px solid var(--border2);color:var(--muted);padding:0.18rem 0.5rem;border-radius:3px;}
+.card-category{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.35rem;display:block;}
+.matrix-card h3{font-size:0.9rem;font-weight:700;margin-bottom:0.3rem;letter-spacing:-0.01em;}
+.matrix-card p{font-size:0.76rem;color:var(--muted);line-height:1.6;margin-bottom:0.9rem;}
+.card-foot{display:flex;align-items:center;justify-content:space-between;padding-top:0.75rem;border-top:1px solid var(--border);}
+.card-status{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.04em;color:var(--muted);}
+.card-status.done{color:var(--S);}
+.card-status.locked-text{color:var(--muted2);}
+.card-arrow{font-size:0.8rem;color:var(--muted);transition:color 0.15s;}
+.matrix-card:not(.locked):hover .card-arrow{color:var(--accent);}
+
+/* BOTTOM GRID */
+.bottom-grid{display:grid;grid-template-columns:1fr 300px;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:2rem;}
+.activity-panel{background:var(--surface);padding:1.5rem;}
+.progress-panel{background:var(--surface2);padding:1.5rem;}
+.panel-label{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:1.25rem;display:block;}
+.activity-empty{text-align:center;padding:2.5rem 1rem;color:var(--muted);}
+.activity-empty .e-icon{font-size:1.5rem;margin-bottom:0.65rem;display:block;opacity:0.3;}
+.activity-empty p{font-size:0.78rem;line-height:1.7;}
+.progress-item{margin-bottom:1.1rem;}
+.progress-item:last-child{margin-bottom:0;}
+.prog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;}
+.prog-head span{font-size:0.78rem;font-weight:600;}
+.prog-pct{font-family:var(--mono);font-size:0.62rem;color:var(--muted);}
+.prog-track{height:2px;background:rgba(255,255,255,0.05);border-radius:100px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:100px;transition:width 1.2s cubic-bezier(0.34,1.56,0.64,1);}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:0.9rem 1.25rem;display:flex;align-items:center;gap:0.65rem;font-size:0.82rem;z-index:999;transform:translateY(80px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);backdrop-filter:blur(20px);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-check{width:20px;height:20px;border-radius:50%;background:rgba(46,196,160,0.12);border:1px solid var(--S);display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--S);flex-shrink:0;}
+.toast strong{display:block;font-size:0.82rem;font-weight:600;}
+.toast-sub{color:var(--muted);font-size:0.72rem;font-family:var(--mono);}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--muted2);border-radius:100px;}
+
+
+/* MOBILE NAV BAR */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(7,8,12,0.95);border-top:1px solid var(--border);backdrop-filter:blur(20px);padding:0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));}
+.mobile-nav-items{display:flex;justify-content:space-around;align-items:center;}
+.mobile-nav-item{display:flex;flex-direction:column;align-items:center;gap:0.2rem;padding:0.4rem 0.75rem;border-radius:8px;color:var(--muted);text-decoration:none;font-size:0.6rem;font-family:var(--mono);letter-spacing:0.06em;border:none;background:transparent;cursor:pointer;transition:color 0.15s;min-width:60px;}
+.mobile-nav-item:hover,.mobile-nav-item.active{color:var(--accent);}
+.mobile-nav-icon{font-size:1.1rem;line-height:1;}
+.mobile-topbar{display:none;position:sticky;top:0;z-index:50;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0.9rem 1.5rem;align-items:center;justify-content:space-between;}
+.mobile-topbar-logo{font-size:0.9rem;font-weight:700;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:0.4rem;}
+.mobile-topbar-logo .logo-mark{width:22px;height:22px;background:var(--accent);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:#fff;}
+.mobile-topbar-logo span{color:var(--accent);}
+.mobile-user{display:flex;align-items:center;gap:0.5rem;}
+.mobile-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--I),var(--C));display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;}
+@media(max-width:1024px){.shell{grid-template-columns:1fr;}.sidebar{display:none;}.mobile-nav{display:block;}.mobile-topbar{display:flex;}.main{padding:1.25rem 1.25rem 6rem;}.stats-row{grid-template-columns:repeat(2,1fr);}.bottom-grid{grid-template-columns:1fr;}}
+
+.matrix-card.card-wide{grid-column:span 2;}
+.matrix-card.card-tall{grid-row:span 2;}
+.matrix-card.card-featured{grid-column:span 2;background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border-left:2px solid var(--card-accent,var(--accent));}
+.matrix-card.card-featured::after{display:none;}
+@media(max-width:860px){.matrix-card.card-wide,.matrix-card.card-featured{grid-column:1/-1;}.matrix-card.card-tall{grid-row:auto;}}
+@media(max-width:600px){.stats-row{grid-template-columns:1fr 1fr;}.matrices-grid{grid-template-columns:1fr;}}
+</style>
+<meta property="og:image" content="https://sistemagnosis.com.br/apple-touch-icon.png">
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<header class="mobile-topbar">
+  <a href="index.html" class="mobile-topbar-logo">
+    <div class="logo-mark">G</div>
+    Sistema <span>Gnosis</span>
+  </a>
+  <div class="mobile-user">
+    <div class="mobile-avatar" id="mob-avatar">—</div>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="sidebar">
+    <a href="index.html" class="logo">
+      <div class="logo-mark">G</div>
+      Sistema <span>Gnosis</span>
+    </a>
+    <nav aria-label="Navegação principal">
+      <div class="nav-section">
+        <span class="nav-label">Principal</span>
+        <a class="nav-item active" href="dashboard.html"><span class="nav-icon">⬡</span>Dashboard</a>
+        <a class="nav-item" href="disc.html"><span class="nav-icon">🎯</span>DISC</a>
+        <a class="nav-item" href="soar.html"><span class="nav-icon">🧭</span>SOAR</a>
+        <a class="nav-item" href="#resultados" onclick="scrollToSection('resultados')"><span class="nav-icon">◎</span>Insights de Performance</a>
+        <a class="nav-item" href="tci.html"><span class="nav-icon">🧬</span>Temperamento TCI</a>
+        <a class="nav-item" href="dna.html" style="border:1px solid rgba(201,168,76,0.2);color:#C9A84C;background:rgba(201,168,76,0.06);"><span class="nav-icon">🧬</span>DNA Estratégico</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Conta</span>
+        <a class="nav-item" href="index.html#planos"><span class="nav-icon">◇</span>Planos</a>
+        <button class="nav-item" onclick="logout()"><span class="nav-icon">↩</span>Sair</button>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <div class="user-avatar" id="sb-avatar">—</div>
+        <div>
+          <div class="user-name" id="sb-nome">Carregando...</div>
+          <div class="user-plan">Plano Gratuito</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main role="main" class="main">
+    <div class="topbar">
+      <div>
+        <span class="topbar-eyebrow">Painel de Controle</span>
+        <h1>Olá, <span id="greeting-nome">—</span></h1>
+        <div class="topbar-date" id="greeting-date">—</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-ghost" onclick="exportarDados()">↓ Exportar dados</button>
+        <button class="btn-accent" onclick="novaMatriz()">+ Nova Matriz</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card" style="--stat-color:var(--I)">
+        <span class="stat-tag">Diagnósticos Concluídos</span>
+        <div class="stat-val" id="stat-matrizes">0</div>
+        <div class="stat-sub">de 2 disponíveis</div>
+      </div>
+      <div class="stat-card" style="--stat-color:var(--C)">
+        <span class="stat-tag">Insights Gerados</span>
+        <div class="stat-val" id="stat-insights">0</div>
+        <div class="stat-sub" id="stat-insights-sub">inicie uma avaliação</div>
+      </div>
+      <div class="stat-card" style="--stat-color:var(--S)">
+        <span class="stat-tag">Dias Ativo</span>
+        <div class="stat-val" id="stat-dias">1</div>
+        <div class="stat-sub" id="stat-dias-sub">membro desde hoje</div>
+      </div>
+      <div class="stat-card" style="--stat-color:var(--D)">
+        <span class="stat-tag">Plano Atual</span>
+        <div class="stat-val" style="font-size:1.1rem;padding-top:0.3rem">Gratuito</div>
+        <div class="stat-sub action" onclick="window.location.href='index.html#planos'">Fazer upgrade →</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div>
+        <span class="section-eyebrow">Eixo Individual</span>
+        <h2>Matrizes de Autoconhecimento</h2>
+      </div>
+      <span class="section-note">6 matrizes disponíveis</span>
+    </div>
+
+    <div class="matrices-grid">
+      <div class="matrix-card" style="--card-accent:var(--D)" onclick="window.location.href='disc.html'">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(232,96,58,0.1);border:1px solid rgba(232,96,58,0.18);">🎯</div>
+        </div>
+        <span class="card-category">Personalidade</span>
+        <h3>Perfil DISC</h3>
+        <p>Dominância, Influência, Estabilidade e Conformidade. Mapeie seu DNA comportamental em dados precisos.</p>
+        <div class="card-foot">
+          <span class="card-status" id="disc-status">Não iniciado</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="matrix-card" style="--card-accent:var(--I)" onclick="window.location.href='soar.html'">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(108,95,230,0.1);border:1px solid rgba(108,95,230,0.18);">🧭</div>
+        </div>
+        <span class="card-category">Estratégia Pessoal</span>
+        <h3>Análise SOAR</h3>
+        <p>Forças, Oportunidades, Aspirações e Resultados. Construa sua visão estratégica de longo prazo.</p>
+        <div class="card-foot">
+          <span class="card-status" id="soar-status">Não iniciado</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="matrix-card" style="--card-accent:var(--D)" onclick="window.location.href='ikigai.html'">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(232,96,58,0.1);border:1px solid rgba(232,96,58,0.18);">🌸</div>
+        </div>
+        <span class="card-category">Propósito de Vida</span>
+        <h3>Ikigai</h3>
+        <p>A intersecção entre o que você ama, sabe fazer, o mundo precisa e o que te remunera.</p>
+        <div class="card-foot">
+          <span class="card-status" id="ikigai-status">Não iniciado</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="matrix-card" style="--card-accent:var(--S)" onclick="window.location.href='ancoras.html'">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(46,196,160,0.1);border:1px solid rgba(46,196,160,0.18);">⚓</div>
+        </div>
+        <span class="card-category">Carreira</span>
+        <h3>Âncoras de Carreira</h3>
+        <p>Identifique o que você não abre mão profissionalmente. Clareza sobre seu núcleo de carreira.</p>
+        <div class="card-foot">
+          <span class="card-status" id="ancoras-status">Não iniciado</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="matrix-card" style="--card-accent:var(--C)" onclick="window.location.href='johari.html'">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(27,168,212,0.1);border:1px solid rgba(27,168,212,0.18);">🪟</div>
+        </div>
+        <span class="card-category">Autopercepção</span>
+        <h3>Janela de Johari</h3>
+        <p>Autopercepção versus percepção dos outros. Ferramenta essencial para líderes e equipes.</p>
+        <div class="card-foot">
+          <span class="card-status" id="johari-status">Não iniciado</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="matrix-card card-wide" style="--card-accent:var(--I)" onclick="window.location.href='bigfive.html'">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(108,95,230,0.1);border:1px solid rgba(108,95,230,0.18);">🧠</div>
+        </div>
+        <span class="card-category">Psicometria Científica</span>
+        <h3>Big Five — OCEAN</h3>
+        <p>O modelo mais validado da psicologia da personalidade. Mede 5 traços fundamentais: Abertura, Conscienciosidade, Extroversão, Amabilidade e Neuroticismo.</p>
+        <div class="card-foot">
+          <span class="card-status" id="bigfive-status">Não iniciado</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="matrix-card card-featured" style="--card-accent:#C9A84C" onclick="window.location.href='pearson.html'">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);">🏛️</div>
+        </div>
+        <span class="card-category">Psicologia Junguiana</span>
+        <h3>Arquétipos — Pearson-Marr</h3>
+        <p>Descubra qual dos 12 Arquétipos de Jung define sua essência. Revela os padrões profundos que guiam suas escolhas, motivações e forma de se relacionar com o mundo.</p>
+        <div class="card-foot">
+          <span class="card-status" id="pearson-status">Não iniciado</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:2.25rem;">
+      <div>
+        <span class="section-eyebrow" style="color:#C9A84C;">Síntese Estratégica</span>
+        <h2>DNA Estratégico</h2>
+      </div>
+      <span class="section-note">Gerado por IA · 4 Hélices</span>
+    </div>
+    <div class="matrices-grid" style="margin-bottom:2.25rem;">
+      <div class="matrix-card" style="--card-accent:#7000FF" onclick="window.location.href='tci.html'">
+        <div class="card-icon">🧬</div>
+        <h3>Temperamento TCI</h3>
+        <p>Sua assinatura neuroquímica inata. 4 dimensões de base biológica: Busca de Novidade, Esquiva de Danos, Dependência de Recompensa e Persistência.</p>
+        <div class="card-meta"><span class="card-status" id="tci-status">Não iniciado</span><span class="card-time">~15 min</span></div>
+        <span class="card-arrow">→</span>
+      </div>
+      <div class="matrix-card" style="--card-accent:#C9A84C;grid-column:1/-1;" onclick="window.location.href='dna.html'">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15);font-size:1.2rem;">🧬</div>
+          <span style="font-family:var(--mono);font-size:0.52rem;letter-spacing:0.1em;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);color:#C9A84C;padding:0.18rem 0.5rem;border-radius:3px;">NOVO</span>
+        </div>
+        <span class="card-category" style="color:#C9A84C;">Convergência das 4 Hélices</span>
+        <h3>DNA Estratégico — Sua Assinatura Comportamental</h3>
+        <p>Motor de análise sintética que cruza DISC, Big Five, Âncoras, Johari, Ikigai e SOAR para gerar um diagnóstico ultra-personalizado. Não é um relatório — é o seu mapa genético profissional.</p>
+        <div class="card-foot">
+          <span class="card-status" id="dna-status" style="color:#C9A84C;">Iniciar sequenciamento</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div>
+        <span class="section-eyebrow">Eixo de Equipe</span>
+        <h2>Matrizes de Performance Coletiva</h2>
+      </div>
+      <span class="section-note">Disponível no plano Empresa</span>
+    </div>
+
+    <div class="matrices-grid" style="margin-bottom:2.25rem;">
+      <div class="matrix-card locked" style="--card-accent:var(--C)">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(27,168,212,0.06);border:1px solid rgba(27,168,212,0.08);">📋</div>
+          <span class="lock-badge">EMPRESA</span>
+        </div>
+        <span class="card-category">Planejamento</span>
+        <h3>5W2H</h3>
+        <p>Plano de ação estruturado com acompanhamento visual de progresso para toda a equipe.</p>
+        <div class="card-foot"><span class="card-status locked-text">Disponível no plano Empresa</span><span class="card-arrow">🔒</span></div>
+      </div>
+
+      <div class="matrix-card locked" style="--card-accent:var(--D)">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(232,96,58,0.06);border:1px solid rgba(232,96,58,0.08);">👥</div>
+          <span class="lock-badge">EMPRESA</span>
+        </div>
+        <span class="card-category">Papéis e Responsabilidades</span>
+        <h3>Matriz RACI</h3>
+        <p>Responsável, Autoridade, Consultado e Informado. Papéis claros geram menos conflito.</p>
+        <div class="card-foot"><span class="card-status locked-text">Disponível no plano Empresa</span><span class="card-arrow">🔒</span></div>
+      </div>
+
+      <div class="matrix-card locked" style="--card-accent:var(--S)">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(46,196,160,0.06);border:1px solid rgba(46,196,160,0.08);">📊</div>
+          <span class="lock-badge">EMPRESA</span>
+        </div>
+        <span class="card-category">Estratégia de Equipe</span>
+        <h3>SWOT de Equipe</h3>
+        <p>Análise estratégica coletiva. Forças, Fraquezas, Oportunidades e Ameaças do grupo.</p>
+        <div class="card-foot"><span class="card-status locked-text">Disponível no plano Empresa</span><span class="card-arrow">🔒</span></div>
+      </div>
+    </div>
+
+    <div class="bottom-grid" id="resultados">
+      <div class="activity-panel">
+        <span class="panel-label">Atividade Recente</span>
+        <div id="activity-list">
+          <div class="activity-empty">
+            <span class="e-icon">◎</span>
+            <p>Nenhuma atividade registrada ainda.<br>Complete sua primeira matriz para começar.</p>
+          </div>
+        </div>
+      </div>
+      <div class="progress-panel">
+        <span class="panel-label">Progresso do Perfil</span>
+        <div class="progress-item">
+          <div class="prog-head"><span>Cadastro</span><span class="prog-pct">100%</span></div>
+          <div class="prog-track"><div class="prog-fill" style="width:100%;background:var(--S);"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="prog-head"><span>DISC</span><span class="prog-pct" id="disc-pct">0%</span></div>
+          <div class="prog-track"><div class="prog-fill" id="disc-fill" style="width:0%;background:var(--D);"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="prog-head"><span>SOAR</span><span class="prog-pct" id="soar-pct">0%</span></div>
+          <div class="prog-track"><div class="prog-fill" id="soar-fill" style="width:0%;background:var(--I);"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="prog-head"><span>Perfil completo</span><span class="prog-pct" id="total-pct">2%</span></div>
+          <div class="prog-track"><div class="prog-fill" id="total-fill" style="width:2%;background:var(--accent);"></div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<nav class="mobile-nav" aria-label="Navegação mobile">
+  <div class="mobile-nav-items">
+    <a href="dashboard.html" class="mobile-nav-item active">
+      <span class="mobile-nav-icon">⬡</span>
+      <span>Dashboard</span>
+    </a>
+    <a href="disc.html" class="mobile-nav-item">
+      <span class="mobile-nav-icon">🎯</span>
+      <span>DISC</span>
+    </a>
+    <a href="soar.html" class="mobile-nav-item">
+      <span class="mobile-nav-icon">🧭</span>
+      <span>SOAR</span>
+    </a>
+    <a href="index.html#planos" class="mobile-nav-item">
+      <span class="mobile-nav-icon">◇</span>
+      <span>Planos</span>
+    </a>
+    <button class="mobile-nav-item" onclick="logout()">
+      <span class="mobile-nav-icon">↩</span>
+      <span>Sair</span>
+    </button>
+  </div>
+</nav>
+
+
+<div class="toast" id="toast">
+  <div class="toast-check">✓</div>
+  <div>
+    <strong id="toast-title">Bem-vindo(a)!</strong>
+    <div class="toast-sub" id="toast-sub">Conta criada com sucesso.</div>
+  </div>
+</div>
+
+<script>
+// #6: Cliente Supabase centralizado em js/db.js
+var db = (typeof capsulaDB !== "undefined") ? capsulaDB.getDB() : null;
+
+function initDate(){
+  const now=new Date(),h=now.getHours();
+  const s=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
+  const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  document.getElementById('greeting-date').textContent=`${s} · ${dias[now.getDay()]}, ${now.getDate()} de ${meses[now.getMonth()]}`;
+}
+
+async function loadUser(){
+  const lsRaw = localStorage.getItem('capsula_user');
+  const ssRaw = sessionStorage.getItem('capsula_user');
+  const isNew = sessionStorage.getItem('capsula_is_new_user') === '1';
+
+  // Caminho rápido: dados locais existem → carrega sem aguardar Auth
+  if (!lsRaw && !ssRaw) {
+    // Sem dados locais → verifica se há sessão Supabase Auth ativa
+    let authUser = null;
+    try {
+      const { session } = await capsulaDB.authGetSession();
+      if (session) authUser = session.user;
+    } catch(e) { console.warn('[dashboard] authGetSession:', e); }
+
+    if (!authUser) {
+      window.location.href = 'index.html';
+      return;
+    }
+    // Sessão Auth existe mas sem localStorage → cria perfil local
+    try {
+      const profile = await capsulaDB.authLoadUserProfile(authUser);
+      capsulaDB.lsSetUser(profile);
+    } catch(e) { console.warn('[dashboard] loadProfile:', e); }
+  }
+
+  // Sincroniza sessionStorage → localStorage se necessário
+  if (ssRaw && !lsRaw) capsulaDB.lsSetRaw('capsula_user', ssRaw);
+
+  if (isNew) sessionStorage.removeItem('capsula_is_new_user');
+
+  const finalRaw = localStorage.getItem('capsula_user') || ssRaw;
+  if (!finalRaw) { window.location.href = 'index.html'; return; }
+
+  const u = JSON.parse(finalRaw);
+  applyUser(u.nome, u.apelido);
+
+  if (isNew) showToast(u.apelido || (u.nome ? u.nome.split(' ')[0] : 'Usuário'));
+
+  loadMatrixState((capsulaDB.lsGetUser() || {}));
+
+  if (u.criado_em) {
+    const criado = new Date(u.criado_em);
+    const dias = Math.max(1, Math.ceil((Date.now() - criado.getTime()) / (1000*60*60*24)));
+    document.getElementById('stat-dias').textContent = dias;
+    document.getElementById('stat-dias-sub').textContent = dias === 1 ? 'membro desde hoje' : 'dias na plataforma';
+  }
+
+  // ── Sincroniza com Supabase em background ──────────────────
+  if (u.email) {
+    capsulaDB.migrateLocalToSupabase(u.email).then(merged => {
+      if (merged) loadMatrixState(merged);
+    }).catch(e => console.warn('[dashboard] sync Supabase:', e));
+  }
+}
+
+function loadMatrixState(userData){
+  const discDone=!!(userData.disc&&userData.disc.completedAt);
+  const soarData=userData.soar;
+  const soarPct=soarData?Math.round(soarData.completionPct||0):0;
+  const soarDone=soarPct>=80;
+  const ikigaiDone=!!(userData.ikigai&&userData.ikigai.completedAt);
+  const ancorasDone=!!(userData.ancoras&&userData.ancoras.completedAt);
+  const johariDone=!!(userData.johari&&userData.johari.completedAt);
+  const bigfiveDone=!!(userData.bigfive&&userData.bigfive.completedAt);
+  const pearsonDone=!!(userData.pearson&&userData.pearson.completedAt);
+  const tciDone=!!(userData.tci&&userData.tci.completedAt);
+
+  const total=[discDone,soarDone,ikigaiDone,ancorasDone,johariDone,bigfiveDone,pearsonDone,tciDone].filter(Boolean).length;
+  document.getElementById('stat-matrizes').textContent=total;
+  document.getElementById('stat-insights').textContent=total;
+  if(total>0){
+    const sub=total===1?'1 relatório disponível':`${total} relatórios disponíveis`;
+    document.getElementById('stat-insights-sub').textContent=sub;
+  }
+
+  function setStatus(id,done,inProgress){
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(done){el.textContent='Concluído ✓';el.classList.add('done');}
+    else if(inProgress){el.textContent=inProgress;}
+  }
+  setStatus('disc-status',discDone);
+  setStatus('soar-status',soarDone,soarPct>0?`Em andamento · ${soarPct}%`:null);
+  setStatus('ikigai-status',ikigaiDone);
+  setStatus('ancoras-status',ancorasDone);
+  setStatus('johari-status',johariDone);
+  setStatus('bigfive-status',bigfiveDone);
+  setStatus('pearson-status',pearsonDone);
+  setStatus('tci-status',tciDone);
+
+  // Progresso
+  const discP=discDone?100:0;
+  const totalP=Math.min(Math.round(10+(total/5)*90),100);
+  setProgress('disc-pct','disc-fill',discP);
+  setProgress('soar-pct','soar-fill',soarPct);
+  setProgress('total-pct','total-fill',totalP);
+
+  // Atividades
+  const activities=[];
+  if(discDone)activities.push({icon:'🎯',label:'Perfil DISC concluído',date:userData.disc.completedAt,color:'var(--D)'});
+  if(soarDone)activities.push({icon:'🧭',label:'Análise SOAR concluída',date:userData.soar.completedAt,color:'var(--I)'});
+  else if(soarPct>0)activities.push({icon:'🧭',label:`SOAR em andamento (${soarPct}%)`,date:userData.soar.completedAt||new Date().toISOString(),color:'var(--I)'});
+  if(ikigaiDone)activities.push({icon:'🌸',label:'Ikigai concluído',date:userData.ikigai.completedAt,color:'var(--D)'});
+  if(ancorasDone)activities.push({icon:'⚓',label:'Âncoras de Carreira concluídas',date:userData.ancoras.completedAt,color:'var(--S)'});
+  if(johariDone)activities.push({icon:'🪟',label:'Janela de Johari concluída',date:userData.johari.completedAt,color:'var(--C)'});
+  if(bigfiveDone)activities.push({icon:'🧠',label:'Big Five — OCEAN concluído',date:userData.bigfive.completedAt,color:'var(--I)'});
+  if(pearsonDone)activities.push({icon:'🏛️',label:'Arquétipos Pearson-Marr concluídos',date:userData.pearson.completedAt,color:'#C9A84C'});
+  if(tciDone)activities.push({icon:'🧬',label:'Temperamento TCI mapeado',date:userData.tci.completedAt,color:'#7000FF'});
+  if(userData.dna&&userData.dna.generatedAt){const dnaEl=document.getElementById('dna-status');if(dnaEl){dnaEl.textContent='DNA gerado · '+new Date(userData.dna.generatedAt).toLocaleDateString('pt-BR');}activities.push({icon:'🧬',label:'DNA Estratégico gerado',date:userData.dna.generatedAt,color:'#C9A84C'});}
+
+  if(activities.length>0){
+    const list=document.getElementById('activity-list');
+    list.innerHTML=activities.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(a=>{
+      const d=new Date(a.date);
+      const lbl=d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
+      return '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0;border-bottom:1px solid var(--border);">'+
+        '<span style="font-size:1rem;width:28px;text-align:center;">'+a.icon+'</span>'+
+        '<div style="flex:1;"><div style="font-size:0.8rem;font-weight:600;">'+a.label+'</div>'+
+        '<div style="font-size:0.65rem;color:var(--muted);font-family:var(--mono);margin-top:0.1rem;">'+lbl+'</div></div>'+
+        '<span style="width:6px;height:6px;border-radius:50%;background:'+a.color+';flex-shrink:0;"></span></div>';
+    }).join('');
+  }
+}
+
+function setProgress(pctId,fillId,value){
+  const p=document.getElementById(pctId);
+  const f=document.getElementById(fillId);
+  if(p)p.textContent=value+'%';
+  if(f)setTimeout(()=>f.style.width=value+'%',100);
+}
+
+// ── UTILITÁRIO: nome de exibição ──────────────────────────────
+function getNomeExibido(userData) {
+  if (!userData) return 'Usuário';
+  if (userData.apelido && userData.apelido.trim()) return userData.apelido.trim();
+  if (userData.nome && userData.nome.trim()) return userData.nome.trim();
+  return 'Usuário';
+}
+
+function applyUser(nome,apelido){
+  const ex=getNomeExibido({nome,apelido});
+  document.getElementById('greeting-nome').textContent=ex;
+  document.getElementById('sb-nome').textContent=nome||ex;
+  document.getElementById('sb-avatar').textContent=ex.charAt(0).toUpperCase();const mob=document.getElementById('mob-avatar');if(mob)mob.textContent=ex.charAt(0).toUpperCase();
+}
+
+function showToast(nome){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-title').textContent='Bem-vindo(a), '+nome+'!';
+  document.getElementById('toast-sub').textContent='Escolha uma matriz para começar.';
+  setTimeout(()=>t.classList.add('show'),600);
+  setTimeout(()=>t.classList.remove('show'),5000);
+}
+
+async function logout(){
+  try {
+    const raw = localStorage.getItem('capsula_user');
+    if (raw) {
+      const u = JSON.parse(raw);
+      delete u.soar_draft;
+      delete u.ikigai_draft;
+      const perfis = capsulaDB.lsGetUsers();
+      const idx = perfis.findIndex(p => (u.uid && p.uid === u.uid) || p.email === u.email);
+      if (idx >= 0) { perfis[idx] = u; capsulaDB.lsSetUsers(perfis); }
+    }
+  } catch(e) {}
+  // Encerra sessão Supabase Auth
+  try { await capsulaDB.authSignOut(); } catch(e) { console.warn('[logout] signOut:', e); }
+  sessionStorage.removeItem('capsula_user');
+  localStorage.removeItem('capsula_user');
+  window.location.href = 'index.html';
+}
+
+document.addEventListener("DOMContentLoaded", function() { if(typeof capsulaDB !== "undefined") { db = capsulaDB.getDB(); } initDate(); loadUser(); });
+
+// ── FIX CRÍTICO 2: Recarrega estado ao voltar do DISC/SOAR ────
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') {
+    const raw = localStorage.getItem('capsula_user');
+    if (raw) {
+      const u = JSON.parse(raw);
+      loadMatrixState(u);
+      // Sincroniza progresso atualizado com o Supabase
+      if (u.email) {
+        capsulaDB.syncMatrizes(u).catch(e => console.warn('[sync] visibilitychange:', e));
+      }
+    }
+  }
+});
+
+// Também ouve mudanças no localStorage (caso abra em outra aba)
+window.addEventListener('storage', function(e) {
+  if (e.key === 'capsula_user' && e.newValue) {
+    loadMatrixState(JSON.parse(e.newValue));
+  }
+});
+
+// ── FIX CRÍTICO 3: Botão Nova Matriz ─────────────────────────
+function novaMatriz() {
+  // Scrolla para a seção de matrizes disponíveis
+  const grid = document.querySelector('.matrices-grid');
+  if (grid) {
+    grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Pisca levemente para indicar ao usuário
+    grid.style.transition = 'outline 0.3s';
+    grid.style.outline = '1px solid var(--accent)';
+    setTimeout(function() { grid.style.outline = 'none'; }, 1200);
+  }
+}
+
+// ── FIX CRÍTICO 3: Botão Exportar ────────────────────────────
+function exportarDados() {
+  const raw = localStorage.getItem('capsula_user');
+  if (!raw) return;
+  const u = JSON.parse(raw);
+  const exp = {
+    exportado_em: new Date().toISOString(),
+    perfil: { nome: u.nome, apelido: u.apelido, objetivo: u.objetivo, criado_em: u.criado_em },
+    disc: u.disc || null,
+    soar: u.soar || null,
+    ikigai: u.ikigai || null,
+    ancoras: u.ancoras || null,
+    johari: u.johari || null,
+    bigfive: u.bigfive || null,
+    swot: u.swot || null,
+  };
+  const blob = new Blob([JSON.stringify(exp, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'capsula-' + (u.apelido || u.nome || 'perfil').replace(/\s+/g,'-').toLowerCase() + '.json';
+  a.click();
+  setTimeout(function() { URL.revokeObjectURL(url); }, 3000);
+}
+
+// ── Helper: scroll para seção ─────────────────────────────────
+function scrollToSection(id) {
+  var el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
