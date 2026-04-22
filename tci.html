@@ -526,77 +526,54 @@ function interpretacaoLocal(scores) {
 function generatePDF() {
   const u = capsulaDB.lsGetUser() || {};
   const nome = u.apelido || u.nome || 'Usuário';
-  const scores = u.tci?.scores || {};
+  const tciScores = u.tci?.scores || {};
   const data = new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
   const ACCENT = '#7000FF';
 
-  const dimsHTML = ['BN','ED','DR','PE'].map(d => {
-    const s = scores[d] || 0;
-    const dim = DIMS[d];
-    const bar = `<div style="height:5px;background:rgba(255,255,255,0.1);border-radius:3px;margin:6px 0;"><div style="height:100%;width:${s}%;background:${dim.hex};border-radius:3px;"></div></div>`;
-    return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-top:2px solid ${dim.hex};border-radius:8px;padding:14px 16px;margin-bottom:10px;">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
-        <span style="font-family:'Space Mono',monospace;font-size:9px;color:${dim.hex};letter-spacing:0.1em;text-transform:uppercase;">${dim.name}</span>
-        <span style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:${dim.hex};">${s}%</span>
-      </div>
-      ${bar}
-      <div style="font-size:10px;color:#9090B0;line-height:1.6;">${s>=50?dim.high:dim.low}</div>
+  const _gnCss = '*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page{width:794px;min-height:1123px;margin:0 auto;padding:40px 48px;background:#f8fafc;}.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:20px;border-bottom:2px solid #000;margin-bottom:28px;}.brand{display:flex;align-items:center;gap:10px;}.brand-name{font-size:17px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:GNOSIS_ACCENT;font-style:italic;font-weight:300;}.header-meta{font-family:'Space Mono',monospace;font-size:8px;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;text-align:right;line-height:1.9;}.result-box{background:#fafafa;border:1px solid #000;padding:28px 32px;margin-bottom:24px;position:relative;}.result-box-label{position:absolute;top:-10px;left:20px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:8px;padding:2px 10px;text-transform:uppercase;letter-spacing:0.2em;}.result-eyebrow{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:6px;color:GNOSIS_ACCENT;}.result-title{font-family:'Inter',sans-serif;font-size:50px;font-weight:900;text-transform:uppercase;letter-spacing:-0.05em;line-height:1;}.bars-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px;}.bar-item{border:1px solid #e4e4e7;padding:12px;background:#fff;}.bar-item.dim{opacity:0.4;}.bar-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.bar-pct{font-size:22px;font-weight:900;}.bar-track{height:4px;background:#f1f5f9;border-radius:2px;margin-top:6px;overflow:hidden;}.bar-fill{height:100%;border-radius:2px;}.blueprint-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}.blueprint-item{border:1px solid #e4e4e7;padding:14px 16px;background:#fff;}.blueprint-item.full{grid-column:1/-1;}.item-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.item-value{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-style:italic;}.item-text{font-size:11px;line-height:1.75;color:#333;}.rank-item{display:flex;align-items:center;gap:12px;border:1px solid #e4e4e7;padding:11px 15px;margin-bottom:7px;background:#fff;}.rank-item.top{border-color:#000;border-left:3px solid GNOSIS_ACCENT;}.rank-num{font-family:'Space Mono',monospace;font-size:9px;color:#a1a1aa;min-width:22px;}.rank-icon{font-size:18px;}.rank-name{font-size:13px;font-weight:700;flex:1;}.rank-meta{font-size:10px;color:#71717a;margin-top:2px;}.rank-score{font-family:'Space Mono',monospace;font-size:9px;color:#71717a;white-space:nowrap;}.rank-dots{display:flex;gap:3px;}.insight-box{background:#fff;border:1px solid #000;padding:20px 24px;margin-bottom:14px;}.insight-label{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:GNOSIS_ACCENT;margin-bottom:10px;display:flex;align-items:center;gap:8px;}.insight-label::before{content:'';display:inline-block;width:20px;height:2px;background:GNOSIS_ACCENT;border-radius:2px;}.insight-text{font-size:11px;color:#444;line-height:1.8;}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}.chip{font-family:'Space Mono',monospace;font-size:8px;padding:4px 10px;border:1px solid GNOSIS_ACCENT;color:GNOSIS_ACCENT;letter-spacing:0.08em;text-transform:uppercase;}.quad-card{background:#fff;padding:16px 18px;border:1px solid #e4e4e7;overflow:hidden;}.footer{padding-top:14px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:24px;}.footer-left{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}.footer-right{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:#000;}@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;padding:28px 36px;}}'.split('GNOSIS_ACCENT').join(ACCENT);
+
+  const dimKeys = ['BN','ED','DR','PE'];
+  const dominant = dimKeys.reduce((a,b) => (tciScores[a]||0) > (tciScores[b]||0) ? a : b);
+
+  const barsHTML = dimKeys.map(d => {
+    const dim = DIMS[d]; const pct = tciScores[d] || 0; const isDom = d === dominant;
+    return `<div class="bar-item${isDom?'':' dim'}"><span class="bar-tag" style="color:${dim.hex};">${dim.name}</span><div class="bar-pct" style="color:${dim.hex};">${pct}%</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${dim.hex};"></div></div></div>`;
+  }).join('');
+
+  const dimsHTML = dimKeys.map(d => {
+    const dim = DIMS[d]; const pct = tciScores[d] || 0;
+    return `<div class="blueprint-item">
+      <span class="item-tag" style="color:${dim.hex};">${dim.name}</span>
+      <p class="item-text">${pct>=50?dim.high:dim.low}</p>
     </div>`;
   }).join('');
 
   const aiText = document.getElementById('ai-content')?.innerText || '';
 
-  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
-<title>Temperamento TCI — ${nome} · Sistema Gnosis</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Outfit',sans-serif;background:#07080C;color:#E8E6F0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page{width:794px;min-height:1123px;margin:0 auto;padding:44px 48px;}@media print{@page{margin:0;size:A4;}body{background:#07080C!important;}.page{width:100%;padding:32px 36px;}}</style>
-</head><body><div class="page">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06);">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div style="width:28px;height:28px;background:${ACCENT};border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;">G</div>
-      <span style="font-size:14px;font-weight:700;color:#E8E6F0;">Sistema <span style="color:${ACCENT};">Gnosis</span></span>
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8"><title>Temperamento TCI — ${nome} · Sistema Gnosis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>${_gnCss}</style></head><body><div class="page">
+  <div class="header">
+    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="32" height="32"><path d="M85 50C85 69.33 69.33 85 50 85C30.67 85 15 69.33 15 50C15 30.67 30.67 15 50 15C59.66 15 68.38 18.91 74.72 25.22" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><path d="M85 50H55" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="50" r="4" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
+    <div class="header-meta">Módulo: Temperamento TCI<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
+  </div>
+  <div class="result-box">
+    <div class="result-box-label">Resultado_Diagnóstico_TCI</div>
+    <div style="text-align:center;">
+      <div class="result-eyebrow" style="color:${ACCENT};">Perfil_Vetor_Temperamento</div>
+      <div class="result-title" style="color:${ACCENT};">${DIMS[dominant]?.name?.toUpperCase() || 'TEMPERAMENTO'}</div>
+      <div class="bars-grid">${barsHTML}</div>
     </div>
-    <div style="text-align:right;">
-      <div style="font-family:'Space Mono',monospace;font-size:7px;letter-spacing:0.12em;text-transform:uppercase;color:${ACCENT};">// inventário de temperamento · tci</div>
-      <div style="font-family:'Space Mono',monospace;font-size:7px;color:#555;">${data.toUpperCase()}</div>
-    </div>
   </div>
-  <div style="margin-bottom:28px;">
-    <div style="font-family:'Space Mono',monospace;font-size:8px;color:#555;letter-spacing:0.1em;margin-bottom:6px;">// assinatura neuroquímica · ${nome.toUpperCase()}</div>
-    <div style="font-size:42px;font-weight:900;letter-spacing:-0.03em;color:#E8E6F0;line-height:1;margin-bottom:8px;">Temperamento TCI</div>
-    <div style="font-size:11px;color:#6B6980;">Base biológica de temperamento — camada anterior à personalidade e ao caráter.</div>
+  <div class="blueprint-grid">${dimsHTML}</div>
+  ${aiText ? `<div class="insight-box" style="margin-top:14px;"><div class="insight-label" style="color:${ACCENT};">Interpretação_Integrada_IA</div><p class="insight-text">${aiText}</p></div>` : ''}
+  <div class="footer"><span class="footer-left">SISTEMA GNOSIS // ENGENHARIA COMPORTAMENTAL // CONFIDENCIAL</span><span class="footer-right">sistemagnosis.com.br</span></div>
   </div>
-  ${dimsHTML}
-  ${aiText ? `<div style="background:rgba(112,0,255,0.07);border:1px solid rgba(112,0,255,0.2);border-top:2px solid ${ACCENT};border-radius:8px;padding:16px 20px;margin-top:16px;">
-    <div style="font-family:'Space Mono',monospace;font-size:7px;letter-spacing:0.12em;text-transform:uppercase;color:#9B5CF6;margin-bottom:10px;">◆ Interpretação integrada · IA</div>
-    <div style="font-size:10px;color:#C0BDD8;line-height:1.7;">${aiText}</div>
-  </div>` : ''}
-  <div style="margin-top:28px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;">
-    <span style="font-family:'Space Mono',monospace;font-size:7px;color:#222;">SISTEMA GNOSIS · TEMPERAMENTO TCI · CONFIDENCIAL</span>
-    <span style="font-family:'Space Mono',monospace;font-size:8px;color:#222;">Sistema Gnosis</span>
-  </div>
-</div>
-<script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
-</body></html>`;
-
-  var old = document.getElementById('_pdf_frame'); if (old) old.remove();
-  var iframe = document.createElement('iframe');
-  iframe.id = '_pdf_frame';
-  iframe.setAttribute('style','position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;border:none;');
-  document.body.appendChild(iframe);
-  var doc = iframe.contentDocument || iframe.contentWindow.document;
-  doc.open(); doc.write(html); doc.close();
-  iframe.onload = function() {
-    setTimeout(function() {
-      try { iframe.contentWindow.focus(); iframe.contentWindow.print(); }
-      catch(e) {
-        var blob = new Blob([html], {type:'text/html'});
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a'); a.href=url; a.download='temperamento-tci.html'; a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 3000);
-      }
-    }, 700);
-  };
+  <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
+  </body></html>\`);
+  w.document.close();
 }
 
 // Proteção de rota + restaura resultado anterior

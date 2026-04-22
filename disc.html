@@ -1397,194 +1397,57 @@ document.addEventListener('DOMContentLoaded', initPage);
 function generatePDF() {
   const dominant    = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
   const profile     = PROFILES[dominant];
-  const accentColor = profile.color;
+  const ACCENT      = profile.color;
   const user        = (capsulaDB.lsGetUser() || {});
   const nome        = getNomeExibido(user);
   const data        = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
-  const order       = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+  const dimNames    = {D:'Dominância',I:'Influência',S:'Estabilidade',C:'Conformidade'};
+  const dimColors   = {D:'#E8603A',I:'#6C5FE6',S:'#2EC4A0',C:'#1BA8D4'};
+  const motivMap    = {D:'Desafio e Autonomia',I:'Reconhecimento Social',S:'Segurança e Lealdade',C:'Precisão e Qualidade'};
+  const focoMap     = {D:'Resultados e Velocidade',I:'Pessoas e Entusiasmo',S:'Ritmo e Harmonia',C:'Dados e Processos'};
 
-  // ── Radar SVG ──────────────────────────────────────────────
-  function buildRadar(sc) {
-    const cx=130, cy=130, R=100;
-    const dims=['D','I','S','C'];
-    const dColors={'D':'#E8603A','I':'#6C5FE6','S':'#2EC4A0','C':'#1BA8D4'};
-    const angles=dims.map((_,i)=>(i/dims.length)*2*Math.PI - Math.PI/2);
-    let s='';
-    // grid rings
-    [0.25,0.5,0.75,1].forEach(r=>{
-      const pts=angles.map(a=>`${cx+R*r*Math.cos(a)},${cy+R*r*Math.sin(a)}`).join(' ');
-      s+=`<polygon points="${pts}" fill="none" stroke="rgba(30,58,95,0.12)" stroke-width="1"/>`;
-    });
-    // spokes
-    angles.forEach(a=>{
-      s+=`<line x1="${cx}" y1="${cy}" x2="${cx+R*Math.cos(a)}" y2="${cy+R*Math.sin(a)}" stroke="rgba(30,58,95,0.1)" stroke-width="1"/>`;
-    });
-    // filled area
-    const pts=dims.map((d,i)=>{ const r=(sc[d]||0)/100; return `${cx+R*r*Math.cos(angles[i])},${cy+R*r*Math.sin(angles[i])}`; });
-    s+=`<polygon points="${pts.join(' ')}" fill="${accentColor}25" stroke="${accentColor}" stroke-width="2" stroke-linejoin="round"/>`;
-    // dots + labels
-    dims.forEach((d,i)=>{
-      const r=(sc[d]||0)/100;
-      const px=cx+R*r*Math.cos(angles[i]), py=cy+R*r*Math.sin(angles[i]);
-      s+=`<circle cx="${px}" cy="${py}" r="4" fill="${dColors[d]}"/>`;
-      const lx=cx+(R+20)*Math.cos(angles[i]), ly=cy+(R+20)*Math.sin(angles[i]);
-      s+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-family="monospace" font-size="12" font-weight="700" fill="${dColors[d]}">${d}: ${sc[d]}%</text>`;
-    });
-    return s;
-  }
+  const _gnCss = '*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page{width:794px;min-height:1123px;margin:0 auto;padding:40px 48px;background:#f8fafc;}.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:20px;border-bottom:2px solid #000;margin-bottom:28px;}.brand{display:flex;align-items:center;gap:10px;}.brand-name{font-size:17px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:GNOSIS_ACCENT;font-style:italic;font-weight:300;}.header-meta{font-family:'Space Mono',monospace;font-size:8px;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;text-align:right;line-height:1.9;}.result-box{background:#fafafa;border:1px solid #000;padding:28px 32px;margin-bottom:24px;position:relative;}.result-box-label{position:absolute;top:-10px;left:20px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:8px;padding:2px 10px;text-transform:uppercase;letter-spacing:0.2em;}.result-eyebrow{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:6px;color:GNOSIS_ACCENT;}.result-title{font-family:'Inter',sans-serif;font-size:50px;font-weight:900;text-transform:uppercase;letter-spacing:-0.05em;line-height:1;}.bars-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px;}.bar-item{border:1px solid #e4e4e7;padding:12px;background:#fff;}.bar-item.dim{opacity:0.4;}.bar-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.bar-pct{font-size:22px;font-weight:900;}.bar-track{height:4px;background:#f1f5f9;border-radius:2px;margin-top:6px;overflow:hidden;}.bar-fill{height:100%;border-radius:2px;}.blueprint-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}.blueprint-item{border:1px solid #e4e4e7;padding:14px 16px;background:#fff;}.blueprint-item.full{grid-column:1/-1;}.item-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.item-value{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-style:italic;}.item-text{font-size:11px;line-height:1.75;color:#333;}.rank-item{display:flex;align-items:center;gap:12px;border:1px solid #e4e4e7;padding:11px 15px;margin-bottom:7px;background:#fff;}.rank-item.top{border-color:#000;border-left:3px solid GNOSIS_ACCENT;}.rank-num{font-family:'Space Mono',monospace;font-size:9px;color:#a1a1aa;min-width:22px;}.rank-icon{font-size:18px;}.rank-name{font-size:13px;font-weight:700;flex:1;}.rank-meta{font-size:10px;color:#71717a;margin-top:2px;}.rank-score{font-family:'Space Mono',monospace;font-size:9px;color:#71717a;white-space:nowrap;}.rank-dots{display:flex;gap:3px;}.insight-box{background:#fff;border:1px solid #000;padding:20px 24px;margin-bottom:14px;}.insight-label{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:GNOSIS_ACCENT;margin-bottom:10px;display:flex;align-items:center;gap:8px;}.insight-label::before{content:'';display:inline-block;width:20px;height:2px;background:GNOSIS_ACCENT;border-radius:2px;}.insight-text{font-size:11px;color:#444;line-height:1.8;}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}.chip{font-family:'Space Mono',monospace;font-size:8px;padding:4px 10px;border:1px solid GNOSIS_ACCENT;color:GNOSIS_ACCENT;letter-spacing:0.08em;text-transform:uppercase;}.quad-card{background:#fff;padding:16px 18px;border:1px solid #e4e4e7;overflow:hidden;}.footer{padding-top:14px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:24px;}.footer-left{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}.footer-right{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:#000;}@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;padding:28px 36px;}}'.split('GNOSIS_ACCENT').join(ACCENT);
 
-  // ── Vertical bars (painel direito) ────────────────────────
-  const dimColors={'D':'#3A7BD5','I':'#F5A623','S':'#4ECBA0','C':'#3A7BD5'};
-  const vbarsHTML = ['D','I','S','C'].map(dim => {
-    const pct = scores[dim] || 0;
-    const col = PROFILES[dim].color;
-    return `<div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;">
-      <span style="font-family:'Space Mono',monospace;font-size:8px;color:#5A7399;">${pct}%</span>
-      <div style="width:26px;height:110px;background:#D9E4F0;border-radius:5px;overflow:hidden;display:flex;align-items:flex-end;">
-        <div style="width:100%;height:${pct}%;background:${col};border-radius:5px 5px 0 0;"></div>
-      </div>
-      <span style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#1E3A5F;">${dim}</span>
-    </div>`;
+  const barsHTML = ['D','I','S','C'].map(dim => {
+    const pct = scores[dim] || 0; const col = dimColors[dim]; const isDom = dim === dominant;
+    return `<div class="bar-item${isDom ? '' : ' dim'}"><span class="bar-tag">${dimNames[dim]}</span><div class="bar-pct">${pct}%</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col};"></div></div></div>`;
   }).join('');
 
-  // ── Attribute tags ─────────────────────────────────────────
-  const attrsHTML = profile.traits.map(t =>
-    `<span style="font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:3px;border:1px solid ${accentColor}44;color:${accentColor};background:${accentColor}11;">${t}</span>`
-  ).join('');
+  const attrsHTML = profile.traits.map(t => `<span class="chip">${t}</span>`).join('');
 
-  // ── Insight blocks ─────────────────────────────────────────
-  const blockDefs = [
-    { label:'Pontos Fortes',      text: profile.strengths,     accent:'#3A7BD5' },
-    { label:'Pontos de Atenção',  text: profile.challenges,    accent:'#F5A623' },
-    { label:'Ambiente Ideal',     text: profile.environment,   accent:'#4ECBA0' },
-    { label:'Como se Comunicar',  text: profile.communication, accent:'#A78BFA' },
-  ];
-  const blocksHTML = blockDefs.map(b => `
-    <div style="background:#fff;border:1px solid #D0DCF0;border-radius:8px;padding:14px 16px 14px 19px;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:0;left:0;bottom:0;width:3px;background:${b.accent};"></div>
-      <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:#1E3A5F;margin-bottom:7px;">${b.label}</div>
-      <p style="font-size:10px;color:#4A6080;line-height:1.7;">${b.text}</p>
-    </div>`).join('');
-
-  // ── CSS ────────────────────────────────────────────────────
-  const css = `
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Outfit',sans-serif;background:#E8EEF7;color:#1E3A5F;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-    .page{width:794px;min-height:1123px;margin:0 auto;padding:36px 44px;background:#E8EEF7;}
-    /* HEADER */
-    .hd{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1.5px solid #C5D3E8;margin-bottom:18px;}
-    .brand{display:flex;align-items:center;gap:9px;}
-    .brand-cube{width:28px;height:28px;background:#1E3A5F;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;}
-    .brand-name{font-size:15px;font-weight:700;color:#1E3A5F;letter-spacing:-0.02em;}
-    .brand-name em{color:${accentColor};font-style:normal;}
-    .hd-meta{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:0.09em;color:#5A7399;text-align:right;}
-    /* USER */
-    .user-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
-    .user-name{font-size:20px;font-weight:700;color:#1E3A5F;letter-spacing:-0.01em;line-height:1;}
-    .user-sub{font-family:'Space Mono',monospace;font-size:7px;color:#5A7399;letter-spacing:0.08em;margin-top:3px;}
-    .result-hero{display:flex;align-items:center;gap:14px;}
-    .result-label{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:#5A7399;margin-bottom:4px;text-align:right;}
-    .result-title{font-size:30px;font-weight:800;color:${accentColor};letter-spacing:-0.02em;line-height:1;text-align:right;}
-    .result-code{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:0.1em;color:#1E3A5F;margin-top:3px;text-align:right;}
-    .result-pct{font-family:'Space Mono',monospace;font-size:30px;font-weight:700;color:#1E3A5F;letter-spacing:-0.02em;background:${accentColor}12;border:1.5px solid ${accentColor}33;padding:8px 18px;border-radius:6px;line-height:1;white-space:nowrap;}
-    .result-pct span{font-size:12px;color:#5A7399;font-weight:400;}
-    .divider{height:1.5px;background:#C5D3E8;margin:12px 0 16px;}
-    /* PANELS */
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
-    .panel{background:#fff;border:1px solid #D0DCF0;border-radius:10px;padding:16px 18px;}
-    .panel-title{font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#5A7399;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
-    .panel-title::before{content:'';display:inline-block;width:16px;height:2px;background:${accentColor};border-radius:2px;}
-    /* FOOTER */
-    .footer{padding-top:12px;border-top:1.5px solid #C5D3E8;display:flex;justify-content:space-between;align-items:center;}
-    .footer span{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:0.07em;color:#8FA8C8;}
-    /* BLOCKS SECTION */
-    .blocks-title{font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#5A7399;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #C5D3E8;display:flex;align-items:center;gap:8px;}
-    .blocks-title::before{content:'';display:inline-block;width:16px;height:2px;background:${accentColor};border-radius:2px;}
-    .blocks-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-    @media print{@page{margin:0;size:A4;}body{background:#E8EEF7!important;}.page{width:100%;padding:28px 36px;}}
-  `;
-
-  // ── HTML output ────────────────────────────────────────────
   const w = window.open('', '_blank');
   w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
-  <meta charset="UTF-8">
-  <title>Relatório DISC — ${nome} · Sistema Gnosis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>${css}</style>
-</head><body><div class="page">
-
-  <!-- HEADER -->
-  <div class="hd">
-    <div class="brand">
-      <div class="brand-cube">G</div>
-      <span class="brand-name">Sistema <em>Gnosis</em></span>
-    </div>
-    <div class="hd-meta">
-      [ SISTEMA: GNOSIS // MÓDULO: DISC // ID: ${nome.toUpperCase().replace(/\s+/g,'-')}-${new Date().getFullYear()} // STATUS: ANÁLISE COMPLETA ]
+  <meta charset="UTF-8"><title>Perfil DISC — ${nome} · Sistema Gnosis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>${_gnCss}</style></head><body><div class="page">
+  <div class="header">
+    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="32" height="32"><path d="M85 50C85 69.33 69.33 85 50 85C30.67 85 15 69.33 15 50C15 30.67 30.67 15 50 15C59.66 15 68.38 18.91 74.72 25.22" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><path d="M85 50H55" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="50" r="4" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
+    <div class="header-meta">Módulo: Perfil DISC<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
+  </div>
+  <div class="result-box">
+    <div class="result-box-label">Resultado_Diagnóstico_DISC</div>
+    <div style="text-align:center;">
+      <div class="result-eyebrow" style="color:${ACCENT};">Perfil_Vetor_${profile.code}</div>
+      <div class="result-title" style="color:${ACCENT};">${profile.title.toUpperCase()}</div>
+      <div class="bars-grid">${barsHTML}</div>
     </div>
   </div>
-
-  <!-- USER STRIP -->
-  <div class="user-row">
-    <div>
-      <div class="user-name">${nome.toUpperCase()}</div>
-      <div class="user-sub">// análise comportamental · ${data.toUpperCase()}</div>
-    </div>
-    <div class="result-hero">
-      <div>
-        <div class="result-label">Perfil dominante</div>
-        <div class="result-title">${profile.title}</div>
-        <div class="result-code">${profile.code}</div>
-      </div>
-      <div class="result-pct">${scores[dominant]}<span>%</span></div>
-    </div>
+  <div class="blueprint-grid">
+    <div class="blueprint-item"><span class="item-tag">Foco_Primário</span><div class="item-value">${focoMap[dominant]}</div></div>
+    <div class="blueprint-item"><span class="item-tag">Motivador</span><div class="item-value">${motivMap[dominant]}</div></div>
+    <div class="blueprint-item full"><span class="item-tag">Arquitetura_Comportamental</span><p class="item-text">${profile.strengths}</p></div>
+    <div class="blueprint-item"><span class="item-tag">Pontos_de_Atenção</span><p class="item-text">${profile.challenges}</p></div>
+    <div class="blueprint-item"><span class="item-tag">Ambiente_Ideal</span><p class="item-text">${profile.environment}</p></div>
+    <div class="blueprint-item full"><span class="item-tag">Como_se_Comunicar</span><p class="item-text">${profile.communication}</p></div>
   </div>
-  <div class="divider"></div>
-
-  <!-- MAIN PANELS -->
-  <div class="grid2">
-
-    <!-- RADAR -->
-    <div class="panel">
-      <div class="panel-title">Visão Geral do Perfil DISC</div>
-      <div style="display:flex;align-items:center;gap:16px;">
-        <svg width="170" height="170" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">${buildRadar(scores)}</svg>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          ${'DISC'.split('').map(d=>`
-          <div style="display:flex;align-items:center;gap:7px;font-size:9px;font-weight:600;color:#1E3A5F;">
-            <div style="width:8px;height:8px;border-radius:50%;background:${PROFILES[d].color};flex-shrink:0;"></div>
-            <span style="font-family:'Space Mono',monospace;">${d}: ${scores[d]}%</span>
-          </div>`).join('')}
-        </div>
-      </div>
-    </div>
-
-    <!-- MÉTRICAS -->
-    <div class="panel">
-      <div class="panel-title">Métricas de Intensidade</div>
-      <div style="display:flex;gap:10px;align-items:flex-end;justify-content:center;padding:6px 0 14px;">${vbarsHTML}</div>
-      <div style="border-top:1px solid #E0EAF5;padding-top:12px;">
-        <div class="panel-title" style="margin-bottom:8px;">Matriz de Atributos</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;">${attrsHTML}</div>
-      </div>
-    </div>
-
+  <div class="insight-box" style="margin-top:14px;">
+    <div class="insight-label">Matriz_de_Atributos</div>
+    <div class="chips">${attrsHTML}</div>
   </div>
-
-  <!-- INSIGHT BLOCKS -->
-  <div class="blocks-title">Blocos de Insight</div>
-  <div class="blocks-grid">${blocksHTML}</div>
-
-  <!-- FOOTER -->
-  <div class="footer">
-    <span>✦ CERTIFICADO DE ENGENHARIA COMPORTAMENTAL</span>
-    <span>sistemagnosis.com.br</span>
-    <span>CONFIDENCIAL | PÁGINA 1/1</span>
+  <div class="footer"><span class="footer-left">SISTEMA GNOSIS // ENGENHARIA COMPORTAMENTAL // CONFIDENCIAL</span><span class="footer-right">sistemagnosis.com.br</span></div>
   </div>
-
-</div>
-<script>window.onload=function(){setTimeout(function(){window.print();},600);}<\/script>
-</body></html>`);
+  <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
+  </body></html>\`);
   w.document.close();
 }
 
