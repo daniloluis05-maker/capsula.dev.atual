@@ -53,7 +53,7 @@ body{background:#d4d4d4;display:flex;flex-direction:column;align-items:center;pa
 .chip{font-family:'Space Mono',monospace;font-size:6.5px;padding:2px 7px;border:1px solid;text-transform:uppercase;letter-spacing:0.07em;}
 
 /* TENSÃO */
-.tension-box{margin-top:10px;padding-top:9px;border-top:1px solid #e4e4e7;flex-shrink:0;}
+.tension-box{margin-top:10px;padding-top:9px;border-top:1px solid #e4e4e7;flex:1;display:flex;flex-direction:column;justify-content:center;}
 .tension-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#71717a;margin-bottom:7px;}
 .tension-row{display:flex;align-items:center;gap:8px;}
 .tension-arch{display:flex;align-items:center;gap:6px;flex:1;padding:6px 8px;border:1px solid;border-radius:2px;}
@@ -62,7 +62,7 @@ body{background:#d4d4d4;display:flex;flex-direction:column;align-items:center;pa
 .tension-arch-name{font-size:8.5px;font-weight:700;}
 .tension-arch-pct{font-family:'Space Mono',monospace;font-size:7.5px;}
 .tension-arrow{font-family:'Space Mono',monospace;font-size:9px;color:#a1a1aa;flex-shrink:0;}
-.tension-note{font-size:7.5px;color:#71717a;line-height:1.65;margin-top:6px;}
+.tension-note{font-size:7.5px;color:#71717a;line-height:1.65;margin-top:6px;text-align:center;}
 
 /* GRUPOS */
 .group-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;}
@@ -155,7 +155,7 @@ body{background:#d4d4d4;display:flex;flex-direction:column;align-items:center;pa
 
         <!-- Zona de Tensão -->
         <div class="tension-box">
-          <div class="tension-lbl">// Zona de Tensão · Polaridade Arquetípica</div>
+          <div class="tension-lbl" style="text-align:center;">// Zona de Tensão · Polaridade Arquetípica</div>
           <div class="tension-row">
             <div class="tension-arch" style="border-color:#C9A84C35;background:#C9A84C08;">
               <div class="tension-arch-icon" style="background:#C9A84C15;border:1px solid #C9A84C30;">
