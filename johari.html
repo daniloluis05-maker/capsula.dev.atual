@@ -391,6 +391,105 @@ function generatePDF(){
   const aberto=[...selfSelected].filter(a=>othersSelected.has(a));
   const cego=[...othersSelected].filter(a=>!selfSelected.has(a));
   const oculto=[...selfSelected].filter(a=>!othersSelected.has(a));
+  // ── PDF v2: 2-col uniform layout ──
+  const mainRec = cego.length>oculto.length
+    ? `Sua Área Cega (${cego.length} traços) é maior que a Oculta (${oculto.length}), sugerindo que os outros percebem qualidades ou padrões que você ainda não reconhece em si. Peça feedback regular e esteja aberto a perspectivas externas.`
+    : `Sua Área Oculta (${oculto.length} traços) é maior que a Cega (${cego.length}), indicando que você guarda mais do que compartilha. Ampliar a Área Aberta através de mais vulnerabilidade seletiva fortalece seus vínculos profissionais e pessoais.`;
+
+  const panes=[
+    {title:'Área Aberta',desc:'você sabe · outros sabem',color:'#1BA8D4',items:aberto},
+    {title:'Área Cega',desc:'você não vê · outros veem',color:'#E8603A',items:cego},
+    {title:'Área Oculta',desc:'você sabe · outros não veem',color:'#6C5FE6',items:oculto},
+    {title:'Área Desconhecida',desc:'potencial a explorar',color:'#71717a',items:[],empty:'Traços a descobrir com o tempo.'},
+  ];
+
+  const _gnCss_jh = `*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.page{width:794px;height:1123px;overflow:hidden;margin:0 auto;padding:24px 34px;background:#f8fafc;display:flex;flex-direction:column;}
+.hd{display:flex;justify-content:space-between;align-items:center;padding-bottom:11px;border-bottom:2px solid #000;margin-bottom:13px;flex-shrink:0;}
+.brand{display:flex;align-items:center;gap:7px;}.brand-name{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:ACC;font-style:italic;font-weight:300;}
+.hd-meta{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;text-align:right;line-height:1.85;}
+.grid{display:grid;grid-template-columns:1fr 1.2fr;gap:11px;flex:1;min-height:0;}.col{display:flex;flex-direction:column;gap:9px;min-height:0;overflow:hidden;}
+.pn{background:#fafafa;border:1px solid #000;padding:13px 15px;position:relative;flex-shrink:0;}
+.pn-grow{background:#fff;border:1px solid #000;padding:13px 15px;position:relative;flex:1;min-height:0;display:flex;flex-direction:column;}
+.lbl{position:absolute;top:-8px;left:12px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:6.5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.15em;}
+.dom-hero{display:flex;align-items:center;gap:11px;margin-bottom:9px;}
+.dom-ew{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:ACC;margin-bottom:2px;}
+.dom-name{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;line-height:1.1;}
+.ins-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:ACC;margin-bottom:7px;display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.ins-lbl::before{content:'';width:14px;height:2px;background:ACC;border-radius:2px;display:inline-block;}
+.ins-txt{font-size:8.5px;color:#444;line-height:1.75;flex-shrink:0;}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;flex-shrink:0;}
+.stat{border:1px solid;padding:8px 10px;border-radius:2px;}
+.stat-n{font-size:22px;font-weight:900;line-height:1;}.stat-lbl{font-family:'Space Mono',monospace;font-size:6px;text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;}
+.rec-box{margin-top:9px;padding-top:9px;border-top:1px solid #e4e4e7;flex:1;display:flex;flex-direction:column;justify-content:center;}
+.rec-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#71717a;margin-bottom:7px;}
+.rec-txt{font-size:8px;color:#444;line-height:1.7;}
+.pane-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0;}
+.pane{background:#fafafa;border:1px solid #e4e4e7;padding:10px 12px;display:flex;flex-direction:column;overflow:hidden;}
+.pane-title{font-size:9px;font-weight:700;margin-bottom:2px;}
+.pane-desc{font-family:'Space Mono',monospace;font-size:6px;color:#71717a;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #f1f5f9;}
+.chips-wrap{display:flex;flex-wrap:wrap;gap:3px;overflow:hidden;}
+.chip{font-family:'Space Mono',monospace;font-size:6px;padding:2px 5px;border:1px solid;text-transform:uppercase;letter-spacing:0.06em;}
+.ft{padding-top:9px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:9px;flex-shrink:0;}
+.ft-l{font-family:'Space Mono',monospace;font-size:6px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}
+.ft-r{font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;color:#000;}
+@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;}}`.split('ACC').join(ACCENT);
+
+  const panesHTML = panes.map(p=>{
+    const chips = p.items.length>0
+      ? `<div class="chips-wrap">${p.items.map(a=>`<span class="chip" style="border-color:${p.color}40;color:${p.color};background:${p.color}07;">${a}</span>`).join('')}</div>`
+      : `<span style="font-family:'Space Mono',monospace;font-size:8px;color:#a1a1aa;">${p.empty||'// nenhum traço'}</span>`;
+    return `<div class="pane" style="border-left:3px solid ${p.color};">
+      <div class="pane-title" style="color:${p.color};">${p.title}</div>
+      <div class="pane-desc">${p.desc}</div>
+      ${chips}
+    </div>`;
+  }).join('');
+
+  _imprimirPDF(`<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8"><title>Janela de Johari — ${nome} · Sistema Gnosis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>${_gnCss_jh}</style></head><body><div class="page">
+  <div class="hd">
+    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="26" height="26"><path d="M85 50C85 69.33 69.33 85 50 85C30.67 85 15 69.33 15 50C15 30.67 30.67 15 50 15C59.66 15 68.38 18.91 74.72 25.22" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><path d="M85 50H55" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="50" r="4" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
+    <div class="hd-meta">Módulo: Janela de Johari · Autopercepção<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
+  </div>
+  <div class="grid">
+    <div class="col">
+      <div class="pn">
+        <div class="lbl">Resultado_Johari</div>
+        <div>
+          <div class="dom-ew">Resultado · Janela de Johari</div>
+          <div class="dom-name" style="color:${ACCENT};">Janela de Johari</div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat" style="border-color:#1BA8D430;background:#1BA8D407;"><div class="stat-n" style="color:#1BA8D4;">${aberto.length}</div><div class="stat-lbl" style="color:#1BA8D4;">Área Aberta</div></div>
+          <div class="stat" style="border-color:#E8603A30;background:#E8603A07;"><div class="stat-n" style="color:#E8603A;">${cego.length}</div><div class="stat-lbl" style="color:#E8603A;">Área Cega</div></div>
+          <div class="stat" style="border-color:#6C5FE630;background:#6C5FE607;"><div class="stat-n" style="color:#6C5FE6;">${oculto.length}</div><div class="stat-lbl" style="color:#6C5FE6;">Área Oculta</div></div>
+        </div>
+      </div>
+      <div class="pn-grow">
+        <div class="lbl">Análise_do_Perfil</div>
+        <div class="ins-lbl">Síntese Johari</div>
+        <p class="ins-txt">A Janela de Johari mapeia quatro quadrantes de autopercepção em relação a como os outros te enxergam. A área aberta (${aberto.length} traços) reflete alinhamento entre sua autopercepção e a percepção externa. É o terreno de maior confiança e efetividade relacional.</p>
+        <div class="rec-box">
+          <div class="rec-lbl">// Recomendação Principal</div>
+          <p class="rec-txt">${mainRec}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="pn-grow" style="flex:1;">
+        <div class="lbl">Mapa_das_Quatro_Áreas</div>
+        <div class="pane-grid" style="margin-top:8px;">${panesHTML}</div>
+      </div>
+    </div>
+  </div>
+  <div class="ft"><span class="ft-l">Sistema Gnosis // Janela de Johari // Autopercepção // Confidencial</span><span class="ft-r">sistemagnosis.com.br</span></div>
+  </div>
+  <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
+  </body></html>`);
+  return; // skip old code
 
   const _gnCss = `*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page{width:794px;min-height:1123px;margin:0 auto;padding:40px 48px;background:#f8fafc;}.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:20px;border-bottom:2px solid #000;margin-bottom:28px;}.brand{display:flex;align-items:center;gap:10px;}.brand-name{font-size:17px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:GNOSIS_ACCENT;font-style:italic;font-weight:300;}.header-meta{font-family:'Space Mono',monospace;font-size:8px;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;text-align:right;line-height:1.9;}.result-box{background:#fafafa;border:1px solid #000;padding:28px 32px;margin-bottom:24px;position:relative;}.result-box-label{position:absolute;top:-10px;left:20px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:8px;padding:2px 10px;text-transform:uppercase;letter-spacing:0.2em;}.result-eyebrow{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:6px;color:GNOSIS_ACCENT;}.result-title{font-family:'Inter',sans-serif;font-size:50px;font-weight:900;text-transform:uppercase;letter-spacing:-0.05em;line-height:1;}.bars-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px;}.bar-item{border:1px solid #e4e4e7;padding:12px;background:#fff;}.bar-item.dim{opacity:0.4;}.bar-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.bar-pct{font-size:22px;font-weight:900;}.bar-track{height:4px;background:#f1f5f9;border-radius:2px;margin-top:6px;overflow:hidden;}.bar-fill{height:100%;border-radius:2px;}.blueprint-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}.blueprint-item{border:1px solid #e4e4e7;padding:14px 16px;background:#fff;}.blueprint-item.full{grid-column:1/-1;}.item-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.item-value{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-style:italic;}.item-text{font-size:11px;line-height:1.75;color:#333;}.rank-item{display:flex;align-items:center;gap:12px;border:1px solid #e4e4e7;padding:11px 15px;margin-bottom:7px;background:#fff;}.rank-item.top{border-color:#000;border-left:3px solid GNOSIS_ACCENT;}.rank-num{font-family:'Space Mono',monospace;font-size:9px;color:#a1a1aa;min-width:22px;}.rank-icon{font-size:18px;}.rank-name{font-size:13px;font-weight:700;flex:1;}.rank-meta{font-size:10px;color:#71717a;margin-top:2px;}.rank-score{font-family:'Space Mono',monospace;font-size:9px;color:#71717a;white-space:nowrap;}.rank-dots{display:flex;gap:3px;}.insight-box{background:#fff;border:1px solid #000;padding:20px 24px;margin-bottom:14px;}.insight-label{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:GNOSIS_ACCENT;margin-bottom:10px;display:flex;align-items:center;gap:8px;}.insight-label::before{content:'';display:inline-block;width:20px;height:2px;background:GNOSIS_ACCENT;border-radius:2px;}.insight-text{font-size:11px;color:#444;line-height:1.8;}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}.chip{font-family:'Space Mono',monospace;font-size:8px;padding:4px 10px;border:1px solid GNOSIS_ACCENT;color:GNOSIS_ACCENT;letter-spacing:0.08em;text-transform:uppercase;}.quad-card{background:#fff;padding:16px 18px;border:1px solid #e4e4e7;overflow:hidden;}.footer{padding-top:14px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:24px;}.footer-left{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}.footer-right{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:#000;}@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;padding:28px 36px;}}`.split('GNOSIS_ACCENT').join(ACCENT);
 
