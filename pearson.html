@@ -216,6 +216,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
     <div class="dominant-card" id="dominant-card">
       <span class="dominant-eyebrow">arquétipo dominante</span>
+      <div id="dominant-icon" style="margin-bottom:0.5rem;"></div>
       <div class="dominant-name" id="dominant-name">—</div>
       <div class="dominant-theme" id="dominant-theme">—</div>
       <div class="dominant-desc" id="dominant-desc">—</div>
@@ -281,6 +282,26 @@ const ARCHETYPES = {
 };
 
 const GROUP_COLORS = { ego:'#E8603A', soul:'#2EC4A0', self:'#9B59B6', drive:'#1BA8D4' };
+
+const ARCH_ICONS = {
+  innocente: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
+  orfao:     '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  guerreiro: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  prestativo:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+  buscador:  '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
+  destruidor:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  amante:    '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+  criador:   '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>',
+  governante:'<path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/><line x1="2" y1="20" x2="22" y2="20"/>',
+  mago:      '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="2" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="22" y2="12"/>',
+  sabio:     '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  bobo:      '<polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>',
+};
+
+function archSvg(key, color, size) {
+  size = size || 20;
+  return '<svg viewBox="0 0 24 24" style="width:'+size+'px;height:'+size+'px;stroke:'+color+';stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round;">'+(ARCH_ICONS[key]||'')+'</svg>';
+}
 
 // ══════════════════════════════════════
 // QUESTÕES — 60 itens (5 por arquétipo)
@@ -597,7 +618,9 @@ function showResult(){
 
   // Card dominante
   const card = document.getElementById('dominant-card');
-  card.setAttribute('data-icon', topArch.icon);
+  card.setAttribute('data-icon', '');
+  const iconEl = document.getElementById('dominant-icon');
+  if(iconEl) iconEl.innerHTML = archSvg(topKey, topArch.color, 40);
   card.style.borderColor = topArch.color + '40';
   card.style.background = `linear-gradient(135deg,${topArch.color}0A,rgba(155,89,182,0.04))`;
   document.getElementById('dominant-name').textContent = topArch.name;
@@ -621,7 +644,7 @@ function showResult(){
     const a = ARCHETYPES[k];
     return `
       <div class="arch-result-card ${i===0?'highlight':''}" style="${i===0?`border-color:${a.color}44;background:${a.color}08;`:''}">
-        <div class="arch-icon-wrap" style="background:${a.color}18;border:1px solid ${a.color}30;">${a.icon}</div>
+        <div class="arch-icon-wrap" style="background:${a.color}18;border:1px solid ${a.color}30;">${archSvg(k, a.color, 18)}</div>
         <div>
           <div class="arch-result-name">${a.name}</div>
           <div class="arch-result-group" style="color:${GROUP_COLORS[a.group]}">${a.groupName} · ${score >= 60 ? 'Forte' : score >= 40 ? 'Moderado' : 'Latente'}</div>
@@ -717,7 +740,8 @@ function generatePDF(){
 .arch-career{font-size:8.5px;line-height:1.6;color:#71717a;margin-top:6px;padding-top:6px;border-top:1px solid #e4e4e7;}
 .score-row{display:flex;align-items:center;gap:7px;padding:3px 0;border-bottom:1px solid #f1f5f9;}
 .score-rank{font-family:'Space Mono',monospace;font-size:7px;color:#a1a1aa;min-width:14px;}
-.score-icon{font-size:12px;min-width:18px;text-align:center;}
+.score-icon{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.score-icon svg{width:13px;height:13px;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
 .score-name{font-size:9.5px;font-weight:700;flex:1;}
 .score-track{flex:0 0 80px;height:3px;background:#f1f5f9;border-radius:2px;overflow:hidden;}
 .score-fill{height:100%;border-radius:2px;}
@@ -735,7 +759,7 @@ function generatePDF(){
     const a = ARCHETYPES[k];
     return `<div class="score-row">
       <span class="score-rank">${String(i+1).padStart(2,'0')}</span>
-      <span class="score-icon">${a.icon}</span>
+      <span class="score-icon"><svg viewBox="0 0 24 24" style="stroke:${a.color};">${ARCH_ICONS[k]||''}</svg></span>
       <span class="score-name">${a.name}</span>
       <div class="score-track"><div class="score-fill" style="width:${score}%;background:${a.color};"></div></div>
       <span class="score-pct" style="color:${a.color};">${score}%</span>
@@ -758,7 +782,8 @@ function generatePDF(){
       <div class="panel">
         <div class="panel-label">Arquétipo_Dominante</div>
         <div class="eyebrow">Resultado · Pearson-Marr</div>
-        <div class="arch-title" style="color:${topArch.color};">${topArch.icon} ${topArch.name.toUpperCase()}</div>
+        <div style="margin-bottom:6px;"><svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:${topArch.color};stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round;">${ARCH_ICONS[topKey]||''}</svg></div>
+        <div class="arch-title" style="color:${topArch.color};">${topArch.name.toUpperCase()}</div>
         <div class="arch-badge" style="color:${ACCENT};border-color:${ACCENT}40;">⬡ ${topArch.groupName} · ${topArch.theme}</div>
         <p class="arch-desc">${topArch.hi}</p>
         <p class="arch-career">${topArch.career}</p>
