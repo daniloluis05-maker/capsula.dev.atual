@@ -496,6 +496,8 @@ const QUADRANTS = [
 // ══════════════════════════════════════
 let currentQ = 0; // quadrant index 0-3
 let answers  = { S: {}, O: {}, A: {}, R: {} };
+let _isLoadingExisting = false;
+
 
 // ══════════════════════════════════════
 // NAVIGATION
@@ -805,8 +807,7 @@ function generatePDF() {
     </div>`
   ).join('');
 
-  const w = window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
+  _imprimirPDF(`<!DOCTYPE html><html lang="pt-BR"><head>
   <meta charset="UTF-8"><title>Análise SOAR — ${nome} · Sistema Gnosis</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>${_gnCss}</style></head><body><div class="page">
@@ -831,7 +832,6 @@ function generatePDF() {
   </div>
   <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
   </body></html>\`);
-  w.document.close();
 }
 
 // ══════════════════════════════════════
@@ -853,6 +853,19 @@ function shareResult() {
 // INICIALIZAÇÃO DA PÁGINA
 // ══════════════════════════════════════
 function initPage() {
+  // Redirect: se já tem resultado salvo, mostra direto
+  try {
+    var _raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+    if (_raw) {
+      var _u = JSON.parse(_raw);
+      if (_u.soar && _u.soar.completedAt && _u.soar.answers) {
+        answers = _u.soar.answers;
+        _isLoadingExisting = true;
+        showResult();
+        return;
+      }
+    }
+  } catch(_e) { console.warn('[soar redirect]', _e); }
   const userData = JSON.parse(
     localStorage.getItem('capsula_user') ||
     sessionStorage.getItem('capsula_user') ||
@@ -926,19 +939,17 @@ function showCopyToast(msg) {
   t._timer = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(12px)'; }, 2800);
 }
 
+function _imprimirPDF(html){
+  var old=document.getElementById('_pdf_frame');if(old)old.remove();
+  var iframe=document.createElement('iframe');iframe.id='_pdf_frame';
+  iframe.setAttribute('style','position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;border:none;');
+  document.body.appendChild(iframe);
+  var doc=iframe.contentDocument||iframe.contentWindow.document;
+  doc.open();doc.write(html);doc.close();
+  iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='soar-resultado.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
+}
 document.addEventListener('DOMContentLoaded', initPage);
 </script>
-<script>
-(function() {
-  try {
-    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    if (!raw) return;
-    var u = JSON.parse(raw);
-    if (!u.soar || !u.soar.completedAt || !u.soar.answers) return;
-    answers = u.soar.answers;
-    showResult();
-  } catch(e) { console.warn('[soar redirect]', e); }
-})();
-</script>
+
 </body>
 </html>

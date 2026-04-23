@@ -247,6 +247,7 @@ const QUADRANTS = [
 
 let currentQ = 0;
 let answers = {ama:{}, bom:{}, precisa:{}, paga:{}};
+let _isLoadingExisting = false;
 
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 
@@ -385,6 +386,20 @@ function showResult(){
 
 // Restaura rascunho e proteção de rota
 document.addEventListener('DOMContentLoaded', function(){
+
+  // Redirect: se já tem resultado salvo, mostra direto
+  try {
+    var _raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+    if (_raw) {
+      var _u = JSON.parse(_raw);
+      if (_u.ikigai && _u.ikigai.completedAt && _u.ikigai.answers) {
+        answers = _u.ikigai.answers;
+        _isLoadingExisting = true;
+        showResult();
+        return;
+      }
+    }
+  } catch(_e) { console.warn('[ikigai redirect]', _e); }
   try{
     const u=(capsulaDB.lsGetUser() || {});
     if(u.ikigai_draft)answers=u.ikigai_draft;
@@ -462,17 +477,6 @@ function _imprimirPDF(html){
   iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='ikigai.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
 }
 </script>
-<script>
-(function() {
-  try {
-    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    if (!raw) return;
-    var u = JSON.parse(raw);
-    if (!u.ikigai || !u.ikigai.completedAt || !u.ikigai.answers) return;
-    answers = u.ikigai.answers;
-    showResult();
-  } catch(e) { console.warn('[ikigai redirect]', e); }
-})();
-</script>
+
 </body>
 </html>

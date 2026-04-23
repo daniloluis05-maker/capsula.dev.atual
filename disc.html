@@ -22,9 +22,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
 <!-- Supabase JS (Auth + DB) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" defer></script>
-<script src="js/config.js" defer></script>
-<script src="js/db.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
   <script src="js/ui.js" defer></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1004,6 +1004,7 @@ const PROFILES = {
 let currentQ   = 0;
 let answers    = new Array(QUESTIONS.length).fill(null);
 let scores     = { D: 0, I: 0, S: 0, C: 0 };
+let _isLoadingExisting = false; // true quando carregando resultado já salvo
 
 // ══════════════════════════════════════
 // NAVIGATION
@@ -1236,6 +1237,7 @@ async function showResult() {
   if (!userData.uid) {
     userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
   }
+  if (!_isLoadingExisting) {
   userData.disc = { dominant, scores, completedAt: new Date().toISOString() };
   capsulaDB.lsSetUser(userData);
   try { sessionStorage.setItem('capsula_user', JSON.stringify(userData)); } catch(_) {}
@@ -1253,6 +1255,7 @@ async function showResult() {
       capsulaDB.lsSetUsers(perfis);
     }
   } catch(e) { /* silencioso */ }
+  } // end !_isLoadingExisting
 }
 
 // ══════════════════════════════════════
@@ -1388,6 +1391,19 @@ function initPage() {
   // Inicia onboarding se necessário
   obInit();
 }
+  // Redirect: se já tem resultado salvo, mostra direto
+  try {
+    var _raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+    if (_raw) {
+      var _u = JSON.parse(_raw);
+      if (_u.disc && _u.disc.completedAt && _u.disc.scores) {
+        scores = _u.disc.scores;
+        _isLoadingExisting = true;
+        showResult();
+        return;
+      }
+    }
+  } catch(_e) { console.warn('[disc redirect]', _e); }
 
 document.addEventListener('DOMContentLoaded', initPage);
 
@@ -1415,8 +1431,7 @@ function generatePDF() {
 
   const attrsHTML = profile.traits.map(t => `<span class="chip">${t}</span>`).join('');
 
-  const w = window.open('', '_blank');
-  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
+  _imprimirPDF(`<!DOCTYPE html><html lang="pt-BR"><head>
   <meta charset="UTF-8"><title>Perfil DISC — ${nome} · Sistema Gnosis</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>${_gnCss}</style></head><body><div class="page">
@@ -1448,9 +1463,17 @@ function generatePDF() {
   </div>
   <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
   </body></html>\`);
-  w.document.close();
 }
 
+function _imprimirPDF(html){
+  var old=document.getElementById('_pdf_frame');if(old)old.remove();
+  var iframe=document.createElement('iframe');iframe.id='_pdf_frame';
+  iframe.setAttribute('style','position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;border:none;');
+  document.body.appendChild(iframe);
+  var doc=iframe.contentDocument||iframe.contentWindow.document;
+  doc.open();doc.write(html);doc.close();
+  iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='disc-resultado.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
+}
 // ══════════════════════════════════════
 // SHARE
 // ══════════════════════════════════════
@@ -1567,17 +1590,6 @@ function showCopyToast(msg) {
 }
 .ob-btn-start:hover { box-shadow: 0 0 50px rgba(108,95,230,0.55); transform: translateY(-1px); opacity: 0.9; }
 </style>
-<script>
-(function() {
-  try {
-    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    if (!raw) return;
-    var u = JSON.parse(raw);
-    if (!u.disc || !u.disc.completedAt || !u.disc.scores) return;
-    scores = u.disc.scores;
-    showResult();
-  } catch(e) { console.warn('[disc redirect]', e); }
-})();
-</script>
+
 </body>
 </html>

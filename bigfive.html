@@ -327,6 +327,7 @@ const HINTS = ['Discordo totalmente','Discordo','Neutro','Concordo','Concordo to
 
 let currentQ = 0;
 let answers = []; // array de 44 posições, valores 1-5
+let _isLoadingExisting = false;
 
 // ── Navegação de páginas
 function showPage(id){
@@ -641,6 +642,7 @@ function showResult(){
   }
 
   // Salva no localStorage
+  if (!_isLoadingExisting) {
   const u = (capsulaDB.lsGetUser() || {});
   if (!u.uid) { u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); }
   u.bigfive = { scores, completedAt: new Date().toISOString() };
@@ -653,6 +655,7 @@ function showResult(){
   } catch(e) {}
   // Sync Supabase
   if(window.capsulaDB && u.email){ capsulaDB.saveUser(u).catch(e => console.warn('[bigfive] sync:', e)); }
+  } // end !_isLoadingExisting
 }
 
 // ══════════════════════════════════════
@@ -724,6 +727,20 @@ function _imprimirPDF(html){
 // ── Proteção de rota
 document.addEventListener('DOMContentLoaded', function(){
   try{
+
+  // Redirect: se já tem resultado salvo, mostra direto
+  try {
+    var _raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+    if (_raw) {
+      var _u = JSON.parse(_raw);
+      if (_u.bigfive && _u.bigfive.completedAt && _u.bigfive.scores) {
+        var _orig = window.calcScores; window.calcScores = function() { return _u.bigfive.scores; };
+        _isLoadingExisting = true;
+        showResult();
+        return;
+      }
+    }
+  } catch(_e) { console.warn('[bigfive redirect]', _e); }
     const u = (capsulaDB.lsGetUser() || {});
     if(!u.nome && !u.apelido && !u.email && !(u.bigfive && u.bigfive.completedAt)) window.location.href = 'index.html';
     // Auto-heal uid
@@ -733,20 +750,6 @@ document.addEventListener('DOMContentLoaded', function(){
   } catch(e) {}
 });
 </script>
-<script>
-(function() {
-  try {
-    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    if (!raw) return;
-    var u = JSON.parse(raw);
-    if (!u.bigfive || !u.bigfive.completedAt || !u.bigfive.scores) return;
-    var saved = u.bigfive.scores;
-    var orig = window.calcScores;
-    window.calcScores = function() { return saved; };
-    showResult();
-    window.calcScores = orig;
-  } catch(e) { console.warn('[bigfive redirect]', e); }
-})();
-</script>
+
 </body>
 </html>

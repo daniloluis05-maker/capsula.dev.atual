@@ -241,6 +241,7 @@ const ANCHORS = [
 const HINTS = ['Não me representa','Me representa pouco','Neutro','Me representa bem','Me representa muito'];
 let currentA = 0;
 let scores = {};
+let _isLoadingExisting = false;
 
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 
@@ -337,7 +338,21 @@ function showResult(){
 }
 
 // Proteção de rota
-document.addEventListener('DOMContentLoaded',function(){try{const u=(capsulaDB.lsGetUser() || {});if(!u.nome&&!u.apelido&&!u.email&&!(u.ancoras&&u.ancoras.completedAt))window.location.href='index.html';if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}}catch(e){}});
+document.addEventListener('DOMContentLoaded',function(){
+  // Redirect: se já tem resultado salvo, mostra direto
+  try {
+    var _raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+    if (_raw) {
+      var _u = JSON.parse(_raw);
+      if (_u.ancoras && _u.ancoras.completedAt && _u.ancoras.scores) {
+        scores = _u.ancoras.scores;
+        _isLoadingExisting = true;
+        showResult();
+        return;
+      }
+    }
+  } catch(_e) { console.warn('[ancoras redirect]', _e); }
+try{const u=(capsulaDB.lsGetUser() || {});if(!u.nome&&!u.apelido&&!u.email&&!(u.ancoras&&u.ancoras.completedAt))window.location.href='index.html';if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}}catch(e){}});
 
 function generatePDF(){
   const u=(capsulaDB.lsGetUser()||{});
@@ -408,17 +423,6 @@ function _imprimirPDF(html){
   iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='ancoras-carreira.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
 }
 </script>
-<script>
-(function() {
-  try {
-    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    if (!raw) return;
-    var u = JSON.parse(raw);
-    if (!u.ancoras || !u.ancoras.completedAt || !u.ancoras.scores) return;
-    scores = u.ancoras.scores;
-    showResult();
-  } catch(e) { console.warn('[ancoras redirect]', e); }
-})();
-</script>
+
 </body>
 </html>

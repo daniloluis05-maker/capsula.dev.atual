@@ -221,6 +221,7 @@ const ALL_ADJECTIVES = [
 
 let step = 1; // 1 = eu mesmo, 2 = como os outros me veem
 let selfSelected = new Set();
+let _isLoadingExisting = false;
 let othersSelected = new Set();
 
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
@@ -364,7 +365,21 @@ function showResult(){
 }
 
 // Proteção de rota
-document.addEventListener('DOMContentLoaded',function(){try{const u=(capsulaDB.lsGetUser() || {});if(!u.nome&&!u.apelido&&!u.email&&!(u.johari&&u.johari.completedAt))window.location.href='index.html';if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}}catch(e){}});
+document.addEventListener('DOMContentLoaded',function(){
+  // Redirect: se já tem resultado salvo, mostra direto
+  try {
+    var _raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+    if (_raw) {
+      var _u = JSON.parse(_raw);
+      if (_u.johari && _u.johari.completedAt && _u.johari.self && _u.johari.others) {
+        selfSelected = new Set(_u.johari.self); othersSelected = new Set(_u.johari.others);
+        _isLoadingExisting = true;
+        showResult();
+        return;
+      }
+    }
+  } catch(_e) { console.warn('[johari redirect]', _e); }
+try{const u=(capsulaDB.lsGetUser() || {});if(!u.nome&&!u.apelido&&!u.email&&!(u.johari&&u.johari.completedAt))window.location.href='index.html';if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}}catch(e){}});
 
 function generatePDF(){
   const u=(capsulaDB.lsGetUser() || {});
@@ -443,19 +458,6 @@ function _imprimirPDF(html){
   iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='johari.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
 }
 </script>
-<script>
-(function() {
-  try {
-    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    if (!raw) return;
-    var u = JSON.parse(raw);
-    if (!u.johari || !u.johari.completedAt) return;
-    if (!u.johari.self || !u.johari.others) return;
-    selfSelected = new Set(u.johari.self);
-    othersSelected = new Set(u.johari.others);
-    showResult();
-  } catch(e) { console.warn('[johari redirect]', e); }
-})();
-</script>
+
 </body>
 </html>
