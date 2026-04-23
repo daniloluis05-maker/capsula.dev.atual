@@ -330,23 +330,20 @@
    * @returns {object|null} userData
    */
   async function ensureUserData() {
-    let userData = lsGetUser();
-    if (userData && (userData.nome || userData.email || userData.apelido)) {
-      return userData;
-    }
     const db = getDB();
-    if (!db) return userData || null;
-    try {
-      const { data: { session } } = await db.auth.getSession();
-      if (session && session.user) {
-        const profile = await authLoadUserProfile(session.user);
-        if (profile) {
-          lsSetUser(profile);
-          return profile;
+    if (db) {
+      try {
+        const { data: { session } } = await db.auth.getSession();
+        if (session && session.user) {
+          const profile = await authLoadUserProfile(session.user);
+          if (profile) {
+            lsSetUser(profile);
+            return profile;
+          }
         }
-      }
-    } catch(e) { console.warn('[db] ensureUserData:', e); }
-    return userData || null;
+      } catch(e) { console.warn('[db] ensureUserData:', e); }
+    }
+    return lsGetUser() || null;
   }
 
   // ── Exporta para escopo global ──────────────────────────────
