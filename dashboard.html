@@ -258,7 +258,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <span class="section-eyebrow">Eixo Individual</span>
         <h2>Matrizes de Autoconhecimento</h2>
       </div>
-      <span class="section-note">6 matrizes disponíveis</span>
+      <span class="section-note">7 matrizes disponíveis</span>
     </div>
 
     <div class="matrices-grid">
@@ -597,7 +597,7 @@ function loadMatrixState(userData){
 
   // Progresso
   const discP=discDone?100:0;
-  const totalP=Math.min(Math.round(10+(total/5)*90),100);
+  const totalP=Math.min(Math.round(10+(total/8)*90),100);
   setProgress('disc-pct','disc-fill',discP);
   setProgress('soar-pct','soar-fill',soarPct);
   setProgress('total-pct','total-fill',totalP);

@@ -1368,6 +1368,16 @@ function initPage() {
     return;
   }
 
+  // Redirect: se já tem resultado salvo, mostra direto (antes do onboarding)
+  try {
+    if (userData.disc && userData.disc.completedAt && userData.disc.scores) {
+      scores = userData.disc.scores;
+      _isLoadingExisting = true;
+      showResult();
+      return;
+    }
+  } catch(_e) { console.warn('[disc redirect]', _e); }
+
   // Auto-heal: garante que uid sempre existe
   if (!userData.uid) {
     userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
@@ -1391,19 +1401,6 @@ function initPage() {
   // Inicia onboarding se necessário
   obInit();
 }
-  // Redirect: se já tem resultado salvo, mostra direto
-  try {
-    var _raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    if (_raw) {
-      var _u = JSON.parse(_raw);
-      if (_u.disc && _u.disc.completedAt && _u.disc.scores) {
-        scores = _u.disc.scores;
-        _isLoadingExisting = true;
-        showResult();
-        return;
-      }
-    }
-  } catch(_e) { console.warn('[disc redirect]', _e); }
 
 document.addEventListener('DOMContentLoaded', initPage);
 

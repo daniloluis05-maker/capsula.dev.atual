@@ -687,26 +687,22 @@ function showResult(){
 
 document.addEventListener('DOMContentLoaded', function(){
   try{
-    const u = (capsulaDB.lsGetUser() || {});
+    const raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+    const u = raw ? JSON.parse(raw) : {};
+
+    // Redirect: se já tem resultado salvo, mostra direto (antes do auth guard)
+    if (u.pearson && u.pearson.completedAt && u.pearson.scores) {
+      var saved = u.pearson.scores;
+      window.calcScores = function() { return saved; };
+      showResult();
+      return;
+    }
+
+    // Auth guard
     if(!u.nome && !u.apelido && !u.email && !(u.pearson && u.pearson.completedAt)) window.location.href = 'index.html';
     if(!u.uid){ u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); try{ capsulaDB.lsSetUser(u); }catch(_){} }
   }catch(e){}
 });
-</script>
-<script>
-(function() {
-  try {
-    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    if (!raw) return;
-    var u = JSON.parse(raw);
-    if (!u.pearson || !u.pearson.completedAt || !u.pearson.scores) return;
-    var saved = u.pearson.scores;
-    var orig = window.calcScores;
-    window.calcScores = function() { return saved; };
-    showResult();
-    window.calcScores = orig;
-  } catch(e) { console.warn('[pearson redirect]', e); }
-})();
 </script>
 </body>
 </html>
