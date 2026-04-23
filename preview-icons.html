@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Preview — Ícones Arquétipos</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: #07080C; color: #fff; padding: 48px; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Mono&display=swap');
+  h1 { font-size: 13px; font-family: 'Space Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase; color: #71717a; margin-bottom: 32px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; max-width: 900px; }
+  .card { background: #111318; border: 1px solid #1e1f26; border-radius: 10px; padding: 20px 18px; display: flex; align-items: center; gap: 14px; }
+  .icon-wrap { width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .icon-wrap svg { width: 20px; height: 20px; stroke-width: 1.75; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .name { font-size: 13px; font-weight: 700; }
+  .group { font-family: 'Space Mono', monospace; font-size: 9px; color: #71717a; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 3px; }
+  .theme { font-size: 10px; color: #a1a1aa; margin-top: 2px; }
+
+  h2 { font-size: 11px; font-family: 'Space Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: #71717a; margin: 40px 0 16px; }
+
+  /* PDF preview */
+  .pdf-preview { background: #f8fafc; color: #000; border-radius: 8px; padding: 28px 32px; max-width: 900px; margin-top: 48px; }
+  .pdf-preview h1 { color: #71717a; margin-bottom: 20px; }
+  .pdf-row { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid #f1f5f9; }
+  .pdf-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
+  .pdf-icon svg { width: 14px; height: 14px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .pdf-rank { font-family: 'Space Mono', monospace; font-size: 8px; color: #a1a1aa; min-width: 18px; }
+  .pdf-name { font-size: 11px; font-weight: 700; flex: 1; }
+  .pdf-bar-track { flex: 0 0 100px; height: 3px; background: #f1f5f9; border-radius: 2px; overflow: hidden; }
+  .pdf-bar-fill { height: 100%; border-radius: 2px; }
+  .pdf-pct { font-family: 'Space Mono', monospace; font-size: 9px; min-width: 32px; text-align: right; }
+</style>
+</head>
+<body>
+
+<h1>// Preview · Ícones SVG para Arquétipos de Jung · Pearson-Marr</h1>
+
+<h2>Web — Cards de Resultado</h2>
+<div class="grid">
+
+  <!-- Inocente -->
+  <div class="card">
+    <div class="icon-wrap" style="background:#F0C96B18;border:1px solid #F0C96B30;">
+      <svg viewBox="0 0 24 24" style="stroke:#F0C96B;">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+      </svg>
+    </div>
+    <div>
+      <div class="name">Inocente</div>
+      <div class="group" style="color:#E8603A">Ego</div>
+      <div class="theme">Otimismo e fé no bem</div>
+    </div>
+  </div>
+
+  <!-- Órfão -->
+  <div class="card">
+    <div class="icon-wrap" style="background:#2EC4A018;border:1px solid #2EC4A030;">
+      <svg viewBox="0 0 24 24" style="stroke:#2EC4A0;">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    </div>
+    <div>
+      <div class="name">Órfão</div>
+      <div class="group" style="color:#2EC4A0">Alma</div>
+      <div class="theme">Empatia e solidariedade</div>
+    </div>
+  </div>
+
+  <!-- Guerreiro -->
+  <div class="card">
+    <div class="icon-wrap" style="background:#E8603A18;border:1px solid #E8603A30;">
+      <svg viewBox="0 0 24 24" style="stroke:#E8603A;">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    </div>
+    <div>
+      <div class="name">Guerreiro</div>
+      <div class="group" style="color:#E8603A">Ego</div>
+      <div class="theme">Coragem e disciplina</div>
+    </div>
+  </div>
+
+  <!-- Prestativo -->
+  <div class="card">
+    <div class="icon-wrap" style="background:#1BA8D418;border:1px solid #1BA8D430;">
+      <svg viewBox="0 0 24 24" style="stroke:#1BA8D4;">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    </div>
+    <div>
+      <div class="name">Prestativo</div>
+      <div class="group" style="color:#2EC4A0">Alma</div>
+      <div class="theme">Altruísmo e cuidado</div>
+    </div>
+  </div>
+
+  <!-- Buscador -->
+  <div class="card">
+    <div class="icon-wrap" style="background:#6C5FE618;border:1px solid #6C5FE630;">
+      <svg viewBox="0 0 24 24" style="stroke:#6C5FE6;">
+        <circle cx="12" cy="12" r="10"/>
+        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+      </svg>
+    </div>
+    <div>
+      <div class="name">Buscador</div>
+      <div class="group" style="color:#1BA8D4">Liberdade</div>
+      <div class="theme">Autonomia e autenticidade</div>
+    </div>
+  </div>
+
+  <!-- Destruidor -->
+  <div class="card">
+    <div class="icon-wrap" style="background:#E74C3C18;border:1px solid #E74C3C30;">
+      <svg viewBox="0 0 24 24" style="stroke:#E74C3C;">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+    </div>
+    <div>
+      <div class="name">Destruidor</div>
+      <div class="group" style="color:#9B59B6">Self</div>
+      <div class="theme">Metamorfose e ruptura</div>
+    </div>
+  </div>
+
+  <!-- Amante -->
+  <div class="card">
+    <div class="icon-wrap" style="background:#E91E8C18;border:1px solid #E91E8C30;">
+      <svg viewBox="0 0 24 24" style="stroke:#E91E8C;">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+    </div>
+    <div>
+      <div class="name">Amante</div>
+      <div class="group" style="color:#2EC4A0">Alma</div>
+      <div class="theme">Paixão e conexão profunda</div>
+    </div>
+  </div>
+
+  <!-- Criador -->
+  <div class="card">
+    <div class="icon-wrap" style="background:#9B59B618;border:1px solid #9B59B630;">
+      <svg viewBox="0 0 24 24" style="stroke:#9B59B6;">
+        <path d="M12 20h9"/>
+        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+      </svg>
+    </div>
+    <div>
+      <div class="name">Criador</div>
+      <div class="group" style="color:#9B59B6">Self</div>
+      <div class="theme">Imaginação e expressão</div>
+    </div>
+  </div>
+
+  <!-- Governante -->
+  <div class="card">
+    <div class="icon-wrap" style="background:#C9A84C18;border:1px solid #C9A84C30;">
+      <svg viewBox="0 0 24 24" style="stroke:#C9A84C;">
+        <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/>
+        <line x1="2" y1="20" x2="22" y2="20"/>
+      </svg>
+    </div>
+    <div>
+      <div class="name">Governante</div>
+      <div class="group" style="color:#E8603A">Ego</div>
+      <div class="theme">Liderança e ordem</div>
+    </div>
+  </div>
+
+  <!-- Mago -->
+  <div class="card">
+    <div class="icon-wrap" style="background:#8E44AD18;border:1px solid #8E44AD30;">
+      <svg viewBox="0 0 24 24" style="stroke:#8E44AD;">
+        <circle cx="12" cy="12" r="10"/>
+        <circle cx="12" cy="12" r="4"/>
+        <line x1="12" y1="2" x2="12" y2="8"/>
+        <line x1="12" y1="16" x2="12" y2="22"/>
+        <line x1="2" y1="12" x2="8" y2="12"/>
+        <line x1="16" y1="12" x2="22" y2="12"/>
+      </svg>
+    </div>
+    <div>
+      <div class="name">Mago</div>
+      <div class="group" style="color:#9B59B6">Self</div>
+      <div class="theme">Transformação e visão sistêmica</div>
+    </div>
+  </div>
+
+  <!-- Sábio -->
+  <div class="card">
+    <div class="icon-wrap" style="background:#3498DB18;border:1px solid #3498DB30;">
+      <svg viewBox="0 0 24 24" style="stroke:#3498DB;">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+      </svg>
+    </div>
+    <div>
+      <div class="name">Sábio</div>
+      <div class="group" style="color:#1BA8D4">Liberdade</div>
+      <div class="theme">Conhecimento e verdade</div>
+    </div>
+  </div>
+
+  <!-- Bobo da Corte -->
+  <div class="card">
+    <div class="icon-wrap" style="background:#27AE6018;border:1px solid #27AE6030;">
+      <svg viewBox="0 0 24 24" style="stroke:#27AE60;">
+        <polyline points="16 3 21 3 21 8"/>
+        <line x1="4" y1="20" x2="21" y2="3"/>
+        <polyline points="21 16 21 21 16 21"/>
+        <line x1="15" y1="15" x2="21" y2="21"/>
+      </svg>
+    </div>
+    <div>
+      <div class="name">Bobo da Corte</div>
+      <div class="group" style="color:#1BA8D4">Liberdade</div>
+      <div class="theme">Leveza e disrupção lúdica</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PDF preview -->
+<h2>PDF — Ranking de Arquétipos (simulação)</h2>
+<div class="pdf-preview">
+  <p style="font-family:monospace;font-size:9px;color:#71717a;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.1em;">Ranking_12_Arquétipos</p>
+
+  <div class="pdf-row">
+    <span class="pdf-rank">01</span>
+    <div class="pdf-icon"><svg viewBox="0 0 24 24" style="stroke:#C9A84C;"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+    <span class="pdf-name" style="color:#000;">Governante</span>
+    <div class="pdf-bar-track"><div class="pdf-bar-fill" style="width:88%;background:#C9A84C;"></div></div>
+    <span class="pdf-pct" style="color:#C9A84C;">88%</span>
+  </div>
+
+  <div class="pdf-row">
+    <span class="pdf-rank">02</span>
+    <div class="pdf-icon"><svg viewBox="0 0 24 24" style="stroke:#E8603A;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+    <span class="pdf-name" style="color:#000;">Guerreiro</span>
+    <div class="pdf-bar-track"><div class="pdf-bar-fill" style="width:75%;background:#E8603A;"></div></div>
+    <span class="pdf-pct" style="color:#E8603A;">75%</span>
+  </div>
+
+  <div class="pdf-row">
+    <span class="pdf-rank">03</span>
+    <div class="pdf-icon"><svg viewBox="0 0 24 24" style="stroke:#8E44AD;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="2" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="22" y2="12"/></svg></div>
+    <span class="pdf-name" style="color:#000;">Mago</span>
+    <div class="pdf-bar-track"><div class="pdf-bar-fill" style="width:70%;background:#8E44AD;"></div></div>
+    <span class="pdf-pct" style="color:#8E44AD;">70%</span>
+  </div>
+
+  <div class="pdf-row">
+    <span class="pdf-rank">04</span>
+    <div class="pdf-icon"><svg viewBox="0 0 24 24" style="stroke:#3498DB;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+    <span class="pdf-name" style="color:#000;">Sábio</span>
+    <div class="pdf-bar-track"><div class="pdf-bar-fill" style="width:62%;background:#3498DB;"></div></div>
+    <span class="pdf-pct" style="color:#3498DB;">62%</span>
+  </div>
+
+  <div class="pdf-row">
+    <span class="pdf-rank">05</span>
+    <div class="pdf-icon"><svg viewBox="0 0 24 24" style="stroke:#9B59B6;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+    <span class="pdf-name" style="color:#000;">Criador</span>
+    <div class="pdf-bar-track"><div class="pdf-bar-fill" style="width:58%;background:#9B59B6;"></div></div>
+    <span class="pdf-pct" style="color:#9B59B6;">58%</span>
+  </div>
+
+  <div class="pdf-row">
+    <span class="pdf-rank">06</span>
+    <div class="pdf-icon"><svg viewBox="0 0 24 24" style="stroke:#6C5FE6;"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
+    <span class="pdf-name" style="color:#000;">Buscador</span>
+    <div class="pdf-bar-track"><div class="pdf-bar-fill" style="width:50%;background:#6C5FE6;"></div></div>
+    <span class="pdf-pct" style="color:#6C5FE6;">50%</span>
+  </div>
+
+</div>
+
+</body>
+</html>
