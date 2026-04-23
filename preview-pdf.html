@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Preview PDF — Pearson-Marr</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#e8e8e8;display:flex;flex-direction:column;align-items:center;padding:40px 20px;gap:40px;}
+label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#666;margin-bottom:8px;display:block;}
+
+/* ── PAGE ── */
+.page{
+  width:794px;height:1123px;overflow:hidden;
+  background:#f8fafc;
+  padding:26px 36px;
+  display:flex;flex-direction:column;
+  box-shadow:0 4px 32px rgba(0,0,0,0.18);
+}
+
+/* ── HEADER ── */
+.header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-bottom:12px;border-bottom:2px solid #000;margin-bottom:14px;flex-shrink:0;
+}
+.brand{display:flex;align-items:center;gap:8px;}
+.brand-name{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;font-family:'Inter',sans-serif;}
+.brand-name em{color:#C9A84C;font-style:italic;font-weight:300;}
+.header-meta{font-family:'Space Mono',monospace;font-size:7.5px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;text-align:right;line-height:1.8;}
+
+/* ── BODY GRID ── */
+.body-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:0;}
+.col{display:flex;flex-direction:column;gap:10px;min-height:0;}
+
+/* ── PANELS ── */
+.panel{background:#fafafa;border:1px solid #000;padding:14px 16px;position:relative;flex-shrink:0;}
+.panel-fill{background:#fafafa;border:1px solid #000;padding:14px 16px;position:relative;flex:1;min-height:0;}
+.panel-label{position:absolute;top:-9px;left:14px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:7px;padding:1px 8px;text-transform:uppercase;letter-spacing:0.15em;}
+.eyebrow{font-family:'Space Mono',monospace;font-size:8px;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:#C9A84C;margin-bottom:8px;}
+
+/* ── DOMINANT CARD ── */
+.dominant-hero{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.dominant-icon-wrap{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dominant-icon-wrap svg{width:28px;height:28px;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.dominant-eyebrow{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:#C9A84C;margin-bottom:3px;}
+.dominant-name{font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;line-height:1;font-family:'Inter',sans-serif;}
+.arch-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:7px;padding:2px 8px;border:1px solid;text-transform:uppercase;letter-spacing:0.08em;margin-top:8px;}
+.arch-desc{font-size:9.5px;line-height:1.7;color:#333;margin-top:10px;font-family:'Inter',sans-serif;}
+.arch-career{font-size:8.5px;line-height:1.65;color:#71717a;margin-top:8px;padding-top:8px;border-top:1px solid #e4e4e7;font-family:'Inter',sans-serif;}
+
+/* ── INSIGHT ── */
+.insight-panel{background:#fff;border:1px solid #000;padding:12px 14px;flex:1;position:relative;}
+.insight-label{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#C9A84C;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.insight-label::before{content:'';display:inline-block;width:16px;height:2px;background:#C9A84C;border-radius:2px;}
+.insight-text{font-size:9px;color:#444;line-height:1.75;font-family:'Inter',sans-serif;}
+
+/* ── RANKING ── */
+.score-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid #f1f5f9;}
+.score-rank{font-family:'Space Mono',monospace;font-size:7.5px;color:#a1a1aa;min-width:16px;}
+.score-icon-wrap{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.score-icon-wrap svg{width:13px;height:13px;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.score-name{font-size:9.5px;font-weight:700;flex:1;font-family:'Inter',sans-serif;}
+.score-track{flex:1;height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;max-width:120px;}
+.score-fill{height:100%;border-radius:3px;}
+.score-pct{font-family:'Space Mono',monospace;font-size:8px;min-width:30px;text-align:right;}
+
+/* ── GROUP SUMMARY ── */
+.group-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
+.group-cell{border:1px solid;padding:8px 10px;border-radius:2px;}
+.group-cell-label{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
+.group-cell-score{font-size:18px;font-weight:900;line-height:1;font-family:'Inter',sans-serif;}
+.group-cell-sub{font-family:'Space Mono',monospace;font-size:6.5px;color:#71717a;margin-top:2px;}
+
+/* ── FOOTER ── */
+.footer{padding-top:10px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-shrink:0;}
+.footer-left{font-family:'Space Mono',monospace;font-size:6.5px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}
+.footer-right{font-family:'Space Mono',monospace;font-size:8px;font-weight:700;color:#000;}
+</style>
+</head>
+<body>
+
+<label>// Preview · PDF Pearson-Marr · Proposta de melhoria</label>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="brand">
+      <svg viewBox="0 0 100 100" fill="none" width="28" height="28">
+        <path d="M85 50C85 69.33 69.33 85 50 85C30.67 85 15 69.33 15 50C15 30.67 30.67 15 50 15C59.66 15 68.38 18.91 74.72 25.22" stroke="#C9A84C" stroke-width="6" stroke-linecap="round"/>
+        <path d="M85 50H55" stroke="#C9A84C" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="85" cy="50" r="4" fill="#C9A84C"/>
+      </svg>
+      <span class="brand-name">SISTEMA <em>Gnosis</em></span>
+    </div>
+    <div class="header-meta">Módulo: Pearson-Marr · Arquétipos de Jung<br>23 DE ABRIL DE 2026<br>DANILO LUIS</div>
+  </div>
+
+  <!-- BODY -->
+  <div class="body-grid">
+
+    <!-- COL ESQUERDA -->
+    <div class="col">
+
+      <!-- Arquétipo Dominante -->
+      <div class="panel">
+        <div class="panel-label">Arquétipo_Dominante</div>
+
+        <div class="dominant-hero">
+          <div class="dominant-icon-wrap" style="background:#C9A84C15;border:1px solid #C9A84C30;">
+            <svg viewBox="0 0 24 24" style="stroke:#C9A84C;">
+              <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/>
+              <line x1="2" y1="20" x2="22" y2="20"/>
+            </svg>
+          </div>
+          <div>
+            <div class="dominant-eyebrow">Resultado · Pearson-Marr</div>
+            <div class="dominant-name" style="color:#C9A84C;">Governante</div>
+          </div>
+        </div>
+
+        <div class="arch-badge" style="color:#E8603A;border-color:#E8603A40;background:#E8603A0A;">
+          <svg viewBox="0 0 24 24" width="9" height="9" style="stroke:#E8603A;fill:none;stroke-width:2;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Ego · Liderança e Ordem
+        </div>
+
+        <p class="arch-desc">Você sente responsabilidade natural de organizar pessoas e recursos para um objetivo maior. O caos o incomoda e você tem facilidade em enxergar o panorama geral e tomar decisões que funcionam no longo prazo.</p>
+        <p class="arch-career">Gestão executiva, política, empreendedorismo em escala, estratégia corporativa e qualquer papel de liderança com poder real.</p>
+      </div>
+
+      <!-- Análise do Perfil -->
+      <div class="insight-panel">
+        <div class="insight-label">Análise_do_Perfil</div>
+        <p class="insight-text">
+          Seu arquétipo dominante é <strong>Governante (100%)</strong>. Você sente responsabilidade natural de organizar pessoas e recursos para um objetivo maior. O caos o incomoda e você tem facilidade em enxergar o panorama geral e tomar decisões que funcionam no longo prazo.<br><br>
+          Seu segundo arquétipo mais forte é <strong>Guerreiro</strong> — coragem e disciplina.<br><br>
+          ✦ <em>Guerreiro + Governante: você tem a disciplina para executar e a visão para liderar. Alta capacidade de construir e manter estruturas de alta performance.</em>
+        </p>
+      </div>
+
+      <!-- Grupos -->
+      <div class="panel" style="flex-shrink:0;">
+        <div class="panel-label">Média_por_Grupo</div>
+        <div class="group-grid" style="margin-top:6px;">
+          <div class="group-cell" style="border-color:#E8603A30;background:#E8603A08;">
+            <div class="group-cell-label" style="color:#E8603A;">⬡ Ego</div>
+            <div class="group-cell-score" style="color:#E8603A;">93%</div>
+            <div class="group-cell-sub">Inocente · Guerreiro · Governante</div>
+          </div>
+          <div class="group-cell" style="border-color:#2EC4A030;background:#2EC4A008;">
+            <div class="group-cell-label" style="color:#2EC4A0;">⬡ Alma</div>
+            <div class="group-cell-score" style="color:#2EC4A0;">71%</div>
+            <div class="group-cell-sub">Órfão · Prestativo · Amante</div>
+          </div>
+          <div class="group-cell" style="border-color:#9B59B630;background:#9B59B608;">
+            <div class="group-cell-label" style="color:#9B59B6;">⬡ Self</div>
+            <div class="group-cell-score" style="color:#9B59B6;">85%</div>
+            <div class="group-cell-sub">Destruidor · Criador · Mago</div>
+          </div>
+          <div class="group-cell" style="border-color:#1BA8D430;background:#1BA8D408;">
+            <div class="group-cell-label" style="color:#1BA8D4;">⬡ Liberdade</div>
+            <div class="group-cell-score" style="color:#1BA8D4;">43%</div>
+            <div class="group-cell-sub">Buscador · Sábio · Bobo</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COL DIREITA -->
+    <div class="col">
+      <div class="panel-fill">
+        <div class="panel-label">Ranking_12_Arquétipos</div>
+        <div style="padding-top:6px;">
+
+          <!-- 01 Governante -->
+          <div class="score-row">
+            <span class="score-rank">01</span>
+            <div class="score-icon-wrap" style="background:#C9A84C15;border:1px solid #C9A84C30;">
+              <svg viewBox="0 0 24 24" style="stroke:#C9A84C;"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+            </div>
+            <span class="score-name">Governante</span>
+            <div class="score-track"><div class="score-fill" style="width:100%;background:#C9A84C;"></div></div>
+            <span class="score-pct" style="color:#C9A84C;">100%</span>
+          </div>
+
+          <!-- 02 Guerreiro -->
+          <div class="score-row">
+            <span class="score-rank">02</span>
+            <div class="score-icon-wrap" style="background:#E8603A15;border:1px solid #E8603A30;">
+              <svg viewBox="0 0 24 24" style="stroke:#E8603A;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <span class="score-name">Guerreiro</span>
+            <div class="score-track"><div class="score-fill" style="width:90%;background:#E8603A;"></div></div>
+            <span class="score-pct" style="color:#E8603A;">90%</span>
+          </div>
+
+          <!-- 03 Destruidor -->
+          <div class="score-row">
+            <span class="score-rank">03</span>
+            <div class="score-icon-wrap" style="background:#E74C3C15;border:1px solid #E74C3C30;">
+              <svg viewBox="0 0 24 24" style="stroke:#E74C3C;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <span class="score-name">Destruidor</span>
+            <div class="score-track"><div class="score-fill" style="width:90%;background:#E74C3C;"></div></div>
+            <span class="score-pct" style="color:#E74C3C;">90%</span>
+          </div>
+
+          <!-- 04 Prestativo -->
+          <div class="score-row">
+            <span class="score-rank">04</span>
+            <div class="score-icon-wrap" style="background:#1BA8D415;border:1px solid #1BA8D430;">
+              <svg viewBox="0 0 24 24" style="stroke:#1BA8D4;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <span class="score-name">Prestativo</span>
+            <div class="score-track"><div class="score-fill" style="width:90%;background:#1BA8D4;"></div></div>
+            <span class="score-pct" style="color:#1BA8D4;">90%</span>
+          </div>
+
+          <!-- 05 Sábio -->
+          <div class="score-row">
+            <span class="score-rank">05</span>
+            <div class="score-icon-wrap" style="background:#3498DB15;border:1px solid #3498DB30;">
+              <svg viewBox="0 0 24 24" style="stroke:#3498DB;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <span class="score-name">Sábio</span>
+            <div class="score-track"><div class="score-fill" style="width:85%;background:#3498DB;"></div></div>
+            <span class="score-pct" style="color:#3498DB;">85%</span>
+          </div>
+
+          <!-- 06 Criador -->
+          <div class="score-row">
+            <span class="score-rank">06</span>
+            <div class="score-icon-wrap" style="background:#9B59B615;border:1px solid #9B59B630;">
+              <svg viewBox="0 0 24 24" style="stroke:#9B59B6;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </div>
+            <span class="score-name">Criador</span>
+            <div class="score-track"><div class="score-fill" style="width:85%;background:#9B59B6;"></div></div>
+            <span class="score-pct" style="color:#9B59B6;">85%</span>
+          </div>
+
+          <!-- 07 Mago -->
+          <div class="score-row">
+            <span class="score-rank">07</span>
+            <div class="score-icon-wrap" style="background:#8E44AD15;border:1px solid #8E44AD30;">
+              <svg viewBox="0 0 24 24" style="stroke:#8E44AD;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="2" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="22" y2="12"/></svg>
+            </div>
+            <span class="score-name">Mago</span>
+            <div class="score-track"><div class="score-fill" style="width:80%;background:#8E44AD;"></div></div>
+            <span class="score-pct" style="color:#8E44AD;">80%</span>
+          </div>
+
+          <!-- 08 Órfão -->
+          <div class="score-row">
+            <span class="score-rank">08</span>
+            <div class="score-icon-wrap" style="background:#2EC4A015;border:1px solid #2EC4A030;">
+              <svg viewBox="0 0 24 24" style="stroke:#2EC4A0;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <span class="score-name">Órfão</span>
+            <div class="score-track"><div class="score-fill" style="width:65%;background:#2EC4A0;"></div></div>
+            <span class="score-pct" style="color:#2EC4A0;">65%</span>
+          </div>
+
+          <!-- 09 Bobo da Corte -->
+          <div class="score-row">
+            <span class="score-rank">09</span>
+            <div class="score-icon-wrap" style="background:#27AE6015;border:1px solid #27AE6030;">
+              <svg viewBox="0 0 24 24" style="stroke:#27AE60;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+            </div>
+            <span class="score-name">Bobo da Corte</span>
+            <div class="score-track"><div class="score-fill" style="width:40%;background:#27AE60;"></div></div>
+            <span class="score-pct" style="color:#27AE60;">40%</span>
+          </div>
+
+          <!-- 10 Buscador -->
+          <div class="score-row">
+            <span class="score-rank">10</span>
+            <div class="score-icon-wrap" style="background:#6C5FE615;border:1px solid #6C5FE630;">
+              <svg viewBox="0 0 24 24" style="stroke:#6C5FE6;"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+            </div>
+            <span class="score-name">Buscador</span>
+            <div class="score-track"><div class="score-fill" style="width:40%;background:#6C5FE6;"></div></div>
+            <span class="score-pct" style="color:#6C5FE6;">40%</span>
+          </div>
+
+          <!-- 11 Amante -->
+          <div class="score-row">
+            <span class="score-rank">11</span>
+            <div class="score-icon-wrap" style="background:#E91E8C15;border:1px solid #E91E8C30;">
+              <svg viewBox="0 0 24 24" style="stroke:#E91E8C;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <span class="score-name">Amante</span>
+            <div class="score-track"><div class="score-fill" style="width:30%;background:#E91E8C;"></div></div>
+            <span class="score-pct" style="color:#E91E8C;">30%</span>
+          </div>
+
+          <!-- 12 Inocente -->
+          <div class="score-row" style="border-bottom:none;">
+            <span class="score-rank">12</span>
+            <div class="score-icon-wrap" style="background:#F0C96B15;border:1px solid #F0C96B30;">
+              <svg viewBox="0 0 24 24" style="stroke:#F0C96B;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            </div>
+            <span class="score-name">Inocente</span>
+            <div class="score-track"><div class="score-fill" style="width:5%;background:#F0C96B;"></div></div>
+            <span class="score-pct" style="color:#F0C96B;">5%</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span class="footer-left">Sistema Gnosis // Psicologia Junguiana // Pearson-Marr // Confidencial</span>
+    <span class="footer-right">sistemagnosis.com.br</span>
+  </div>
+
+</div>
+
+</body>
+</html>
