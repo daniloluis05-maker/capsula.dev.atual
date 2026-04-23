@@ -852,28 +852,21 @@ function shareResult() {
 // ══════════════════════════════════════
 // INICIALIZAÇÃO DA PÁGINA
 // ══════════════════════════════════════
-function initPage() {
+async function initPage() {
+  // Tenta localStorage; se vazio, busca sessão Supabase
+  let userData = null;
+  try { userData = await capsulaDB.ensureUserData(); } catch(_e) {}
+
   // Redirect: se já tem resultado salvo, mostra direto
-  try {
-    var _raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    if (_raw) {
-      var _u = JSON.parse(_raw);
-      if (_u.soar && _u.soar.completedAt && _u.soar.answers) {
-        answers = _u.soar.answers;
-        _isLoadingExisting = true;
-        showResult();
-        return;
-      }
-    }
-  } catch(_e) { console.warn('[soar redirect]', _e); }
-  const userData = JSON.parse(
-    localStorage.getItem('capsula_user') ||
-    sessionStorage.getItem('capsula_user') ||
-    'null'
-  );
+  if (userData && userData.soar && userData.soar.completedAt && userData.soar.answers) {
+    answers = userData.soar.answers;
+    _isLoadingExisting = true;
+    showResult();
+    return;
+  }
 
   // Guard: sem usuário cadastrado → volta para index
-  if (!userData || (!userData.nome && !userData.apelido && !userData.email && !(userData.soar && userData.soar.completedAt))) {
+  if (!userData || (!userData.nome && !userData.apelido && !userData.email)) {
     window.location.href = 'index.html';
     return;
   }

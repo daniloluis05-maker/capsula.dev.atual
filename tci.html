@@ -577,9 +577,9 @@ function generatePDF() {
 }
 
 // Proteção de rota + restaura resultado anterior
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   try {
-    const u = capsulaDB.lsGetUser() || {};
+    const u = (await capsulaDB.ensureUserData()) || {};
     if (!u.nome && !u.apelido && !u.email && !(u.tci && u.tci.completedAt)) {
       window.location.href = 'index.html'; return;
     }
@@ -587,11 +587,9 @@ document.addEventListener('DOMContentLoaded', function() {
       u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
       try { capsulaDB.lsSetUser(u); } catch(_) {}
     }
-    // Restaura resultado anterior se existir
     if (u.tci && u.tci.completedAt && u.tci.scores) {
-      // Pre-populate answers map for PDF to work
       answers = {};
-      QUESTIONS.forEach(q => { answers[q.id] = 3; }); // placeholder
+      QUESTIONS.forEach(q => { answers[q.id] = 3; });
       showResult(u.tci.scores);
     }
   } catch(e) {}

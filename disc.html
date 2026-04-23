@@ -1357,10 +1357,10 @@ function obFinish() {
 // ══════════════════════════════════════
 // INICIALIZAÇÃO DA PÁGINA
 // ══════════════════════════════════════
-function initPage() {
-  const raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+async function initPage() {
+  // Tenta localStorage; se vazio, busca sessão Supabase e popula localStorage
   let userData = null;
-  try { userData = raw ? JSON.parse(raw) : null; } catch(_) {}
+  try { userData = await capsulaDB.ensureUserData(); } catch(_) {}
 
   // Guard: sem usuário cadastrado → redireciona para cadastro
   if (!userData) {

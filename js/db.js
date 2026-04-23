@@ -322,6 +322,33 @@
     return { error };
   }
 
+  // ── Garante dados do usuário: localStorage → Supabase Auth ─
+  /**
+   * Retorna dados do usuário do localStorage.
+   * Se não houver dados locais, busca sessão ativa do Supabase e
+   * popula o localStorage antes de retornar.
+   * @returns {object|null} userData
+   */
+  async function ensureUserData() {
+    let userData = lsGetUser();
+    if (userData && (userData.nome || userData.email || userData.apelido)) {
+      return userData;
+    }
+    const db = getDB();
+    if (!db) return userData || null;
+    try {
+      const { data: { session } } = await db.auth.getSession();
+      if (session && session.user) {
+        const profile = await authLoadUserProfile(session.user);
+        if (profile) {
+          lsSetUser(profile);
+          return profile;
+        }
+      }
+    } catch(e) { console.warn('[db] ensureUserData:', e); }
+    return userData || null;
+  }
+
   // ── Exporta para escopo global ──────────────────────────────
   window.capsulaDB = {
     getDB,
@@ -337,6 +364,7 @@
     authSignOut,
     authLoadUserProfile,
     authResetPassword,
+    ensureUserData,
     // localStorage seguro
     lsGet,
     lsGetRaw,

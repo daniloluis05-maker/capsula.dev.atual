@@ -725,29 +725,23 @@ function _imprimirPDF(html){
 }
 
 // ── Proteção de rota
-document.addEventListener('DOMContentLoaded', function(){
-  try{
+document.addEventListener('DOMContentLoaded', async function(){
+  let _u = null;
+  try { _u = await capsulaDB.ensureUserData(); } catch(_e) {}
 
-  // Redirect: se já tem resultado salvo, mostra direto
-  try {
-    var _raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    if (_raw) {
-      var _u = JSON.parse(_raw);
-      if (_u.bigfive && _u.bigfive.completedAt && _u.bigfive.scores) {
-        var _orig = window.calcScores; window.calcScores = function() { return _u.bigfive.scores; };
-        _isLoadingExisting = true;
-        showResult();
-        return;
-      }
-    }
-  } catch(_e) { console.warn('[bigfive redirect]', _e); }
-    const u = (capsulaDB.lsGetUser() || {});
-    if(!u.nome && !u.apelido && !u.email && !(u.bigfive && u.bigfive.completedAt)) window.location.href = 'index.html';
-    // Auto-heal uid
-    if(!u.uid){ u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2); try{capsulaDB.lsSetUser(u);}catch(_){} }
-    // Restaura rascunho (caso tenha saído no meio)
-    if(u.bigfive_draft) answers = u.bigfive_draft;
-  } catch(e) {}
+  if (_u && _u.bigfive && _u.bigfive.completedAt && _u.bigfive.scores) {
+    window.calcScores = function() { return _u.bigfive.scores; };
+    _isLoadingExisting = true;
+    showResult();
+    return;
+  }
+
+  if (!_u || (!_u.nome && !_u.apelido && !_u.email)) {
+    window.location.href = 'index.html';
+    return;
+  }
+  if (!_u.uid) { _u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2); try{capsulaDB.lsSetUser(_u);}catch(_){} }
+  if (_u.bigfive_draft) answers = _u.bigfive_draft;
 });
 </script>
 

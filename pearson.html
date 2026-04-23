@@ -685,23 +685,20 @@ function showResult(){
   if(window.capsulaDB && u.email){ capsulaDB.saveUser(u).catch(e => console.warn('[pearson] sync:', e)); }
 }
 
-document.addEventListener('DOMContentLoaded', function(){
-  try{
-    const raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    const u = raw ? JSON.parse(raw) : {};
+document.addEventListener('DOMContentLoaded', async function(){
+  let u = null;
+  try { u = await capsulaDB.ensureUserData(); } catch(e) {}
+  u = u || {};
 
-    // Redirect: se já tem resultado salvo, mostra direto (antes do auth guard)
-    if (u.pearson && u.pearson.completedAt && u.pearson.scores) {
-      var saved = u.pearson.scores;
-      window.calcScores = function() { return saved; };
-      showResult();
-      return;
-    }
+  if (u.pearson && u.pearson.completedAt && u.pearson.scores) {
+    var saved = u.pearson.scores;
+    window.calcScores = function() { return saved; };
+    showResult();
+    return;
+  }
 
-    // Auth guard
-    if(!u.nome && !u.apelido && !u.email && !(u.pearson && u.pearson.completedAt)) window.location.href = 'index.html';
-    if(!u.uid){ u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); try{ capsulaDB.lsSetUser(u); }catch(_){} }
-  }catch(e){}
+  if (!u.nome && !u.apelido && !u.email) { window.location.href = 'index.html'; return; }
+  if (!u.uid) { u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); try{ capsulaDB.lsSetUser(u); }catch(_){} }
 });
 </script>
 </body>

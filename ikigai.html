@@ -385,29 +385,26 @@ function showResult(){
 }
 
 // Restaura rascunho e proteção de rota
-document.addEventListener('DOMContentLoaded', function(){
+document.addEventListener('DOMContentLoaded', async function(){
+  // Tenta localStorage; se vazio, busca sessão Supabase
+  let _u = null;
+  try { _u = await capsulaDB.ensureUserData(); } catch(_e) {}
 
   // Redirect: se já tem resultado salvo, mostra direto
-  try {
-    var _raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    if (_raw) {
-      var _u = JSON.parse(_raw);
-      if (_u.ikigai && _u.ikigai.completedAt && _u.ikigai.answers) {
-        answers = _u.ikigai.answers;
-        _isLoadingExisting = true;
-        showResult();
-        return;
-      }
-    }
-  } catch(_e) { console.warn('[ikigai redirect]', _e); }
-  try{
-    const u=(capsulaDB.lsGetUser() || {});
-    if(u.ikigai_draft)answers=u.ikigai_draft;
-    // Proteção de rota
-    if(!u.nome&&!u.apelido&&!u.email&&!(u.ikigai&&u.ikigai.completedAt))window.location.href='index.html';
-    // Auto-heal uid
-    if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}
-  }catch(e){}
+  if (_u && _u.ikigai && _u.ikigai.completedAt && _u.ikigai.answers) {
+    answers = _u.ikigai.answers;
+    _isLoadingExisting = true;
+    showResult();
+    return;
+  }
+
+  // Proteção de rota
+  if (!_u || (!_u.nome && !_u.apelido && !_u.email)) {
+    window.location.href = 'index.html';
+    return;
+  }
+  if (_u.ikigai_draft) answers = _u.ikigai_draft;
+  if (!_u.uid) { _u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); try { capsulaDB.lsSetUser(_u); } catch(_) {} }
 });
 
 function generatePDF(){

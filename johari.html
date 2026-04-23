@@ -365,21 +365,23 @@ function showResult(){
 }
 
 // Proteção de rota
-document.addEventListener('DOMContentLoaded',function(){
-  // Redirect: se já tem resultado salvo, mostra direto
-  try {
-    var _raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    if (_raw) {
-      var _u = JSON.parse(_raw);
-      if (_u.johari && _u.johari.completedAt && _u.johari.self && _u.johari.others) {
-        selfSelected = new Set(_u.johari.self); othersSelected = new Set(_u.johari.others);
-        _isLoadingExisting = true;
-        showResult();
-        return;
-      }
-    }
-  } catch(_e) { console.warn('[johari redirect]', _e); }
-try{const u=(capsulaDB.lsGetUser() || {});if(!u.nome&&!u.apelido&&!u.email&&!(u.johari&&u.johari.completedAt))window.location.href='index.html';if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}}catch(e){}});
+document.addEventListener('DOMContentLoaded', async function(){
+  let _u = null;
+  try { _u = await capsulaDB.ensureUserData(); } catch(_e) {}
+
+  if (_u && _u.johari && _u.johari.completedAt && _u.johari.self && _u.johari.others) {
+    selfSelected = new Set(_u.johari.self); othersSelected = new Set(_u.johari.others);
+    _isLoadingExisting = true;
+    showResult();
+    return;
+  }
+
+  if (!_u || (!_u.nome && !_u.apelido && !_u.email)) {
+    window.location.href = 'index.html';
+    return;
+  }
+  if (!_u.uid) { _u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); try { capsulaDB.lsSetUser(_u); } catch(_) {} }
+});
 
 function generatePDF(){
   const u=(capsulaDB.lsGetUser() || {});
