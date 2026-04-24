@@ -1345,11 +1345,24 @@ function obFinish() {
 // INICIALIZAÇÃO DA PÁGINA
 // ══════════════════════════════════════
 async function initPage() {
-  // Fast path: lê localStorage direto antes de chamar Supabase
-  const _ls = capsulaDB.lsGetUser() || {};
-  if (_ls.disc && _ls.disc.completedAt && _ls.disc.scores) {
-    scores = _ls.disc.scores;
+  // Busca dados de disc em qualquer fonte disponível
+  function _findDisc() {
+    try {
+      const u = capsulaDB.lsGetUser() || {};
+      if (u.disc && u.disc.completedAt && u.disc.scores) return u.disc;
+      const arr = capsulaDB.lsGetUsers() || [];
+      for (const p of arr) {
+        if (p.disc && p.disc.completedAt && p.disc.scores) return p.disc;
+      }
+    } catch(_) {}
+    return null;
+  }
+
+  const _saved = _findDisc();
+  if (_saved) {
+    scores = _saved.scores;
     _isLoadingExisting = true;
+    showPage('page-result');
     showResult();
     return;
   }
@@ -1358,21 +1371,21 @@ async function initPage() {
   let userData = null;
   try { userData = await capsulaDB.ensureUserData(); } catch(_) {}
 
+  // Tenta novamente após Supabase (pode ter hidratado localStorage)
+  const _saved2 = _findDisc();
+  if (_saved2) {
+    scores = _saved2.scores;
+    _isLoadingExisting = true;
+    showPage('page-result');
+    showResult();
+    return;
+  }
+
   // Guard: sem usuário cadastrado → redireciona para cadastro
   if (!userData) {
     window.location.href = 'index.html';
     return;
   }
-
-  // Redirect: se já tem resultado salvo, mostra direto (antes do onboarding)
-  try {
-    if (userData.disc && userData.disc.completedAt && userData.disc.scores) {
-      scores = userData.disc.scores;
-      _isLoadingExisting = true;
-      showResult();
-      return;
-    }
-  } catch(_e) { console.warn('[disc redirect]', _e); }
 
   // Auto-heal: garante que uid sempre existe
   if (!userData.uid) {

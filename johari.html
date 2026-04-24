@@ -366,11 +366,24 @@ function showResult(){
 
 // Proteção de rota
 document.addEventListener('DOMContentLoaded', async function(){
-  // Fast path: lê localStorage direto antes de chamar Supabase
-  const _ls = capsulaDB.lsGetUser() || {};
-  if (_ls.johari && _ls.johari.completedAt && _ls.johari.self && _ls.johari.others) {
-    selfSelected = new Set(_ls.johari.self); othersSelected = new Set(_ls.johari.others);
+  function _findJohari() {
+    try {
+      const u = capsulaDB.lsGetUser() || {};
+      if (u.johari && u.johari.completedAt && u.johari.self) return u.johari;
+      const arr = capsulaDB.lsGetUsers() || [];
+      for (const p of arr) {
+        if (p.johari && p.johari.completedAt && p.johari.self) return p.johari;
+      }
+    } catch(_) {}
+    return null;
+  }
+
+  const _saved = _findJohari();
+  if (_saved) {
+    selfSelected = new Set(_saved.self || []);
+    othersSelected = new Set(_saved.others || []);
     _isLoadingExisting = true;
+    showPage('page-result');
     showResult();
     return;
   }
@@ -378,9 +391,12 @@ document.addEventListener('DOMContentLoaded', async function(){
   let _u = null;
   try { _u = await capsulaDB.ensureUserData(); } catch(_e) {}
 
-  if (_u && _u.johari && _u.johari.completedAt && _u.johari.self && _u.johari.others) {
-    selfSelected = new Set(_u.johari.self); othersSelected = new Set(_u.johari.others);
+  const _saved2 = _findJohari();
+  if (_saved2) {
+    selfSelected = new Set(_saved2.self || []);
+    othersSelected = new Set(_saved2.others || []);
     _isLoadingExisting = true;
+    showPage('page-result');
     showResult();
     return;
   }
