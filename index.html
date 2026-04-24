@@ -6,7 +6,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.groq.com;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.groq.com https://api.emailjs.com;">
 <title>Sistema Gnosis | Matrizes de Alta Performance</title>
 
 <!-- SEO -->
@@ -780,6 +780,8 @@
 <script src="js/config.js"></script>
 <script src="js/db.js"></script>
   <script src="js/ui.js"></script>
+<!-- EmailJS SDK (P6 — ativo apenas quando EMAILJS_PUBLIC_KEY definido em js/config.js) -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
 </head>
 <body>
 
@@ -1076,8 +1078,18 @@
 <!-- FOOTER -->
 <footer>
   <a href="#" class="footer-logo">Sistema <span>Gnosis</span></a>
+  <div style="display:flex;flex-wrap:wrap;gap:1.25rem;align-items:center;">
+    <a href="termos.html" style="font-size:0.8rem;color:var(--muted2,rgba(255,255,255,0.35));text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted2,rgba(255,255,255,0.35))'">Termos de Uso</a>
+    <a href="privacidade.html" style="font-size:0.8rem;color:var(--muted2,rgba(255,255,255,0.35));text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted2,rgba(255,255,255,0.35))'">Privacidade</a>
+    <a href="mailto:suporte@sistemagnosis.com.br" style="font-size:0.8rem;color:var(--muted2,rgba(255,255,255,0.35));text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted2,rgba(255,255,255,0.35))'">suporte@sistemagnosis.com.br</a>
+  </div>
   <p>© 2025 Sistema Gnosis. Todos os direitos reservados.</p>
 </footer>
+
+<!-- BOTÃO FLUTUANTE DE SUPORTE -->
+<a href="mailto:suporte@sistemagnosis.com.br" id="support-fab" title="Falar com suporte" style="position:fixed;bottom:1.5rem;right:1.5rem;width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(124,106,247,0.4);z-index:9000;transition:transform 0.2s,box-shadow 0.2s;text-decoration:none;" onmouseover="this.style.transform='scale(1.1)';this.style.boxShadow='0 6px 24px rgba(124,106,247,0.55)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 16px rgba(124,106,247,0.4)'">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</a>
 
 <!-- MODAL DE CADASTRO -->
 <div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
@@ -1125,7 +1137,7 @@
         </select>
       </div>
       <button class="form-submit" id="form-submit-btn" type="button">Criar conta grátis →</button>
-      <p class="form-terms">Ao criar sua conta, você concorda com os Termos de Uso e Política de Privacidade.</p>
+      <p class="form-terms">Ao criar sua conta, você concorda com os <a href="termos.html" target="_blank" style="color:var(--accent)">Termos de Uso</a> e <a href="privacidade.html" target="_blank" style="color:var(--accent)">Política de Privacidade</a>.</p>
     </div>
 
     <!-- ── LOGIN ── -->
@@ -1308,6 +1320,22 @@
     });
   }
 
+  // ── E-mail de boas-vindas (P6) ───────────────────────────────
+  // Requer configuração de EmailJS: adicione suas credenciais em js/config.js
+  // EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_WELCOME, EMAILJS_PUBLIC_KEY
+  function sendWelcomeEmail(nome, email) {
+    try {
+      if (typeof window.EMAILJS_PUBLIC_KEY === 'undefined') return; // não configurado
+      emailjs.init(window.EMAILJS_PUBLIC_KEY);
+      emailjs.send(window.EMAILJS_SERVICE_ID, window.EMAILJS_TEMPLATE_WELCOME, {
+        to_name: nome,
+        to_email: email,
+        from_name: 'Sistema Gnosis',
+        reply_to: 'suporte@sistemagnosis.com.br',
+      });
+    } catch(_) { /* silencioso — não bloqueia o fluxo */ }
+  }
+
   // Persiste dados do usuário no localStorage após auth bem-sucedida
   function persistUserLocally(userData) {
     try {
@@ -1371,6 +1399,7 @@
       if (data) {
         sessionStorage.setItem('capsula_is_new_user', '1');
         persistUserLocally(data);
+        sendWelcomeEmail(nome || email, email);
         showPanel('success');
         setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
       }

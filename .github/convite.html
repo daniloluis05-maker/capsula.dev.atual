@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convite — Sistema Gnosis</title>
+<link rel="stylesheet" href="css/capsula.css">
+<meta name="robots" content="noindex">
+<style>
+  body { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; }
+  .invite-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 2.5rem 2rem; max-width: 440px; width: 100%;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4); text-align: center;
+  }
+  .brand { font-size: 1.1rem; color: var(--muted); margin-bottom: 1.5rem; }
+  .brand span { color: var(--accent); font-weight: 700; }
+  .invite-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: rgba(124,106,247,0.12); display: flex; align-items: center;
+    justify-content: center; margin: 0 auto 1.25rem;
+  }
+  h1 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+  .invite-sub { font-size: 0.9rem; color: var(--muted); margin-bottom: 0.35rem; }
+  .invited-by {
+    display: inline-block; background: rgba(124,106,247,0.1);
+    border: 1px solid rgba(124,106,247,0.2); border-radius: 6px;
+    padding: 0.3rem 0.8rem; font-size: 0.82rem; color: var(--accent);
+    margin-bottom: 1.75rem; font-family: monospace;
+  }
+  .form-group { text-align: left; margin-bottom: 1rem; }
+  .form-group label { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 0.3rem; }
+  .form-group input {
+    width: 100%; padding: 0.7rem 0.9rem; background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+    font-size: 0.9rem; font-family: inherit; outline: none; transition: border-color 0.2s;
+  }
+  .form-group input:focus { border-color: var(--accent); }
+  .btn-submit {
+    width: 100%; padding: 0.85rem; background: var(--accent); color: #fff;
+    border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; transition: opacity 0.2s; margin-top: 0.5rem;
+  }
+  .btn-submit:hover { opacity: 0.88; }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+  .form-terms { font-size: 0.75rem; color: var(--muted); margin-top: 0.75rem; }
+  .form-terms a { color: var(--accent); }
+  .error-msg {
+    color: #e05252; font-size: 0.85rem; margin-top: 0.6rem;
+    background: rgba(224,82,82,0.08); border: 1px solid rgba(224,82,82,0.2);
+    border-radius: 6px; padding: 0.5rem 0.75rem; display: none;
+  }
+  .success-state { display: none; }
+  .success-state .check { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  .login-link { font-size: 0.85rem; color: var(--muted); margin-top: 1.25rem; }
+  .login-link a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="invite-card">
+  <div class="brand">Sistema <span>Gnosis</span></div>
+
+  <div class="invite-icon">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <line x1="19" y1="8" x2="19" y2="14"/>
+      <line x1="22" y1="11" x2="16" y2="11"/>
+    </svg>
+  </div>
+
+  <div id="form-state">
+    <h1>Você foi convidado!</h1>
+    <p class="invite-sub">Crie sua conta gratuitamente e comece seu mapeamento de perfil.</p>
+    <p class="invited-by" id="invited-by-badge" style="display:none"></p>
+
+    <div class="form-group">
+      <label for="nome">Seu nome</label>
+      <input type="text" id="nome" placeholder="Como prefere ser chamado(a)?" autocomplete="name"/>
+    </div>
+    <div class="form-group">
+      <label for="email">E-mail</label>
+      <input type="email" id="email" placeholder="seu@email.com" autocomplete="email"/>
+    </div>
+    <div class="form-group">
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
+    </div>
+    <button class="btn-submit" id="btn-submit" type="button">Criar conta grátis →</button>
+    <div class="error-msg" id="error-msg"></div>
+    <p class="form-terms">Ao criar sua conta, você concorda com os <a href="termos.html" target="_blank">Termos de Uso</a> e <a href="privacidade.html" target="_blank">Política de Privacidade</a>.</p>
+    <p class="login-link">Já tem conta? <a href="index.html">Fazer login</a></p>
+  </div>
+
+  <div class="success-state" id="success-state">
+    <div class="check">✓</div>
+    <h1>Conta criada!</h1>
+    <p style="color:var(--muted);font-size:0.9rem;margin-top:0.5rem">Redirecionando para seu dashboard…</p>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script>
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get('ref');
+  if (ref) {
+    document.getElementById('invited-by-badge').style.display = 'inline-block';
+    document.getElementById('invited-by-badge').textContent = 'Convite recebido ✓';
+  }
+
+  document.getElementById('btn-submit').addEventListener('click', async function() {
+    const nome  = document.getElementById('nome').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const senha = document.getElementById('senha').value;
+    const errEl = document.getElementById('error-msg');
+    errEl.style.display = 'none';
+
+    if (!nome)            return showErr('Informe seu nome.');
+    if (!email)           return showErr('Informe seu e-mail.');
+    if (senha.length < 6) return showErr('A senha precisa ter no mínimo 6 caracteres.');
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.textContent = 'Criando conta...';
+
+    try {
+      const { data, error, confirmEmail } = await capsulaDB.authSignUp(email, senha, nome, 'individual');
+      if (error) { showErr(error.message || 'Erro ao criar conta.'); return; }
+      if (confirmEmail) { showErr('Confirme seu e-mail para continuar.'); return; }
+
+      if (data) {
+        if (ref) {
+          try { localStorage.setItem('capsula_invitedBy', ref); } catch(_) {}
+        }
+        document.getElementById('form-state').style.display = 'none';
+        document.getElementById('success-state').style.display = 'block';
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1400);
+      }
+    } catch(e) {
+      showErr('Erro inesperado. Tente novamente.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Criar conta grátis →';
+    }
+
+    function showErr(msg) {
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+    }
+  });
+})();
+</script>
+</body>
+</html>

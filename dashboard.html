@@ -399,7 +399,13 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <span class="section-eyebrow">Eixo de Equipe</span>
         <h2>Matrizes de Performance Coletiva</h2>
       </div>
-      <span class="section-note">Disponível no plano Empresa</span>
+      <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+        <button id="invite-btn" onclick="openInviteModal()" style="display:flex;align-items:center;gap:0.45rem;padding:0.5rem 1rem;background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.25);border-radius:8px;color:var(--accent);font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(124,106,247,0.18)'" onmouseout="this.style.background='rgba(124,106,247,0.1)'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+          Convidar membro
+        </button>
+        <span class="section-note">Disponível no plano Empresa</span>
+      </div>
     </div>
 
     <div class="matrices-grid" style="margin-bottom:2.25rem;">
@@ -465,6 +471,16 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <div class="prog-head"><span>Perfil completo</span><span class="prog-pct" id="total-pct">2%</span></div>
           <div class="prog-track"><div class="prog-fill" id="total-fill" style="width:2%;background:var(--accent);"></div></div>
         </div>
+
+        <!-- DISC History Chart (P7) -->
+        <div id="disc-history-block" style="display:none;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;">
+            <span style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Evolução DISC</span>
+            <span style="font-size:0.65rem;color:var(--muted);font-family:monospace;" id="disc-history-count"></span>
+          </div>
+          <svg id="disc-history-chart" width="100%" height="64" viewBox="0 0 240 64" preserveAspectRatio="none" style="overflow:visible;"></svg>
+          <div style="display:flex;gap:0.75rem;margin-top:0.5rem;flex-wrap:wrap;" id="disc-history-legend"></div>
+        </div>
       </div>
     </div>
   </main>
@@ -500,6 +516,27 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <div>
     <strong id="toast-title">Bem-vindo(a)!</strong>
     <div class="toast-sub" id="toast-sub">Conta criada com sucesso.</div>
+  </div>
+</div>
+
+<!-- MODAL CONVITE (P8) -->
+<div id="invite-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9100;align-items:center;justify-content:center;padding:1rem;" onclick="if(event.target===this)closeInviteModal()">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:420px;width:100%;position:relative;box-shadow:0 16px 48px rgba(0,0,0,0.5);">
+    <button onclick="closeInviteModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1;">×</button>
+    <h3 style="margin:0 0 0.4rem;">Convidar membro</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1.25rem;">Compartilhe este link para que a pessoa crie a conta e entre na sua equipe.</p>
+    <div style="display:flex;gap:0.5rem;">
+      <input id="invite-link-input" readonly style="flex:1;padding:0.65rem 0.75rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.8rem;font-family:monospace;outline:none;" />
+      <button onclick="copyInviteLink()" style="padding:0.65rem 1rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:600;font-size:0.85rem;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'" id="copy-invite-btn">Copiar</button>
+    </div>
+    <p style="font-size:0.72rem;color:var(--muted);margin-top:0.75rem;font-family:monospace;" id="invite-copied-msg" style="display:none;"></p>
+    <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">
+      <p style="font-size:0.8rem;color:var(--muted);">Ou compartilhe diretamente:</p>
+      <div style="display:flex;gap:0.5rem;margin-top:0.6rem;flex-wrap:wrap;">
+        <button onclick="shareInviteWhatsApp()" style="padding:0.45rem 0.9rem;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.2);border-radius:6px;color:#25D366;font-size:0.8rem;cursor:pointer;">WhatsApp</button>
+        <button onclick="shareInviteNative()" style="padding:0.45rem 0.9rem;background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.2);border-radius:6px;color:var(--accent);font-size:0.8rem;cursor:pointer;">Compartilhar</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -650,6 +687,9 @@ function loadMatrixState(userData){
         '<span style="width:6px;height:6px;border-radius:50%;background:'+a.color+';flex-shrink:0;"></span></div>';
     }).join('');
   }
+
+  // P7 — render DISC history chart
+  if (typeof renderDiscHistoryChart === 'function') renderDiscHistoryChart(userData);
 }
 
 function setProgress(pctId,fillId,value){
@@ -767,6 +807,107 @@ function exportarDados() {
 function scrollToSection(id) {
   var el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════
+// P7 — DISC HISTORY CHART
+// ══════════════════════════════════════
+function renderDiscHistoryChart(userData) {
+  const disc = userData && userData.disc;
+  if (!disc) return;
+
+  const history = Array.isArray(disc.history) ? disc.history : [];
+  // Include current result if history array is empty (backwards compat)
+  const entries = history.length > 0 ? history : (disc.completedAt ? [{ dominant: disc.dominant, scores: disc.scores, completedAt: disc.completedAt }] : []);
+  if (entries.length < 2) return; // need at least 2 points to draw a line
+
+  const block = document.getElementById('disc-history-block');
+  const svg   = document.getElementById('disc-history-chart');
+  const count = document.getElementById('disc-history-count');
+  const legend= document.getElementById('disc-history-legend');
+  if (!block || !svg) return;
+
+  block.style.display = 'block';
+  count.textContent   = entries.length + (entries.length === 1 ? ' avaliação' : ' avaliações');
+
+  const COLS = { D:'#E8603A', I:'#6C5FE6', S:'#2EC4A0', C:'#1BA8D4' };
+  const LBLS = { D:'Dom', I:'Inf', S:'Est', C:'Con' };
+  const W = 240, H = 64, pad = 12;
+  const xStep = entries.length > 1 ? (W - pad*2) / (entries.length - 1) : 0;
+
+  let lines = '';
+  ['D','I','S','C'].forEach(dim => {
+    const pts = entries.map((e, i) => {
+      const v = (e.scores && e.scores[dim]) || 0;
+      const x = pad + i * xStep;
+      const y = H - pad - ((v / 100) * (H - pad*2));
+      return `${x},${y}`;
+    });
+    lines += `<polyline points="${pts.join(' ')}" fill="none" stroke="${COLS[dim]}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>`;
+    // dot at last point
+    const last = entries[entries.length - 1];
+    const lv = (last.scores && last.scores[dim]) || 0;
+    const lx = pad + (entries.length - 1) * xStep;
+    const ly = H - pad - ((lv / 100) * (H - pad*2));
+    lines += `<circle cx="${lx}" cy="${ly}" r="3" fill="${COLS[dim]}"/>`;
+  });
+  svg.innerHTML = lines;
+
+  // Legend
+  legend.innerHTML = Object.entries(COLS).map(([k,c]) => {
+    const last = entries[entries.length-1];
+    const v = (last.scores && last.scores[k]) || 0;
+    return `<span style="display:flex;align-items:center;gap:0.3rem;font-size:0.68rem;color:${c};font-family:monospace;">
+      <span style="width:8px;height:8px;border-radius:50%;background:${c};flex-shrink:0;"></span>${LBLS[k]} ${v}%
+    </span>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// P8 — INVITE MODAL
+// ══════════════════════════════════════
+function getInviteLink() {
+  const raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || '{}';
+  const userData = JSON.parse(raw);
+  const uid = userData.uid || 'guest';
+  const base = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/');
+  return base + 'convite.html?ref=' + uid;
+}
+
+function openInviteModal() {
+  const modal = document.getElementById('invite-modal');
+  const input = document.getElementById('invite-link-input');
+  if (input) input.value = getInviteLink();
+  if (modal) { modal.style.display = 'flex'; }
+}
+
+function closeInviteModal() {
+  const modal = document.getElementById('invite-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function copyInviteLink() {
+  const link = getInviteLink();
+  navigator.clipboard.writeText(link).then(() => {
+    const btn = document.getElementById('copy-invite-btn');
+    const msg = document.getElementById('invite-copied-msg');
+    if (btn) { const orig = btn.textContent; btn.textContent = 'Copiado!'; setTimeout(() => { btn.textContent = orig; }, 2000); }
+    if (msg) { msg.textContent = 'Link copiado para a área de transferência ✓'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 3000); }
+  });
+}
+
+function shareInviteWhatsApp() {
+  const link = encodeURIComponent(getInviteLink());
+  window.open('https://wa.me/?text=Acesse%20o%20Sistema%20Gnosis%20e%20mapeie%20seu%20perfil%20comportamental%20gratuitamente%3A%20' + link, '_blank');
+}
+
+function shareInviteNative() {
+  const link = getInviteLink();
+  if (navigator.share) {
+    navigator.share({ title: 'Sistema Gnosis', text: 'Mapeie seu perfil comportamental gratuitamente!', url: link });
+  } else {
+    copyInviteLink();
+  }
 }
 </script>
 </body>

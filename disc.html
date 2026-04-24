@@ -1238,7 +1238,12 @@ async function showResult() {
     userData.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
   }
   if (!_isLoadingExisting) {
-  userData.disc = { dominant, scores, completedAt: new Date().toISOString() };
+  const nowISO = new Date().toISOString();
+  const prevHistory = (userData.disc && Array.isArray(userData.disc.history)) ? userData.disc.history : [];
+  // append current result to history (keep last 10 entries)
+  const historyEntry = { dominant, scores: Object.assign({}, scores), completedAt: nowISO };
+  const newHistory = [...prevHistory, historyEntry].slice(-10);
+  userData.disc = { dominant, scores, completedAt: nowISO, history: newHistory };
   capsulaDB.lsSetUser(userData);
   try { sessionStorage.setItem('capsula_user', JSON.stringify(userData)); } catch(_) {}
 
@@ -1594,11 +1599,30 @@ function _imprimirPDF(html){
 function shareResult() {
   const dominant = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
   const profile  = PROFILES[dominant];
-  const text     = `Meu perfil DISC no Sistema Gnosis: ${profile.title} (${profile.code} ${scores[dominant]}%) — Descubra o seu em sistemagnosis.com.br`;
-  if (navigator.share) {
-    navigator.share({ title: 'Meu Perfil DISC', text });
-  } else {
-    navigator.clipboard.writeText(text).then(() => showCopyToast('Resultado copiado! Cole onde quiser.'));
+
+  // Build shareable URL with encoded result
+  try {
+    const userData = JSON.parse(localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || '{}');
+    const payload  = JSON.stringify({
+      dominant,
+      scores: Object.assign({}, scores),
+      completedAt: (userData.disc && userData.disc.completedAt) || new Date().toISOString(),
+      name: userData.nome || userData.apelido || null,
+    });
+    const encoded  = btoa(payload).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+    const baseUrl  = window.location.origin + (window.location.pathname.replace(/\/[^/]*$/, '/'));
+    const shareUrl = baseUrl + 'disc-share.html?d=' + encoded;
+    const text     = `Meu perfil DISC no Sistema Gnosis: ${profile.title} (${profile.code} ${scores[dominant]}%)`;
+
+    if (navigator.share) {
+      navigator.share({ title: 'Meu Perfil DISC', text, url: shareUrl });
+    } else {
+      navigator.clipboard.writeText(shareUrl).then(() => showCopyToast('Link copiado! Compartilhe onde quiser.'));
+    }
+  } catch(e) {
+    // fallback
+    const text = `Meu perfil DISC no Sistema Gnosis: ${profile.title} (${profile.code} ${scores[dominant]}%) — sistemagnosis.com.br`;
+    navigator.clipboard && navigator.clipboard.writeText(text).then(() => showCopyToast('Resultado copiado!'));
   }
 }
 
