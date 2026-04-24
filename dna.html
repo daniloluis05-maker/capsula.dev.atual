@@ -874,14 +874,14 @@ function showError(msg) {
   setTimeout(() => t.classList.remove('show'), 5000);
 }
 
-// ── PRINT PDF PREMIUM v3.0 ────────────────────────────────────────────────────
+// ── PRINT PDF PREMIUM v3.1 (light) ───────────────────────────────────────────
 function printDNA() {
-  const GOLD   = '#C9A84C';
-  const GOLD2  = '#FFD700';
-  const PURPLE = '#7000FF';
-  const TEAL   = '#2EC4A0';
+  const GOLD   = '#B8922A';
+  const GOLD2  = '#C9A84C';
+  const PURPLE = '#5B00D4';
+  const TEAL   = '#1FA888';
   const ORANGE = '#E8603A';
-  const BLUE   = '#6C5FE6';
+  const BLUE   = '#5048C8';
   const nome = document.getElementById('doc-name')?.textContent || 'Usuário';
   const meta  = document.getElementById('doc-meta')?.textContent || '';
   const badge = document.getElementById('doc-badge')?.textContent || '';
@@ -914,27 +914,27 @@ function printDNA() {
   // Painel Autogestão
   const agVisible = document.getElementById('autogestao-panel')?.style.display !== 'none';
   const agHTML = agVisible ? `
-    <div style="background:linear-gradient(135deg,rgba(112,0,255,0.07),rgba(201,168,76,0.04));border:1px solid rgba(112,0,255,0.18);border-radius:10px;padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;">
+    <div style="background:#fafafa;border:1px solid #e4e4e7;border-radius:10px;padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden;">
       <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${PURPLE},${GOLD},transparent);"></div>
       <div style="font-family:'Space Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:${PURPLE};margin-bottom:11px;">◆ PAINEL DE AUTOGESTÃO PSICOLÓGICA</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-        <div style="background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.14);border-radius:7px;padding:11px 12px;">
+        <div style="background:#fff;border:1px solid ${GOLD}30;border-radius:7px;padding:11px 12px;">
           <div style="margin-bottom:6px;">${icoLightning}</div>
           <div style="font-family:'Space Mono',monospace;font-size:6.5px;letter-spacing:0.1em;color:${GOLD};margin-bottom:4px;text-transform:uppercase;">Pilar de Poder</div>
-          <div style="font-size:9.5px;font-weight:700;color:#E0E0E0;margin-bottom:5px;line-height:1.3;">${document.getElementById('ag-poder-title')?.textContent||''}</div>
-          <div style="font-size:8px;color:#888;line-height:1.65;">${document.getElementById('ag-poder-text')?.textContent||''}</div>
+          <div style="font-size:9.5px;font-weight:700;color:#111;margin-bottom:5px;line-height:1.3;">${document.getElementById('ag-poder-title')?.textContent||''}</div>
+          <div style="font-size:8px;color:#555;line-height:1.65;">${document.getElementById('ag-poder-text')?.textContent||''}</div>
         </div>
-        <div style="background:rgba(232,96,58,0.04);border:1px solid rgba(232,96,58,0.14);border-radius:7px;padding:11px 12px;">
+        <div style="background:#fff;border:1px solid ${ORANGE}30;border-radius:7px;padding:11px 12px;">
           <div style="margin-bottom:6px;">${icoWarning}</div>
           <div style="font-family:'Space Mono',monospace;font-size:6.5px;letter-spacing:0.1em;color:${ORANGE};margin-bottom:4px;text-transform:uppercase;">Zona de Risco</div>
-          <div style="font-size:9.5px;font-weight:700;color:#E0E0E0;margin-bottom:5px;line-height:1.3;">${document.getElementById('ag-risco-title')?.textContent||''}</div>
-          <div style="font-size:8px;color:#888;line-height:1.65;">${document.getElementById('ag-risco-text')?.textContent||''}</div>
+          <div style="font-size:9.5px;font-weight:700;color:#111;margin-bottom:5px;line-height:1.3;">${document.getElementById('ag-risco-title')?.textContent||''}</div>
+          <div style="font-size:8px;color:#555;line-height:1.65;">${document.getElementById('ag-risco-text')?.textContent||''}</div>
         </div>
-        <div style="background:rgba(46,196,160,0.04);border:1px solid rgba(46,196,160,0.14);border-radius:7px;padding:11px 12px;">
+        <div style="background:#fff;border:1px solid ${TEAL}30;border-radius:7px;padding:11px 12px;">
           <div style="margin-bottom:6px;">${icoSprout}</div>
           <div style="font-family:'Space Mono',monospace;font-size:6.5px;letter-spacing:0.1em;color:${TEAL};margin-bottom:4px;text-transform:uppercase;">Florescimento</div>
-          <div style="font-size:9.5px;font-weight:700;color:#E0E0E0;margin-bottom:5px;line-height:1.3;">${document.getElementById('ag-flor-title')?.textContent||''}</div>
-          <div style="font-size:8px;color:#888;line-height:1.65;">${document.getElementById('ag-flor-text')?.textContent||''}</div>
+          <div style="font-size:9.5px;font-weight:700;color:#111;margin-bottom:5px;line-height:1.3;">${document.getElementById('ag-flor-title')?.textContent||''}</div>
+          <div style="font-size:8px;color:#555;line-height:1.65;">${document.getElementById('ag-flor-text')?.textContent||''}</div>
         </div>
       </div>
     </div>` : '';
@@ -948,24 +948,20 @@ function printDNA() {
   ];
   const renderHelix = (h) => {
     const content = document.getElementById(h.id)?.innerHTML || '—';
-    const bg = h.featured
-      ? `linear-gradient(135deg,rgba(201,168,76,0.07),rgba(112,0,255,0.04))`
-      : `rgba(255,255,255,0.02)`;
-    const border = h.featured
-      ? `1px solid rgba(201,168,76,0.22)`
-      : `1px solid rgba(255,255,255,0.06)`;
+    const bg     = h.featured ? `#fffdf5` : `#fafafa`;
+    const border = h.featured ? `1px solid ${GOLD}40` : `1px solid #e4e4e7`;
     const featuredMark = h.featured
-      ? `<span style="font-family:'Space Mono',monospace;font-size:6px;padding:1px 5px;border:1px solid ${GOLD}44;color:${GOLD};border-radius:2px;text-transform:uppercase;letter-spacing:0.08em;">linha de ouro</span>`
+      ? `<span style="font-family:'Space Mono',monospace;font-size:6px;padding:1px 5px;border:1px solid ${GOLD}55;color:${GOLD};border-radius:2px;text-transform:uppercase;letter-spacing:0.08em;">linha de ouro</span>`
       : '';
     return `
       <div style="background:${bg};border:${border};border-radius:10px;padding:14px 17px;margin-bottom:9px;position:relative;overflow:hidden;">
         <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${h.color},${h.color}00);"></div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,0.05);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid #f1f5f9;">
           <div style="width:21px;height:21px;border-radius:4px;background:${h.color}15;border:1px solid ${h.color}40;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;color:${h.color};">${h.num}</div>
           <div style="font-size:9.5px;font-weight:700;color:${h.color};flex:1;">${h.title}</div>
           ${featuredMark}
         </div>
-        <div style="font-size:9px;color:#BDBCC8;line-height:1.85;">${content}</div>
+        <div style="font-size:9px;color:#333;line-height:1.85;">${content}</div>
       </div>`;
   };
 
@@ -976,87 +972,85 @@ function printDNA() {
   const emVisible = document.getElementById('emocional-block')?.style.display !== 'none';
   const emHTML = emVisible ? `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px;">
-      <div style="background:rgba(232,96,58,0.04);border:1px solid rgba(232,96,58,0.15);border-radius:9px;padding:13px 15px;position:relative;overflow:hidden;">
+      <div style="background:#fff8f6;border:1px solid ${ORANGE}30;border-radius:9px;padding:13px 15px;position:relative;overflow:hidden;">
         <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${ORANGE},transparent);"></div>
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:9px;">${icoBolt}<span style="font-size:9px;font-weight:700;color:${ORANGE};">Gatilhos de Estresse</span></div>
-        <div style="font-size:8px;color:#BDBCC8;line-height:1.75;">${document.getElementById('em-gatilhos-content')?.innerHTML||''}</div>
+        <div style="font-size:8px;color:#444;line-height:1.75;">${document.getElementById('em-gatilhos-content')?.innerHTML||''}</div>
       </div>
-      <div style="background:rgba(46,196,160,0.04);border:1px solid rgba(46,196,160,0.15);border-radius:9px;padding:13px 15px;position:relative;overflow:hidden;">
+      <div style="background:#f6fffc;border:1px solid ${TEAL}30;border-radius:9px;padding:13px 15px;position:relative;overflow:hidden;">
         <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${TEAL},transparent);"></div>
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:9px;">${icoTrend}<span style="font-size:9px;font-weight:700;color:${TEAL};">Protocolo de Autorregulação</span></div>
-        <div style="font-size:8px;color:#BDBCC8;line-height:1.75;">${document.getElementById('em-protocolo-content')?.innerHTML||''}</div>
+        <div style="font-size:8px;color:#444;line-height:1.75;">${document.getElementById('em-protocolo-content')?.innerHTML||''}</div>
       </div>
     </div>` : '';
 
   // Ação de Ouro
   const aoVisible = document.getElementById('acao-ouro')?.style.display !== 'none';
   const aoHTML = aoVisible ? `
-    <div style="background:linear-gradient(135deg,rgba(255,215,0,0.06),rgba(201,168,76,0.04));border:1px solid rgba(255,215,0,0.18);border-radius:9px;padding:14px 17px;margin-bottom:11px;position:relative;overflow:hidden;">
+    <div style="background:#fffdf0;border:1px solid ${GOLD}40;border-radius:9px;padding:14px 17px;margin-bottom:11px;position:relative;overflow:hidden;">
       <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${GOLD2},${GOLD},transparent);"></div>
       <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px;">
         ${icoStar}
-        <span style="font-family:'Space Mono',monospace;font-size:7px;letter-spacing:0.12em;text-transform:uppercase;color:${GOLD2};">Ação de Ouro · Micro-Hábito</span>
+        <span style="font-family:'Space Mono',monospace;font-size:7px;letter-spacing:0.12em;text-transform:uppercase;color:${GOLD};">Ação de Ouro · Micro-Hábito</span>
         <span style="font-family:'Space Mono',monospace;font-size:6.5px;color:${TEAL};">// máx 5 min · impacto sistêmico</span>
       </div>
-      <div style="font-size:9px;color:#D4C9A8;line-height:1.85;">${document.getElementById('ao-content')?.innerHTML||''}</div>
+      <div style="font-size:9px;color:#333;line-height:1.85;">${document.getElementById('ao-content')?.innerHTML||''}</div>
     </div>` : '';
 
   // Assinatura
   const convVisible = document.getElementById('convergence-block')?.style.display !== 'none';
   const convHTML = convVisible ? `
-    <div style="background:linear-gradient(135deg,rgba(201,168,76,0.06),rgba(112,0,255,0.04));border:1px solid rgba(201,168,76,0.2);border-radius:9px;padding:15px 18px;margin-bottom:14px;position:relative;overflow:hidden;">
+    <div style="background:#fafafa;border:1px solid ${GOLD}35;border-radius:9px;padding:15px 18px;margin-bottom:14px;position:relative;overflow:hidden;">
       <div style="position:absolute;left:0;top:12%;bottom:12%;width:2px;background:linear-gradient(to bottom,transparent,${GOLD},transparent);border-radius:100px;"></div>
       <div style="font-family:'Space Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:${GOLD};margin-bottom:8px;padding-left:2px;">◆ Assinatura Comportamental</div>
-      <div style="font-size:11px;color:#D4C9A8;line-height:1.9;font-weight:500;padding-left:2px;">${document.getElementById('conv-content')?.innerHTML||''}</div>
+      <div style="font-size:11px;color:#222;line-height:1.9;font-weight:500;padding-left:2px;">${document.getElementById('conv-content')?.innerHTML||''}</div>
     </div>` : '';
 
   const footerHTML = `
-    <div style="padding-top:12px;border-top:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-family:'Space Mono',monospace;font-size:6px;color:#2A2A3A;letter-spacing:0.05em;text-transform:uppercase;">Cápsula de Desenvolvimento · Dossiê de Autogestão Comportamental · Confidencial</span>
-      <span style="font-family:'Space Mono',monospace;font-size:6px;color:#2A2A3A;">Sistema Gnosis</span>
+    <div style="padding-top:12px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-family:'Space Mono',monospace;font-size:6px;color:#71717a;letter-spacing:0.05em;text-transform:uppercase;">Cápsula de Desenvolvimento · Dossiê de Autogestão Comportamental · Confidencial</span>
+      <span style="font-family:'Space Mono',monospace;font-size:7px;font-weight:700;color:#000;">sistemagnosis.com.br</span>
     </div>`;
 
   const w = window.open('', '_blank');
-  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="color-scheme" content="dark">
+  w.document.write(`<!DOCTYPE html><html lang="pt-BR" style="color-scheme:light;"><head><meta charset="UTF-8"><meta name="color-scheme" content="light">
 <title>DNA Estratégico v2.0 — ${nome} · Sistema Gnosis</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Outfit',sans-serif;background:#0A0B10;color:#E0E0E0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  .pg{width:794px;min-height:1123px;margin:0 auto;padding:32px 40px;background:#0A0B10;position:relative;}
-  .pg2{page-break-before:always;padding-top:28px;}
-  strong{color:#FFD700;font-weight:700;} em{font-style:normal;color:#C9A84C;}
-  .em-trigger-tag{display:inline-block;background:rgba(232,96,58,0.1);border:0.5px solid rgba(232,96,58,0.28);padding:2px 7px;border-radius:3px;font-size:7px;color:#E8603A;margin:2px 2px 3px;font-family:'Space Mono',monospace;}
+  body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .pg{width:794px;min-height:1123px;margin:0 auto;padding:30px 38px;background:#f8fafc;position:relative;}
+  .pg2{page-break-before:always;padding-top:26px;}
+  strong{color:#000;font-weight:700;} em{font-style:normal;color:${GOLD};}
+  .em-trigger-tag{display:inline-block;background:${ORANGE}10;border:0.5px solid ${ORANGE}40;padding:2px 7px;border-radius:3px;font-size:7px;color:${ORANGE};margin:2px 2px 3px;font-family:'Space Mono',monospace;}
   .em-step{display:flex;gap:8px;margin-bottom:7px;align-items:flex-start;}
-  .em-step-num{width:16px;height:16px;border-radius:50%;background:rgba(46,196,160,0.13);border:0.5px solid rgba(46,196,160,0.3);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:7px;color:#2EC4A0;flex-shrink:0;margin-top:1px;}
-  .em-step-text{font-size:8px;line-height:1.65;color:#BDBCC8;}
-  .helix-keyword{display:inline-block;background:#181C28;border:1px solid rgba(255,255,255,0.08);padding:1px 6px;border-radius:2px;font-family:'Space Mono',monospace;font-size:6.5px;color:#3A3A4A;margin:1px;}
-  @media print{@page{margin:0;size:A4;}body{background:#0A0B10!important;}.pg{width:100%;padding:24px 30px;min-height:unset;}.pg2{padding-top:28px;}}
+  .em-step-num{width:16px;height:16px;border-radius:50%;background:${TEAL}15;border:0.5px solid ${TEAL}40;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:7px;color:${TEAL};flex-shrink:0;margin-top:1px;}
+  .em-step-text{font-size:8px;line-height:1.65;color:#333;}
+  .helix-keyword{display:inline-block;background:#f1f5f9;border:1px solid #e2e8f0;padding:1px 6px;border-radius:2px;font-family:'Space Mono',monospace;font-size:6.5px;color:#64748b;margin:1px;}
+  @media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.pg{width:100%;padding:22px 28px;min-height:unset;}.pg2{padding-top:22px;}}
 </style>
-</head><body>
+</head><body style="background:#f8fafc!important;">
 
 <!-- ═══ PAGE 1 ═══ -->
 <div class="pg">
-  <div style="height:3px;background:linear-gradient(90deg,${GOLD},${PURPLE},${GOLD}00);border-radius:2px;margin-bottom:22px;"></div>
+  <div style="height:3px;background:linear-gradient(90deg,${GOLD},${PURPLE},transparent);border-radius:2px;margin-bottom:20px;"></div>
 
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:11px;border-bottom:2px solid #000;margin-bottom:16px;">
     <div style="display:flex;align-items:center;gap:9px;">
-      <div style="width:26px;height:26px;background:${GOLD};border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#0A0B10;">C</div>
-      <span style="font-size:13px;font-weight:700;letter-spacing:-0.02em;">Sistema <span style="color:${GOLD};">Gnosis</span></span>
+      <svg viewBox="0 0 100 100" fill="none" width="26" height="26"><path d="M85 50C85 69.33 69.33 85 50 85C30.67 85 15 69.33 15 50C15 30.67 30.67 15 50 15C59.66 15 68.38 18.91 74.72 25.22" stroke="${GOLD}" stroke-width="6" stroke-linecap="round"/><path d="M85 50H55" stroke="${GOLD}" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="50" r="4" fill="${GOLD}"/></svg>
+      <span style="font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;">SISTEMA <em style="color:${GOLD};font-style:italic;font-weight:300;">Gnosis</em></span>
     </div>
-    <div style="text-align:right;line-height:1.7;">
-      <div style="font-family:'Space Mono',monospace;font-size:6.5px;letter-spacing:0.12em;text-transform:uppercase;color:${GOLD};">// dossiê de autogestão comportamental v2.0</div>
-      <div style="font-family:'Space Mono',monospace;font-size:6px;color:#2E2E3E;letter-spacing:0.06em;">EMITIDO EM ${data.toUpperCase()}</div>
+    <div style="font-family:'Space Mono',monospace;font-size:7px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;text-align:right;line-height:1.85;">
+      Módulo: DNA Estratégico · Dossiê de Autogestão v2.0<br>${data.toUpperCase()}<br>${nome.toUpperCase()}
     </div>
   </div>
 
-  <div style="background:linear-gradient(135deg,rgba(112,0,255,0.07),rgba(201,168,76,0.05));border:1px solid rgba(201,168,76,0.16);border-left:3px solid ${GOLD};border-radius:10px;padding:18px 22px;margin-bottom:14px;position:relative;overflow:hidden;">
-    <div style="position:absolute;top:0;right:0;width:100px;height:100px;background:radial-gradient(circle,rgba(201,168,76,0.09),transparent 70%);"></div>
-    <div style="font-family:'Space Mono',monospace;font-size:6.5px;letter-spacing:0.14em;text-transform:uppercase;color:#333;margin-bottom:5px;">// sequenciamento estratégico · ${nome.toUpperCase()}</div>
-    <div style="font-size:30px;font-weight:900;letter-spacing:-0.04em;line-height:1;background:linear-gradient(135deg,${GOLD},${GOLD2});-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:5px;">DNA Estratégico</div>
-    <div style="font-size:8.5px;color:#444;margin-bottom:10px;">${meta}</div>
+  <div style="background:#fafafa;border:1px solid #000;border-left:3px solid ${GOLD};padding:16px 20px;margin-bottom:14px;position:relative;">
+    <div style="font-family:'Space Mono',monospace;font-size:6.5px;letter-spacing:0.14em;text-transform:uppercase;color:#71717a;margin-bottom:5px;">// sequenciamento estratégico · ${nome.toUpperCase()}</div>
+    <div style="font-size:28px;font-weight:900;letter-spacing:-0.04em;line-height:1;color:${GOLD};margin-bottom:5px;">DNA Estratégico</div>
+    <div style="font-size:8.5px;color:#71717a;margin-bottom:10px;">${meta}</div>
     <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-      <span style="font-family:'Space Mono',monospace;font-size:6.5px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border:1px solid ${GOLD}44;color:${GOLD};border-radius:3px;">${badge}</span>
+      <span style="font-family:'Space Mono',monospace;font-size:6.5px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border:1px solid ${GOLD}55;color:${GOLD};border-radius:2px;">${badge}</span>
       ${sourcesHTML}
     </div>
   </div>
@@ -1064,18 +1058,18 @@ function printDNA() {
   ${agHTML}
   ${helicesP1}
 
-  <div style="margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center;">
-    <span style="font-family:'Space Mono',monospace;font-size:6px;color:#2A2A3A;letter-spacing:0.05em;text-transform:uppercase;">Cápsula de Desenvolvimento · Dossiê de Autogestão · Confidencial</span>
-    <span style="font-family:'Space Mono',monospace;font-size:6px;color:#2A2A3A;">pág. 01/02</span>
+  <div style="margin-top:14px;padding-top:9px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-family:'Space Mono',monospace;font-size:6px;color:#71717a;letter-spacing:0.05em;text-transform:uppercase;">Sistema Gnosis // DNA Estratégico // Dossiê de Autogestão // Confidencial</span>
+    <span style="font-family:'Space Mono',monospace;font-size:6px;color:#71717a;">pág. 01/02</span>
   </div>
 </div>
 
 <!-- ═══ PAGE 2 ═══ -->
 <div class="pg pg2">
-  <div style="height:2px;background:linear-gradient(90deg,${PURPLE},${GOLD},transparent);border-radius:2px;margin-bottom:18px;"></div>
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-    <span style="font-family:'Space Mono',monospace;font-size:6.5px;letter-spacing:0.1em;text-transform:uppercase;color:#282838;">// DNA Estratégico v2.0 · ${nome.toUpperCase()}</span>
-    <span style="font-family:'Space Mono',monospace;font-size:6.5px;color:#282838;">${data.toUpperCase()}</span>
+  <div style="height:2px;background:linear-gradient(90deg,${GOLD},${PURPLE},transparent);margin-bottom:16px;"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:13px;">
+    <span style="font-family:'Space Mono',monospace;font-size:6.5px;letter-spacing:0.1em;text-transform:uppercase;color:#a1a1aa;">// DNA Estratégico v2.0 · ${nome.toUpperCase()}</span>
+    <span style="font-family:'Space Mono',monospace;font-size:6.5px;color:#a1a1aa;">${data.toUpperCase()}</span>
   </div>
 
   ${helicesP2}
