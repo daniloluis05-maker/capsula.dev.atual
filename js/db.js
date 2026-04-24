@@ -337,8 +337,15 @@
         if (session && session.user) {
           const profile = await authLoadUserProfile(session.user);
           if (profile) {
-            lsSetUser(profile);
-            return profile;
+            // Mescla dados de matrizes locais que ainda não foram sincronizados com o Supabase
+            const _local = lsGetUser() || {};
+            const _matrixKeys = ['disc','johari','bigfive','ancoras','soar','ikigai','tci','pearson'];
+            const _merged = { ...profile };
+            for (const _k of _matrixKeys) {
+              if (!_merged[_k] && _local[_k]) _merged[_k] = _local[_k];
+            }
+            lsSetUser(_merged);
+            return _merged;
           }
         }
       } catch(e) { console.warn('[db] ensureUserData:', e); }
