@@ -92,7 +92,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .section-note{font-family:var(--mono);font-size:0.6rem;color:var(--muted);}
 
 /* MATRIX CARDS */
-.matrices-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:2.25rem;}
+.matrices-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:2.25rem;}
 .matrix-card{background:var(--surface);padding:2rem;cursor:pointer;position:relative;transition:background 0.15s;animation:fadeUp 0.4s ease both;}
 .matrix-card:hover{background:var(--surface2);}
 .matrix-card::after{content:'';position:absolute;top:0;left:0;bottom:0;width:2px;background:var(--card-accent,var(--accent));opacity:0;transition:opacity 0.15s;}
@@ -108,6 +108,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 .card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;}
 .card-glyph{width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.card-glyph svg{width:18px;height:18px;stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.nav-icon{display:flex;align-items:center;justify-content:center;width:18px;}
+.nav-icon svg{width:14px;height:14px;stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0.7;}
+.mobile-nav-icon svg{width:20px;height:20px;stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round;}
 .lock-badge{font-family:var(--mono);font-size:0.52rem;letter-spacing:0.1em;background:var(--surface2);border:1px solid var(--border2);color:var(--muted);padding:0.18rem 0.5rem;border-radius:3px;}
 .card-category{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.35rem;display:block;}
 .matrix-card h3{font-size:0.9rem;font-weight:700;margin-bottom:0.3rem;letter-spacing:-0.01em;}
@@ -193,17 +197,17 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     <nav aria-label="Navegação principal">
       <div class="nav-section">
         <span class="nav-label">Principal</span>
-        <a class="nav-item active" href="dashboard.html"><span class="nav-icon">⬡</span>Dashboard</a>
-        <a class="nav-item" href="disc.html"><span class="nav-icon">🎯</span>DISC</a>
-        <a class="nav-item" href="soar.html"><span class="nav-icon">🧭</span>SOAR</a>
-        <a class="nav-item" href="#resultados" onclick="scrollToSection('resultados')"><span class="nav-icon">◎</span>Insights de Performance</a>
-        <a class="nav-item" href="tci.html"><span class="nav-icon">🧬</span>Temperamento TCI</a>
-        <a class="nav-item" href="dna.html" style="border:1px solid rgba(201,168,76,0.2);color:#C9A84C;background:rgba(201,168,76,0.06);"><span class="nav-icon">🧬</span>DNA Estratégico</a>
+        <a class="nav-item active" href="dashboard.html"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span>Dashboard</a>
+        <a class="nav-item" href="disc.html"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></span>DISC</a>
+        <a class="nav-item" href="soar.html"><span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span>SOAR</a>
+        <a class="nav-item" href="#resultados" onclick="scrollToSection('resultados')"><span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>Insights de Performance</a>
+        <a class="nav-item" href="tci.html"><span class="nav-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>Temperamento TCI</a>
+        <a class="nav-item" href="dna.html" style="border:1px solid rgba(201,168,76,0.2);color:#C9A84C;background:rgba(201,168,76,0.06);"><span class="nav-icon"><svg viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>DNA Estratégico</a>
       </div>
       <div class="nav-section">
         <span class="nav-label">Conta</span>
-        <a class="nav-item" href="index.html#planos"><span class="nav-icon">◇</span>Planos</a>
-        <button class="nav-item" onclick="logout()"><span class="nav-icon">↩</span>Sair</button>
+        <a class="nav-item" href="index.html#planos"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Planos</a>
+        <button class="nav-item" onclick="logout()"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>Sair</button>
       </div>
     </nav>
     <div class="sidebar-footer">
@@ -258,13 +262,13 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <span class="section-eyebrow">Eixo Individual</span>
         <h2>Matrizes de Autoconhecimento</h2>
       </div>
-      <span class="section-note">6 matrizes disponíveis</span>
+      <span class="section-note">8 matrizes disponíveis</span>
     </div>
 
     <div class="matrices-grid">
       <div class="matrix-card" style="--card-accent:var(--D)" onclick="window.location.href='disc.html'">
         <div class="card-top">
-          <div class="card-glyph" style="background:rgba(232,96,58,0.1);border:1px solid rgba(232,96,58,0.18);">🎯</div>
+          <div class="card-glyph" style="background:rgba(232,96,58,0.1);border:1px solid rgba(232,96,58,0.18);"><svg viewBox="0 0 24 24" style="stroke:#E8603A"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></div>
         </div>
         <span class="card-category">Personalidade</span>
         <h3>Perfil DISC</h3>
@@ -277,7 +281,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
       <div class="matrix-card" style="--card-accent:var(--I)" onclick="window.location.href='soar.html'">
         <div class="card-top">
-          <div class="card-glyph" style="background:rgba(108,95,230,0.1);border:1px solid rgba(108,95,230,0.18);">🧭</div>
+          <div class="card-glyph" style="background:rgba(108,95,230,0.1);border:1px solid rgba(108,95,230,0.18);"><svg viewBox="0 0 24 24" style="stroke:#6C5FE6"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
         </div>
         <span class="card-category">Estratégia Pessoal</span>
         <h3>Análise SOAR</h3>
@@ -290,7 +294,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
       <div class="matrix-card" style="--card-accent:var(--D)" onclick="window.location.href='ikigai.html'">
         <div class="card-top">
-          <div class="card-glyph" style="background:rgba(232,96,58,0.1);border:1px solid rgba(232,96,58,0.18);">🌸</div>
+          <div class="card-glyph" style="background:rgba(232,96,58,0.1);border:1px solid rgba(232,96,58,0.18);"><svg viewBox="0 0 24 24" style="stroke:#E8603A"><circle cx="9" cy="9" r="6"/><circle cx="15" cy="9" r="6"/><circle cx="12" cy="15" r="6"/></svg></div>
         </div>
         <span class="card-category">Propósito de Vida</span>
         <h3>Ikigai</h3>
@@ -303,7 +307,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
       <div class="matrix-card" style="--card-accent:var(--S)" onclick="window.location.href='ancoras.html'">
         <div class="card-top">
-          <div class="card-glyph" style="background:rgba(46,196,160,0.1);border:1px solid rgba(46,196,160,0.18);">⚓</div>
+          <div class="card-glyph" style="background:rgba(46,196,160,0.1);border:1px solid rgba(46,196,160,0.18);"><svg viewBox="0 0 24 24" style="stroke:#2EC4A0"><circle cx="12" cy="5" r="3"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg></div>
         </div>
         <span class="card-category">Carreira</span>
         <h3>Âncoras de Carreira</h3>
@@ -316,7 +320,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
       <div class="matrix-card" style="--card-accent:var(--C)" onclick="window.location.href='johari.html'">
         <div class="card-top">
-          <div class="card-glyph" style="background:rgba(27,168,212,0.1);border:1px solid rgba(27,168,212,0.18);">🪟</div>
+          <div class="card-glyph" style="background:rgba(27,168,212,0.1);border:1px solid rgba(27,168,212,0.18);"><svg viewBox="0 0 24 24" style="stroke:#1BA8D4"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg></div>
         </div>
         <span class="card-category">Autopercepção</span>
         <h3>Janela de Johari</h3>
@@ -327,9 +331,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         </div>
       </div>
 
-      <div class="matrix-card card-wide" style="--card-accent:var(--I)" onclick="window.location.href='bigfive.html'">
+      <div class="matrix-card" style="--card-accent:var(--I)" onclick="window.location.href='bigfive.html'">
         <div class="card-top">
-          <div class="card-glyph" style="background:rgba(108,95,230,0.1);border:1px solid rgba(108,95,230,0.18);">🧠</div>
+          <div class="card-glyph" style="background:rgba(108,95,230,0.1);border:1px solid rgba(108,95,230,0.18);"><svg viewBox="0 0 24 24" style="stroke:#6C5FE6"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
         </div>
         <span class="card-category">Psicometria Científica</span>
         <h3>Big Five — OCEAN</h3>
@@ -340,15 +344,28 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         </div>
       </div>
 
-      <div class="matrix-card card-featured" style="--card-accent:#C9A84C" onclick="window.location.href='pearson.html'">
+      <div class="matrix-card" style="--card-accent:#C9A84C" onclick="window.location.href='pearson.html'">
         <div class="card-top">
-          <div class="card-glyph" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);">🏛️</div>
+          <div class="card-glyph" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);"><svg viewBox="0 0 24 24" style="stroke:#C9A84C"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
         </div>
         <span class="card-category">Psicologia Junguiana</span>
         <h3>Arquétipos — Pearson-Marr</h3>
         <p>Descubra qual dos 12 Arquétipos de Jung define sua essência. Revela os padrões profundos que guiam suas escolhas, motivações e forma de se relacionar com o mundo.</p>
         <div class="card-foot">
           <span class="card-status" id="pearson-status">Não iniciado</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="matrix-card" style="--card-accent:#7000FF" onclick="window.location.href='tci.html'">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(112,0,255,0.1);border:1px solid rgba(112,0,255,0.18);"><svg viewBox="0 0 24 24" style="stroke:#7000FF"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        </div>
+        <span class="card-category">Neurociência do Temperamento</span>
+        <h3>Temperamento TCI</h3>
+        <p>Sua assinatura neuroquímica inata. 4 dimensões de base biológica: Busca de Novidade, Esquiva de Danos, Dependência de Recompensa e Persistência.</p>
+        <div class="card-foot">
+          <span class="card-status" id="tci-status">Não iniciado</span>
           <span class="card-arrow">→</span>
         </div>
       </div>
@@ -362,16 +379,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <span class="section-note">Gerado por IA · 4 Hélices</span>
     </div>
     <div class="matrices-grid" style="margin-bottom:2.25rem;">
-      <div class="matrix-card" style="--card-accent:#7000FF" onclick="window.location.href='tci.html'">
-        <div class="card-icon">🧬</div>
-        <h3>Temperamento TCI</h3>
-        <p>Sua assinatura neuroquímica inata. 4 dimensões de base biológica: Busca de Novidade, Esquiva de Danos, Dependência de Recompensa e Persistência.</p>
-        <div class="card-meta"><span class="card-status" id="tci-status">Não iniciado</span><span class="card-time">~15 min</span></div>
-        <span class="card-arrow">→</span>
-      </div>
       <div class="matrix-card" style="--card-accent:#C9A84C;grid-column:1/-1;" onclick="window.location.href='dna.html'">
         <div class="card-top">
-          <div class="card-glyph" style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15);font-size:1.2rem;">🧬</div>
+          <div class="card-glyph" style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15);"><svg viewBox="0 0 24 24" style="stroke:#C9A84C"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></div>
           <span style="font-family:var(--mono);font-size:0.52rem;letter-spacing:0.1em;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);color:#C9A84C;padding:0.18rem 0.5rem;border-radius:3px;">NOVO</span>
         </div>
         <span class="card-category" style="color:#C9A84C;">Convergência das 4 Hélices</span>
@@ -395,7 +405,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     <div class="matrices-grid" style="margin-bottom:2.25rem;">
       <div class="matrix-card locked" style="--card-accent:var(--C)">
         <div class="card-top">
-          <div class="card-glyph" style="background:rgba(27,168,212,0.06);border:1px solid rgba(27,168,212,0.08);">📋</div>
+          <div class="card-glyph" style="background:rgba(27,168,212,0.06);border:1px solid rgba(27,168,212,0.08);"><svg viewBox="0 0 24 24" style="stroke:#1BA8D4"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></div>
           <span class="lock-badge">EMPRESA</span>
         </div>
         <span class="card-category">Planejamento</span>
@@ -406,7 +416,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
       <div class="matrix-card locked" style="--card-accent:var(--D)">
         <div class="card-top">
-          <div class="card-glyph" style="background:rgba(232,96,58,0.06);border:1px solid rgba(232,96,58,0.08);">👥</div>
+          <div class="card-glyph" style="background:rgba(232,96,58,0.06);border:1px solid rgba(232,96,58,0.08);"><svg viewBox="0 0 24 24" style="stroke:#E8603A"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
           <span class="lock-badge">EMPRESA</span>
         </div>
         <span class="card-category">Papéis e Responsabilidades</span>
@@ -417,7 +427,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
       <div class="matrix-card locked" style="--card-accent:var(--S)">
         <div class="card-top">
-          <div class="card-glyph" style="background:rgba(46,196,160,0.06);border:1px solid rgba(46,196,160,0.08);">📊</div>
+          <div class="card-glyph" style="background:rgba(46,196,160,0.06);border:1px solid rgba(46,196,160,0.08);"><svg viewBox="0 0 24 24" style="stroke:#2EC4A0"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></div>
           <span class="lock-badge">EMPRESA</span>
         </div>
         <span class="card-category">Estratégia de Equipe</span>
@@ -462,23 +472,23 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 <nav class="mobile-nav" aria-label="Navegação mobile">
   <div class="mobile-nav-items">
     <a href="dashboard.html" class="mobile-nav-item active">
-      <span class="mobile-nav-icon">⬡</span>
+      <span class="mobile-nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span>
       <span>Dashboard</span>
     </a>
     <a href="disc.html" class="mobile-nav-item">
-      <span class="mobile-nav-icon">🎯</span>
+      <span class="mobile-nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></span>
       <span>DISC</span>
     </a>
     <a href="soar.html" class="mobile-nav-item">
-      <span class="mobile-nav-icon">🧭</span>
+      <span class="mobile-nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span>
       <span>SOAR</span>
     </a>
     <a href="index.html#planos" class="mobile-nav-item">
-      <span class="mobile-nav-icon">◇</span>
+      <span class="mobile-nav-icon"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
       <span>Planos</span>
     </a>
     <button class="mobile-nav-item" onclick="logout()">
-      <span class="mobile-nav-icon">↩</span>
+      <span class="mobile-nav-icon"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
       <span>Sair</span>
     </button>
   </div>
@@ -597,23 +607,36 @@ function loadMatrixState(userData){
 
   // Progresso
   const discP=discDone?100:0;
-  const totalP=Math.min(Math.round(10+(total/5)*90),100);
+  const totalP=Math.min(Math.round(10+(total/8)*90),100);
   setProgress('disc-pct','disc-fill',discP);
   setProgress('soar-pct','soar-fill',soarPct);
   setProgress('total-pct','total-fill',totalP);
 
   // Atividades
   const activities=[];
-  if(discDone)activities.push({icon:'🎯',label:'Perfil DISC concluído',date:userData.disc.completedAt,color:'var(--D)'});
-  if(soarDone)activities.push({icon:'🧭',label:'Análise SOAR concluída',date:userData.soar.completedAt,color:'var(--I)'});
-  else if(soarPct>0)activities.push({icon:'🧭',label:`SOAR em andamento (${soarPct}%)`,date:userData.soar.completedAt||new Date().toISOString(),color:'var(--I)'});
-  if(ikigaiDone)activities.push({icon:'🌸',label:'Ikigai concluído',date:userData.ikigai.completedAt,color:'var(--D)'});
-  if(ancorasDone)activities.push({icon:'⚓',label:'Âncoras de Carreira concluídas',date:userData.ancoras.completedAt,color:'var(--S)'});
-  if(johariDone)activities.push({icon:'🪟',label:'Janela de Johari concluída',date:userData.johari.completedAt,color:'var(--C)'});
-  if(bigfiveDone)activities.push({icon:'🧠',label:'Big Five — OCEAN concluído',date:userData.bigfive.completedAt,color:'var(--I)'});
-  if(pearsonDone)activities.push({icon:'🏛️',label:'Arquétipos Pearson-Marr concluídos',date:userData.pearson.completedAt,color:'#C9A84C'});
-  if(tciDone)activities.push({icon:'🧬',label:'Temperamento TCI mapeado',date:userData.tci.completedAt,color:'#7000FF'});
-  if(userData.dna&&userData.dna.generatedAt){const dnaEl=document.getElementById('dna-status');if(dnaEl){dnaEl.textContent='DNA gerado · '+new Date(userData.dna.generatedAt).toLocaleDateString('pt-BR');}activities.push({icon:'🧬',label:'DNA Estratégico gerado',date:userData.dna.generatedAt,color:'#C9A84C'});}
+  const _svg={
+    disc:'<rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/>',
+    soar:'<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
+    ikigai:'<circle cx="9" cy="9" r="6"/><circle cx="15" cy="9" r="6"/><circle cx="12" cy="15" r="6"/>',
+    ancoras:'<circle cx="12" cy="5" r="3"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/>',
+    johari:'<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/>',
+    bigfive:'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+    pearson:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    tci:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+    dna:'<line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
+  };
+  function _actIcon(key,color){return '<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:'+color+';stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round;">'+(_svg[key]||'')+'</svg>';}
+
+  if(discDone)activities.push({icon:'disc',label:'Perfil DISC concluído',date:userData.disc.completedAt,color:'var(--D)'});
+  if(soarDone)activities.push({icon:'soar',label:'Análise SOAR concluída',date:userData.soar.completedAt,color:'var(--I)'});
+  else if(soarPct>0)activities.push({icon:'soar',label:`SOAR em andamento (${soarPct}%)`,date:userData.soar.completedAt||new Date().toISOString(),color:'var(--I)'});
+  if(ikigaiDone)activities.push({icon:'ikigai',label:'Ikigai concluído',date:userData.ikigai.completedAt,color:'var(--D)'});
+  if(ancorasDone)activities.push({icon:'ancoras',label:'Âncoras de Carreira concluídas',date:userData.ancoras.completedAt,color:'var(--S)'});
+  if(johariDone)activities.push({icon:'johari',label:'Janela de Johari concluída',date:userData.johari.completedAt,color:'var(--C)'});
+  if(bigfiveDone)activities.push({icon:'bigfive',label:'Big Five — OCEAN concluído',date:userData.bigfive.completedAt,color:'var(--I)'});
+  if(pearsonDone)activities.push({icon:'pearson',label:'Arquétipos Pearson-Marr concluídos',date:userData.pearson.completedAt,color:'#C9A84C'});
+  if(tciDone)activities.push({icon:'tci',label:'Temperamento TCI mapeado',date:userData.tci.completedAt,color:'#7000FF'});
+  if(userData.dna&&userData.dna.generatedAt){const dnaEl=document.getElementById('dna-status');if(dnaEl){dnaEl.textContent='DNA gerado · '+new Date(userData.dna.generatedAt).toLocaleDateString('pt-BR');}activities.push({icon:'dna',label:'DNA Estratégico gerado',date:userData.dna.generatedAt,color:'#C9A84C'});}
 
   if(activities.length>0){
     const list=document.getElementById('activity-list');
@@ -621,7 +644,7 @@ function loadMatrixState(userData){
       const d=new Date(a.date);
       const lbl=d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
       return '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0;border-bottom:1px solid var(--border);">'+
-        '<span style="font-size:1rem;width:28px;text-align:center;">'+a.icon+'</span>'+
+        '<span style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:'+a.color.replace('var(--D)','rgba(232,96,58,0.12)').replace('var(--I)','rgba(108,95,230,0.12)').replace('var(--S)','rgba(46,196,160,0.12)').replace('var(--C)','rgba(27,168,212,0.12)')+'15;flex-shrink:0;">'+_actIcon(a.icon,a.color)+'</span>'+
         '<div style="flex:1;"><div style="font-size:0.8rem;font-weight:600;">'+a.label+'</div>'+
         '<div style="font-size:0.65rem;color:var(--muted);font-family:var(--mono);margin-top:0.1rem;">'+lbl+'</div></div>'+
         '<span style="width:6px;height:6px;border-radius:50%;background:'+a.color+';flex-shrink:0;"></span></div>';

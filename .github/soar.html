@@ -720,39 +720,47 @@ function showResult() {
 // GENERATE INSIGHTS
 // ══════════════════════════════════════
 function generateInsights() {
-  const s = Object.values(answers.S || {}).filter(v => v).join(' ');
-  const o = Object.values(answers.O || {}).filter(v => v).join(' ');
-  const a = Object.values(answers.A || {}).filter(v => v).join(' ');
-  const r = Object.values(answers.R || {}).filter(v => v).join(' ');
+  const sArr = Object.values(answers.S || {}).filter(v => v && v.trim());
+  const oArr = Object.values(answers.O || {}).filter(v => v && v.trim());
+  const aArr = Object.values(answers.A || {}).filter(v => v && v.trim());
+  const rArr = Object.values(answers.R || {}).filter(v => v && v.trim());
+  const s1 = sArr[0] || '', o1 = oArr[0] || '', a1 = aArr[0] || '', r1 = rArr[0] || '';
 
   const insights = [];
 
-  if (s && a) {
+  if (sArr.length && aArr.length) {
     insights.push({
       label: 'Alavancagem (S + A)',
-      text: 'Suas forças são o combustível para suas aspirações. Use o que você já sabe fazer bem como ponto de partida para o que deseja conquistar.'
+      text: s1 && a1
+        ? `"${s1}" é uma força que pode impulsionar diretamente a aspiração "${a1}". Use suas competências já consolidadas como ponto de partida para o que deseja conquistar.`
+        : 'Suas forças são o combustível para suas aspirações. Use o que você já sabe fazer bem como ponto de partida para o que deseja conquistar.'
     });
   }
-  if (o && r) {
+  if (oArr.length && rArr.length) {
     insights.push({
       label: 'Plano de Ação (O + R)',
-      text: 'As oportunidades identificadas se conectam diretamente aos resultados que você quer. Priorize as que têm maior alinhamento com suas metas de curto prazo.'
+      text: o1 && r1
+        ? `A oportunidade "${o1}" se conecta diretamente ao resultado esperado "${r1}". Priorize as ações com maior alinhamento entre essas duas dimensões.`
+        : 'As oportunidades identificadas se conectam diretamente aos resultados que você quer. Priorize as que têm maior alinhamento com suas metas de curto prazo.'
     });
   }
-  if (s && o) {
+  if (sArr.length && oArr.length) {
     insights.push({
       label: 'Vantagem Competitiva (S + O)',
-      text: 'A combinação das suas forças únicas com as oportunidades do mercado define onde você tem maior potencial de diferenciação.'
+      text: s1 && o1
+        ? `A força "${s1}" combinada com a oportunidade "${o1}" define um eixo de diferenciação único. É aqui que seu potencial competitivo é mais alto.`
+        : 'A combinação das suas forças únicas com as oportunidades do mercado define onde você tem maior potencial de diferenciação.'
     });
   }
-  if (a && r) {
+  if (aArr.length && rArr.length) {
     insights.push({
       label: 'Visão de Futuro (A + R)',
-      text: 'Suas aspirações de longo prazo e seus resultados esperados estão mapeados. O próximo passo é definir os marcos que ligam onde você está a onde quer chegar.'
+      text: a1 && r1
+        ? `A aspiração "${a1}" e o resultado esperado "${r1}" estão mapeados. O próximo passo é definir os marcos concretos que ligam onde você está a onde quer chegar.`
+        : 'Suas aspirações de longo prazo e seus resultados esperados estão mapeados. Defina marcos que conectem o presente ao futuro desejado.'
     });
   }
 
-  // Always have at least 2 insights
   if (insights.length < 2) {
     insights.push({
       label: 'Próximo Passo',
@@ -779,59 +787,112 @@ function generatePDF() {
   const nome = getNomeExibido(user);
   const data = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
   const ACCENT = '#6C5FE6';
+  // ── PDF v2: 2-col uniform layout ──
+  const insights2 = generateInsights();
+  const totalItems2 = QUADRANTS.reduce((sum,q)=>sum+Object.values(answers[q.key]||{}).filter(v=>v&&v.trim()).length,0);
 
-  const _gnCss = '*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page{width:794px;min-height:1123px;margin:0 auto;padding:40px 48px;background:#f8fafc;}.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:20px;border-bottom:2px solid #000;margin-bottom:28px;}.brand{display:flex;align-items:center;gap:10px;}.brand-name{font-size:17px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:GNOSIS_ACCENT;font-style:italic;font-weight:300;}.header-meta{font-family:'Space Mono',monospace;font-size:8px;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;text-align:right;line-height:1.9;}.result-box{background:#fafafa;border:1px solid #000;padding:28px 32px;margin-bottom:24px;position:relative;}.result-box-label{position:absolute;top:-10px;left:20px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:8px;padding:2px 10px;text-transform:uppercase;letter-spacing:0.2em;}.result-eyebrow{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:6px;color:GNOSIS_ACCENT;}.result-title{font-family:'Inter',sans-serif;font-size:50px;font-weight:900;text-transform:uppercase;letter-spacing:-0.05em;line-height:1;}.bars-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px;}.bar-item{border:1px solid #e4e4e7;padding:12px;background:#fff;}.bar-item.dim{opacity:0.4;}.bar-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.bar-pct{font-size:22px;font-weight:900;}.bar-track{height:4px;background:#f1f5f9;border-radius:2px;margin-top:6px;overflow:hidden;}.bar-fill{height:100%;border-radius:2px;}.blueprint-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}.blueprint-item{border:1px solid #e4e4e7;padding:14px 16px;background:#fff;}.blueprint-item.full{grid-column:1/-1;}.item-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.item-value{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-style:italic;}.item-text{font-size:11px;line-height:1.75;color:#333;}.rank-item{display:flex;align-items:center;gap:12px;border:1px solid #e4e4e7;padding:11px 15px;margin-bottom:7px;background:#fff;}.rank-item.top{border-color:#000;border-left:3px solid GNOSIS_ACCENT;}.rank-num{font-family:'Space Mono',monospace;font-size:9px;color:#a1a1aa;min-width:22px;}.rank-icon{font-size:18px;}.rank-name{font-size:13px;font-weight:700;flex:1;}.rank-meta{font-size:10px;color:#71717a;margin-top:2px;}.rank-score{font-family:'Space Mono',monospace;font-size:9px;color:#71717a;white-space:nowrap;}.rank-dots{display:flex;gap:3px;}.insight-box{background:#fff;border:1px solid #000;padding:20px 24px;margin-bottom:14px;}.insight-label{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:GNOSIS_ACCENT;margin-bottom:10px;display:flex;align-items:center;gap:8px;}.insight-label::before{content:'';display:inline-block;width:20px;height:2px;background:GNOSIS_ACCENT;border-radius:2px;}.insight-text{font-size:11px;color:#444;line-height:1.8;}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}.chip{font-family:'Space Mono',monospace;font-size:8px;padding:4px 10px;border:1px solid GNOSIS_ACCENT;color:GNOSIS_ACCENT;letter-spacing:0.08em;text-transform:uppercase;}.quad-card{background:#fff;padding:16px 18px;border:1px solid #e4e4e7;overflow:hidden;}.footer{padding-top:14px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:24px;}.footer-left{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}.footer-right{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:#000;}@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;padding:28px 36px;}}'.split('GNOSIS_ACCENT').join(ACCENT);
+  const _gnCss_so = `*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.page{width:794px;height:1123px;overflow:hidden;margin:0 auto;padding:24px 34px;background:#f8fafc;display:flex;flex-direction:column;}
+.hd{display:flex;justify-content:space-between;align-items:center;padding-bottom:11px;border-bottom:2px solid #000;margin-bottom:13px;flex-shrink:0;}
+.brand{display:flex;align-items:center;gap:7px;}.brand-name{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:ACC;font-style:italic;font-weight:300;}
+.hd-meta{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;text-align:right;line-height:1.85;}
+.grid{display:grid;grid-template-columns:1fr 1.3fr;gap:11px;flex:1;min-height:0;}.col{display:flex;flex-direction:column;gap:9px;min-height:0;overflow:hidden;}
+.pn{background:#fafafa;border:1px solid #000;padding:13px 15px;position:relative;flex-shrink:0;}
+.pn-grow{background:#fff;border:1px solid #000;padding:13px 15px;position:relative;flex:1;min-height:0;display:flex;flex-direction:column;}
+.lbl{position:absolute;top:-8px;left:12px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:6.5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.15em;}
+.dom-ew{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:ACC;margin-bottom:2px;}
+.dom-name{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;line-height:1;}
+.arch-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:6.5px;padding:2px 7px;border:1px solid;text-transform:uppercase;letter-spacing:0.07em;margin-top:7px;}
+.ins-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:ACC;margin-bottom:7px;display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.ins-lbl::before{content:'';width:14px;height:2px;background:ACC;border-radius:2px;display:inline-block;}
+.ins-txt{font-size:8.5px;color:#444;line-height:1.75;flex-shrink:0;}
+.bp-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px;flex-shrink:0;}
+.bp{border:1px solid #e4e4e7;padding:7px 9px;background:#fff;}
+.bp-tag{font-family:'Space Mono',monospace;font-size:6px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:3px;color:ACC;}
+.bp-txt{font-size:7.5px;line-height:1.6;color:#333;}
+.quad-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0;}
+.quad{background:#fafafa;border:1px solid #e4e4e7;padding:10px 12px;display:flex;flex-direction:column;overflow:hidden;}
+.quad-hd{display:flex;align-items:center;gap:7px;margin-bottom:7px;padding-bottom:6px;border-bottom:1px solid #f1f5f9;flex-shrink:0;}
+.quad-ico{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;}
+.quad-title{font-size:8.5px;font-weight:700;}
+.quad-sub{font-family:'Space Mono',monospace;font-size:6px;color:#71717a;text-transform:uppercase;letter-spacing:0.07em;}
+.q-item{display:flex;gap:6px;align-items:flex-start;margin-bottom:5px;}
+.q-dot{width:4px;height:4px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.q-txt{font-size:7.5px;line-height:1.55;color:#333;}
+.ft{padding-top:9px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:9px;flex-shrink:0;}
+.ft-l{font-family:'Space Mono',monospace;font-size:6px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}
+.ft-r{font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;color:#000;}
+@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;}}`.split('ACC').join(ACCENT);
 
-  const quadrantsHTML = QUADRANTS.map(q => {
-    const filled = Object.values(answers[q.key]||{}).filter(v=>v&&v.trim().length>0);
-    const itemsHTML = filled.length > 0
-      ? filled.map(v=>`<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:7px;"><span style="width:5px;height:5px;border-radius:50%;background:${q.color};margin-top:6px;flex-shrink:0;display:block;"></span><span style="font-size:11px;color:#333;line-height:1.65;">${v}</span></div>`).join('')
-      : '<span style="font-family:monospace;font-size:10px;color:#a1a1aa;">// não respondido</span>';
-    return `<div class="quad-card" style="border-top:2px solid ${q.color};">
-      <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #f1f5f9;">
-        <div style="width:28px;height:28px;border-radius:6px;background:${q.color}15;border:1px solid ${q.color}40;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:13px;font-weight:800;color:${q.color};">${q.icon}</div>
-        <div>
-          <div style="font-family:'Space Mono',monospace;font-size:7px;letter-spacing:0.1em;text-transform:uppercase;color:#71717a;">${q.label}</div>
-          <div style="font-size:13px;font-weight:700;color:#000;">${q.name}</div>
-        </div>
+  const insightsHTML2 = insights2.map(ins=>`<div class="bp"><span class="bp-tag">${ins.label}</span><p class="bp-txt">${ins.text}</p></div>`).join('');
+
+  const _qCounts = {S:0,O:0,A:0,R:0};
+  QUADRANTS.forEach(q=>{ _qCounts[q.key]=Object.values(answers[q.key]||{}).filter(v=>v&&v.trim()).length; });
+  const completionPct2 = Math.round((totalItems2/16)*100);
+
+  const quadHTML2 = QUADRANTS.map(q=>{
+    const filled=Object.values(answers[q.key]||{}).filter(v=>v&&v.trim().length>0);
+    const items=filled.length>0
+      ? filled.slice(0,4).map(v=>`<div class="q-item"><span class="q-dot" style="background:${q.color};"></span><span class="q-txt">${v}</span></div>`).join('')
+      : '<span style="font-family:monospace;font-size:9px;color:#a1a1aa;">// não respondido</span>';
+    return `<div class="quad" style="border-top:2px solid ${q.color};">
+      <div class="quad-hd">
+        <div class="quad-ico" style="background:${q.color}15;border:1px solid ${q.color}35;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:${q.color};">${q.icon}</div>
+        <div style="flex:1;"><div class="quad-title" style="color:${q.color};">${q.name}</div><div class="quad-sub">${q.label||''}</div></div>
+        <span style="font-family:'Space Mono',monospace;font-size:6.5px;color:${q.color};background:${q.color}10;border:1px solid ${q.color}30;padding:1px 5px;border-radius:2px;">${filled.length}/4</span>
       </div>
-      ${itemsHTML}
+      ${items}
     </div>`;
   }).join('');
 
-  const insights = generateInsights();
-  const insightsHTML = insights.map(ins=>
-    `<div class="blueprint-item">
-      <span class="item-tag">${ins.label}</span>
-      <p class="item-text">${ins.text}</p>
-    </div>`
-  ).join('');
+  const _sArr2=Object.values(answers.S||{}).filter(v=>v&&v.trim());
+  const _oArr2=Object.values(answers.O||{}).filter(v=>v&&v.trim());
+  const _aArr2=Object.values(answers.A||{}).filter(v=>v&&v.trim());
+  const _rArr2=Object.values(answers.R||{}).filter(v=>v&&v.trim());
+  const _synthDesc = totalItems2>0
+    ? `${nome} mapeou ${totalItems2} elemento${totalItems2!==1?'s':''} estratégicos: ${_sArr2.length} força${_sArr2.length!==1?'s':''}, ${_oArr2.length} oportunidade${_oArr2.length!==1?'s':''}, ${_aArr2.length} aspiração/aspirações e ${_rArr2.length} resultado${_rArr2.length!==1?'s':''} esperados. A análise SOAR foca no positivo para construir uma visão estratégica acionável.`
+    : 'A análise SOAR mapeia seu posicionamento estratégico a partir de quatro dimensões positivas: forças, oportunidades, aspirações e resultados concretos.';
 
   _imprimirPDF(`<!DOCTYPE html><html lang="pt-BR"><head>
   <meta charset="UTF-8"><title>Análise SOAR — ${nome} · Sistema Gnosis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>${_gnCss}</style></head><body><div class="page">
-  <div class="header">
-    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="32" height="32"><path d="M85 50C85 69.33 69.33 85 50 85C30.67 85 15 69.33 15 50C15 30.67 30.67 15 50 15C59.66 15 68.38 18.91 74.72 25.22" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><path d="M85 50H55" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="50" r="4" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
-    <div class="header-meta">Módulo: Análise SOAR<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>${_gnCss_so}</style></head><body><div class="page">
+  <div class="hd">
+    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="26" height="26"><path d="M85 50C85 69.33 69.33 85 50 85C30.67 85 15 69.33 15 50C15 30.67 30.67 15 50 15C59.66 15 68.38 18.91 74.72 25.22" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><path d="M85 50H55" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="50" r="4" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
+    <div class="hd-meta">Módulo: Análise SOAR · Planejamento Estratégico<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
   </div>
-  <div class="result-box">
-    <div class="result-box-label">Resultado_Diagnóstico_SOAR</div>
-    <div style="text-align:center;">
-      <div class="result-eyebrow" style="color:${ACCENT};">Perfil_Vetor_Estratégico</div>
-      <div class="result-title" style="color:${ACCENT};">ANÁLISE SOAR</div>
-      <div style="margin-top:8px;font-size:12px;color:#71717a;font-family:'Space Mono',monospace;">Forças · Oportunidades · Aspirações · Resultados</div>
+  <div class="grid">
+    <div class="col">
+      <div class="pn">
+        <div class="lbl">Resultado_SOAR</div>
+        <div class="dom-ew">Resultado · Análise SOAR</div>
+        <div class="dom-name" style="color:${ACCENT};">ANÁLISE SOAR</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+          <div class="arch-badge" style="color:${ACCENT};border-color:${ACCENT}40;background:${ACCENT}08;">${totalItems2} de 16 elementos · ${completionPct2}% completo</div>
+        </div>
+        <div style="display:flex;gap:5px;margin-top:8px;">
+          ${QUADRANTS.map(q=>`<div style="flex:1;background:${q.color}10;border:1px solid ${q.color}30;border-radius:3px;padding:4px 6px;text-align:center;"><div style="font-family:'Space Mono',monospace;font-size:8px;font-weight:700;color:${q.color};">${q.icon}</div><div style="font-family:'Space Mono',monospace;font-size:6px;color:${q.color};margin-top:1px;">${_qCounts[q.key]}/4</div></div>`).join('')}
+        </div>
+      </div>
+      <div class="pn-grow">
+        <div class="lbl">Síntese_Estratégica</div>
+        <div class="ins-lbl">Análise Integrada</div>
+        <p class="ins-txt">${_synthDesc}</p>
+        <div class="bp-grid">${insightsHTML2}</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="pn-grow" style="flex:1;">
+        <div class="lbl">Mapa_SOAR</div>
+        <div class="quad-grid" style="margin-top:8px;">${quadHTML2}</div>
+      </div>
     </div>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">${quadrantsHTML}</div>
-  <div class="insight-box" style="margin-top:14px;">
-    <div class="insight-label">Síntese_Estratégica</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">${insightsHTML}</div>
-  </div>
-  <div class="footer"><span class="footer-left">SISTEMA GNOSIS // ENGENHARIA COMPORTAMENTAL // CONFIDENCIAL</span><span class="footer-right">sistemagnosis.com.br</span></div>
+  <div class="ft"><span class="ft-l">Sistema Gnosis // Análise SOAR // Planejamento Estratégico // Confidencial</span><span class="ft-r">sistemagnosis.com.br</span></div>
   </div>
   <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
-  </body></html>\`);
+  </body></html>`);
+  return;
 }
 
 // ══════════════════════════════════════
@@ -852,15 +913,21 @@ function shareResult() {
 // ══════════════════════════════════════
 // INICIALIZAÇÃO DA PÁGINA
 // ══════════════════════════════════════
-function initPage() {
-  const userData = JSON.parse(
-    localStorage.getItem('capsula_user') ||
-    sessionStorage.getItem('capsula_user') ||
-    'null'
-  );
+async function initPage() {
+  // Tenta localStorage; se vazio, busca sessão Supabase
+  let userData = null;
+  try { userData = await capsulaDB.ensureUserData(); } catch(_e) {}
+
+  // Redirect: se já tem resultado salvo, mostra direto
+  if (userData && userData.soar && userData.soar.completedAt && userData.soar.answers) {
+    answers = userData.soar.answers;
+    _isLoadingExisting = true;
+    showResult();
+    return;
+  }
 
   // Guard: sem usuário cadastrado → volta para index
-  if (!userData || (!userData.nome && !userData.apelido && !userData.email && !(userData.soar && userData.soar.completedAt))) {
+  if (!userData || (!userData.nome && !userData.apelido && !userData.email)) {
     window.location.href = 'index.html';
     return;
   }
@@ -937,18 +1004,6 @@ function _imprimirPDF(html){
 }
 document.addEventListener('DOMContentLoaded', initPage);
 </script>
-<script>
-(function() {
-  try {
-    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    if (!raw) return;
-    var u = JSON.parse(raw);
-    if (!u.soar || !u.soar.completedAt || !u.soar.answers) return;
-    answers = u.soar.answers;
-    _isLoadingExisting = true;
-    showResult();
-  } catch(e) { console.warn('[soar redirect]', e); }
-})();
-</script>
+
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR" dir="ltr">
 <head>
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -249,6 +249,14 @@ let currentQ = 0;
 let answers = {ama:{}, bom:{}, precisa:{}, paga:{}};
 let _isLoadingExisting = false;
 
+const _IK_SVGS={
+  ama:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21C12 21 3 9.5 3 7a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 2.5-9 14-9 14z" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 10c0-1.5 1-3 3-3" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+  bom:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="12,2 15.1,8.3 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.3" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
+  precisa:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="${c}" stroke-width="1.8"/><ellipse cx="12" cy="12" rx="4" ry="9" stroke="${c}" stroke-width="1.5"/><line x1="3" y1="12" x2="21" y2="12" stroke="${c}" stroke-width="1.5"/></svg>`,
+  paga:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="6" width="18" height="13" rx="2" stroke="${c}" stroke-width="1.8"/><path d="M3 10h18" stroke="${c}" stroke-width="1.5"/><circle cx="8" cy="15" r="1.5" fill="${c}"/><line x1="12" y1="13" x2="17" y2="13" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="16" x2="15" y2="16" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+};
+const _ikIco=(q,size)=>(_IK_SVGS[q.key]?_IK_SVGS[q.key](q.color,size):'');
+
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 
 function startForm(){currentQ=0;answers={ama:{},bom:{},precisa:{},paga:{}};showPage('page-form');renderQuadrant(0);}
@@ -385,15 +393,26 @@ function showResult(){
 }
 
 // Restaura rascunho e proteção de rota
-document.addEventListener('DOMContentLoaded', function(){
-  try{
-    const u=(capsulaDB.lsGetUser() || {});
-    if(u.ikigai_draft)answers=u.ikigai_draft;
-    // Proteção de rota
-    if(!u.nome&&!u.apelido&&!u.email&&!(u.ikigai&&u.ikigai.completedAt))window.location.href='index.html';
-    // Auto-heal uid
-    if(!u.uid){u.uid=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);try{capsulaDB.lsSetUser(u);}catch(_){}}
-  }catch(e){}
+document.addEventListener('DOMContentLoaded', async function(){
+  // Tenta localStorage; se vazio, busca sessão Supabase
+  let _u = null;
+  try { _u = await capsulaDB.ensureUserData(); } catch(_e) {}
+
+  // Redirect: se já tem resultado salvo, mostra direto
+  if (_u && _u.ikigai && _u.ikigai.completedAt && _u.ikigai.answers) {
+    answers = _u.ikigai.answers;
+    _isLoadingExisting = true;
+    showResult();
+    return;
+  }
+
+  // Proteção de rota
+  if (!_u || (!_u.nome && !_u.apelido && !_u.email)) {
+    window.location.href = 'index.html';
+    return;
+  }
+  if (_u.ikigai_draft) answers = _u.ikigai_draft;
+  if (!_u.uid) { _u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); try { capsulaDB.lsSetUser(_u); } catch(_) {} }
 });
 
 function generatePDF(){
@@ -401,56 +420,107 @@ function generatePDF(){
   const nome=u.apelido||u.nome||'Usuário';
   const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
   const ACCENT='#E8603A';
+  // ── PDF v2: 2-col uniform layout ──
+  const totalItems = QUADRANTS.reduce((sum,q)=>sum+Object.values(answers[q.key]||{}).filter(v=>v&&v.trim()).length,0);
 
-  const _gnCss = '*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.page{width:794px;min-height:1123px;margin:0 auto;padding:40px 48px;background:#f8fafc;}.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:20px;border-bottom:2px solid #000;margin-bottom:28px;}.brand{display:flex;align-items:center;gap:10px;}.brand-name{font-size:17px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:GNOSIS_ACCENT;font-style:italic;font-weight:300;}.header-meta{font-family:'Space Mono',monospace;font-size:8px;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;text-align:right;line-height:1.9;}.result-box{background:#fafafa;border:1px solid #000;padding:28px 32px;margin-bottom:24px;position:relative;}.result-box-label{position:absolute;top:-10px;left:20px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:8px;padding:2px 10px;text-transform:uppercase;letter-spacing:0.2em;}.result-eyebrow{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:6px;color:GNOSIS_ACCENT;}.result-title{font-family:'Inter',sans-serif;font-size:50px;font-weight:900;text-transform:uppercase;letter-spacing:-0.05em;line-height:1;}.bars-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px;}.bar-item{border:1px solid #e4e4e7;padding:12px;background:#fff;}.bar-item.dim{opacity:0.4;}.bar-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.bar-pct{font-size:22px;font-weight:900;}.bar-track{height:4px;background:#f1f5f9;border-radius:2px;margin-top:6px;overflow:hidden;}.bar-fill{height:100%;border-radius:2px;}.blueprint-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}.blueprint-item{border:1px solid #e4e4e7;padding:14px 16px;background:#fff;}.blueprint-item.full{grid-column:1/-1;}.item-tag{font-family:'Space Mono',monospace;font-size:7px;color:GNOSIS_ACCENT;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;}.item-value{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;font-style:italic;}.item-text{font-size:11px;line-height:1.75;color:#333;}.rank-item{display:flex;align-items:center;gap:12px;border:1px solid #e4e4e7;padding:11px 15px;margin-bottom:7px;background:#fff;}.rank-item.top{border-color:#000;border-left:3px solid GNOSIS_ACCENT;}.rank-num{font-family:'Space Mono',monospace;font-size:9px;color:#a1a1aa;min-width:22px;}.rank-icon{font-size:18px;}.rank-name{font-size:13px;font-weight:700;flex:1;}.rank-meta{font-size:10px;color:#71717a;margin-top:2px;}.rank-score{font-family:'Space Mono',monospace;font-size:9px;color:#71717a;white-space:nowrap;}.rank-dots{display:flex;gap:3px;}.insight-box{background:#fff;border:1px solid #000;padding:20px 24px;margin-bottom:14px;}.insight-label{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:GNOSIS_ACCENT;margin-bottom:10px;display:flex;align-items:center;gap:8px;}.insight-label::before{content:'';display:inline-block;width:20px;height:2px;background:GNOSIS_ACCENT;border-radius:2px;}.insight-text{font-size:11px;color:#444;line-height:1.8;}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}.chip{font-family:'Space Mono',monospace;font-size:8px;padding:4px 10px;border:1px solid GNOSIS_ACCENT;color:GNOSIS_ACCENT;letter-spacing:0.08em;text-transform:uppercase;}.quad-card{background:#fff;padding:16px 18px;border:1px solid #e4e4e7;overflow:hidden;}.footer{padding-top:14px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:24px;}.footer-left{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}.footer-right{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:#000;}@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;padding:28px 36px;}}'.split('GNOSIS_ACCENT').join(ACCENT);
+  const _gnCss_ik = `*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.page{width:794px;height:1123px;overflow:hidden;margin:0 auto;padding:24px 34px;background:#f8fafc;display:flex;flex-direction:column;}
+.hd{display:flex;justify-content:space-between;align-items:center;padding-bottom:11px;border-bottom:2px solid #000;margin-bottom:13px;flex-shrink:0;}
+.brand{display:flex;align-items:center;gap:7px;}.brand-name{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:ACC;font-style:italic;font-weight:300;}
+.hd-meta{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;text-align:right;line-height:1.85;}
+.grid{display:grid;grid-template-columns:1fr 1.3fr;gap:11px;flex:1;min-height:0;}.col{display:flex;flex-direction:column;gap:9px;min-height:0;overflow:hidden;}
+.pn{background:#fafafa;border:1px solid #000;padding:13px 15px;position:relative;flex-shrink:0;}
+.pn-grow{background:#fff;border:1px solid #000;padding:13px 15px;position:relative;flex:1;min-height:0;display:flex;flex-direction:column;}
+.lbl{position:absolute;top:-8px;left:12px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:6.5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.15em;}
+.dom-ew{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:ACC;margin-bottom:2px;}
+.dom-name{font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;line-height:1;}
+.arch-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:6.5px;padding:2px 7px;border:1px solid;text-transform:uppercase;letter-spacing:0.07em;margin-top:7px;}
+.ins-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:ACC;margin-bottom:7px;display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.ins-lbl::before{content:'';width:14px;height:2px;background:ACC;border-radius:2px;display:inline-block;}
+.ins-txt{font-size:8.5px;color:#444;line-height:1.75;flex-shrink:0;}
+.int-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px;flex-shrink:0;}
+.int-item{border:1px solid #e4e4e7;padding:7px 9px;}
+.int-tag{font-family:'Space Mono',monospace;font-size:6px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:3px;}
+.int-txt{font-size:7.5px;line-height:1.6;color:#333;}
+.gap-box{flex:1;display:flex;flex-direction:column;justify-content:center;margin-top:9px;padding-top:9px;border-top:1px solid #e4e4e7;}
+.gap-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#71717a;margin-bottom:6px;}
+.gap-txt{font-size:8px;color:#71717a;line-height:1.65;text-align:center;}
+.quad-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0;}
+.quad{background:#fafafa;border:1px solid #e4e4e7;padding:10px 12px;display:flex;flex-direction:column;overflow:hidden;}
+.quad-hd{display:flex;align-items:center;gap:7px;margin-bottom:7px;padding-bottom:6px;border-bottom:1px solid #f1f5f9;flex-shrink:0;}
+.quad-ico{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;}
+.quad-title{font-size:8.5px;font-weight:700;}
+.quad-sub{font-family:'Space Mono',monospace;font-size:6px;color:#71717a;text-transform:uppercase;letter-spacing:0.07em;}
+.quad-items{flex:1;overflow:hidden;}
+.q-item{display:flex;gap:6px;align-items:flex-start;margin-bottom:5px;}
+.q-dot{width:4px;height:4px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.q-txt{font-size:7.5px;line-height:1.55;color:#333;}
+.ft{padding-top:9px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:9px;flex-shrink:0;}
+.ft-l{font-family:'Space Mono',monospace;font-size:6px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}
+.ft-r{font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;color:#000;}
+@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;}}`.split('ACC').join(ACCENT);
 
-  const quadrantsHTML = QUADRANTS.map(q=>{
-    const filled=Object.values(answers[q.key]||{}).filter(v=>v&&v.length>0);
-    const items=filled.map(v=>
-      `<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:7px;">
-        <span style="width:5px;height:5px;border-radius:50%;background:${q.color};margin-top:6px;flex-shrink:0;display:block;"></span>
-        <span style="font-size:11px;color:#333;line-height:1.65;">${v}</span>
-      </div>`
-    ).join('') || '<span style="font-family:monospace;font-size:10px;color:#a1a1aa;">// não respondido</span>';
-    return `<div class="quad-card" style="border-top:2px solid ${q.color};">
-      <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #f1f5f9;">
-        <div style="width:28px;height:28px;border-radius:6px;background:${q.color}15;border:1px solid ${q.color}40;display:flex;align-items:center;justify-content:center;font-size:14px;">${q.icon}</div>
-        <div>
-          <div style="font-family:'Space Mono',monospace;font-size:7px;letter-spacing:0.1em;text-transform:uppercase;color:#71717a;">${q.label||q.name.toUpperCase()}</div>
-          <div style="font-size:13px;font-weight:700;color:${q.color};">${q.name}</div>
-        </div>
+  const intersections = [
+    {tag:'Paixão',txt:'A interseção entre o que você ama e no que é bom define sua paixão — a energia que sustenta esforços de longo prazo.',color:'#E8603A'},
+    {tag:'Missão',txt:'Onde o que você ama encontra o que o mundo precisa. É o chamado que transcende o interesse pessoal.',color:'#9B59B6'},
+    {tag:'Vocação',txt:'No que você é bom e pelo que pode ser pago. É sua proposta de valor — a entrega que o mercado reconhece.',color:'#2EC4A0'},
+    {tag:'Profissão',txt:'O que o mundo precisa e pelo que pode ser pago. É a sustentabilidade — a viabilidade prática do propósito.',color:'#1BA8D4'},
+  ];
+  const intHTML = intersections.map(i=>`<div class="int-item" style="border-color:${i.color}30;background:${i.color}04;"><span class="int-tag" style="color:${i.color};">${i.tag}</span><p class="int-txt">${i.txt}</p></div>`).join('');
+
+  const quadHTML = QUADRANTS.map(q=>{
+    const filled=Object.values(answers[q.key]||{}).filter(v=>v&&v.trim().length>0);
+    const items=filled.length>0
+      ? filled.slice(0,4).map(v=>`<div class="q-item"><span class="q-dot" style="background:${q.color};"></span><span class="q-txt">${v}</span></div>`).join('')
+      : '<span style="font-family:monospace;font-size:9px;color:#a1a1aa;">// não respondido</span>';
+    return `<div class="quad" style="border-top:2px solid ${q.color};">
+      <div class="quad-hd">
+        <div class="quad-ico" style="background:${q.color}15;border:1px solid ${q.color}35;">${_ikIco(q,16)}</div>
+        <div><div class="quad-title" style="color:${q.color};">${q.name}</div><div class="quad-sub">${q.label||''}</div></div>
       </div>
-      ${items}
+      <div class="quad-items">${items}</div>
     </div>`;
   }).join('');
 
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
+  _imprimirPDF(`<!DOCTYPE html><html lang="pt-BR"><head>
   <meta charset="UTF-8"><title>Ikigai — ${nome} · Sistema Gnosis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>${_gnCss}</style></head><body><div class="page">
-  <div class="header">
-    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="32" height="32"><path d="M85 50C85 69.33 69.33 85 50 85C30.67 85 15 69.33 15 50C15 30.67 30.67 15 50 15C59.66 15 68.38 18.91 74.72 25.22" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><path d="M85 50H55" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="50" r="4" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
-    <div class="header-meta">Módulo: Ikigai<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>${_gnCss_ik}</style></head><body><div class="page">
+  <div class="hd">
+    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="26" height="26"><path d="M85 50C85 69.33 69.33 85 50 85C30.67 85 15 69.33 15 50C15 30.67 30.67 15 50 15C59.66 15 68.38 18.91 74.72 25.22" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><path d="M85 50H55" stroke="${ACCENT}" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="50" r="4" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
+    <div class="hd-meta">Módulo: Ikigai · Razão de Ser<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
   </div>
-  <div class="result-box">
-    <div class="result-box-label">Resultado_Diagnóstico_Ikigai</div>
-    <div style="text-align:center;">
-      <div class="result-eyebrow" style="color:${ACCENT};">Perfil_Vetor_Propósito</div>
-      <div class="result-title" style="color:${ACCENT};">IKIGAI</div>
-      <div style="margin-top:8px;font-size:12px;color:#71717a;font-family:'Space Mono',monospace;">Razão de Ser · ${nome.toUpperCase()}</div>
+  <div class="grid">
+    <div class="col">
+      <div class="pn">
+        <div class="lbl">Resultado_Ikigai</div>
+        <div class="dom-ew">Resultado · Ikigai</div>
+        <div class="dom-name" style="color:${ACCENT};">IKIGAI</div>
+        <div class="arch-badge" style="color:${ACCENT};border-color:${ACCENT}40;background:${ACCENT}08;">${totalItems} elementos mapeados · ${QUADRANTS.length} quadrantes</div>
+      </div>
+      <div class="pn-grow">
+        <div class="lbl">Análise_do_Perfil</div>
+        <div class="ins-lbl">Síntese dos Quatro Pilares</div>
+        <p class="ins-txt">O Ikigai é a confluência entre quatro dimensões: o que você ama, no que é bom, o que o mundo precisa e pelo que pode ser remunerado. Seu propósito de vida emerge no ponto onde esses quatro círculos se sobrepõem.</p>
+        <div class="int-grid">${intHTML}</div>
+        <div class="gap-box">
+          <div class="gap-lbl">// Próximo Passo</div>
+          <p class="gap-txt">Identifique nos seus quadrantes os elementos que aparecem em mais de uma área. Essa sobreposição é o sinal mais claro do seu Ikigai em formação.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="pn-grow" style="flex:1;">
+        <div class="lbl">Mapa_dos_Quatro_Quadrantes</div>
+        <div class="quad-grid" style="margin-top:8px;">${quadHTML}</div>
+      </div>
     </div>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">${quadrantsHTML}</div>
-  <div class="insight-box" style="margin-top:14px;">
-    <div class="insight-label">Intersecção_dos_Quatro_Pilares</div>
-    <p class="insight-text">Revisite cada quadrante e identifique onde há maior sobreposição — essa confluência é sua zona de máximo propósito e impacto.</p>
-  </div>
-  <div class="footer"><span class="footer-left">SISTEMA GNOSIS // ENGENHARIA COMPORTAMENTAL // CONFIDENCIAL</span><span class="footer-right">sistemagnosis.com.br</span></div>
+  <div class="ft"><span class="ft-l">Sistema Gnosis // Ikigai // Razão de Ser // Confidencial</span><span class="ft-r">sistemagnosis.com.br</span></div>
   </div>
   <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
-  </body></html>\`);
-  w.document.close();
+  </body></html>`);
+  return;
 }
 
 function _imprimirPDF(html){
@@ -463,18 +533,6 @@ function _imprimirPDF(html){
   iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='ikigai.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
 }
 </script>
-<script>
-(function() {
-  try {
-    var raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
-    if (!raw) return;
-    var u = JSON.parse(raw);
-    if (!u.ikigai || !u.ikigai.completedAt || !u.ikigai.answers) return;
-    answers = u.ikigai.answers;
-    _isLoadingExisting = true;
-    showResult();
-  } catch(e) { console.warn('[ikigai redirect]', e); }
-})();
-</script>
+
 </body>
 </html>
