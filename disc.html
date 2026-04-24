@@ -1308,21 +1308,8 @@ function setSyncStatus(msg, isError) {
   }
 }
 
-// Verifica autenticação ao carregar e escuta mudanças de sessão
-document.addEventListener('DOMContentLoaded', async () => {
-  const sb = capsulaDB.getDB();
-  if (!sb) return;
-
-  // Listener de auth: atualiza UI se necessário
-  sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN') {
-      console.info('[Gnosis] Sessão iniciada:', session.user.email);
-    }
-    if (event === 'SIGNED_OUT') {
-      localStorage.removeItem('capsula_user');
-    }
-  });
-});
+// Auth listener removido — onAuthStateChange disparava SIGNED_OUT imediatamente
+// para usuários sem sessão Supabase, apagando o localStorage antes de initPage rodar.
 
 // ══════════════════════════════════════
 // ONBOARDING WIZARD
@@ -1358,7 +1345,16 @@ function obFinish() {
 // INICIALIZAÇÃO DA PÁGINA
 // ══════════════════════════════════════
 async function initPage() {
-  // Tenta localStorage; se vazio, busca sessão Supabase e popula localStorage
+  // Fast path: lê localStorage direto antes de chamar Supabase
+  const _ls = capsulaDB.lsGetUser() || {};
+  if (_ls.disc && _ls.disc.completedAt && _ls.disc.scores) {
+    scores = _ls.disc.scores;
+    _isLoadingExisting = true;
+    showResult();
+    return;
+  }
+
+  // Slow path: sincroniza com Supabase
   let userData = null;
   try { userData = await capsulaDB.ensureUserData(); } catch(_) {}
 

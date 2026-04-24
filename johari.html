@@ -366,6 +366,15 @@ function showResult(){
 
 // Proteção de rota
 document.addEventListener('DOMContentLoaded', async function(){
+  // Fast path: lê localStorage direto antes de chamar Supabase
+  const _ls = capsulaDB.lsGetUser() || {};
+  if (_ls.johari && _ls.johari.completedAt && _ls.johari.self && _ls.johari.others) {
+    selfSelected = new Set(_ls.johari.self); othersSelected = new Set(_ls.johari.others);
+    _isLoadingExisting = true;
+    showResult();
+    return;
+  }
+
   let _u = null;
   try { _u = await capsulaDB.ensureUserData(); } catch(_e) {}
 
