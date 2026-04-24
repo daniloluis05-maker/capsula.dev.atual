@@ -202,6 +202,11 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 <!-- ── RESULTADO ── -->
 <div class="page" id="page-result">
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);">
+    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;">← Dashboard</a>
+    <span style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);">// resultado · tci</span>
+    <button onclick="generatePDF()" style="font-family:var(--mono);font-size:0.7rem;background:transparent;color:var(--muted);border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;cursor:pointer;">↓ PDF</button>
+  </nav>
   <div class="result-page">
     <div class="result-eyebrow">// inventário de temperamento · tci</div>
     <h1 class="result-title">Perfil de <span id="res-nome" style="background:linear-gradient(135deg,var(--accent),var(--ED));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">—</span></h1>
