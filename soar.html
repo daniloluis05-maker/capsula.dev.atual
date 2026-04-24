@@ -720,39 +720,47 @@ function showResult() {
 // GENERATE INSIGHTS
 // ══════════════════════════════════════
 function generateInsights() {
-  const s = Object.values(answers.S || {}).filter(v => v).join(' ');
-  const o = Object.values(answers.O || {}).filter(v => v).join(' ');
-  const a = Object.values(answers.A || {}).filter(v => v).join(' ');
-  const r = Object.values(answers.R || {}).filter(v => v).join(' ');
+  const sArr = Object.values(answers.S || {}).filter(v => v && v.trim());
+  const oArr = Object.values(answers.O || {}).filter(v => v && v.trim());
+  const aArr = Object.values(answers.A || {}).filter(v => v && v.trim());
+  const rArr = Object.values(answers.R || {}).filter(v => v && v.trim());
+  const s1 = sArr[0] || '', o1 = oArr[0] || '', a1 = aArr[0] || '', r1 = rArr[0] || '';
 
   const insights = [];
 
-  if (s && a) {
+  if (sArr.length && aArr.length) {
     insights.push({
       label: 'Alavancagem (S + A)',
-      text: 'Suas forças são o combustível para suas aspirações. Use o que você já sabe fazer bem como ponto de partida para o que deseja conquistar.'
+      text: s1 && a1
+        ? `"${s1}" é uma força que pode impulsionar diretamente a aspiração "${a1}". Use suas competências já consolidadas como ponto de partida para o que deseja conquistar.`
+        : 'Suas forças são o combustível para suas aspirações. Use o que você já sabe fazer bem como ponto de partida para o que deseja conquistar.'
     });
   }
-  if (o && r) {
+  if (oArr.length && rArr.length) {
     insights.push({
       label: 'Plano de Ação (O + R)',
-      text: 'As oportunidades identificadas se conectam diretamente aos resultados que você quer. Priorize as que têm maior alinhamento com suas metas de curto prazo.'
+      text: o1 && r1
+        ? `A oportunidade "${o1}" se conecta diretamente ao resultado esperado "${r1}". Priorize as ações com maior alinhamento entre essas duas dimensões.`
+        : 'As oportunidades identificadas se conectam diretamente aos resultados que você quer. Priorize as que têm maior alinhamento com suas metas de curto prazo.'
     });
   }
-  if (s && o) {
+  if (sArr.length && oArr.length) {
     insights.push({
       label: 'Vantagem Competitiva (S + O)',
-      text: 'A combinação das suas forças únicas com as oportunidades do mercado define onde você tem maior potencial de diferenciação.'
+      text: s1 && o1
+        ? `A força "${s1}" combinada com a oportunidade "${o1}" define um eixo de diferenciação único. É aqui que seu potencial competitivo é mais alto.`
+        : 'A combinação das suas forças únicas com as oportunidades do mercado define onde você tem maior potencial de diferenciação.'
     });
   }
-  if (a && r) {
+  if (aArr.length && rArr.length) {
     insights.push({
       label: 'Visão de Futuro (A + R)',
-      text: 'Suas aspirações de longo prazo e seus resultados esperados estão mapeados. O próximo passo é definir os marcos que ligam onde você está a onde quer chegar.'
+      text: a1 && r1
+        ? `A aspiração "${a1}" e o resultado esperado "${r1}" estão mapeados. O próximo passo é definir os marcos concretos que ligam onde você está a onde quer chegar.`
+        : 'Suas aspirações de longo prazo e seus resultados esperados estão mapeados. Defina marcos que conectem o presente ao futuro desejado.'
     });
   }
 
-  // Always have at least 2 insights
   if (insights.length < 2) {
     insights.push({
       label: 'Próximo Passo',
@@ -818,6 +826,10 @@ function generatePDF() {
 
   const insightsHTML2 = insights2.map(ins=>`<div class="bp"><span class="bp-tag">${ins.label}</span><p class="bp-txt">${ins.text}</p></div>`).join('');
 
+  const _qCounts = {S:0,O:0,A:0,R:0};
+  QUADRANTS.forEach(q=>{ _qCounts[q.key]=Object.values(answers[q.key]||{}).filter(v=>v&&v.trim()).length; });
+  const completionPct2 = Math.round((totalItems2/16)*100);
+
   const quadHTML2 = QUADRANTS.map(q=>{
     const filled=Object.values(answers[q.key]||{}).filter(v=>v&&v.trim().length>0);
     const items=filled.length>0
@@ -825,12 +837,21 @@ function generatePDF() {
       : '<span style="font-family:monospace;font-size:9px;color:#a1a1aa;">// não respondido</span>';
     return `<div class="quad" style="border-top:2px solid ${q.color};">
       <div class="quad-hd">
-        <div class="quad-ico" style="background:${q.color}15;border:1px solid ${q.color}35;">${q.icon}</div>
-        <div><div class="quad-title" style="color:${q.color};">${q.name}</div><div class="quad-sub">${q.label||''}</div></div>
+        <div class="quad-ico" style="background:${q.color}15;border:1px solid ${q.color}35;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:${q.color};">${q.icon}</div>
+        <div style="flex:1;"><div class="quad-title" style="color:${q.color};">${q.name}</div><div class="quad-sub">${q.label||''}</div></div>
+        <span style="font-family:'Space Mono',monospace;font-size:6.5px;color:${q.color};background:${q.color}10;border:1px solid ${q.color}30;padding:1px 5px;border-radius:2px;">${filled.length}/4</span>
       </div>
       ${items}
     </div>`;
   }).join('');
+
+  const _sArr2=Object.values(answers.S||{}).filter(v=>v&&v.trim());
+  const _oArr2=Object.values(answers.O||{}).filter(v=>v&&v.trim());
+  const _aArr2=Object.values(answers.A||{}).filter(v=>v&&v.trim());
+  const _rArr2=Object.values(answers.R||{}).filter(v=>v&&v.trim());
+  const _synthDesc = totalItems2>0
+    ? `${nome} mapeou ${totalItems2} elemento${totalItems2!==1?'s':''} estratégicos: ${_sArr2.length} força${_sArr2.length!==1?'s':''}, ${_oArr2.length} oportunidade${_oArr2.length!==1?'s':''}, ${_aArr2.length} aspiração/aspirações e ${_rArr2.length} resultado${_rArr2.length!==1?'s':''} esperados. A análise SOAR foca no positivo para construir uma visão estratégica acionável.`
+    : 'A análise SOAR mapeia seu posicionamento estratégico a partir de quatro dimensões positivas: forças, oportunidades, aspirações e resultados concretos.';
 
   _imprimirPDF(`<!DOCTYPE html><html lang="pt-BR"><head>
   <meta charset="UTF-8"><title>Análise SOAR — ${nome} · Sistema Gnosis</title>
@@ -846,12 +867,17 @@ function generatePDF() {
         <div class="lbl">Resultado_SOAR</div>
         <div class="dom-ew">Resultado · Análise SOAR</div>
         <div class="dom-name" style="color:${ACCENT};">ANÁLISE SOAR</div>
-        <div class="arch-badge" style="color:${ACCENT};border-color:${ACCENT}40;background:${ACCENT}08;">${totalItems2} elementos · Forças · Oportunidades · Aspirações · Resultados</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+          <div class="arch-badge" style="color:${ACCENT};border-color:${ACCENT}40;background:${ACCENT}08;">${totalItems2} de 16 elementos · ${completionPct2}% completo</div>
+        </div>
+        <div style="display:flex;gap:5px;margin-top:8px;">
+          ${QUADRANTS.map(q=>`<div style="flex:1;background:${q.color}10;border:1px solid ${q.color}30;border-radius:3px;padding:4px 6px;text-align:center;"><div style="font-family:'Space Mono',monospace;font-size:8px;font-weight:700;color:${q.color};">${q.icon}</div><div style="font-family:'Space Mono',monospace;font-size:6px;color:${q.color};margin-top:1px;">${_qCounts[q.key]}/4</div></div>`).join('')}
+        </div>
       </div>
       <div class="pn-grow">
         <div class="lbl">Síntese_Estratégica</div>
         <div class="ins-lbl">Análise Integrada</div>
-        <p class="ins-txt">A análise SOAR mapeia seu posicionamento estratégico a partir de quatro dimensões positivas: as forças que você já possui, as oportunidades que pode capturar, as aspirações que guiam suas decisões e os resultados concretos que busca alcançar.</p>
+        <p class="ins-txt">${_synthDesc}</p>
         <div class="bp-grid">${insightsHTML2}</div>
       </div>
     </div>
