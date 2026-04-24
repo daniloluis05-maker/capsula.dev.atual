@@ -92,7 +92,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .section-note{font-family:var(--mono);font-size:0.6rem;color:var(--muted);}
 
 /* MATRIX CARDS */
-.matrices-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:2.25rem;}
+.matrices-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:2.25rem;}
 .matrix-card{background:var(--surface);padding:2rem;cursor:pointer;position:relative;transition:background 0.15s;animation:fadeUp 0.4s ease both;}
 .matrix-card:hover{background:var(--surface2);}
 .matrix-card::after{content:'';position:absolute;top:0;left:0;bottom:0;width:2px;background:var(--card-accent,var(--accent));opacity:0;transition:opacity 0.15s;}
@@ -331,7 +331,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         </div>
       </div>
 
-      <div class="matrix-card card-wide" style="--card-accent:var(--I)" onclick="window.location.href='bigfive.html'">
+      <div class="matrix-card" style="--card-accent:var(--I)" onclick="window.location.href='bigfive.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(108,95,230,0.1);border:1px solid rgba(108,95,230,0.18);"><svg viewBox="0 0 24 24" style="stroke:#6C5FE6"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
         </div>
@@ -344,7 +344,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         </div>
       </div>
 
-      <div class="matrix-card card-featured" style="--card-accent:#C9A84C" onclick="window.location.href='pearson.html'">
+      <div class="matrix-card" style="--card-accent:#C9A84C" onclick="window.location.href='pearson.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);"><svg viewBox="0 0 24 24" style="stroke:#C9A84C"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
         </div>
