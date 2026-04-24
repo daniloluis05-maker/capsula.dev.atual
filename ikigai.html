@@ -249,6 +249,14 @@ let currentQ = 0;
 let answers = {ama:{}, bom:{}, precisa:{}, paga:{}};
 let _isLoadingExisting = false;
 
+const _IK_SVGS={
+  ama:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21C12 21 3 9.5 3 7a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 2.5-9 14-9 14z" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 10c0-1.5 1-3 3-3" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+  bom:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="12,2 15.1,8.3 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.3" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
+  precisa:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="${c}" stroke-width="1.8"/><ellipse cx="12" cy="12" rx="4" ry="9" stroke="${c}" stroke-width="1.5"/><line x1="3" y1="12" x2="21" y2="12" stroke="${c}" stroke-width="1.5"/></svg>`,
+  paga:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="6" width="18" height="13" rx="2" stroke="${c}" stroke-width="1.8"/><path d="M3 10h18" stroke="${c}" stroke-width="1.5"/><circle cx="8" cy="15" r="1.5" fill="${c}"/><line x1="12" y1="13" x2="17" y2="13" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="16" x2="15" y2="16" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+};
+const _ikIco=(q,size)=>(_IK_SVGS[q.key]?_IK_SVGS[q.key](q.color,size):'');
+
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 
 function startForm(){currentQ=0;answers={ama:{},bom:{},precisa:{},paga:{}};showPage('page-form');renderQuadrant(0);}
@@ -467,7 +475,7 @@ function generatePDF(){
       : '<span style="font-family:monospace;font-size:9px;color:#a1a1aa;">// não respondido</span>';
     return `<div class="quad" style="border-top:2px solid ${q.color};">
       <div class="quad-hd">
-        <div class="quad-ico" style="background:${q.color}15;border:1px solid ${q.color}35;">${q.icon}</div>
+        <div class="quad-ico" style="background:${q.color}15;border:1px solid ${q.color}35;">${_ikIco(q,16)}</div>
         <div><div class="quad-title" style="color:${q.color};">${q.name}</div><div class="quad-sub">${q.label||''}</div></div>
       </div>
       <div class="quad-items">${items}</div>
