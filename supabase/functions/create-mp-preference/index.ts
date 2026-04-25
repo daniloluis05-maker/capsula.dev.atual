@@ -69,27 +69,29 @@ Deno.serve(async (req: Request) => {
     },
     auto_return:      'approved',
     notification_url: WEBHOOK_URL,
-    // Expira em 30 minutos para evitar links stale
-    expires:          true,
-    expiration_date_from: new Date().toISOString(),
-    expiration_date_to:   new Date(Date.now() + 30 * 60 * 1000).toISOString(),
   };
 
-  const mpRes = await fetch('https://api.mercadopago.com/checkout/preferences', {
-    method:  'POST',
-    headers: {
-      'Authorization':     `Bearer ${MP_ACCESS_TOKEN}`,
-      'Content-Type':      'application/json',
-      'X-Idempotency-Key': `${uid}-${product_key}-${Date.now()}`,
-    },
-    body: JSON.stringify(preference),
-  });
-
-  const data = await mpRes.json();
+  let mpRes: Response;
+  let data: Record<string, unknown>;
+  try {
+    mpRes = await fetch('https://api.mercadopago.com/checkout/preferences', {
+      method:  'POST',
+      headers: {
+        'Authorization':     `Bearer ${MP_ACCESS_TOKEN}`,
+        'Content-Type':      'application/json',
+        'X-Idempotency-Key': `${email}-${product_key}-${Date.now()}`,
+      },
+      body: JSON.stringify(preference),
+    });
+    data = await mpRes.json();
+  } catch (err) {
+    console.error('[create-mp-preference] Fetch error:', err);
+    return json({ error: 'Falha ao conectar com Mercado Pago' }, 500);
+  }
 
   if (!mpRes.ok) {
     console.error('[create-mp-preference] Erro MP:', data);
-    return json({ error: data.message || 'Erro ao criar preferência MP' }, 500);
+    return json({ error: (data as Record<string,string>).message || 'Erro ao criar preferência MP' }, 500);
   }
 
   console.log(`[create-mp-preference] Preferência criada: ${data.id} para email=${email} produto=${product_key}`);
