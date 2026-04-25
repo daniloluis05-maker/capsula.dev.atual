@@ -284,6 +284,9 @@
     const db = getDB();
     if (!db) return;
     await db.auth.signOut();
+    // Limpa dados do usuário do storage para não vazar entre contas
+    try { localStorage.removeItem('capsula_user'); } catch(_) {}
+    try { sessionStorage.removeItem('capsula_user'); } catch(_) {}
   }
 
   async function authLoadUserProfile(user) {
@@ -337,12 +340,16 @@
         if (session && session.user) {
           const profile = await authLoadUserProfile(session.user);
           if (profile) {
-            // Mescla dados de matrizes locais que ainda não foram sincronizados com o Supabase
+            // Mescla dados de matrizes locais apenas se pertencerem ao mesmo usuário
             const _local = lsGetUser() || {};
             const _matrixKeys = ['disc','johari','bigfive','ancoras','soar','ikigai','tci','pearson'];
             const _merged = { ...profile };
-            for (const _k of _matrixKeys) {
-              if (!_merged[_k] && _local[_k]) _merged[_k] = _local[_k];
+            const _sameUser = _local.email && profile.email &&
+              _local.email.toLowerCase() === profile.email.toLowerCase();
+            if (_sameUser) {
+              for (const _k of _matrixKeys) {
+                if (!_merged[_k] && _local[_k]) _merged[_k] = _local[_k];
+              }
             }
             lsSetUser(_merged);
             return _merged;
