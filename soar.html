@@ -931,6 +931,19 @@ async function initPage() {
   let userData = null;
   try { userData = await capsulaDB.ensureUserData(); } catch(_e) {}
 
+  // Gate: exige crédito antes de iniciar a matriz
+  if (window._payments && !_payments.hasAccess('soar')) {
+    _payments.showPaywall('soar');
+    const _gate = new MutationObserver(function() {
+      if (!document.getElementById('_paywall-modal')) {
+        _gate.disconnect();
+        if (!_payments.hasAccess('soar')) window.location.href = 'dashboard.html';
+      }
+    });
+    _gate.observe(document.body, { childList: true, subtree: true });
+    return;
+  }
+
   // Redirect: se já tem resultado salvo, mostra direto
   if (userData && userData.soar && userData.soar.completedAt && userData.soar.answers) {
     answers = userData.soar.answers;

@@ -703,6 +703,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (!u.nome && !u.apelido && !u.email && !(u.tci && u.tci.completedAt)) {
       window.location.href = 'index.html'; return;
     }
+
+    // Gate: exige crédito antes de iniciar a matriz
+    if (window._payments && !_payments.hasAccess('tci')) {
+      _payments.showPaywall('tci');
+      const _gate = new MutationObserver(function() {
+        if (!document.getElementById('_paywall-modal')) {
+          _gate.disconnect();
+          if (!_payments.hasAccess('tci')) window.location.href = 'dashboard.html';
+        }
+      });
+      _gate.observe(document.body, { childList: true, subtree: true });
+      return;
+    }
     if (!u.uid) {
       u.uid = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
       try { capsulaDB.lsSetUser(u); } catch(_) {}

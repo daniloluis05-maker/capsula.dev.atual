@@ -399,6 +399,19 @@ document.addEventListener('DOMContentLoaded', async function(){
   let _u = null;
   try { _u = await capsulaDB.ensureUserData(); } catch(_e) {}
 
+  // Gate: exige crédito antes de iniciar a matriz
+  if (window._payments && !_payments.hasAccess('ikigai')) {
+    _payments.showPaywall('ikigai');
+    const _gate = new MutationObserver(function() {
+      if (!document.getElementById('_paywall-modal')) {
+        _gate.disconnect();
+        if (!_payments.hasAccess('ikigai')) window.location.href = 'dashboard.html';
+      }
+    });
+    _gate.observe(document.body, { childList: true, subtree: true });
+    return;
+  }
+
   // Redirect: se já tem resultado salvo, mostra direto
   if (_u && _u.ikigai && _u.ikigai.completedAt && _u.ikigai.answers) {
     answers = _u.ikigai.answers;

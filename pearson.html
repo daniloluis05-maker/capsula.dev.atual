@@ -962,6 +962,19 @@ document.addEventListener('DOMContentLoaded', async function(){
   try { u = await capsulaDB.ensureUserData(); } catch(e) {}
   u = u || {};
 
+  // Gate: exige crédito antes de iniciar a matriz
+  if (window._payments && !_payments.hasAccess('pearson')) {
+    _payments.showPaywall('pearson');
+    const _gate = new MutationObserver(function() {
+      if (!document.getElementById('_paywall-modal')) {
+        _gate.disconnect();
+        if (!_payments.hasAccess('pearson')) window.location.href = 'dashboard.html';
+      }
+    });
+    _gate.observe(document.body, { childList: true, subtree: true });
+    return;
+  }
+
   if (u.pearson && u.pearson.completedAt && u.pearson.scores) {
     var saved = u.pearson.scores;
     window.calcScores = function() { return saved; };
