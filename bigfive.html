@@ -663,15 +663,9 @@ function showResult(){
 // PDF
 // ══════════════════════════════════════
 function generatePDF(){
-  if (window._payments && !_payments.hasAccess('bigfive')) {
-    _payments.showPaywall('bigfive');
-    document.addEventListener('payments:creditUsed', function _h() {
-      document.removeEventListener('payments:creditUsed', _h);
-      _generatePDF();
-    });
-    return;
+  if (window._payments && !_payments.isPro() && !_payments.isAdmin()) {
+    if (!_payments.deductCredit('bigfive')) { _payments.showPaywall('bigfive'); return; }
   }
-  if (window._payments) _payments.deductCredit('bigfive');
   _generatePDF();
 }
 function _generatePDF(){
@@ -840,17 +834,21 @@ document.addEventListener('DOMContentLoaded', async function(){
   let _u = null;
   try { _u = await capsulaDB.ensureUserData(); } catch(_e) {}
 
-  // Gate: exige crédito antes de iniciar a matriz
-  if (window._payments && !_payments.hasAccess('bigfive')) {
-    _payments.showPaywall('bigfive');
-    const _gate = new MutationObserver(function() {
-      if (!document.getElementById('_paywall-modal')) {
-        _gate.disconnect();
-        if (!_payments.hasAccess('bigfive')) window.location.href = 'dashboard.html';
-      }
-    });
-    _gate.observe(document.body, { childList: true, subtree: true });
-    return;
+  if (window._payments && !_payments.isPro() && !_payments.isAdmin()) {
+    const _c = _payments.getCredits();
+    const _hasSpec = (_c['bigfive'] || 0) > 0, _hasAvul = (_c.avulsos || 0) > 0;
+    if (!_hasSpec && !_hasAvul) {
+      _payments.showPaywall('bigfive');
+      const _gate = new MutationObserver(function() {
+        if (!document.getElementById('_paywall-modal')) {
+          _gate.disconnect();
+          if (!_payments.hasAccess('bigfive')) window.location.href = 'dashboard.html';
+        }
+      });
+      _gate.observe(document.body, { childList: true, subtree: true });
+      return;
+    }
+    if (!_hasSpec && _hasAvul) await _payments.unlockMatrix('bigfive');
   }
 
   if (_u && _u.bigfive && _u.bigfive.completedAt && _u.bigfive.scores) {

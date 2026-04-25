@@ -252,9 +252,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <div class="stat-sub" id="stat-dias-sub">membro desde hoje</div>
       </div>
       <div class="stat-card" style="--stat-color:var(--D)">
-        <span class="stat-tag">Plano Atual</span>
-        <div class="stat-val" style="font-size:1.1rem;padding-top:0.3rem">Gratuito</div>
-        <div class="stat-sub action" onclick="abrirModalPlanos()">Fazer upgrade →</div>
+        <span class="stat-tag">Créditos &amp; Plano</span>
+        <div class="stat-val" id="stat-creditos" style="font-size:1.4rem;padding-top:0.2rem">0</div>
+        <div class="stat-sub" id="stat-plano-sub" style="cursor:pointer;color:var(--D)" onclick="abrirModalPlanos()">Comprar créditos →</div>
       </div>
     </div>
 
@@ -600,6 +600,21 @@ async function loadUser(){
     document.getElementById('stat-dias-sub').textContent = dias === 1 ? 'membro desde hoje' : 'dias na plataforma';
   }
 
+  // ── Créditos & plano ────────────────────────────────────────
+  if (window._payments) {
+    const elCred = document.getElementById('stat-creditos');
+    const elSub  = document.getElementById('stat-plano-sub');
+    if (_payments.isAdmin() || _payments.isPro()) {
+      if (elCred) elCred.textContent = '∞';
+      if (elSub)  { elSub.textContent = _payments.isAdmin() ? 'Admin · acesso total' : 'Profissional · ilimitado'; elSub.style.color = 'var(--S)'; }
+    } else {
+      const c = _payments.getCredits();
+      const total = (c.avulsos || 0) + Object.entries(c).filter(([k]) => k !== 'avulsos').reduce((s,[,v]) => s + (typeof v === 'number' ? v : 0), 0);
+      if (elCred) elCred.textContent = total;
+      if (elSub)  elSub.textContent = total > 0 ? `crédito${total !== 1 ? 's' : ''} disponível${total !== 1 ? 'is' : ''}` : 'Comprar créditos →';
+    }
+  }
+
   // ── Sincroniza com Supabase em background ──────────────────
   if (u.email) {
     capsulaDB.migrateLocalToSupabase(u.email).then(merged => {
@@ -917,61 +932,49 @@ function shareInviteNative() {
   <div style="max-width:900px;margin:0 auto;position:relative;">
     <button onclick="fecharModalPlanos()" style="position:sticky;top:0;float:right;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#fff;width:36px;height:36px;border-radius:50%;font-size:1.2rem;cursor:pointer;margin-bottom:1rem;">×</button>
     <div style="clear:both;padding-bottom:0.5rem;">
-      <p style="font-family:var(--mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:0.4rem;">Preços</p>
-      <h2 style="font-size:1.8rem;margin:0 0 0.4rem;">Pague pelo que usar</h2>
-      <p style="color:rgba(232,232,240,0.55);font-size:0.9rem;margin-bottom:2rem;">Compra única por matriz ou acesso ilimitado para profissionais.</p>
+      <p style="font-family:var(--mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:0.4rem;">Créditos</p>
+      <h2 style="font-size:1.8rem;margin:0 0 0.4rem;">Escolha quantas matrizes quer acessar</h2>
+      <p style="color:rgba(232,232,240,0.55);font-size:0.9rem;margin-bottom:2rem;">1 crédito = acesso completo a qualquer matriz + PDF. Use como quiser, sem prazo.</p>
     </div>
 
-    <!-- Cards avulsos -->
+    <!-- Cards de créditos -->
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;">
 
       <div style="background:#13131a;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.5rem;">
-        <p style="font-size:0.75rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.5rem;">Avaliação Individual</p>
-        <div style="font-size:2rem;font-weight:800;margin-bottom:0.75rem;">R$29<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90</span></div>
-        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem;">1 crédito para qualquer matriz. Gera 1 PDF.</p>
+        <p style="font-size:0.75rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.5rem;">1 Crédito</p>
+        <div style="font-size:2rem;font-weight:800;margin-bottom:0.4rem;">R$29<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90</span></div>
+        <p style="font-size:0.72rem;color:var(--muted);margin-bottom:1rem;">R$29,90 por matriz</p>
         <ul style="list-style:none;padding:0;margin:0 0 1.25rem;font-size:0.8rem;display:flex;flex-direction:column;gap:0.4rem;">
           <li>✓ Acesso a 1 matriz à sua escolha</li>
-          <li>✓ 1 PDF gerado</li>
-          <li>✓ Compra única</li>
+          <li>✓ PDF incluído</li>
+          <li>✓ Sem prazo de validade</li>
         </ul>
-        <button onclick="abrirCheckout('AVALIACAO')" style="width:100%;padding:0.7rem;background:transparent;border:1px solid rgba(124,106,247,0.4);border-radius:8px;color:#7c6af7;font-weight:600;font-size:0.85rem;cursor:pointer;">Comprar →</button>
+        <button onclick="abrirCheckout('credito1')" style="width:100%;padding:0.7rem;background:transparent;border:1px solid rgba(124,106,247,0.4);border-radius:8px;color:#7c6af7;font-weight:600;font-size:0.85rem;cursor:pointer;">Comprar →</button>
       </div>
 
       <div style="background:#13131a;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.5rem;">
-        <p style="font-size:0.75rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.5rem;">Pacote Essencial</p>
-        <div style="font-size:2rem;font-weight:800;margin-bottom:0.75rem;">R$79<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90</span></div>
-        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem;">DISC + SOAR + Ikigai. As 3 matrizes mais transformadoras.</p>
+        <p style="font-size:0.75rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.5rem;">3 Créditos</p>
+        <div style="font-size:2rem;font-weight:800;margin-bottom:0.4rem;">R$69<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90</span></div>
+        <p style="font-size:0.72rem;color:var(--S);margin-bottom:1rem;">R$23,30 por matriz · economia de R$19,80</p>
         <ul style="list-style:none;padding:0;margin:0 0 1.25rem;font-size:0.8rem;display:flex;flex-direction:column;gap:0.4rem;">
-          <li>✓ DISC + SOAR + Ikigai</li>
+          <li>✓ Acesso a 3 matrizes à sua escolha</li>
           <li>✓ 3 PDFs incluídos</li>
-          <li>✓ Compra única</li>
+          <li>✓ Sem prazo de validade</li>
         </ul>
-        <button onclick="abrirCheckout('PACOTE3')" style="width:100%;padding:0.7rem;background:transparent;border:1px solid rgba(124,106,247,0.4);border-radius:8px;color:#7c6af7;font-weight:600;font-size:0.85rem;cursor:pointer;">Comprar pacote →</button>
-      </div>
-
-      <div style="background:#13131a;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.5rem;">
-        <p style="font-size:0.75rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.5rem;">DNA Estratégico</p>
-        <div style="font-size:2rem;font-weight:800;margin-bottom:0.75rem;">R$67<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90</span></div>
-        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem;">Análise completa com IA. Requer 8 matrizes concluídas.</p>
-        <ul style="list-style:none;padding:0;margin:0 0 1.25rem;font-size:0.8rem;display:flex;flex-direction:column;gap:0.4rem;">
-          <li>✓ Análise de perfil com IA</li>
-          <li>✓ Direcionamento profissional</li>
-          <li>✓ PDF completo 2 páginas</li>
-        </ul>
-        <button onclick="abrirCheckout('DNA')" style="width:100%;padding:0.7rem;background:transparent;border:1px solid rgba(124,106,247,0.4);border-radius:8px;color:#7c6af7;font-weight:600;font-size:0.85rem;cursor:pointer;">Comprar DNA →</button>
+        <button onclick="abrirCheckout('credito3')" style="width:100%;padding:0.7rem;background:transparent;border:1px solid rgba(124,106,247,0.4);border-radius:8px;color:#7c6af7;font-weight:600;font-size:0.85rem;cursor:pointer;">Comprar 3 créditos →</button>
       </div>
 
       <div style="background:#13131a;border:2px solid rgba(124,106,247,0.35);border-radius:14px;padding:1.5rem;position:relative;">
         <span style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#7c6af7;color:#fff;font-size:0.65rem;font-weight:700;padding:0.2rem 0.7rem;border-radius:20px;letter-spacing:0.06em;">MELHOR VALOR</span>
-        <p style="font-size:0.75rem;font-weight:600;color:var(--accent);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.5rem;">Pacote Completo</p>
-        <div style="font-size:2rem;font-weight:800;margin-bottom:0.75rem;">R$219<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90</span></div>
-        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem;">Todas as 8 matrizes + DNA. Economia de R$87.</p>
+        <p style="font-size:0.75rem;font-weight:600;color:var(--accent);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.5rem;">8 Créditos</p>
+        <div style="font-size:2rem;font-weight:800;margin-bottom:0.4rem;">R$159<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90</span></div>
+        <p style="font-size:0.72rem;color:var(--S);margin-bottom:1rem;">R$19,99 por matriz · economia de R$79,30</p>
         <ul style="list-style:none;padding:0;margin:0 0 1.25rem;font-size:0.8rem;display:flex;flex-direction:column;gap:0.4rem;">
-          <li>✓ 8 matrizes completas</li>
-          <li>✓ DNA Estratégico incluído</li>
-          <li>✓ 9 PDFs gerados</li>
+          <li>✓ Acesso a todas as 8 matrizes</li>
+          <li>✓ 8 PDFs incluídos</li>
+          <li>✓ Sem prazo de validade</li>
         </ul>
-        <button onclick="abrirCheckout('COMPLETO')" style="width:100%;padding:0.7rem;background:#7c6af7;border:none;border-radius:8px;color:#fff;font-weight:600;font-size:0.85rem;cursor:pointer;">Comprar tudo →</button>
+        <button onclick="abrirCheckout('credito8')" style="width:100%;padding:0.7rem;background:#7c6af7;border:none;border-radius:8px;color:#fff;font-weight:600;font-size:0.85rem;cursor:pointer;">Comprar 8 créditos →</button>
       </div>
 
     </div>
@@ -981,15 +984,15 @@ function shareInviteNative() {
       <div style="flex:1;min-width:240px;">
         <p style="font-size:0.75rem;font-weight:600;color:var(--accent);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.4rem;">Plano Profissional</p>
         <div style="font-size:2rem;font-weight:800;margin-bottom:0.5rem;">R$129<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90/30 dias</span></div>
-        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">PDFs e testes ilimitados. Gere links de avaliação para liderados ou pacientes.</p>
+        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">Acesso ilimitado a todas as matrizes e PDFs por 30 dias.</p>
         <ul style="list-style:none;padding:0;margin:0;font-size:0.82rem;display:grid;grid-template-columns:1fr 1fr;gap:0.35rem;">
+          <li>✓ Todas as matrizes ilimitadas</li>
           <li>✓ PDFs ilimitados</li>
-          <li>✓ Refazer testes sem limite</li>
           <li>✓ Links de avaliação remota</li>
           <li>✓ Dashboard da equipe</li>
         </ul>
       </div>
-      <button onclick="abrirCheckout('PRO')" style="padding:0.9rem 2rem;background:var(--accent);border:none;border-radius:10px;color:#fff;font-weight:700;font-size:0.95rem;cursor:pointer;white-space:nowrap;">Assinar agora →</button>
+      <button onclick="abrirCheckout('pro')" style="padding:0.9rem 2rem;background:var(--accent);border:none;border-radius:10px;color:#fff;font-weight:700;font-size:0.95rem;cursor:pointer;white-space:nowrap;">Assinar agora →</button>
     </div>
   </div>
 </div>

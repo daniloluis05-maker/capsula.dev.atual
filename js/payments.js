@@ -57,6 +57,23 @@
     return false;
   }
 
+  // Converte 1 avulso em crédito específico da matriz (earmark ao acessar)
+  // Retorna true se convertido com sucesso
+  async function unlockMatrix(matrixKey) {
+    if (isPro()) return true;
+    const u = getUser();
+    if (!u) return false;
+    const c = u.creditos || {};
+    if ((c[matrixKey] || 0) > 0) return true; // já earmarked
+    if ((c.avulsos || 0) <= 0) return false;   // sem crédito
+    c.avulsos--;
+    c[matrixKey] = (c[matrixKey] || 0) + 1;
+    u.creditos = c;
+    saveUser(u);
+    if (window.capsulaDB) await capsulaDB.syncCreditos(u).catch(() => {});
+    return true;
+  }
+
   // Debita 1 crédito para a matriz (preferência: crédito específico > avulso)
   // Retorna true se debitado, false se sem crédito
   function deductCredit(matrixKey) {
@@ -148,8 +165,6 @@
       johari:'Johari', bigfive:'Big Five', pearson:'Pearson-Marr', tci:'TCI', dna:'DNA Estratégico',
     };
     const label = names[matrixKey] || matrixKey;
-    const price = matrixKey === 'dna' ? 'R$ 67,90' : 'R$ 29,90';
-    const linkKey = matrixKey === 'dna' ? 'DNA' : 'AVALIACAO';
     const credits = getCredits();
     const hasAvulso = (credits.avulsos || 0) > 0;
 
@@ -168,12 +183,20 @@
         </p>
         ${hasAvulso ? `
         <button onclick="window._payments.useAvulsoAndContinue('${matrixKey}')" style="width:100%;padding:0.8rem;background:rgba(124,106,247,0.15);border:1px solid rgba(124,106,247,0.3);border-radius:8px;color:#7c6af7;font-weight:600;font-size:0.9rem;cursor:pointer;margin-bottom:0.75rem;">
-          Usar 1 crédito avulso (${credits.avulsos} disponível${credits.avulsos > 1 ? 'is' : ''})
+          Usar 1 crédito (${credits.avulsos} disponível${credits.avulsos > 1 ? 'is' : ''})
         </button>` : ''}
-        <button onclick="window._payments.openCheckout('${linkKey}')" style="width:100%;padding:0.8rem;background:#7c6af7;border:none;border-radius:8px;color:#fff;font-weight:600;font-size:0.9rem;cursor:pointer;margin-bottom:0.75rem;">
-          Comprar acesso — ${price}
-        </button>
-        <button onclick="window._payments.openCheckout('PRO')" style="width:100%;padding:0.8rem;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:rgba(232,232,240,0.6);font-size:0.85rem;cursor:pointer;">
+        <div style="display:grid;gap:0.5rem;margin-bottom:0.75rem;">
+          <button onclick="window._payments.openCheckout('credito1')" style="width:100%;padding:0.75rem;background:#7c6af7;border:none;border-radius:8px;color:#fff;font-weight:600;font-size:0.88rem;cursor:pointer;">
+            1 Crédito — R$ 29,90
+          </button>
+          <button onclick="window._payments.openCheckout('credito3')" style="width:100%;padding:0.75rem;background:rgba(124,106,247,0.15);border:1px solid rgba(124,106,247,0.3);border-radius:8px;color:#7c6af7;font-weight:600;font-size:0.88rem;cursor:pointer;">
+            3 Créditos — R$ 69,90 <span style="font-size:0.72rem;opacity:0.7">(economize R$19,80)</span>
+          </button>
+          <button onclick="window._payments.openCheckout('credito8')" style="width:100%;padding:0.75rem;background:rgba(124,106,247,0.15);border:1px solid rgba(124,106,247,0.3);border-radius:8px;color:#7c6af7;font-weight:600;font-size:0.88rem;cursor:pointer;">
+            8 Créditos — R$ 159,90 <span style="font-size:0.72rem;opacity:0.7">(economize R$79,30)</span>
+          </button>
+        </div>
+        <button onclick="window._payments.openCheckout('pro')" style="width:100%;padding:0.8rem;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:rgba(232,232,240,0.6);font-size:0.85rem;cursor:pointer;">
           Plano Profissional — R$ 129,90/mês (ilimitado)
         </button>
       </div>`;
@@ -235,6 +258,7 @@
     getCredits,
     hasAccess,
     deductCredit,
+    unlockMatrix,
     openCheckout,
     showPaywall,
     useAvulsoAndContinue,

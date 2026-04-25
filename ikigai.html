@@ -399,17 +399,21 @@ document.addEventListener('DOMContentLoaded', async function(){
   let _u = null;
   try { _u = await capsulaDB.ensureUserData(); } catch(_e) {}
 
-  // Gate: exige crédito antes de iniciar a matriz
-  if (window._payments && !_payments.hasAccess('ikigai')) {
-    _payments.showPaywall('ikigai');
-    const _gate = new MutationObserver(function() {
-      if (!document.getElementById('_paywall-modal')) {
-        _gate.disconnect();
-        if (!_payments.hasAccess('ikigai')) window.location.href = 'dashboard.html';
-      }
-    });
-    _gate.observe(document.body, { childList: true, subtree: true });
-    return;
+  if (window._payments && !_payments.isPro() && !_payments.isAdmin()) {
+    const _c = _payments.getCredits();
+    const _hasSpec = (_c['ikigai'] || 0) > 0, _hasAvul = (_c.avulsos || 0) > 0;
+    if (!_hasSpec && !_hasAvul) {
+      _payments.showPaywall('ikigai');
+      const _gate = new MutationObserver(function() {
+        if (!document.getElementById('_paywall-modal')) {
+          _gate.disconnect();
+          if (!_payments.hasAccess('ikigai')) window.location.href = 'dashboard.html';
+        }
+      });
+      _gate.observe(document.body, { childList: true, subtree: true });
+      return;
+    }
+    if (!_hasSpec && _hasAvul) await _payments.unlockMatrix('ikigai');
   }
 
   // Redirect: se já tem resultado salvo, mostra direto
@@ -430,15 +434,9 @@ document.addEventListener('DOMContentLoaded', async function(){
 });
 
 function generatePDF(){
-  if (window._payments && !_payments.hasAccess('ikigai')) {
-    _payments.showPaywall('ikigai');
-    document.addEventListener('payments:creditUsed', function _h() {
-      document.removeEventListener('payments:creditUsed', _h);
-      _generatePDF();
-    });
-    return;
+  if (window._payments && !_payments.isPro() && !_payments.isAdmin()) {
+    if (!_payments.deductCredit('ikigai')) { _payments.showPaywall('ikigai'); return; }
   }
-  if (window._payments) _payments.deductCredit('ikigai');
   _generatePDF();
 }
 function _generatePDF(){
