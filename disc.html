@@ -1351,15 +1351,18 @@ function obFinish() {
 // INICIALIZAÇÃO DA PÁGINA
 // ══════════════════════════════════════
 async function initPage() {
-  // Busca dados de disc em qualquer fonte disponível
+  // Carrega dados do usuário autenticado antes de qualquer coisa
+  let userData = null;
+  try { userData = await capsulaDB.ensureUserData(); } catch(_) {}
+
+  // Só usa dados DISC se pertencerem ao usuário atual (verificado pelo email)
   function _findDisc() {
     try {
       const u = capsulaDB.lsGetUser() || {};
+      const sessionEmail = userData && userData.email ? userData.email.toLowerCase() : null;
+      if (!sessionEmail) return null;
+      if (u.email && u.email.toLowerCase() !== sessionEmail) return null;
       if (u.disc && u.disc.completedAt && u.disc.scores) return u.disc;
-      const arr = capsulaDB.lsGetUsers() || [];
-      for (const p of arr) {
-        if (p.disc && p.disc.completedAt && p.disc.scores) return p.disc;
-      }
     } catch(_) {}
     return null;
   }
@@ -1367,20 +1370,6 @@ async function initPage() {
   const _saved = _findDisc();
   if (_saved) {
     scores = _saved.scores;
-    _isLoadingExisting = true;
-    showPage('page-result');
-    showResult();
-    return;
-  }
-
-  // Slow path: sincroniza com Supabase
-  let userData = null;
-  try { userData = await capsulaDB.ensureUserData(); } catch(_) {}
-
-  // Tenta novamente após Supabase (pode ter hidratado localStorage)
-  const _saved2 = _findDisc();
-  if (_saved2) {
-    scores = _saved2.scores;
     _isLoadingExisting = true;
     showPage('page-result');
     showResult();
