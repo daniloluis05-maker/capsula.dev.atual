@@ -59,7 +59,7 @@ Deno.serve(async (req: Request) => {
       unit_price: product.amount,
       currency_id:'BRL',
     }],
-    payer:              { email },
+    // Não pré-preenche payer para evitar conflito com contas MP do vendedor
     external_reference: email,   // chave primária da tabela usuarios
     metadata:           { product_key },
     back_urls: {
