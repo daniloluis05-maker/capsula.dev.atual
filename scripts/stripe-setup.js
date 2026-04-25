@@ -1,226 +1,236 @@
 #!/usr/bin/env node
 // ─────────────────────────────────────────────────────────────
 // scripts/stripe-setup.js
-// Cria automaticamente todos os produtos, preços e webhook no
-// Stripe e atualiza js/config.js com os IDs gerados.
+// Cria produtos, preços, payment links e webhook no Stripe.
+// Atualiza js/config.js com todos os IDs e URLs gerados.
 //
 // Uso:
-//   node scripts/stripe-setup.js sk_test_SUA_CHAVE_AQUI
-//   node scripts/stripe-setup.js sk_live_SUA_CHAVE_AQUI
+//   node scripts/stripe-setup.js sk_test_SUA_CHAVE
+//   node scripts/stripe-setup.js sk_live_SUA_CHAVE
 // ─────────────────────────────────────────────────────────────
 
 const fs   = require('fs');
 const path = require('path');
 
-// ── Validação do argumento ────────────────────────────────────
 const SECRET_KEY = process.argv[2];
 if (!SECRET_KEY || (!SECRET_KEY.startsWith('sk_test_') && !SECRET_KEY.startsWith('sk_live_'))) {
-  console.error('\n❌  Chave inválida. Use:');
-  console.error('    node scripts/stripe-setup.js sk_test_SUA_CHAVE\n');
+  console.error('\n❌  Chave inválida.');
+  console.error('    Precisa da Secret Key (sk_test_... ou sk_live_...)');
+  console.error('    Stripe → Developers → API Keys → Secret key → Reveal\n');
   process.exit(1);
 }
 
 const IS_LIVE      = SECRET_KEY.startsWith('sk_live_');
 const CONFIG_PATH  = path.join(__dirname, '..', 'js', 'config.js');
 const SUPABASE_URL = 'https://dfnmofzbpdmnvlyowtmp.supabase.co';
+const SITE_URL     = IS_LIVE ? 'https://sistemagnosis.com.br' : 'http://localhost:3000';
 const WEBHOOK_URL  = `${SUPABASE_URL}/functions/v1/stripe-webhook`;
 
-// ── Produtos a criar ──────────────────────────────────────────
 const PRODUCTS = [
   {
-    key:         'STRIPE_PRICE_AVALIACAO',
+    key:         'avaliacao',
     name:        'Avaliação Individual',
-    description: '1 matriz à sua escolha + geração de PDF',
-    amount:      2599,   // centavos → R$ 25,99
+    description: '1 crédito para qualquer matriz + PDF gerado',
+    amount:      2599,
     type:        'one_time',
   },
   {
-    key:         'STRIPE_PRICE_PACOTE3',
+    key:         'pacote3',
     name:        'Pacote Essencial — DISC + SOAR + Ikigai',
     description: '3 matrizes com PDF incluído',
-    amount:      6990,   // R$ 69,90
+    amount:      6990,
     type:        'one_time',
   },
   {
-    key:         'STRIPE_PRICE_DNA',
+    key:         'dna',
     name:        'DNA Estratégico',
-    description: 'Análise com IA — requer 8 matrizes concluídas',
-    amount:      3990,   // R$ 39,90
+    description: 'Análise IA — requer 8 matrizes concluídas',
+    amount:      3990,
     type:        'one_time',
   },
   {
-    key:         'STRIPE_PRICE_COMPLETO',
+    key:         'completo',
     name:        'Pacote Completo + DNA',
     description: 'Todas as 8 matrizes + DNA Estratégico',
-    amount:      17990,  // R$ 179,90
+    amount:      17990,
     type:        'one_time',
   },
   {
-    key:         'STRIPE_PRICE_PRO',
+    key:         'pro',
     name:        'Plano Profissional',
     description: 'PDFs e testes ilimitados + envio para terceiros',
-    amount:      12990,  // R$ 129,90
+    amount:      12990,
     type:        'recurring',
     interval:    'month',
   },
 ];
 
-// ── Helper: chamada à API do Stripe ──────────────────────────
+// Créditos concedidos por produto
+const CREDITS_MAP = {
+  avaliacao: { avulsos: 1 },
+  pacote3:   { disc: 1, soar: 1, ikigai: 1 },
+  dna:       { dna: 1 },
+  completo:  { disc: 1, soar: 1, ikigai: 1, ancoras: 1, johari: 1, bigfive: 1, pearson: 1, tci: 1, dna: 1 },
+  pro:       { plano: 'profissional' },
+};
+
 async function stripe(method, endpoint, body = null) {
   const auth    = Buffer.from(`${SECRET_KEY}:`).toString('base64');
-  const headers = {
-    'Authorization': `Basic ${auth}`,
-    'Content-Type':  'application/x-www-form-urlencoded',
-  };
-
+  const headers = { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/x-www-form-urlencoded' };
   const options = { method, headers };
-  if (body) options.body = new URLSearchParams(body).toString();
-
+  if (body) options.body = flattenParams(body);
   const res  = await fetch(`https://api.stripe.com/v1${endpoint}`, options);
   const json = await res.json();
-
-  if (!res.ok) {
-    throw new Error(`Stripe ${method} ${endpoint} → ${json.error?.message || res.status}`);
-  }
+  if (!res.ok) throw new Error(`Stripe ${method} ${endpoint} → ${json.error?.message || res.status}`);
   return json;
 }
 
-// ── Helper: barra de progresso simples ───────────────────────
-let step = 0;
-const total = PRODUCTS.length * 2 + 1; // produto + preço + webhook
-function tick(label) {
-  step++;
-  const pct  = Math.round((step / total) * 100);
-  const bar  = '█'.repeat(Math.floor(pct / 5)) + '░'.repeat(20 - Math.floor(pct / 5));
-  process.stdout.write(`\r  [${bar}] ${pct}%  ${label.padEnd(50)}`);
+// Flatten nested params for Stripe's form-encoded API
+function flattenParams(obj, prefix = '') {
+  const parts = [];
+  for (const [k, v] of Object.entries(obj)) {
+    const key = prefix ? `${prefix}[${k}]` : k;
+    if (v !== null && typeof v === 'object' && !Array.isArray(v)) {
+      parts.push(flattenParams(v, key));
+    } else if (Array.isArray(v)) {
+      v.forEach((item, i) => {
+        if (typeof item === 'object') parts.push(flattenParams(item, `${key}[${i}]`));
+        else parts.push(`${encodeURIComponent(`${key}[${i}]`)}=${encodeURIComponent(item)}`);
+      });
+    } else {
+      parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(v)}`);
+    }
+  }
+  return parts.join('&');
 }
 
-// ── Main ──────────────────────────────────────────────────────
+let step = 0;
+const TOTAL = PRODUCTS.length * 3 + 1; // produto + preço + payment link + webhook
+function tick(label) {
+  step++;
+  const pct = Math.round((step / TOTAL) * 100);
+  const bar = '█'.repeat(Math.floor(pct / 5)) + '░'.repeat(20 - Math.floor(pct / 5));
+  process.stdout.write(`\r  [${bar}] ${pct}%  ${label.padEnd(52)}`);
+}
+
 async function main() {
   console.log('\n');
-  console.log('  ┌──────────────────────────────────────────┐');
-  console.log('  │   Sistema Gnosis — Stripe Setup          │');
-  console.log(`  │   Modo: ${IS_LIVE ? '🔴 PRODUÇÃO           ' : '🟡 TESTE                 '}       │`);
-  console.log('  └──────────────────────────────────────────┘\n');
+  console.log('  ┌──────────────────────────────────────────────┐');
+  console.log('  │   Sistema Gnosis — Stripe Setup              │');
+  console.log(`  │   Modo: ${IS_LIVE ? '🔴 PRODUÇÃO               ' : '🟡 TESTE                   '}       │`);
+  console.log('  └──────────────────────────────────────────────┘\n');
 
-  const results = {};
+  const priceIds = {};
+  const linkUrls = {};
 
-  // 1. Criar produtos e preços
   for (const p of PRODUCTS) {
-    // Criar produto
-    tick(`Criando produto: ${p.name}`);
-    const product = await stripe('POST', '/products', {
-      name:        p.name,
-      description: p.description,
-    });
+    tick(`Produto: ${p.name}`);
+    const product = await stripe('POST', '/products', { name: p.name, description: p.description });
 
-    // Criar preço
-    tick(`Criando preço: R$ ${(p.amount / 100).toFixed(2).replace('.', ',')}`);
-    const priceBody = {
-      product:    product.id,
-      unit_amount: String(p.amount),
-      currency:   'brl',
-    };
-    if (p.type === 'recurring') {
-      priceBody['recurring[interval]'] = p.interval;
-    }
+    tick(`Preço: R$ ${(p.amount / 100).toFixed(2).replace('.', ',')}`);
+    const priceBody = { product: product.id, unit_amount: String(p.amount), currency: 'brl' };
+    if (p.type === 'recurring') priceBody['recurring[interval]'] = p.interval;
     const price = await stripe('POST', '/prices', priceBody);
+    priceIds[p.key] = price.id;
 
-    results[p.key] = price.id;
+    tick(`Payment Link: ${p.name}`);
+    const linkBody = {
+      'line_items[0][price]':    price.id,
+      'line_items[0][quantity]': '1',
+      'after_completion[type]':  'redirect',
+      'after_completion[redirect][url]': `${SITE_URL}/pagamento-sucesso.html?produto=${p.key}`,
+    };
+    const link = await stripe('POST', '/payment_links', linkBody);
+    linkUrls[p.key] = link.url;
   }
 
-  // 2. Criar webhook endpoint
-  tick('Configurando webhook...');
-  const webhook = await stripe('POST', '/webhook_endpoints', {
+  tick('Webhook endpoint...');
+  const webhookBody = {
     url: WEBHOOK_URL,
-    'enabled_events[]': [
-      'checkout.session.completed',
-      'customer.subscription.created',
-      'customer.subscription.updated',
-      'customer.subscription.deleted',
-      'invoice.payment_succeeded',
-      'invoice.payment_failed',
-    ],
+    'enabled_events[0]':  'checkout.session.completed',
+    'enabled_events[1]':  'customer.subscription.created',
+    'enabled_events[2]':  'customer.subscription.updated',
+    'enabled_events[3]':  'customer.subscription.deleted',
+    'enabled_events[4]':  'invoice.payment_succeeded',
+    'enabled_events[5]':  'invoice.payment_failed',
+    'enabled_events[6]':  'payment_link.completed',
     description: 'Sistema Gnosis — Edge Function',
-  });
-
-  results['STRIPE_WEBHOOK_SECRET'] = webhook.secret;
+  };
+  const webhook = await stripe('POST', '/webhook_endpoints', webhookBody);
 
   process.stdout.write('\n\n');
 
-  // 3. Ler config.js atual e injetar as novas chaves
-  const configRaw = fs.readFileSync(CONFIG_PATH, 'utf8');
-
-  // Remove bloco stripe anterior se existir
-  const cleaned = configRaw.replace(/\n\s*\/\/ ── Stripe[\s\S]*?(?=\n};)/, '');
+  // Atualizar js/config.js
+  let configRaw = fs.readFileSync(CONFIG_PATH, 'utf8');
+  configRaw = configRaw.replace(/\n\s*\/\/ ── Stripe[\s\S]*?(?=\n};)/, '');
 
   const stripeBlock = `
-  // ── Stripe ───────────────────────────────────────────────
-  // ⚠️  Chaves geradas automaticamente por scripts/stripe-setup.js
-  // ⚠️  NUNCA exponha STRIPE_SECRET_KEY nem STRIPE_WEBHOOK_SECRET aqui
-  //     Essas chaves ficam APENAS na Edge Function do Supabase
-  STRIPE_PUBLIC_KEY:        '${IS_LIVE ? 'SUBSTITUA_PELA_pk_live_' : 'SUBSTITUA_PELA_pk_test_'}',
-  STRIPE_PRICE_AVALIACAO:   '${results['STRIPE_PRICE_AVALIACAO']}',
-  STRIPE_PRICE_PACOTE3:     '${results['STRIPE_PRICE_PACOTE3']}',
-  STRIPE_PRICE_DNA:         '${results['STRIPE_PRICE_DNA']}',
-  STRIPE_PRICE_COMPLETO:    '${results['STRIPE_PRICE_COMPLETO']}',
-  STRIPE_PRICE_PRO:         '${results['STRIPE_PRICE_PRO']}',`;
+  // ── Stripe ───────────────────────────────────────────────────
+  // Gerado por scripts/stripe-setup.js — não edite manualmente
+  // ⚠️  NUNCA adicione STRIPE_SECRET_KEY aqui (só na Edge Function)
+  STRIPE_PUBLIC_KEY:   '${IS_LIVE ? 'COLE_pk_live_AQUI' : 'COLE_pk_test_AQUI'}',
+  // Payment Links — URLs de checkout
+  STRIPE_LINK_AVALIACAO: '${linkUrls.avaliacao}',
+  STRIPE_LINK_PACOTE3:   '${linkUrls.pacote3}',
+  STRIPE_LINK_DNA:       '${linkUrls.dna}',
+  STRIPE_LINK_COMPLETO:  '${linkUrls.completo}',
+  STRIPE_LINK_PRO:       '${linkUrls.pro}',
+  // Price IDs (referência interna)
+  STRIPE_PRICE_AVALIACAO: '${priceIds.avaliacao}',
+  STRIPE_PRICE_PACOTE3:   '${priceIds.pacote3}',
+  STRIPE_PRICE_DNA:       '${priceIds.dna}',
+  STRIPE_PRICE_COMPLETO:  '${priceIds.completo}',
+  STRIPE_PRICE_PRO:       '${priceIds.pro}',`;
 
-  const updated = cleaned.replace(/\n};/, stripeBlock + '\n};');
+  const updated = configRaw.replace(/\n};/, stripeBlock + '\n};');
   fs.writeFileSync(CONFIG_PATH, updated, 'utf8');
 
-  // 4. Salvar chaves secretas separadamente (nunca vão para o frontend)
-  const secretsPath = path.join(__dirname, '..', 'scripts', '.stripe-secrets.txt');
-  const secretsContent = [
+  // Salvar secrets (nunca vai pro frontend nem pro git)
+  const secretsPath = path.join(__dirname, '.stripe-secrets.txt');
+  const creditsJson = JSON.stringify(CREDITS_MAP, null, 2);
+  fs.writeFileSync(secretsPath, [
     '# ⚠️  SEGREDO — nunca commite este arquivo',
-    '# Configure estas variáveis na Edge Function do Supabase',
+    '# Cole essas variáveis em: Supabase → Edge Functions → Secrets',
     '#',
     `STRIPE_SECRET_KEY=${SECRET_KEY}`,
-    `STRIPE_WEBHOOK_SECRET=${results['STRIPE_WEBHOOK_SECRET']}`,
+    `STRIPE_WEBHOOK_SECRET=${webhook.secret}`,
     '',
-    '# Price IDs (referência)',
-    ...Object.entries(results).filter(([k]) => k.startsWith('STRIPE_PRICE')).map(([k, v]) => `${k}=${v}`),
-  ].join('\n');
-  fs.writeFileSync(secretsPath, secretsContent, 'utf8');
+    '# Price IDs por produto (para referência)',
+    ...Object.entries(priceIds).map(([k, v]) => `STRIPE_PRICE_${k.toUpperCase()}=${v}`),
+    '',
+    '# Mapa de créditos (copie para a Edge Function se necessário):',
+    '# ' + creditsJson.replace(/\n/g, '\n# '),
+  ].join('\n'), 'utf8');
 
-  // Garantir que .stripe-secrets.txt está no .gitignore
+  // Garantir .gitignore
   const gitignorePath = path.join(__dirname, '..', '.gitignore');
-  const gitignoreContent = fs.existsSync(gitignorePath) ? fs.readFileSync(gitignorePath, 'utf8') : '';
-  if (!gitignoreContent.includes('.stripe-secrets.txt')) {
-    fs.appendFileSync(gitignorePath, '\n# Stripe secrets\nscripts/.stripe-secrets.txt\n');
+  const gi = fs.existsSync(gitignorePath) ? fs.readFileSync(gitignorePath, 'utf8') : '';
+  if (!gi.includes('.stripe-secrets.txt')) {
+    fs.appendFileSync(gitignorePath, '\nscripts/.stripe-secrets.txt\n');
   }
 
-  // 5. Resumo final
-  console.log('  ✅  Tudo configurado!\n');
-  console.log('  ┌─ Price IDs criados ──────────────────────┐');
-  console.log(`  │  Avaliação Individual   ${results['STRIPE_PRICE_AVALIACAO']}`);
-  console.log(`  │  Pacote 3 Matrizes      ${results['STRIPE_PRICE_PACOTE3']}`);
-  console.log(`  │  DNA Estratégico        ${results['STRIPE_PRICE_DNA']}`);
-  console.log(`  │  Pacote Completo        ${results['STRIPE_PRICE_COMPLETO']}`);
-  console.log(`  │  Plano Profissional     ${results['STRIPE_PRICE_PRO']}`);
-  console.log('  └──────────────────────────────────────────┘\n');
-
-  console.log('  ┌─ Próximos passos ────────────────────────┐');
-  console.log('  │                                          │');
-  console.log('  │  1. Abra js/config.js e substitua       │');
-  console.log(`  │     STRIPE_PUBLIC_KEY pela sua           │`);
-  console.log(`  │     ${IS_LIVE ? 'pk_live_...' : 'pk_test_...'}                         │`);
-  console.log('  │                                          │');
-  console.log('  │  2. Configure as variáveis secretas na  │');
-  console.log('  │     Edge Function do Supabase:           │');
-  console.log('  │     (veja scripts/.stripe-secrets.txt)  │');
-  console.log('  │                                          │');
-  console.log('  │  3. Rode: node scripts/deploy-edge.js   │');
-  console.log('  │     para deployar a Edge Function       │');
-  console.log('  │                                          │');
-  console.log('  └──────────────────────────────────────────┘\n');
-
-  console.log('  ⚠️   scripts/.stripe-secrets.txt contém chaves secretas');
-  console.log('       Já foi adicionado ao .gitignore automaticamente.\n');
+  // Resumo
+  console.log('  ✅  Configuração concluída!\n');
+  console.log('  Payment Links criados:');
+  for (const [k, url] of Object.entries(linkUrls)) {
+    console.log(`    ${k.padEnd(12)} ${url}`);
+  }
+  console.log('\n  Price IDs:');
+  for (const [k, id] of Object.entries(priceIds)) {
+    console.log(`    ${k.padEnd(12)} ${id}`);
+  }
+  console.log('\n  ┌─ Próximos passos ──────────────────────────────┐');
+  console.log('  │  1. Abra js/config.js e cole sua Public Key    │');
+  console.log('  │  2. Cole os secrets da Edge Function:          │');
+  console.log('  │     Supabase → Edge Functions → Secrets        │');
+  console.log('  │     (veja scripts/.stripe-secrets.txt)         │');
+  console.log('  │  3. node scripts/deploy-edge.js                │');
+  console.log('  └────────────────────────────────────────────────┘\n');
+  console.log('  ⚠️  scripts/.stripe-secrets.txt → já no .gitignore\n');
 }
 
 main().catch(err => {
   process.stdout.write('\n');
-  console.error(`\n  ❌  Erro: ${err.message}\n`);
+  console.error(`\n  ❌  ${err.message}\n`);
   process.exit(1);
 });

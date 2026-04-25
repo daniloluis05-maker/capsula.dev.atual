@@ -353,6 +353,81 @@
     return lsGetUser() || null;
   }
 
+  // ── Créditos e plano ────────────────────────────────────────
+
+  async function syncCreditos(userData) {
+    if (!userData || !userData.email) return;
+    const db = getDB();
+    if (!db) return;
+    const { error } = await db
+      .from('usuarios')
+      .update({
+        creditos:        userData.creditos        || {},
+        plano:           userData.plano           || 'free',
+        plano_expira_em: userData.plano_expira_em || null,
+      })
+      .eq('email', userData.email.toLowerCase().trim());
+    if (error) console.warn('[db] syncCreditos:', error);
+  }
+
+  async function getCreditos(email) {
+    const db = getDB();
+    if (!db || !email) return {};
+    const { data } = await db
+      .from('usuarios')
+      .select('creditos, plano, plano_expira_em')
+      .eq('email', email.toLowerCase().trim())
+      .maybeSingle();
+    return data || {};
+  }
+
+  // ── Avaliações remotas (Plano Profissional) ─────────────────
+
+  async function createAvaliacaoRemota({ profissional_uid, respondente_nome, etiqueta, matriz, expires_days = 7 }) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const token      = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+    const expires_at = new Date(Date.now() + expires_days * 24 * 60 * 60 * 1000).toISOString();
+    const { data, error } = await db
+      .from('avaliacoes_remotas')
+      .insert({ profissional_uid, respondente_nome, etiqueta: etiqueta || null, matriz, token, expires_at, status: 'pendente' })
+      .select()
+      .single();
+    return { data, error, token };
+  }
+
+  async function getAvaliacoesDoProf(profissional_uid) {
+    const db = getDB();
+    if (!db) return [];
+    const { data } = await db
+      .from('avaliacoes_remotas')
+      .select('*')
+      .eq('profissional_uid', profissional_uid)
+      .order('created_at', { ascending: false });
+    return data || [];
+  }
+
+  async function getAvaliacaoByToken(token) {
+    const db = getDB();
+    if (!db) return null;
+    const { data } = await db
+      .from('avaliacoes_remotas')
+      .select('*')
+      .eq('token', token)
+      .maybeSingle();
+    return data;
+  }
+
+  async function saveResultadoRemoto(token, resultado) {
+    const db = getDB();
+    if (!db) return false;
+    const { error } = await db
+      .from('avaliacoes_remotas')
+      .update({ resultado, status: 'concluido', completado_at: new Date().toISOString() })
+      .eq('token', token);
+    return !error;
+  }
+
   // ── Exporta para escopo global ──────────────────────────────
   window.capsulaDB = {
     getDB,
@@ -369,6 +444,14 @@
     authLoadUserProfile,
     authResetPassword,
     ensureUserData,
+    // Créditos e plano
+    syncCreditos,
+    getCreditos,
+    // Avaliações remotas (Pro)
+    createAvaliacaoRemota,
+    getAvaliacoesDoProf,
+    getAvaliacaoByToken,
+    saveResultadoRemoto,
     // localStorage seguro
     lsGet,
     lsGetRaw,

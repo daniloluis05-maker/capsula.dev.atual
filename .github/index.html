@@ -431,50 +431,85 @@
 
   /* PLANOS */
   .planos { background: var(--surface); }
-  .planos-inner { max-width: 1000px; margin: 0 auto; }
-  .planos-grid {
+  .planos-inner { max-width: 1080px; margin: 0 auto; }
+
+  /* Grid avulso: 4 cards */
+  .planos-avulso {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-top: 3rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-top: 2.5rem;
   }
+  @media (max-width: 900px) { .planos-avulso { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 520px) { .planos-avulso { grid-template-columns: 1fr; } }
+
+  /* Card avulso */
   .plano-card {
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 2.5rem;
-    border-color: var(--accent);
+    border-radius: 14px;
+    padding: 1.75rem 1.5rem;
     position: relative;
-    box-shadow:
-      0 0 0 1px rgba(124,111,247,0.30),
-      0 8px 32px rgba(124,111,247,0.18),
-      0 2px 8px rgba(0,0,0,0.40);
+    transition: border-color 0.2s, transform 0.2s;
+    display: flex; flex-direction: column;
+  }
+  .plano-card:hover { border-color: rgba(124,106,247,0.3); transform: translateY(-2px); }
+  .plano-card.destaque {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(124,111,247,0.25), 0 8px 32px rgba(124,111,247,0.12);
   }
   .plano-card.destaque::before {
-    content: 'MAIS POPULAR';
+    content: 'MELHOR VALOR';
     position: absolute;
     top: -1px; left: 50%; transform: translateX(-50%);
-    background: var(--accent);
-    color: #fff;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    padding: 0.25rem 0.85rem;
-    border-radius: 0 0 6px 6px;
+    background: var(--accent); color: #fff;
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em;
+    padding: 0.2rem 0.75rem; border-radius: 0 0 6px 6px;
   }
-  .plano-nome { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+
+  /* Card Pro */
+  .plano-pro-card {
+    background: linear-gradient(135deg, rgba(124,106,247,0.08) 0%, rgba(79,201,160,0.05) 100%);
+    border: 1px solid rgba(124,106,247,0.3);
+    border-radius: 14px;
+    padding: 2rem 2.5rem;
+    margin-top: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .plano-pro-card::before {
+    content: 'PROFISSIONAL';
+    position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+    background: linear-gradient(90deg,#7c6af7,#4fc9a0);
+    color: #fff; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em;
+    padding: 0.2rem 1rem; border-radius: 0 0 8px 8px;
+  }
+  @media (max-width: 640px) { .plano-pro-card { grid-template-columns: 1fr; } }
+
+  .planos-divider {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 2.5rem 0 0;
+    color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .planos-divider::before, .planos-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .plano-nome { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
   .plano-preco {
     font-family: var(--serif);
-    font-size: 2.5rem;
-    line-height: 1;
-    margin-bottom: 0.35rem;
+    font-size: 2rem; line-height: 1; margin-bottom: 0.25rem;
   }
-  .plano-preco span { font-size: 1rem; color: var(--muted); font-family: var(--sans); font-weight: 400; }
-  .plano-desc { font-size: 0.875rem; color: var(--muted); margin-bottom: 1.5rem; }
-  .plano-features { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
+  .plano-preco span { font-size: 0.9rem; color: var(--muted); font-family: var(--sans); font-weight: 400; }
+  .plano-desc { font-size: 0.82rem; color: var(--muted); margin-bottom: 1.25rem; line-height: 1.5; flex:1; }
+  .plano-features { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; margin-bottom: 1.25rem; }
   .plano-features li {
-    display: flex; gap: 0.65rem;
-    font-size: 0.875rem; color: var(--muted);
+    display: flex; gap: 0.5rem;
+    font-size: 0.82rem; color: var(--muted);
   }
   .plano-features li .check {
     color: var(--accent2);
@@ -482,29 +517,22 @@
     flex-shrink: 0;
   }
   .plano-btn {
-    display: block;
-    text-align: center;
-    padding: 0.85rem;
-    border-radius: 8px;
-    font-family: var(--sans);
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.2s;
+    display: block; text-align: center;
+    padding: 0.75rem; border-radius: 8px;
+    font-family: var(--sans); font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; text-decoration: none; transition: all 0.2s; border: none; margin-top: auto;
   }
   .plano-btn-outline {
-    background: transparent;
-    border: 1px solid var(--border-hover);
-    color: var(--text);
+    background: transparent; border: 1px solid var(--border-hover); color: var(--text);
   }
   .plano-btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-  .plano-btn-filled {
-    background: var(--accent);
-    border: none;
-    color: #fff;
-  }
+  .plano-btn-filled { background: var(--accent); color: #fff; }
   .plano-btn-filled:hover { opacity: 0.85; }
+  .plano-btn-pro {
+    background: linear-gradient(135deg,#7c6af7,#4fc9a0); color:#fff;
+    padding: 0.9rem 2.5rem; font-size: 0.95rem; border-radius: 10px; white-space: nowrap;
+  }
+  .plano-btn-pro:hover { opacity: 0.88; }
 
   /* CTA FINAL */
   .cta-final-section { text-align: center; padding: 7rem 8%; }
@@ -779,6 +807,7 @@
     <!-- TODO: adicionar integrity="sha384-..." após calcular em https://www.srihash.org --></script>
 <script src="js/config.js"></script>
 <script src="js/db.js"></script>
+<script src="js/payments.js"></script>
   <script src="js/ui.js"></script>
 <!-- EmailJS SDK (P6 — ativo apenas quando EMAILJS_PUBLIC_KEY definido em js/config.js) -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
@@ -1018,52 +1047,104 @@
 <section class="planos" id="planos">
   <div class="planos-inner">
     <div class="section-header section-header--centered">
-      <span class="section-label">Compromisso com a Evolução</span>
-      <h2 class="section-title">Simples e transparente</h2>
-      <p class="section-desc">Comece grátis. Escale quando fizer sentido para você.</p>
+      <span class="section-label">Preços</span>
+      <h2 class="section-title">Pague pelo que usar</h2>
+      <p class="section-desc">Compra única por matriz ou acesso ilimitado para profissionais.</p>
     </div>
-    <div class="planos-grid">
+
+    <!-- Avulso -->
+    <div class="planos-avulso">
+
       <div class="plano-card animate-in">
-        <p class="plano-nome">Gratuito</p>
-        <div class="plano-preco">R$0<span>/mês</span></div>
-        <p class="plano-desc">Para você começar a se descobrir agora.</p>
+        <p class="plano-nome">Avaliação Individual</p>
+        <div class="plano-preco">R$25<span>,99</span></div>
+        <p class="plano-desc">1 crédito para qualquer matriz. Gera 1 PDF. Sem recorrência.</p>
         <ul class="plano-features">
-          <li><span class="check">✓</span> 2 matrizes individuais</li>
-          <li><span class="check">✓</span> Resultados em texto</li>
-          <li><span class="check">✓</span> Histórico dos últimos 30 dias</li>
-          <li><span class="check">✓</span> Sem cartão de crédito</li>
+          <li><span class="check">✓</span> Acesso a 1 matriz à sua escolha</li>
+          <li><span class="check">✓</span> 1 PDF gerado</li>
+          <li><span class="check">✓</span> Resultado salvo na conta</li>
+          <li><span class="check">✓</span> Compra única</li>
         </ul>
-        <button class="plano-btn plano-btn-outline" data-modal-open>Começar gratuitamente</button>
+        <button class="plano-btn plano-btn-outline" onclick="planoCheckout('AVALIACAO')">Comprar acesso →</button>
       </div>
+
+      <div class="plano-card animate-in">
+        <p class="plano-nome">Pacote Essencial</p>
+        <div class="plano-preco">R$69<span>,90</span></div>
+        <p class="plano-desc">DISC + SOAR + Ikigai. As 3 matrizes mais transformadoras.</p>
+        <ul class="plano-features">
+          <li><span class="check">✓</span> DISC — Perfil comportamental</li>
+          <li><span class="check">✓</span> SOAR — Análise estratégica</li>
+          <li><span class="check">✓</span> Ikigai — Propósito de vida</li>
+          <li><span class="check">✓</span> 3 PDFs incluídos</li>
+        </ul>
+        <button class="plano-btn plano-btn-outline" onclick="planoCheckout('PACOTE3')">Comprar pacote →</button>
+      </div>
+
+      <div class="plano-card animate-in">
+        <p class="plano-nome">DNA Estratégico</p>
+        <div class="plano-preco">R$39<span>,90</span></div>
+        <p class="plano-desc">Análise completa com IA. Requer todas as 8 matrizes concluídas.</p>
+        <ul class="plano-features">
+          <li><span class="check">✓</span> Análise de perfil com IA</li>
+          <li><span class="check">✓</span> Direcionamento profissional</li>
+          <li><span class="check">✓</span> Plano de 90 dias</li>
+          <li><span class="check">✓</span> PDF completo 2 páginas</li>
+        </ul>
+        <button class="plano-btn plano-btn-outline" onclick="planoCheckout('DNA')">Comprar DNA →</button>
+      </div>
+
       <div class="plano-card destaque animate-in">
-        <p class="plano-nome">Pro</p>
-        <div class="plano-preco">R$39<span>/mês</span></div>
-        <p class="plano-desc">Para profissionais que levam o desenvolvimento a sério.</p>
+        <p class="plano-nome">Pacote Completo</p>
+        <div class="plano-preco">R$179<span>,90</span></div>
+        <p class="plano-desc">Todas as 8 matrizes + DNA Estratégico. Economia de R$47.</p>
         <ul class="plano-features">
-          <li><span class="check">✓</span> Todas as matrizes individuais</li>
-          <li><span class="check">✓</span> Gráficos de radar (DISC/SOAR)</li>
-          <li><span class="check">✓</span> Download em PDF</li>
-          <li><span class="check">✓</span> Histórico completo</li>
-          <li><span class="check">✓</span> Comparação de evolução</li>
+          <li><span class="check">✓</span> 8 matrizes completas</li>
+          <li><span class="check">✓</span> DNA Estratégico incluído</li>
+          <li><span class="check">✓</span> 9 PDFs gerados</li>
+          <li><span class="check">✓</span> Melhor custo-benefício</li>
         </ul>
-        <button class="plano-btn plano-btn-filled" data-modal-open>Assinar Pro</button>
+        <button class="plano-btn plano-btn-filled" onclick="planoCheckout('COMPLETO')">Comprar tudo →</button>
       </div>
-      <div class="plano-card animate-in">
-        <p class="plano-nome">Empresa</p>
-        <div class="plano-preco">R$149<span>/mês</span></div>
-        <p class="plano-desc">Para líderes que querem desenvolver suas equipes.</p>
-        <ul class="plano-features">
-          <li><span class="check">✓</span> Tudo do Pro</li>
-          <li><span class="check">✓</span> Matrizes de equipe</li>
-          <li><span class="check">✓</span> Gestão de até 20 membros</li>
-          <li><span class="check">✓</span> Relatórios coletivos</li>
-          <li><span class="check">✓</span> Faturamento por CNPJ</li>
+
+    </div>
+
+    <!-- Divisor Pro -->
+    <div class="planos-divider">Para profissionais</div>
+
+    <!-- Plano Pro -->
+    <div class="plano-pro-card animate-in">
+      <div>
+        <p class="plano-nome" style="color:var(--accent)">Plano Profissional</p>
+        <div class="plano-preco" style="font-size:2.4rem;">R$129<span>,90/mês</span></div>
+        <p class="plano-desc" style="margin-bottom:1rem;max-width:480px;">PDFs e testes ilimitados para você. Gere links de avaliação e envie para liderados ou pacientes — os resultados chegam direto no seu dashboard.</p>
+        <ul class="plano-features" style="columns:2;gap:1rem;">
+          <li><span class="check">✓</span> PDFs ilimitados</li>
+          <li><span class="check">✓</span> Refazer testes sem limite</li>
+          <li><span class="check">✓</span> Links de avaliação remota</li>
+          <li><span class="check">✓</span> Dashboard com resultados da equipe</li>
+          <li><span class="check">✓</span> Nome e etiqueta por avaliação</li>
+          <li><span class="check">✓</span> Cancele quando quiser</li>
         </ul>
-        <button class="plano-btn plano-btn-outline" data-modal-open>Falar com time</button>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;min-width:180px;">
+        <button class="plano-btn plano-btn-pro" onclick="planoCheckout('PRO')">Assinar agora →</button>
+        <span style="font-size:0.72rem;color:var(--muted);text-align:center;">Cancele a qualquer momento<br>Cobrado mensalmente</span>
       </div>
     </div>
+
   </div>
 </section>
+
+<script>
+function planoCheckout(key) {
+  // Se payments.js carregado, usa checkout inteligente
+  if (window._payments) { window._payments.openCheckout(key); return; }
+  // Fallback: abre modal de cadastro se não logado
+  const btn = document.querySelector('[data-modal-open]');
+  if (btn) btn.click();
+}
+</script>
 
 <!-- CTA FINAL -->
 <section class="cta-final-section">

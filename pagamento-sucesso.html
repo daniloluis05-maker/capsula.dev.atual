@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pagamento confirmado — Sistema Gnosis</title>
+<link rel="stylesheet" href="css/capsula.css">
+<meta name="robots" content="noindex">
+<style>
+  body { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem 1rem; }
+  .card {
+    background:var(--surface); border:1px solid var(--border); border-radius:16px;
+    padding:2.5rem 2rem; max-width:440px; width:100%; text-align:center;
+    box-shadow:0 8px 40px rgba(0,0,0,0.4);
+  }
+  .check-circle {
+    width:72px; height:72px; border-radius:50%; background:rgba(76,175,135,0.12);
+    display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem;
+    animation: pop 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  @keyframes pop { from { transform:scale(0); opacity:0; } to { transform:scale(1); opacity:1; } }
+  h1 { font-size:1.5rem; margin-bottom:0.5rem; }
+  .subtitle { font-size:0.9rem; color:var(--muted); margin-bottom:1.75rem; line-height:1.6; }
+  .produto-badge {
+    display:inline-block; background:rgba(124,106,247,0.1); border:1px solid rgba(124,106,247,0.2);
+    border-radius:8px; padding:0.4rem 1rem; font-size:0.82rem; color:var(--accent);
+    font-weight:600; margin-bottom:1.75rem; font-family:monospace;
+  }
+  .btn-dash {
+    display:block; width:100%; padding:0.85rem; background:var(--accent); color:#fff;
+    border:none; border-radius:8px; font-size:0.95rem; font-weight:600; cursor:pointer;
+    text-decoration:none; transition:opacity 0.2s; margin-bottom:0.75rem;
+  }
+  .btn-dash:hover { opacity:0.88; color:#fff; }
+  .btn-sec {
+    display:block; width:100%; padding:0.75rem; background:transparent;
+    border:1px solid var(--border); border-radius:8px; font-size:0.85rem;
+    color:var(--muted); cursor:pointer; text-decoration:none; transition:border-color 0.2s;
+  }
+  .btn-sec:hover { border-color:rgba(255,255,255,0.2); color:var(--text); }
+  .loading { font-size:0.8rem; color:var(--muted); margin-top:1rem; font-family:monospace; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="check-circle">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#4caf87" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+  </div>
+
+  <h1>Pagamento confirmado!</h1>
+  <p class="subtitle" id="subtitle">Seus créditos estão sendo adicionados à sua conta. Isso leva alguns segundos.</p>
+  <div class="produto-badge" id="produto-badge">Processando...</div>
+
+  <a href="dashboard.html" class="btn-dash">Ir para o Dashboard →</a>
+  <a href="index.html#planos" class="btn-sec">Ver todos os planos</a>
+
+  <p class="loading" id="loading-msg">Sincronizando com o servidor...</p>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script>
+const PRODUTO_LABELS = {
+  avaliacao: 'Avaliação Individual — 1 crédito adicionado',
+  pacote3:   'Pacote Essencial — DISC + SOAR + Ikigai desbloqueados',
+  dna:       'DNA Estratégico — crédito adicionado',
+  completo:  'Pacote Completo — todas as matrizes desbloqueadas',
+  pro:       'Plano Profissional — acesso ilimitado ativado',
+};
+
+(async function() {
+  const params  = new URLSearchParams(window.location.search);
+  const produto = params.get('produto') || '';
+
+  // Atualiza badge
+  const badge = document.getElementById('produto-badge');
+  badge.textContent = PRODUTO_LABELS[produto] || 'Compra confirmada';
+
+  if (produto === 'pro') {
+    document.getElementById('subtitle').textContent =
+      'Seu Plano Profissional está ativo! PDFs e testes ilimitados liberados.';
+  }
+
+  // Aguarda webhook processar (máx 8s) depois recarrega dados do usuário
+  const loadingEl = document.getElementById('loading-msg');
+  let attempts = 0;
+  const maxAttempts = 8;
+
+  async function trySync() {
+    attempts++;
+    try {
+      if (window.capsulaDB) {
+        const u = await capsulaDB.ensureUserData();
+        if (u) {
+          try { localStorage.setItem('capsula_user', JSON.stringify(u)); } catch(_) {}
+          // Verifica se crédito já chegou
+          const c = u.creditos || {};
+          const hasCredits = Object.values(c).some(v => v > 0) || u.plano === 'profissional';
+          if (hasCredits || attempts >= maxAttempts) {
+            loadingEl.textContent = hasCredits ? '✓ Créditos sincronizados!' : 'Sincronização concluída.';
+            loadingEl.style.color = hasCredits ? '#4caf87' : 'rgba(232,232,240,0.4)';
+            return;
+          }
+        }
+      }
+    } catch(_) {}
+
+    if (attempts < maxAttempts) {
+      loadingEl.textContent = `Sincronizando... (${attempts}/${maxAttempts})`;
+      setTimeout(trySync, 1000);
+    } else {
+      loadingEl.textContent = 'Seus créditos aparecerão no dashboard em instantes.';
+    }
+  }
+
+  // Aguarda 2s para o webhook processar antes da primeira tentativa
+  setTimeout(trySync, 2000);
+})();
+</script>
+</body>
+</html>

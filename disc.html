@@ -25,6 +25,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
 <script src="js/config.js"></script>
 <script src="js/db.js"></script>
+<script src="js/payments.js"></script>
   <script src="js/ui.js" defer></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1422,6 +1423,22 @@ document.addEventListener('DOMContentLoaded', initPage);
 // GENERATE PDF — DISC Blueprint v3
 // ══════════════════════════════════════
 function generatePDF() {
+  // ── Verificação de crédito (paywall) ──
+  if (window._payments && !_payments.hasAccess('disc')) {
+    _payments.showPaywall('disc');
+    // Quando usuário usa crédito via modal, ouve o evento e continua
+    document.addEventListener('payments:creditUsed', function handler(e) {
+      if (e.detail.matrixKey === 'disc') {
+        document.removeEventListener('payments:creditUsed', handler);
+        _generatePDFDisc();
+      }
+    }, { once: true });
+    return;
+  }
+  if (window._payments) _payments.deductCredit('disc');
+  _generatePDFDisc();
+}
+function _generatePDFDisc() {
   const dominant    = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
   const profile     = PROFILES[dominant];
   const ACCENT      = profile.color;

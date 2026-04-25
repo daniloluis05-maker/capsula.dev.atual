@@ -17,6 +17,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
 <script src="js/config.js"></script>
 <script src="js/db.js"></script>
+<script src="js/payments.js"></script>
 <script src="js/ui.js" defer></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -1040,6 +1041,20 @@ function showError(msg) {
 
 // ── PRINT PDF PREMIUM v4.0 ────────────────────────────────────────────────────
 function printDNA() {
+  if (window._payments && !_payments.hasAccess('dna')) {
+    _payments.showPaywall('dna');
+    document.addEventListener('payments:creditUsed', function handler(e) {
+      if (e.detail.matrixKey === 'dna') {
+        document.removeEventListener('payments:creditUsed', handler);
+        _printDNACore();
+      }
+    }, { once: true });
+    return;
+  }
+  if (window._payments) _payments.deductCredit('dna');
+  _printDNACore();
+}
+function _printDNACore() {
   const GOLD   = '#B8922A';
   const GOLD2  = '#C9A84C';
   const PURPLE = '#5B00D4';
