@@ -133,6 +133,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
   <script src="js/config.js"></script>
   <script src="js/db.js"></script>
+  <script src="js/payments.js"></script>
   <script src="js/ui.js" defer></script>
 <meta property="og:image" content="https://sistemagnosis.com.br/apple-touch-icon.png">
 </head>
@@ -366,14 +367,17 @@ function showResult(){
 
 // Proteção de rota
 document.addEventListener('DOMContentLoaded', async function(){
+  // Carrega sessão antes de qualquer verificação de dados
+  let _u = null;
+  try { _u = await capsulaDB.ensureUserData(); } catch(_e) {}
+
   function _findJohari() {
     try {
       const u = capsulaDB.lsGetUser() || {};
+      const sessionEmail = _u && _u.email ? _u.email.toLowerCase() : null;
+      if (!sessionEmail) return null;
+      if (u.email && u.email.toLowerCase() !== sessionEmail) return null;
       if (u.johari && u.johari.completedAt && u.johari.self) return u.johari;
-      const arr = capsulaDB.lsGetUsers() || [];
-      for (const p of arr) {
-        if (p.johari && p.johari.completedAt && p.johari.self) return p.johari;
-      }
     } catch(_) {}
     return null;
   }
@@ -388,19 +392,6 @@ document.addEventListener('DOMContentLoaded', async function(){
     return;
   }
 
-  let _u = null;
-  try { _u = await capsulaDB.ensureUserData(); } catch(_e) {}
-
-  const _saved2 = _findJohari();
-  if (_saved2) {
-    selfSelected = new Set(_saved2.self || []);
-    othersSelected = new Set(_saved2.others || []);
-    _isLoadingExisting = true;
-    showPage('page-result');
-    showResult();
-    return;
-  }
-
   if (!_u || (!_u.nome && !_u.apelido && !_u.email)) {
     window.location.href = 'index.html';
     return;
@@ -409,6 +400,18 @@ document.addEventListener('DOMContentLoaded', async function(){
 });
 
 function generatePDF(){
+  if (window._payments && !_payments.hasAccess('johari')) {
+    _payments.showPaywall('johari');
+    document.addEventListener('payments:creditUsed', function _h() {
+      document.removeEventListener('payments:creditUsed', _h);
+      _generatePDF();
+    });
+    return;
+  }
+  if (window._payments) _payments.deductCredit('johari');
+  _generatePDF();
+}
+function _generatePDF(){
   const u=(capsulaDB.lsGetUser() || {});
   const nome=u.apelido||u.nome||'Usuário';
   const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});

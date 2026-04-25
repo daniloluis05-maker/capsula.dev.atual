@@ -24,6 +24,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
 <script src="js/config.js"></script>
 <script src="js/db.js"></script>
+<script src="js/payments.js"></script>
 <script src="js/ui.js" defer></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -529,6 +530,18 @@ function interpretacaoLocal(scores) {
 }
 
 function generatePDF() {
+  if (window._payments && !_payments.hasAccess('tci')) {
+    _payments.showPaywall('tci');
+    document.addEventListener('payments:creditUsed', function _h() {
+      document.removeEventListener('payments:creditUsed', _h);
+      _generatePDF();
+    });
+    return;
+  }
+  if (window._payments) _payments.deductCredit('tci');
+  _generatePDF();
+}
+function _generatePDF() {
   const u = capsulaDB.lsGetUser() || {};
   const nome = u.apelido || u.nome || 'Usuário';
   const tciScores = u.tci?.scores || {};
