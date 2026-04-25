@@ -10,8 +10,8 @@ ALTER TABLE usuarios
   ADD COLUMN IF NOT EXISTS plano           text         DEFAULT 'free',
   ADD COLUMN IF NOT EXISTS plano_expira_em timestamptz  DEFAULT NULL;
 
--- 2. Índice para busca por uid (usado pelo webhook)
-CREATE INDEX IF NOT EXISTS idx_usuarios_uid ON usuarios (uid);
+-- 2. email já é PK (chave primária) — índice criado automaticamente pelo Postgres.
+-- Não é necessário índice adicional para o webhook.
 
 -- 3. Tabela de avaliações remotas (Plano Profissional)
 CREATE TABLE IF NOT EXISTS avaliacoes_remotas (

@@ -58,17 +58,18 @@ async function fetchPayment(paymentId: string) {
 }
 
 // ── Adiciona créditos no Supabase ─────────────────────────────
-async function addCredits(uid: string, credits: Record<string, number | string>): Promise<boolean> {
+// email = external_reference enviado na criação da preferência MP
+async function addCredits(email: string, credits: Record<string, number | string>): Promise<boolean> {
   const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const { data: row, error: findErr } = await db
     .from('usuarios')
     .select('creditos, plano, plano_expira_em')
-    .eq('uid', uid)
+    .eq('email', email.toLowerCase().trim())
     .maybeSingle();
 
   if (findErr || !row) {
-    console.error('[mp-webhook] Usuário não encontrado:', uid, findErr);
+    console.error('[mp-webhook] Usuário não encontrado pelo email:', email, findErr);
     return false;
   }
 
@@ -91,14 +92,14 @@ async function addCredits(uid: string, credits: Record<string, number | string>)
   const { error: updateErr } = await db
     .from('usuarios')
     .update({ creditos: current, plano, plano_expira_em: planoExpiraEm })
-    .eq('uid', uid);
+    .eq('email', email.toLowerCase().trim());
 
   if (updateErr) {
     console.error('[mp-webhook] Erro ao salvar créditos:', updateErr);
     return false;
   }
 
-  console.log(`[mp-webhook] ✓ Créditos adicionados uid=${uid}:`, credits);
+  console.log(`[mp-webhook] ✓ Créditos adicionados email=${email}:`, credits);
   return true;
 }
 
@@ -150,14 +151,13 @@ Deno.serve(async (req: Request) => {
       return new Response('ok', { status: 200 });
     }
 
-    const uid        = payment.external_reference as string;
-    // product_key vem do metadata (preferência) ou do item[0].id
+    const email      = payment.external_reference as string; // email do usuário
     const productKey = (payment.metadata?.product_key as string)
                     || (payment.additional_info?.items?.[0]?.id as string)
                     || '';
 
-    if (!uid) {
-      console.error('[mp-webhook] external_reference vazio — pagamento sem uid');
+    if (!email) {
+      console.error('[mp-webhook] external_reference vazio — pagamento sem email');
       return new Response('ok', { status: 200 });
     }
 
@@ -166,7 +166,7 @@ Deno.serve(async (req: Request) => {
       return new Response('ok', { status: 200 });
     }
 
-    await addCredits(uid, CREDITS_MAP[productKey]);
+    await addCredits(email, CREDITS_MAP[productKey]);
 
   } catch (err) {
     console.error('[mp-webhook] Erro:', (err as Error).message);

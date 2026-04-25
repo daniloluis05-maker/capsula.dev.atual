@@ -106,10 +106,13 @@
     document.body.appendChild(overlay);
 
     try {
+      const email = (u.email || '').toLowerCase().trim();
+      if (!email) throw new Error('Usuário sem email — faça login novamente.');
+
       const res = await fetch(`${supabaseUrl}/functions/v1/create-mp-preference`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ product_key: key, uid: u.uid, email: u.email || '' }),
+        body:    JSON.stringify({ product_key: key, email }),
       });
 
       const data = await res.json();

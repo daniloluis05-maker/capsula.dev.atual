@@ -38,18 +38,18 @@ Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 });
 
-  let body: { product_key: string; uid: string; email?: string };
+  let body: { product_key: string; email: string };
   try {
     body = await req.json();
   } catch {
     return json({ error: 'JSON inválido' }, 400);
   }
 
-  const { product_key, uid, email } = body;
+  const { product_key, email } = body;
   const product = PRODUCTS[product_key];
 
   if (!product) return json({ error: `Produto inválido: ${product_key}` }, 400);
-  if (!uid)     return json({ error: 'uid obrigatório' }, 400);
+  if (!email)   return json({ error: 'email obrigatório' }, 400);
 
   const preference = {
     items: [{
@@ -59,8 +59,8 @@ Deno.serve(async (req: Request) => {
       unit_price: product.amount,
       currency_id:'BRL',
     }],
-    payer:              email ? { email } : undefined,
-    external_reference: uid,
+    payer:              { email },
+    external_reference: email,   // chave primária da tabela usuarios
     metadata:           { product_key },
     back_urls: {
       success: `${SITE_URL}/pagamento-sucesso.html?produto=${product_key}`,
@@ -92,7 +92,7 @@ Deno.serve(async (req: Request) => {
     return json({ error: data.message || 'Erro ao criar preferência MP' }, 500);
   }
 
-  console.log(`[create-mp-preference] Preferência criada: ${data.id} para uid=${uid} produto=${product_key}`);
+  console.log(`[create-mp-preference] Preferência criada: ${data.id} para email=${email} produto=${product_key}`);
 
   return json({
     preference_id:       data.id,
