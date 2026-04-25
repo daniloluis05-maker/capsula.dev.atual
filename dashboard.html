@@ -251,10 +251,13 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <div class="stat-val" id="stat-dias">1</div>
         <div class="stat-sub" id="stat-dias-sub">membro desde hoje</div>
       </div>
-      <div class="stat-card" style="--stat-color:var(--D)">
-        <span class="stat-tag">Créditos &amp; Plano</span>
-        <div class="stat-val" id="stat-creditos" style="font-size:1.4rem;padding-top:0.2rem">0</div>
-        <div class="stat-sub" id="stat-plano-sub" style="cursor:pointer;color:var(--D)" onclick="abrirModalPlanos()">Comprar créditos →</div>
+      <div class="stat-card" id="card-creditos" style="--stat-color:var(--D);cursor:pointer;transition:background 0.2s;" onclick="abrirModalPlanos()" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+        <span class="stat-tag">Seus Créditos</span>
+        <div style="display:flex;align-items:baseline;gap:0.4rem;">
+          <div class="stat-val" id="stat-creditos" style="font-size:1.75rem;padding-top:0.1rem">0</div>
+          <span id="stat-creditos-label" style="font-size:0.7rem;color:var(--muted);font-family:var(--mono)">disponíveis</span>
+        </div>
+        <div class="stat-sub" id="stat-plano-sub" style="color:var(--D);margin-top:0.25rem;">+ Comprar créditos →</div>
       </div>
     </div>
 
@@ -602,16 +605,22 @@ async function loadUser(){
 
   // ── Créditos & plano ────────────────────────────────────────
   if (window._payments) {
-    const elCred = document.getElementById('stat-creditos');
-    const elSub  = document.getElementById('stat-plano-sub');
+    const elCred  = document.getElementById('stat-creditos');
+    const elLabel = document.getElementById('stat-creditos-label');
+    const elSub   = document.getElementById('stat-plano-sub');
+    const elCard  = document.getElementById('card-creditos');
     if (_payments.isAdmin() || _payments.isPro()) {
-      if (elCred) elCred.textContent = '∞';
-      if (elSub)  { elSub.textContent = _payments.isAdmin() ? 'Admin · acesso total' : 'Profissional · ilimitado'; elSub.style.color = 'var(--S)'; }
+      if (elCred)  elCred.textContent = '∞';
+      if (elLabel) elLabel.textContent = _payments.isAdmin() ? 'admin' : 'ilimitado';
+      if (elSub)   { elSub.textContent = _payments.isAdmin() ? 'Acesso total' : 'Plano Profissional ativo'; elSub.style.color = 'var(--S)'; }
+      if (elCard)  elCard.style.setProperty('--stat-color', 'var(--S)');
     } else {
       const c = _payments.getCredits();
       const total = (c.avulsos || 0) + Object.entries(c).filter(([k]) => k !== 'avulsos').reduce((s,[,v]) => s + (typeof v === 'number' ? v : 0), 0);
-      if (elCred) elCred.textContent = total;
-      if (elSub)  elSub.textContent = total > 0 ? `crédito${total !== 1 ? 's' : ''} disponível${total !== 1 ? 'is' : ''}` : 'Comprar créditos →';
+      if (elCred)  elCred.textContent = total;
+      if (elLabel) elLabel.textContent = total === 1 ? 'crédito' : 'créditos';
+      if (elSub)   elSub.textContent = total > 0 ? '+ Comprar mais →' : '+ Comprar créditos →';
+      if (elCard && total === 0) elCard.style.setProperty('--stat-color', 'var(--D)');
     }
   }
 
@@ -928,72 +937,105 @@ function shareInviteNative() {
 </script>
 
 <!-- ── Modal de Planos ──────────────────────────────────────── -->
-<div id="modal-planos" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9000;overflow-y:auto;padding:2rem 1rem;">
-  <div style="max-width:900px;margin:0 auto;position:relative;">
-    <button onclick="fecharModalPlanos()" style="position:sticky;top:0;float:right;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#fff;width:36px;height:36px;border-radius:50%;font-size:1.2rem;cursor:pointer;margin-bottom:1rem;">×</button>
-    <div style="clear:both;padding-bottom:0.5rem;">
-      <p style="font-family:var(--mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:0.4rem;">Créditos</p>
-      <h2 style="font-size:1.8rem;margin:0 0 0.4rem;">Escolha quantas matrizes quer acessar</h2>
-      <p style="color:rgba(232,232,240,0.55);font-size:0.9rem;margin-bottom:2rem;">1 crédito = acesso completo a qualquer matriz + PDF. Use como quiser, sem prazo.</p>
+<div id="modal-planos" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:9000;overflow-y:auto;padding:2rem 1rem;">
+  <div style="max-width:860px;margin:0 auto;position:relative;">
+
+    <button onclick="fecharModalPlanos()" style="position:absolute;top:0;right:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);width:34px;height:34px;border-radius:50%;font-size:1.1rem;cursor:pointer;line-height:1;z-index:10;">×</button>
+
+    <!-- Header -->
+    <div style="padding:2rem 0 1.75rem;">
+      <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.2);border-radius:20px;padding:0.3rem 0.9rem;margin-bottom:1rem;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#7c6af7;display:inline-block;"></span>
+        <span style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:#a89ef8;">Créditos · Sistema Gnosis</span>
+      </div>
+      <h2 style="font-size:2rem;font-weight:800;letter-spacing:-0.03em;margin:0 0 0.5rem;line-height:1.15;">Desbloqueie seu <span style="color:#7c6af7">potencial</span><br>uma matriz por vez.</h2>
+      <p style="color:rgba(232,232,240,0.5);font-size:0.88rem;line-height:1.6;max-width:480px;">1 crédito = acesso completo a qualquer matriz + relatório PDF. Sem prazo. Use quando quiser.</p>
+    </div>
+
+    <!-- Barra de valor/comparação -->
+    <div style="background:rgba(46,196,160,0.07);border:1px solid rgba(46,196,160,0.18);border-radius:10px;padding:0.75rem 1.25rem;display:flex;align-items:center;gap:0.75rem;margin-bottom:1.75rem;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2EC4A0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <span style="font-size:0.82rem;color:rgba(232,232,240,0.75);">Quanto mais créditos, <strong style="color:#2EC4A0">menor o preço por matriz</strong> — de R$29,90 até R$16,24 cada.</span>
     </div>
 
     <!-- Cards de créditos -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.85rem;margin-bottom:1.25rem;">
 
-      <div style="background:#13131a;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.5rem;">
-        <p style="font-size:0.75rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.5rem;">1 Crédito</p>
-        <div style="font-size:2rem;font-weight:800;margin-bottom:0.4rem;">R$29<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90</span></div>
-        <p style="font-size:0.72rem;color:var(--muted);margin-bottom:1rem;">R$29,90 por matriz</p>
-        <ul style="list-style:none;padding:0;margin:0 0 1.25rem;font-size:0.8rem;display:flex;flex-direction:column;gap:0.4rem;">
-          <li>✓ Acesso a 1 matriz à sua escolha</li>
-          <li>✓ PDF incluído</li>
-          <li>✓ Sem prazo de validade</li>
+      <!-- 1 crédito -->
+      <div style="background:#0f1018;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:1.5rem;display:flex;flex-direction:column;">
+        <div style="font-family:var(--mono);font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;">Avulso</div>
+        <div style="font-size:2.1rem;font-weight:800;letter-spacing:-0.04em;line-height:1;margin-bottom:0.2rem;">R$29<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90</span></div>
+        <div style="font-size:0.7rem;color:var(--muted);font-family:var(--mono);margin-bottom:1.25rem;">1 crédito · R$29,90/matriz</div>
+        <ul style="list-style:none;padding:0;margin:0 0 1.5rem;font-size:0.78rem;color:rgba(232,232,240,0.65);display:flex;flex-direction:column;gap:0.5rem;flex:1;">
+          <li style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#7c6af7;flex-shrink:0;">✓</span> Qualquer matriz à sua escolha</li>
+          <li style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#7c6af7;flex-shrink:0;">✓</span> PDF completo incluído</li>
+          <li style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#7c6af7;flex-shrink:0;">✓</span> Sem prazo de validade</li>
         </ul>
-        <button onclick="abrirCheckout('credito1')" style="width:100%;padding:0.7rem;background:transparent;border:1px solid rgba(124,106,247,0.4);border-radius:8px;color:#7c6af7;font-weight:600;font-size:0.85rem;cursor:pointer;">Comprar →</button>
+        <button onclick="abrirCheckout('credito1')" style="width:100%;padding:0.75rem;background:transparent;border:1px solid rgba(124,106,247,0.35);border-radius:9px;color:#7c6af7;font-weight:600;font-size:0.82rem;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='rgba(124,106,247,0.1)'" onmouseout="this.style.background='transparent'">Comprar 1 crédito →</button>
       </div>
 
-      <div style="background:#13131a;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.5rem;">
-        <p style="font-size:0.75rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.5rem;">3 Créditos</p>
-        <div style="font-size:2rem;font-weight:800;margin-bottom:0.4rem;">R$69<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90</span></div>
-        <p style="font-size:0.72rem;color:var(--S);margin-bottom:1rem;">R$23,30 por matriz · economia de R$19,80</p>
-        <ul style="list-style:none;padding:0;margin:0 0 1.25rem;font-size:0.8rem;display:flex;flex-direction:column;gap:0.4rem;">
-          <li>✓ Acesso a 3 matrizes à sua escolha</li>
-          <li>✓ 3 PDFs incluídos</li>
-          <li>✓ Sem prazo de validade</li>
+      <!-- 3 créditos -->
+      <div style="background:#0f1018;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:1.5rem;display:flex;flex-direction:column;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+          <div style="font-family:var(--mono);font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);">Essencial</div>
+          <span style="background:rgba(46,196,160,0.12);border:1px solid rgba(46,196,160,0.25);color:#2EC4A0;font-size:0.58rem;font-weight:700;padding:0.15rem 0.55rem;border-radius:20px;letter-spacing:0.06em;">−22%</span>
+        </div>
+        <div style="font-size:2.1rem;font-weight:800;letter-spacing:-0.04em;line-height:1;margin-bottom:0.2rem;">R$69<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90</span></div>
+        <div style="font-size:0.7rem;color:#2EC4A0;font-family:var(--mono);margin-bottom:1.25rem;">3 créditos · R$23,30/matriz</div>
+        <ul style="list-style:none;padding:0;margin:0 0 1.5rem;font-size:0.78rem;color:rgba(232,232,240,0.65);display:flex;flex-direction:column;gap:0.5rem;flex:1;">
+          <li style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#7c6af7;flex-shrink:0;">✓</span> 3 matrizes à sua escolha</li>
+          <li style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#7c6af7;flex-shrink:0;">✓</span> 3 PDFs incluídos</li>
+          <li style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#2EC4A0;flex-shrink:0;">✓</span> <span>Economia de <strong style="color:#2EC4A0">R$19,80</strong></span></li>
         </ul>
-        <button onclick="abrirCheckout('credito3')" style="width:100%;padding:0.7rem;background:transparent;border:1px solid rgba(124,106,247,0.4);border-radius:8px;color:#7c6af7;font-weight:600;font-size:0.85rem;cursor:pointer;">Comprar 3 créditos →</button>
+        <button onclick="abrirCheckout('credito3')" style="width:100%;padding:0.75rem;background:transparent;border:1px solid rgba(124,106,247,0.35);border-radius:9px;color:#7c6af7;font-weight:600;font-size:0.82rem;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='rgba(124,106,247,0.1)'" onmouseout="this.style.background='transparent'">Comprar 3 créditos →</button>
       </div>
 
-      <div style="background:#13131a;border:2px solid rgba(124,106,247,0.35);border-radius:14px;padding:1.5rem;position:relative;">
-        <span style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#7c6af7;color:#fff;font-size:0.65rem;font-weight:700;padding:0.2rem 0.7rem;border-radius:20px;letter-spacing:0.06em;">MELHOR VALOR</span>
-        <p style="font-size:0.75rem;font-weight:600;color:var(--accent);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.5rem;">8 Créditos</p>
-        <div style="font-size:2rem;font-weight:800;margin-bottom:0.4rem;">R$159<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90</span></div>
-        <p style="font-size:0.72rem;color:var(--S);margin-bottom:1rem;">R$19,99 por matriz · economia de R$79,30</p>
-        <ul style="list-style:none;padding:0;margin:0 0 1.25rem;font-size:0.8rem;display:flex;flex-direction:column;gap:0.4rem;">
-          <li>✓ Acesso a todas as 8 matrizes</li>
-          <li>✓ 8 PDFs incluídos</li>
-          <li>✓ Sem prazo de validade</li>
+      <!-- 8 créditos — destaque -->
+      <div style="background:linear-gradient(160deg,#16143a 0%,#0f1018 60%);border:1.5px solid rgba(124,106,247,0.4);border-radius:16px;padding:1.5rem;display:flex;flex-direction:column;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;right:0;width:120px;height:120px;background:radial-gradient(circle,rgba(124,106,247,0.18) 0%,transparent 70%);pointer-events:none;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+          <div style="font-family:var(--mono);font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:#a89ef8;">Completo</div>
+          <span style="background:#7c6af7;color:#fff;font-size:0.58rem;font-weight:700;padding:0.15rem 0.55rem;border-radius:20px;letter-spacing:0.06em;">MELHOR VALOR</span>
+        </div>
+        <div style="font-size:2.1rem;font-weight:800;letter-spacing:-0.04em;line-height:1;margin-bottom:0.2rem;">R$129<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90</span></div>
+        <div style="font-size:0.7rem;color:#2EC4A0;font-family:var(--mono);margin-bottom:1.25rem;">8 créditos · R$16,24/matriz · −46%</div>
+        <ul style="list-style:none;padding:0;margin:0 0 1.5rem;font-size:0.78rem;color:rgba(232,232,240,0.65);display:flex;flex-direction:column;gap:0.5rem;flex:1;">
+          <li style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#7c6af7;flex-shrink:0;">✓</span> Todas as 8 matrizes</li>
+          <li style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#7c6af7;flex-shrink:0;">✓</span> 8 PDFs incluídos</li>
+          <li style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#2EC4A0;flex-shrink:0;">✓</span> <span>Economia de <strong style="color:#2EC4A0">R$109,30</strong></span></li>
         </ul>
-        <button onclick="abrirCheckout('credito8')" style="width:100%;padding:0.7rem;background:#7c6af7;border:none;border-radius:8px;color:#fff;font-weight:600;font-size:0.85rem;cursor:pointer;">Comprar 8 créditos →</button>
+        <button onclick="abrirCheckout('credito8')" style="width:100%;padding:0.75rem;background:#7c6af7;border:none;border-radius:9px;color:#fff;font-weight:700;font-size:0.85rem;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">Comprar 8 créditos →</button>
       </div>
 
     </div>
 
-    <!-- Card Pro -->
-    <div style="background:linear-gradient(135deg,rgba(124,106,247,0.12),rgba(124,106,247,0.04));border:1px solid rgba(124,106,247,0.25);border-radius:14px;padding:1.75rem;display:flex;flex-wrap:wrap;gap:1.5rem;align-items:center;justify-content:space-between;margin-bottom:2rem;">
+    <!-- Card Pro — promoção -->
+    <div style="position:relative;background:linear-gradient(135deg,rgba(124,106,247,0.1) 0%,rgba(232,96,58,0.06) 100%);border:1px solid rgba(124,106,247,0.3);border-radius:16px;padding:1.75rem 2rem;display:flex;flex-wrap:wrap;gap:1.5rem;align-items:center;justify-content:space-between;margin-bottom:0.5rem;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#7c6af7,#E8603A,#7c6af7);"></div>
       <div style="flex:1;min-width:240px;">
-        <p style="font-size:0.75rem;font-weight:600;color:var(--accent);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.4rem;">Plano Profissional</p>
-        <div style="font-size:2rem;font-weight:800;margin-bottom:0.5rem;">R$129<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90/30 dias</span></div>
-        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">Acesso ilimitado a todas as matrizes e PDFs por 30 dias.</p>
-        <ul style="list-style:none;padding:0;margin:0;font-size:0.82rem;display:grid;grid-template-columns:1fr 1fr;gap:0.35rem;">
-          <li>✓ Todas as matrizes ilimitadas</li>
-          <li>✓ PDFs ilimitados</li>
-          <li>✓ Links de avaliação remota</li>
-          <li>✓ Dashboard da equipe</li>
-        </ul>
+        <div style="display:flex;align-items:center;gap:0.65rem;margin-bottom:0.6rem;">
+          <p style="font-size:0.72rem;font-weight:700;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;margin:0;">Plano Profissional</p>
+          <span style="background:linear-gradient(90deg,#E8603A,#e8893a);color:#fff;font-size:0.58rem;font-weight:800;padding:0.18rem 0.65rem;border-radius:20px;letter-spacing:0.05em;white-space:nowrap;">PROMOÇÃO DE LANÇAMENTO</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:0.75rem;margin-bottom:0.5rem;">
+          <div style="font-size:2.2rem;font-weight:800;letter-spacing:-0.04em;">R$149<span style="font-size:1rem;font-weight:400;color:var(--muted)">,90<span style="font-size:0.72rem;">/30 dias</span></span></div>
+          <div style="font-size:0.88rem;color:var(--muted);text-decoration:line-through;">R$189,90</div>
+        </div>
+        <p style="font-size:0.82rem;color:rgba(232,232,240,0.55);margin-bottom:1rem;">Acesso ilimitado a todas as matrizes e PDFs. Ideal para profissionais de RH, coaches e consultores.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:0.5rem 1.25rem;font-size:0.78rem;color:rgba(232,232,240,0.65);">
+          <span><span style="color:#7c6af7;">✓</span> Matrizes ilimitadas</span>
+          <span><span style="color:#7c6af7;">✓</span> PDFs ilimitados</span>
+          <span><span style="color:#7c6af7;">✓</span> Avaliações remotas</span>
+          <span><span style="color:#7c6af7;">✓</span> Dashboard da equipe</span>
+        </div>
       </div>
-      <button onclick="abrirCheckout('pro')" style="padding:0.9rem 2rem;background:var(--accent);border:none;border-radius:10px;color:#fff;font-weight:700;font-size:0.95rem;cursor:pointer;white-space:nowrap;">Assinar agora →</button>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+        <button onclick="abrirCheckout('pro')" style="padding:0.9rem 2rem;background:linear-gradient(135deg,#7c6af7,#6b5ce7);border:none;border-radius:10px;color:#fff;font-weight:700;font-size:0.95rem;cursor:pointer;white-space:nowrap;box-shadow:0 4px 24px rgba(124,106,247,0.35);transition:all 0.15s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 28px rgba(124,106,247,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(124,106,247,0.35)'">Assinar agora →</button>
+        <span style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);">Economia de R$40,00</span>
+      </div>
     </div>
+
+    <p style="text-align:center;font-family:var(--mono);font-size:0.6rem;color:var(--muted);margin-top:1rem;padding-bottom:1rem;">Pagamento seguro via Mercado Pago · PIX, cartão e boleto</p>
   </div>
 </div>
 
