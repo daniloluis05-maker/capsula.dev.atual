@@ -118,7 +118,7 @@
       johari:'Johari', bigfive:'Big Five', pearson:'Pearson-Marr', tci:'TCI', dna:'DNA Estratégico',
     };
     const label = names[matrixKey] || matrixKey;
-    const price = matrixKey === 'dna' ? 'R$ 39,90' : 'R$ 25,99';
+    const price = matrixKey === 'dna' ? 'R$ 67,90' : 'R$ 29,90';
     const linkKey = matrixKey === 'dna' ? 'DNA' : 'AVALIACAO';
     const credits = getCredits();
     const hasAvulso = (credits.avulsos || 0) > 0;

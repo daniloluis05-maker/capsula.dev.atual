@@ -31,37 +31,36 @@ const PRODUCTS = [
     key:         'avaliacao',
     name:        'Avaliação Individual',
     description: '1 crédito para qualquer matriz + PDF gerado',
-    amount:      2599,
+    amount:      2990,
     type:        'one_time',
   },
   {
     key:         'pacote3',
     name:        'Pacote Essencial — DISC + SOAR + Ikigai',
     description: '3 matrizes com PDF incluído',
-    amount:      6990,
+    amount:      7990,
     type:        'one_time',
   },
   {
     key:         'dna',
     name:        'DNA Estratégico',
     description: 'Análise IA — requer 8 matrizes concluídas',
-    amount:      3990,
+    amount:      6790,
     type:        'one_time',
   },
   {
     key:         'completo',
     name:        'Pacote Completo + DNA',
     description: 'Todas as 8 matrizes + DNA Estratégico',
-    amount:      17990,
+    amount:      21990,
     type:        'one_time',
   },
   {
     key:         'pro',
-    name:        'Plano Profissional',
-    description: 'PDFs e testes ilimitados + envio para terceiros',
+    name:        'Plano Profissional — 30 dias',
+    description: 'PDFs e testes ilimitados + envio para terceiros por 30 dias',
     amount:      12990,
-    type:        'recurring',
-    interval:    'month',
+    type:        'one_time',
   },
 ];
 
@@ -81,7 +80,13 @@ async function stripe(method, endpoint, body = null) {
   if (body) options.body = flattenParams(body);
   const res  = await fetch(`https://api.stripe.com/v1${endpoint}`, options);
   const json = await res.json();
-  if (!res.ok) throw new Error(`Stripe ${method} ${endpoint} → ${json.error?.message || res.status}`);
+  if (!res.ok) {
+    const msg = json.error?.message || res.status;
+    if (json.error?.code === 'api_key_expired' || msg.includes('Invalid API Key')) {
+      throw new Error('Chave Stripe inválida ou revogada.\n    → Stripe → Developers → API Keys → Secret key → Reveal (ou Roll key para gerar uma nova)');
+    }
+    throw new Error(`Stripe ${method} ${endpoint} → ${msg}`);
+  }
   return json;
 }
 
