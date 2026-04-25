@@ -1,5 +1,6 @@
-# Stripe secrets — nunca commitar
+# Secrets de pagamento — nunca commitar
 scripts/.stripe-secrets.txt
+scripts/.mp-secrets.txt
 
 # Dependências
 node_modules/

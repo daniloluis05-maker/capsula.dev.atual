@@ -78,32 +78,54 @@
     return false;
   }
 
-  // ── Checkout ─────────────────────────────────────────────────
+  // ── Checkout (Mercado Pago Checkout Pro) ─────────────────────
 
-  function buildCheckoutUrl(linkKey) {
-    const c   = cfg();
-    const url = c['STRIPE_LINK_' + linkKey.toUpperCase()];
-    if (!url) {
-      console.warn('[payments] Link não configurado:', linkKey);
-      return null;
-    }
-    const u = getUser();
-    const params = new URLSearchParams();
-    if (u && u.uid)   params.set('client_reference_id', u.uid);
-    if (u && u.email) params.set('prefilled_email', u.email);
-    return url + '?' + params.toString();
-  }
-
-  function openCheckout(linkKey) {
-    // Se não logado → abre modal de cadastro primeiro
+  // productKey: 'avaliacao' | 'pacote3' | 'dna' | 'completo' | 'pro'
+  // Também aceita chaves em maiúsculas (AVALIACAO, PRO, etc.) para compatibilidade
+  async function openCheckout(productKey) {
     const u = getUser();
     if (!u || !u.uid) {
+      // Usuário não logado → abre modal de cadastro
       const btn = document.querySelector('[data-modal-open]');
       if (btn) btn.click();
       return;
     }
-    const url = buildCheckoutUrl(linkKey);
-    if (url) window.location.href = url;
+
+    const key = productKey.toLowerCase();
+    const supabaseUrl = (cfg().supabaseUrl || '').replace(/\/$/, '');
+    if (!supabaseUrl) {
+      console.error('[payments] supabaseUrl não configurado');
+      return;
+    }
+
+    // Mostra spinner temporário
+    const overlay = document.createElement('div');
+    overlay.id = '_mp-loading';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;';
+    overlay.innerHTML = '<div style="color:#fff;font-size:1rem;font-family:monospace;text-align:center;"><div style="font-size:2rem;margin-bottom:0.75rem;">⏳</div>Abrindo checkout seguro...</div>';
+    document.body.appendChild(overlay);
+
+    try {
+      const res = await fetch(`${supabaseUrl}/functions/v1/create-mp-preference`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ product_key: key, uid: u.uid, email: u.email || '' }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+      // Em teste usa sandbox_init_point; em produção usa init_point
+      const IS_TEST = (cfg().MP_PUBLIC_KEY || '').startsWith('TEST-');
+      const url = IS_TEST ? (data.sandbox_init_point || data.init_point) : data.init_point;
+      if (!url) throw new Error('URL de checkout não retornada');
+
+      window.location.href = url;
+    } catch (err) {
+      console.error('[payments] Erro ao criar preferência MP:', err);
+      overlay.remove();
+      alert('Não foi possível abrir o checkout. Tente novamente em instantes.');
+    }
   }
 
   // ── Modal de paywall (exibido quando PDF está bloqueado) ─────
