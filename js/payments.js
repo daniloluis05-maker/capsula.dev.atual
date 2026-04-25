@@ -27,9 +27,14 @@
 
   // ── Plano ────────────────────────────────────────────────────
 
+  function isAdmin() {
+    return !!(getUser()?.is_admin);
+  }
+
   function isPro() {
     const u = getUser();
     if (!u) return false;
+    if (u.is_admin) return true; // admin tem acesso ilimitado
     if (u.plano !== 'profissional') return false;
     if (!u.plano_expira_em) return true; // sem data = ativo
     return new Date(u.plano_expira_em) > new Date();
@@ -225,6 +230,7 @@
   // ── Exporta ──────────────────────────────────────────────────
 
   window._payments = {
+    isAdmin,
     isPro,
     getCredits,
     hasAccess,

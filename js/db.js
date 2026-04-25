@@ -44,8 +44,8 @@
     if (!db) return { error: 'offline' };
 
     // Separa campos de perfil dos dados de matrizes
-    // uid, soar_draft e ikigai_draft são campos internos e não devem ir para a coluna matrizes
-    const { nome, email, objetivo, criado_em, apelido, uid, soar_draft, ikigai_draft, ...matrizes } = userData;
+    // uid, is_admin, creditos, plano, plano_expira_em, soar_draft e ikigai_draft são campos internos
+    const { nome, email, objetivo, criado_em, apelido, uid, is_admin, creditos, plano, plano_expira_em, soar_draft, ikigai_draft, ...matrizes } = userData;
 
     const row = {
       email:     email.toLowerCase().trim(),
@@ -85,11 +85,15 @@
     // Remonta objeto plano (perfil + matrizes juntos) para compatibilidade
     if (data) {
       const flat = {
-        nome:      data.nome,
-        apelido:   data.apelido,
-        email:     data.email,
-        objetivo:  data.objetivo,
-        criado_em: data.criado_em,
+        nome:            data.nome,
+        apelido:         data.apelido,
+        email:           data.email,
+        objetivo:        data.objetivo,
+        criado_em:       data.criado_em,
+        is_admin:        data.is_admin        || false,
+        creditos:        data.creditos        || {},
+        plano:           data.plano           || 'free',
+        plano_expira_em: data.plano_expira_em || null,
         ...( data.matrizes || {} ),
       };
       return { data: flat, error: null };
