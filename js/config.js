@@ -16,5 +16,5 @@ window.CAPSULA_CONFIG = {
   // ── Mercado Pago ─────────────────────────────────────────────
   // Gerado por scripts/mercadopago-setup.js — não edite manualmente
   // ⚠️  NUNCA adicione MP_ACCESS_TOKEN aqui (só na Edge Function)
-  MP_PUBLIC_KEY: 'APP_USR-0c9699dc-c8b0-4e5e-90ce-7658b5ec992f',
+  MP_PUBLIC_KEY: 'APP_USR-2d867aca-2710-4594-af67-4e1f9e1184ff',
 };
