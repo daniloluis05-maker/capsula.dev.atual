@@ -1,0 +1,13 @@
+# Stripe secrets — nunca commitar
+scripts/.stripe-secrets.txt
+
+# Dependências
+node_modules/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Variáveis de ambiente locais
+.env
+.env.local
