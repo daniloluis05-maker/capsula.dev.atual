@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matriz RACI | Sistema Gnosis</title>
+<link rel="stylesheet" href="css/capsula.css">
+<meta name="robots" content="noindex">
+<style>
+  body { padding: 2rem 1rem 4rem; max-width: 1200px; margin: 0 auto; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+  .topbar a { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
+  .topbar a:hover { color: var(--text); }
+  .badge-eqx { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(232,96,58,0.1); border: 1px solid rgba(232,96,58,0.25); color: #E8603A; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.7rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.4rem; }
+  .lead { color: var(--muted); font-size: 0.95rem; margin-bottom: 1.75rem; line-height: 1.5; max-width: 600px; }
+  .legend { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; font-size: 0.82rem; }
+  .legend-item { display: flex; align-items: center; gap: 0.5rem; }
+  .legend-pill { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.78rem; color: #fff; }
+  .pill-R { background: #E8603A; }
+  .pill-A { background: #7c6af7; }
+  .pill-C { background: #1BA8D4; }
+  .pill-I { background: #2EC4A0; }
+  .equipe-bar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; padding: 0.85rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; flex-wrap: wrap; }
+  .equipe-bar select { padding: 0.55rem 0.85rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.88rem; min-width: 240px; outline: none; cursor: pointer; }
+  .btn-add { padding: 0.65rem 1.25rem; background: #E8603A; border: none; border-radius: 8px; color: #fff; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: opacity 0.2s; }
+  .btn-add:hover { opacity: 0.85; }
+  .matrix-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; }
+  table.raci { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px; }
+  table.raci th, table.raci td { padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); text-align: center; }
+  table.raci th:first-child, table.raci td:first-child { text-align: left; min-width: 220px; max-width: 320px; padding-left: 1rem; border-right: 2px solid var(--border2); }
+  table.raci th:last-child, table.raci td:last-child { border-right: none; }
+  table.raci tr:last-child td { border-bottom: none; }
+  table.raci thead th { background: rgba(232,96,58,0.04); font-size: 0.75rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.04em; padding: 0.85rem 0.5rem; }
+  table.raci thead th:first-child { font-size: 0.68rem; color: var(--muted); font-family: var(--mono); }
+  .ativ-cell { font-weight: 600; line-height: 1.4; }
+  .raci-pick { display: flex; gap: 0.2rem; justify-content: center; }
+  .raci-btn { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-weight: 800; font-size: 0.75rem; transition: all 0.15s; padding: 0; }
+  .raci-btn:hover { border-color: var(--border2); color: var(--text); }
+  .raci-btn.active { color: #fff; border-color: transparent; }
+  .raci-btn.active.papel-R { background: #E8603A; }
+  .raci-btn.active.papel-A { background: #7c6af7; }
+  .raci-btn.active.papel-C { background: #1BA8D4; }
+  .raci-btn.active.papel-I { background: #2EC4A0; }
+  .ativ-actions { display: flex; gap: 0.4rem; justify-content: flex-end; padding-right: 0.5rem; }
+  .ativ-actions button { background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 0.25rem 0.5rem; color: var(--muted); cursor: pointer; font-size: 0.72rem; }
+  .ativ-actions button:hover { color: #E8603A; border-color: rgba(232,96,58,0.4); }
+  .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: 0.88rem; }
+  .add-bar { display: flex; gap: 0.5rem; margin-top: 1rem; padding: 1rem; background: var(--surface); border: 1px dashed var(--border); border-radius: 10px; align-items: center; flex-wrap: wrap; }
+  .add-bar input { flex: 1; min-width: 240px; padding: 0.6rem 0.85rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.88rem; outline: none; box-sizing: border-box; }
+  .add-bar input:focus { border-color: rgba(232,96,58,0.5); }
+  .warn-rule { padding: 0.7rem 1rem; background: rgba(232,160,58,0.08); border: 1px solid rgba(232,160,58,0.25); border-radius: 8px; color: #E8A03A; font-size: 0.8rem; margin-bottom: 1rem; display: none; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="dashboard.html">← Dashboard</a>
+  <span class="badge-eqx">Matriz RACI</span>
+</div>
+
+<h1>Matriz RACI</h1>
+<p class="lead">Defina papéis e responsabilidades. Cada atividade precisa ter <strong>exatamente um Accountable (A)</strong>. Múltiplos Responsibles (R), Consulteds (C) e Informeds (I) são permitidos.</p>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-pill pill-R">R</span><div><strong>Responsible</strong><br><span style="font-size:0.72rem;color:var(--muted);">Executa a tarefa</span></div></div>
+  <div class="legend-item"><span class="legend-pill pill-A">A</span><div><strong>Accountable</strong><br><span style="font-size:0.72rem;color:var(--muted);">Responde pelo resultado</span></div></div>
+  <div class="legend-item"><span class="legend-pill pill-C">C</span><div><strong>Consulted</strong><br><span style="font-size:0.72rem;color:var(--muted);">É consultado</span></div></div>
+  <div class="legend-item"><span class="legend-pill pill-I">I</span><div><strong>Informed</strong><br><span style="font-size:0.72rem;color:var(--muted);">É informado</span></div></div>
+</div>
+
+<div class="equipe-bar">
+  <span style="font-size:0.78rem;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:0.05em;">Equipe:</span>
+  <select id="sel-equipe" onchange="onEquipeChange()"></select>
+</div>
+
+<div class="warn-rule" id="warn-rule"></div>
+
+<div id="content-area">
+  <div class="empty">Selecione uma equipe acima para começar.</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/payments.js"></script>
+<script>
+let _user = null;
+let _equipes = [];
+let _equipeId = '';
+let _atividades = [];
+let _atribuicoes = [];
+let _membros = [];
+
+async function init() {
+  _user = await capsulaDB.ensureUserData();
+  if (!_user) { window.location.href = 'index.html'; return; }
+  if (!(_payments.isGerencial() || _payments.isAdmin())) {
+    document.body.innerHTML = '<div style="padding:4rem 2rem;text-align:center;"><h2>Acesso restrito</h2><p style="color:var(--muted);margin-top:0.75rem;">Esta ferramenta está disponível apenas para usuários do plano Gerencial.</p><p style="margin-top:1.5rem;"><a href="dashboard.html" style="color:var(--accent);">← Voltar ao dashboard</a></p></div>';
+    return;
+  }
+  _equipes = await capsulaDB.getEquipes(_user.email);
+  const sel = document.getElementById('sel-equipe');
+  if (!_equipes.length) {
+    sel.innerHTML = '<option value="">Nenhuma equipe — crie uma no dashboard</option>';
+    sel.disabled = true;
+    return;
+  }
+  sel.innerHTML = '<option value="">Selecione...</option>' + _equipes.map(e => `<option value="${e.id}">${esc(e.nome)}</option>`).join('');
+
+  const params = new URLSearchParams(window.location.search);
+  const preEq = params.get('equipe');
+  if (preEq && _equipes.find(e => e.id === preEq)) {
+    sel.value = preEq;
+    onEquipeChange();
+  }
+}
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+async function onEquipeChange() {
+  _equipeId = document.getElementById('sel-equipe').value;
+  if (!_equipeId) {
+    document.getElementById('content-area').innerHTML = '<div class="empty">Selecione uma equipe.</div>';
+    return;
+  }
+  const eq = _equipes.find(e => e.id === _equipeId);
+  _membros = (eq && eq.equipe_membros) ? eq.equipe_membros : [];
+  if (!_membros.length) {
+    document.getElementById('content-area').innerHTML = '<div class="empty">Adicione membros a esta equipe no dashboard antes de montar a matriz RACI.</div>';
+    return;
+  }
+  await loadRaci();
+}
+
+async function loadRaci() {
+  const { atividades, atribuicoes } = await capsulaDB.getRACI(_equipeId);
+  _atividades = atividades;
+  _atribuicoes = atribuicoes;
+  renderMatrix();
+  validateRules();
+}
+
+function getPapel(atividadeId, membroId) {
+  const a = _atribuicoes.find(x => x.atividade_id === atividadeId && x.membro_id === membroId);
+  return a ? a.papel : null;
+}
+
+function renderMatrix() {
+  const area = document.getElementById('content-area');
+  const headerCols = _membros.map(m => `<th title="${esc(m.email||'')}">${esc(firstName(m.nome))}</th>`).join('');
+  const rows = _atividades.length
+    ? _atividades.map(at => `
+        <tr data-ativ="${at.id}">
+          <td><div class="ativ-cell">${esc(at.atividade)}</div></td>
+          ${_membros.map(m => `
+            <td>
+              <div class="raci-pick">
+                ${['R','A','C','I'].map(p => {
+                  const cur = getPapel(at.id, m.id);
+                  return `<button class="raci-btn ${cur===p?'active papel-'+p:''}" onclick="setPapel('${at.id}','${m.id}','${p}')">${p}</button>`;
+                }).join('')}
+              </div>
+            </td>
+          `).join('')}
+          <td><div class="ativ-actions"><button onclick="delAtividade('${at.id}')" title="Remover">×</button></div></td>
+        </tr>`).join('')
+    : '';
+
+  area.innerHTML = `
+    <div class="matrix-wrap">
+      <table class="raci">
+        <thead>
+          <tr>
+            <th>Atividade</th>
+            ${headerCols}
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows || `<tr><td colspan="${_membros.length+2}" class="empty" style="padding:2rem;">Nenhuma atividade. Adicione abaixo.</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+    <div class="add-bar">
+      <input id="f-atividade" type="text" placeholder="Ex: Aprovar release semanal" onkeydown="if(event.key==='Enter')addAtividade()">
+      <button class="btn-add" onclick="addAtividade()">+ Adicionar Atividade</button>
+    </div>
+  `;
+}
+
+function firstName(n) {
+  return (n || '').split(' ')[0] || '?';
+}
+
+async function addAtividade() {
+  const inp = document.getElementById('f-atividade');
+  const v = (inp.value || '').trim();
+  if (!v) { inp.focus(); return; }
+  const { error } = await capsulaDB.addRaciAtividade(_equipeId, v);
+  if (error) { alert('Erro ao adicionar atividade.'); return; }
+  inp.value = '';
+  await loadRaci();
+}
+
+async function delAtividade(id) {
+  if (!confirm('Remover esta atividade e suas atribuições?')) return;
+  await capsulaDB.deleteRaciAtividade(id);
+  await loadRaci();
+}
+
+async function setPapel(atividadeId, membroId, papel) {
+  const cur = getPapel(atividadeId, membroId);
+  const novo = (cur === papel) ? null : papel;  // toggle
+  // Atualização otimista
+  _atribuicoes = _atribuicoes.filter(a => !(a.atividade_id === atividadeId && a.membro_id === membroId));
+  if (novo) _atribuicoes.push({ atividade_id: atividadeId, membro_id: membroId, papel: novo });
+  renderMatrix();
+  validateRules();
+  await capsulaDB.setRaciAtribuicao(atividadeId, membroId, novo);
+}
+
+function validateRules() {
+  const warn = document.getElementById('warn-rule');
+  const issues = [];
+  _atividades.forEach(at => {
+    const aCount = _atribuicoes.filter(a => a.atividade_id === at.id && a.papel === 'A').length;
+    const rCount = _atribuicoes.filter(a => a.atividade_id === at.id && a.papel === 'R').length;
+    if (aCount === 0 && (rCount > 0 || _atribuicoes.some(a => a.atividade_id === at.id))) {
+      issues.push(`"${at.atividade}" não tem Accountable (A)`);
+    } else if (aCount > 1) {
+      issues.push(`"${at.atividade}" tem ${aCount} Accountables (deveria ter apenas 1)`);
+    }
+  });
+  if (issues.length) {
+    warn.style.display = 'block';
+    warn.innerHTML = '⚠ ' + issues.slice(0, 3).map(esc).join(' · ') + (issues.length > 3 ? ` (+${issues.length-3})` : '');
+  } else {
+    warn.style.display = 'none';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

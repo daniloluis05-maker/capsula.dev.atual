@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWOT de Equipe | Sistema Gnosis</title>
+<link rel="stylesheet" href="css/capsula.css">
+<meta name="robots" content="noindex">
+<style>
+  body { padding: 2rem 1rem 4rem; max-width: 1100px; margin: 0 auto; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+  .topbar a { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
+  .topbar a:hover { color: var(--text); }
+  .badge-eqx { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(46,196,160,0.1); border: 1px solid rgba(46,196,160,0.25); color: #2EC4A0; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.7rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.4rem; }
+  .lead { color: var(--muted); font-size: 0.95rem; margin-bottom: 1.75rem; line-height: 1.5; max-width: 600px; }
+  .equipe-bar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; padding: 0.85rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; flex-wrap: wrap; }
+  .equipe-bar select { padding: 0.55rem 0.85rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.88rem; min-width: 240px; outline: none; cursor: pointer; }
+  .swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+  @media (max-width: 720px) { .swot-grid { grid-template-columns: 1fr; } }
+  .swot-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; min-height: 280px; display: flex; flex-direction: column; }
+  .swot-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+  .swot-title { display: flex; align-items: center; gap: 0.6rem; font-size: 0.95rem; font-weight: 700; }
+  .swot-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; font-weight: 800; color: #fff; }
+  .swot-count { font-size: 0.72rem; color: var(--muted); font-family: var(--mono); }
+  .swot-list { flex: 1; display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 0.85rem; }
+  .swot-item { display: flex; gap: 0.5rem; align-items: flex-start; padding: 0.6rem 0.75rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; line-height: 1.4; }
+  .swot-item .txt { flex: 1; }
+  .swot-item .del { background: transparent; border: none; color: var(--muted); cursor: pointer; opacity: 0.4; padding: 0; font-size: 1rem; line-height: 1; }
+  .swot-item .del:hover { opacity: 1; color: #E8603A; }
+  .swot-add { display: flex; gap: 0.5rem; }
+  .swot-add input { flex: 1; padding: 0.55rem 0.75rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 7px; color: var(--text); font-size: 0.85rem; outline: none; box-sizing: border-box; font-family: inherit; }
+  .swot-add button { padding: 0.55rem 0.9rem; border: none; border-radius: 7px; color: #fff; font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: opacity 0.2s; }
+  .swot-add button:hover { opacity: 0.85; }
+  .forcas .swot-icon, .forcas .swot-add button { background: #2EC4A0; }
+  .forcas .swot-add input:focus { border-color: rgba(46,196,160,0.5); }
+  .fraquezas .swot-icon, .fraquezas .swot-add button { background: #E8603A; }
+  .fraquezas .swot-add input:focus { border-color: rgba(232,96,58,0.5); }
+  .oportunidades .swot-icon, .oportunidades .swot-add button { background: #1BA8D4; }
+  .oportunidades .swot-add input:focus { border-color: rgba(27,168,212,0.5); }
+  .ameacas .swot-icon, .ameacas .swot-add button { background: #C9A84C; }
+  .ameacas .swot-add input:focus { border-color: rgba(201,168,76,0.5); }
+  .empty-quad { color: var(--muted); font-size: 0.82rem; font-style: italic; text-align: center; padding: 0.75rem; }
+  .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: 0.88rem; }
+  .summary-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-top: 1.5rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+  .summary-item { text-align: center; padding: 0.5rem; }
+  .summary-num { font-size: 1.4rem; font-weight: 800; line-height: 1; }
+  .summary-lbl { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; font-family: var(--mono); margin-top: 0.3rem; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="dashboard.html">← Dashboard</a>
+  <span class="badge-eqx">SWOT de Equipe</span>
+</div>
+
+<h1>SWOT de Equipe</h1>
+<p class="lead">Análise estratégica coletiva. Mapeie <strong>Forças</strong>, <strong>Fraquezas</strong>, <strong>Oportunidades</strong> e <strong>Ameaças</strong> do grupo. Forças e Fraquezas são internas; Oportunidades e Ameaças são externas.</p>
+
+<div class="equipe-bar">
+  <span style="font-size:0.78rem;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:0.05em;">Equipe:</span>
+  <select id="sel-equipe" onchange="onEquipeChange()"></select>
+</div>
+
+<div id="content-area">
+  <div class="empty">Selecione uma equipe acima para começar.</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/payments.js"></script>
+<script>
+let _user = null;
+let _equipes = [];
+let _equipeId = '';
+let _items = [];
+
+const QUADRANTES = [
+  { key: 'forcas',         label: 'Forças',         icon: '↑', desc: 'Internas — o que a equipe faz bem' },
+  { key: 'fraquezas',      label: 'Fraquezas',      icon: '↓', desc: 'Internas — pontos a melhorar' },
+  { key: 'oportunidades',  label: 'Oportunidades',  icon: '↗', desc: 'Externas — tendências favoráveis' },
+  { key: 'ameacas',        label: 'Ameaças',        icon: '↘', desc: 'Externas — riscos do contexto' },
+];
+
+async function init() {
+  _user = await capsulaDB.ensureUserData();
+  if (!_user) { window.location.href = 'index.html'; return; }
+  if (!(_payments.isGerencial() || _payments.isAdmin())) {
+    document.body.innerHTML = '<div style="padding:4rem 2rem;text-align:center;"><h2>Acesso restrito</h2><p style="color:var(--muted);margin-top:0.75rem;">Esta ferramenta está disponível apenas para usuários do plano Gerencial.</p><p style="margin-top:1.5rem;"><a href="dashboard.html" style="color:var(--accent);">← Voltar ao dashboard</a></p></div>';
+    return;
+  }
+  _equipes = await capsulaDB.getEquipes(_user.email);
+  const sel = document.getElementById('sel-equipe');
+  if (!_equipes.length) {
+    sel.innerHTML = '<option value="">Nenhuma equipe — crie uma no dashboard</option>';
+    sel.disabled = true;
+    return;
+  }
+  sel.innerHTML = '<option value="">Selecione...</option>' + _equipes.map(e => `<option value="${e.id}">${esc(e.nome)}</option>`).join('');
+
+  const params = new URLSearchParams(window.location.search);
+  const preEq = params.get('equipe');
+  if (preEq && _equipes.find(e => e.id === preEq)) {
+    sel.value = preEq;
+    onEquipeChange();
+  }
+}
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+async function onEquipeChange() {
+  _equipeId = document.getElementById('sel-equipe').value;
+  if (!_equipeId) {
+    document.getElementById('content-area').innerHTML = '<div class="empty">Selecione uma equipe.</div>';
+    return;
+  }
+  await loadItems();
+}
+
+async function loadItems() {
+  _items = await capsulaDB.getSwotEquipe(_equipeId);
+  renderQuadrantes();
+}
+
+function renderQuadrantes() {
+  const area = document.getElementById('content-area');
+  const counts = {};
+  QUADRANTES.forEach(q => counts[q.key] = _items.filter(i => i.quadrante === q.key).length);
+
+  area.innerHTML = `
+    <div class="swot-grid">
+      ${QUADRANTES.map(q => {
+        const items = _items.filter(i => i.quadrante === q.key);
+        return `
+          <div class="swot-card ${q.key}">
+            <div class="swot-head">
+              <div class="swot-title"><span class="swot-icon">${q.icon}</span> ${q.label}</div>
+              <span class="swot-count">${items.length} item${items.length!==1?'s':''}</span>
+            </div>
+            <div style="font-size:0.72rem;color:var(--muted);margin:-0.5rem 0 0.85rem;font-style:italic;">${q.desc}</div>
+            <div class="swot-list">
+              ${items.length
+                ? items.map(it => `<div class="swot-item"><span class="txt">${esc(it.texto)}</span><button class="del" onclick="delItem('${it.id}')" title="Remover">×</button></div>`).join('')
+                : '<div class="empty-quad">Adicione itens abaixo</div>'}
+            </div>
+            <div class="swot-add">
+              <input id="inp-${q.key}" type="text" placeholder="Adicionar ${q.label.toLowerCase()}..." onkeydown="if(event.key==='Enter')addItem('${q.key}')">
+              <button onclick="addItem('${q.key}')">+ Adicionar</button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+    <div class="summary-bar">
+      ${QUADRANTES.map(q => `
+        <div class="summary-item">
+          <div class="summary-num" style="color:${q.key==='forcas'?'#2EC4A0':q.key==='fraquezas'?'#E8603A':q.key==='oportunidades'?'#1BA8D4':'#C9A84C'};">${counts[q.key]}</div>
+          <div class="summary-lbl">${q.label}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+async function addItem(quad) {
+  const inp = document.getElementById('inp-' + quad);
+  const v = (inp.value || '').trim();
+  if (!v) { inp.focus(); return; }
+  const { error } = await capsulaDB.addSwotEquipeItem(_equipeId, quad, v);
+  if (error) { alert('Erro ao adicionar.'); return; }
+  inp.value = '';
+  await loadItems();
+  document.getElementById('inp-' + quad)?.focus();
+}
+
+async function delItem(id) {
+  if (!confirm('Remover este item?')) return;
+  await capsulaDB.deleteSwotEquipeItem(id);
+  await loadItems();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

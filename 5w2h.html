@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5W2H — Plano de Ação | Sistema Gnosis</title>
+<link rel="stylesheet" href="css/capsula.css">
+<meta name="robots" content="noindex">
+<style>
+  body { padding: 2rem 1rem 4rem; max-width: 1200px; margin: 0 auto; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+  .topbar a { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
+  .topbar a:hover { color: var(--text); }
+  .badge-eqx { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(27,168,212,0.1); border: 1px solid rgba(27,168,212,0.25); color: #1BA8D4; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.7rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.4rem; }
+  .lead { color: var(--muted); font-size: 0.95rem; margin-bottom: 1.75rem; line-height: 1.5; max-width: 600px; }
+  .equipe-bar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; padding: 0.85rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; flex-wrap: wrap; }
+  .equipe-bar select { padding: 0.55rem 0.85rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.88rem; min-width: 240px; outline: none; cursor: pointer; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem 1rem; }
+  .stat-val { font-size: 1.4rem; font-weight: 800; line-height: 1; }
+  .stat-lbl { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.3rem; font-family: var(--mono); }
+  .btn-add { padding: 0.65rem 1.25rem; background: #1BA8D4; border: none; border-radius: 8px; color: #fff; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: opacity 0.2s; }
+  .btn-add:hover { opacity: 0.85; }
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 900px; }
+  thead { background: rgba(27,168,212,0.04); }
+  th { text-align: left; padding: 0.85rem 0.75rem; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-family: var(--mono); border-bottom: 1px solid var(--border); white-space: nowrap; }
+  td { padding: 0.85rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .what-cell { font-weight: 600; min-width: 180px; max-width: 260px; }
+  .text-cell { color: rgba(232,232,240,0.75); max-width: 200px; font-size: 0.82rem; line-height: 1.4; }
+  .pri-tag { display: inline-block; padding: 0.18rem 0.55rem; border-radius: 20px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; font-family: var(--mono); letter-spacing: 0.04em; }
+  .pri-baixa { background: rgba(46,196,160,0.1); color: #2EC4A0; border: 1px solid rgba(46,196,160,0.25); }
+  .pri-media { background: rgba(124,106,247,0.1); color: #7c6af7; border: 1px solid rgba(124,106,247,0.25); }
+  .pri-alta { background: rgba(232,160,58,0.12); color: #E8A03A; border: 1px solid rgba(232,160,58,0.3); }
+  .pri-critica { background: rgba(232,96,58,0.12); color: #E8603A; border: 1px solid rgba(232,96,58,0.3); }
+  .st-tag { display: inline-block; padding: 0.18rem 0.55rem; border-radius: 20px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; font-family: var(--mono); letter-spacing: 0.04em; }
+  .st-pendente { background: rgba(107,105,128,0.15); color: #8c8aa0; border: 1px solid rgba(107,105,128,0.3); }
+  .st-em_andamento { background: rgba(27,168,212,0.1); color: #1BA8D4; border: 1px solid rgba(27,168,212,0.3); }
+  .st-concluido { background: rgba(46,196,160,0.1); color: #2EC4A0; border: 1px solid rgba(46,196,160,0.3); }
+  .st-cancelado { background: rgba(232,96,58,0.1); color: #E8603A; border: 1px solid rgba(232,96,58,0.3); }
+  .row-actions { display: flex; gap: 0.4rem; }
+  .row-actions button { background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 0.3rem 0.55rem; color: var(--muted); cursor: pointer; font-size: 0.75rem; transition: all 0.15s; }
+  .row-actions button:hover { color: var(--text); border-color: var(--border2); }
+  .row-actions .del:hover { color: #E8603A; border-color: rgba(232,96,58,0.4); }
+  .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: 0.88rem; }
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9000; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-bg.show { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.75rem; max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto; }
+  .modal h3 { margin: 0 0 1.25rem; font-size: 1.1rem; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+  .grid-2 .full { grid-column: 1/-1; }
+  .field { margin-bottom: 0.85rem; }
+  .field label { display: block; font-size: 0.7rem; color: var(--muted); margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono); font-weight: 700; }
+  .field input, .field select, .field textarea { width: 100%; padding: 0.6rem 0.75rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.88rem; font-family: var(--sans, system-ui, sans-serif); outline: none; box-sizing: border-box; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: rgba(27,168,212,0.5); }
+  .field textarea { resize: vertical; min-height: 60px; }
+  .modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.25rem; }
+  .modal-actions button { padding: 0.65rem 1.2rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; }
+  .btn-cancel { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-save { background: #1BA8D4; color: #fff; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="dashboard.html">← Dashboard</a>
+  <span class="badge-eqx">5W2H · Plano de Ação</span>
+</div>
+
+<h1>5W2H — Plano de Ação</h1>
+<p class="lead">Estruture ações com clareza: <strong>O quê, Por quê, Onde, Quando, Quem, Como</strong> e <strong>Quanto custa</strong>. Acompanhe status e prioridade visualmente.</p>
+
+<div class="equipe-bar">
+  <span style="font-size:0.78rem;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:0.05em;">Equipe:</span>
+  <select id="sel-equipe" onchange="onEquipeChange()"></select>
+  <span style="flex:1;"></span>
+  <button class="btn-add" id="btn-add" onclick="openModal()" disabled>+ Nova Ação</button>
+</div>
+
+<div class="stats" id="stats" style="display:none;">
+  <div class="stat"><div class="stat-val" id="st-total">0</div><div class="stat-lbl">Total</div></div>
+  <div class="stat"><div class="stat-val" id="st-pendente" style="color:#8c8aa0;">0</div><div class="stat-lbl">Pendentes</div></div>
+  <div class="stat"><div class="stat-val" id="st-andamento" style="color:#1BA8D4;">0</div><div class="stat-lbl">Em Andamento</div></div>
+  <div class="stat"><div class="stat-val" id="st-concluido" style="color:#2EC4A0;">0</div><div class="stat-lbl">Concluídos</div></div>
+  <div class="stat"><div class="stat-val" id="st-pct" style="color:#2EC4A0;">0%</div><div class="stat-lbl">Conclusão</div></div>
+</div>
+
+<div id="content-area">
+  <div class="empty">Selecione uma equipe acima para começar.</div>
+</div>
+
+<!-- Modal Nova/Editar Ação -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h3 id="modal-title">Nova Ação</h3>
+    <div class="grid-2">
+      <div class="field full">
+        <label>O quê (What) *</label>
+        <input id="f-what" type="text" placeholder="Ex: Implementar onboarding de novos clientes">
+      </div>
+      <div class="field full">
+        <label>Por quê (Why)</label>
+        <textarea id="f-why" rows="2" placeholder="Justificativa, problema que resolve"></textarea>
+      </div>
+      <div class="field">
+        <label>Onde (Where)</label>
+        <input id="f-where" type="text" placeholder="Ex: Setor de atendimento">
+      </div>
+      <div class="field">
+        <label>Quando (When)</label>
+        <input id="f-when" type="date">
+      </div>
+      <div class="field">
+        <label>Quem (Who)</label>
+        <input id="f-who" type="text" placeholder="Responsável">
+      </div>
+      <div class="field">
+        <label>Quanto (How Much) — R$</label>
+        <input id="f-howmuch" type="number" step="0.01" placeholder="0,00">
+      </div>
+      <div class="field full">
+        <label>Como (How)</label>
+        <textarea id="f-how" rows="2" placeholder="Passo a passo, método"></textarea>
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <select id="f-status">
+          <option value="pendente">Pendente</option>
+          <option value="em_andamento">Em andamento</option>
+          <option value="concluido">Concluído</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Prioridade</label>
+        <select id="f-prioridade">
+          <option value="baixa">Baixa</option>
+          <option value="media" selected>Média</option>
+          <option value="alta">Alta</option>
+          <option value="critica">Crítica</option>
+        </select>
+      </div>
+    </div>
+    <p id="f-err" style="color:#E8603A;font-size:0.78rem;margin:0.5rem 0 0;min-height:1em;"></p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveItem()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/payments.js"></script>
+<script>
+let _user = null;
+let _equipes = [];
+let _equipeId = '';
+let _items = [];
+let _editId = '';
+
+const PRIORIDADE_LABEL = { baixa:'Baixa', media:'Média', alta:'Alta', critica:'Crítica' };
+const STATUS_LABEL = { pendente:'Pendente', em_andamento:'Em andamento', concluido:'Concluído', cancelado:'Cancelado' };
+
+async function init() {
+  _user = await capsulaDB.ensureUserData();
+  if (!_user) { window.location.href = 'index.html'; return; }
+  if (!(_payments.isGerencial() || _payments.isAdmin())) {
+    document.body.innerHTML = '<div style="padding:4rem 2rem;text-align:center;"><h2>Acesso restrito</h2><p style="color:var(--muted);margin-top:0.75rem;">Esta ferramenta está disponível apenas para usuários do plano Gerencial.</p><p style="margin-top:1.5rem;"><a href="dashboard.html" style="color:var(--accent);">← Voltar ao dashboard</a></p></div>';
+    return;
+  }
+  _equipes = await capsulaDB.getEquipes(_user.email);
+  const sel = document.getElementById('sel-equipe');
+  if (!_equipes.length) {
+    sel.innerHTML = '<option value="">Nenhuma equipe — crie uma no dashboard</option>';
+    sel.disabled = true;
+    return;
+  }
+  sel.innerHTML = '<option value="">Selecione...</option>' + _equipes.map(e => `<option value="${e.id}">${esc(e.nome)}</option>`).join('');
+
+  // Pré-seleciona via ?equipe=ID
+  const params = new URLSearchParams(window.location.search);
+  const preEq = params.get('equipe');
+  if (preEq && _equipes.find(e => e.id === preEq)) {
+    sel.value = preEq;
+    onEquipeChange();
+  }
+}
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function onEquipeChange() {
+  _equipeId = document.getElementById('sel-equipe').value;
+  document.getElementById('btn-add').disabled = !_equipeId;
+  if (!_equipeId) {
+    document.getElementById('content-area').innerHTML = '<div class="empty">Selecione uma equipe.</div>';
+    document.getElementById('stats').style.display = 'none';
+    return;
+  }
+  await loadItems();
+}
+
+async function loadItems() {
+  _items = await capsulaDB.getPlanoAcao(_equipeId);
+  renderStats();
+  renderTable();
+}
+
+function renderStats() {
+  document.getElementById('stats').style.display = 'grid';
+  const total = _items.length;
+  const pend  = _items.filter(i => i.status === 'pendente').length;
+  const and   = _items.filter(i => i.status === 'em_andamento').length;
+  const con   = _items.filter(i => i.status === 'concluido').length;
+  const pct   = total ? Math.round((con / total) * 100) : 0;
+  document.getElementById('st-total').textContent = total;
+  document.getElementById('st-pendente').textContent = pend;
+  document.getElementById('st-andamento').textContent = and;
+  document.getElementById('st-concluido').textContent = con;
+  document.getElementById('st-pct').textContent = pct + '%';
+}
+
+function renderTable() {
+  const area = document.getElementById('content-area');
+  if (!_items.length) {
+    area.innerHTML = '<div class="empty">Nenhuma ação cadastrada para esta equipe.<br>Clique em <strong style="color:#1BA8D4;">+ Nova Ação</strong> para começar.</div>';
+    return;
+  }
+  area.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>O Quê</th><th>Por Quê</th><th>Onde</th><th>Quando</th><th>Quem</th><th>Como</th><th>R$</th><th>Status</th><th>Prio.</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${_items.map(it => `
+            <tr>
+              <td class="what-cell">${esc(it.what)}</td>
+              <td class="text-cell">${esc(it.why || '—')}</td>
+              <td class="text-cell">${esc(it.where_loc || '—')}</td>
+              <td>${it.when_data ? formatDate(it.when_data) : '—'}</td>
+              <td>${esc(it.who || '—')}</td>
+              <td class="text-cell">${esc(it.how || '—')}</td>
+              <td>${it.how_much != null ? 'R$ ' + Number(it.how_much).toFixed(2).replace('.',',') : '—'}</td>
+              <td><span class="st-tag st-${it.status}">${STATUS_LABEL[it.status] || it.status}</span></td>
+              <td><span class="pri-tag pri-${it.prioridade}">${PRIORIDADE_LABEL[it.prioridade] || it.prioridade}</span></td>
+              <td><div class="row-actions"><button onclick="editItem('${it.id}')">✎</button><button class="del" onclick="delItem('${it.id}')">×</button></div></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso + (iso.length === 10 ? 'T00:00:00' : ''));
+  return d.toLocaleDateString('pt-BR');
+}
+
+function openModal(id) {
+  _editId = id || '';
+  document.getElementById('modal-title').textContent = id ? 'Editar Ação' : 'Nova Ação';
+  document.getElementById('f-err').textContent = '';
+  if (id) {
+    const it = _items.find(i => i.id === id);
+    if (!it) return;
+    document.getElementById('f-what').value = it.what || '';
+    document.getElementById('f-why').value = it.why || '';
+    document.getElementById('f-where').value = it.where_loc || '';
+    document.getElementById('f-when').value = it.when_data || '';
+    document.getElementById('f-who').value = it.who || '';
+    document.getElementById('f-how').value = it.how || '';
+    document.getElementById('f-howmuch').value = it.how_much != null ? it.how_much : '';
+    document.getElementById('f-status').value = it.status || 'pendente';
+    document.getElementById('f-prioridade').value = it.prioridade || 'media';
+  } else {
+    ['f-what','f-why','f-where','f-when','f-who','f-how','f-howmuch'].forEach(k => document.getElementById(k).value = '');
+    document.getElementById('f-status').value = 'pendente';
+    document.getElementById('f-prioridade').value = 'media';
+  }
+  document.getElementById('modal-bg').classList.add('show');
+  setTimeout(() => document.getElementById('f-what').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('show');
+  _editId = '';
+}
+
+function editItem(id) { openModal(id); }
+
+async function delItem(id) {
+  if (!confirm('Remover esta ação?')) return;
+  await capsulaDB.deletePlanoAcaoItem(id);
+  await loadItems();
+}
+
+async function saveItem() {
+  const what = document.getElementById('f-what').value.trim();
+  const err = document.getElementById('f-err');
+  if (!what) { err.textContent = 'O campo "O quê" é obrigatório.'; return; }
+  const item = {
+    equipe_id:  _equipeId,
+    what,
+    why:        document.getElementById('f-why').value.trim() || null,
+    where_loc:  document.getElementById('f-where').value.trim() || null,
+    when_data:  document.getElementById('f-when').value || null,
+    who:        document.getElementById('f-who').value.trim() || null,
+    how:        document.getElementById('f-how').value.trim() || null,
+    how_much:   document.getElementById('f-howmuch').value ? parseFloat(document.getElementById('f-howmuch').value) : null,
+    status:     document.getElementById('f-status').value,
+    prioridade: document.getElementById('f-prioridade').value,
+  };
+  if (_editId) item.id = _editId;
+  const { error } = await capsulaDB.savePlanoAcaoItem(item);
+  if (error) { err.textContent = 'Erro ao salvar. Tente novamente.'; return; }
+  closeModal();
+  await loadItems();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

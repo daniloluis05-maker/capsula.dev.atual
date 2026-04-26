@@ -628,6 +628,107 @@
     return { data, error };
   }
 
+  // ── 5W2H — Plano de Ação ────────────────────────────────────
+  async function getPlanoAcao(equipe_id) {
+    const db = getDB();
+    if (!db) return [];
+    const { data } = await db.from('plano_acao_items')
+      .select('*').eq('equipe_id', equipe_id)
+      .order('ordem', { ascending: true })
+      .order('created_at', { ascending: true });
+    return data || [];
+  }
+
+  async function savePlanoAcaoItem(item) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const payload = { ...item, updated_at: new Date().toISOString() };
+    if (item.id) {
+      const { id, ...rest } = payload;
+      const { data, error } = await db.from('plano_acao_items')
+        .update(rest).eq('id', id).select().single();
+      return { data, error };
+    } else {
+      const { data, error } = await db.from('plano_acao_items')
+        .insert(payload).select().single();
+      return { data, error };
+    }
+  }
+
+  async function deletePlanoAcaoItem(id) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { error } = await db.from('plano_acao_items').delete().eq('id', id);
+    return { error };
+  }
+
+  // ── RACI ─────────────────────────────────────────────────────
+  async function getRACI(equipe_id) {
+    const db = getDB();
+    if (!db) return { atividades: [], atribuicoes: [] };
+    const [{ data: atividades }, { data: atribuicoes }] = await Promise.all([
+      db.from('raci_atividades').select('*').eq('equipe_id', equipe_id)
+        .order('ordem', { ascending: true }).order('created_at', { ascending: true }),
+      db.from('raci_atribuicoes').select('*, raci_atividades!inner(equipe_id)')
+        .eq('raci_atividades.equipe_id', equipe_id),
+    ]);
+    return { atividades: atividades || [], atribuicoes: atribuicoes || [] };
+  }
+
+  async function addRaciAtividade(equipe_id, atividade) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { data, error } = await db.from('raci_atividades')
+      .insert({ equipe_id, atividade }).select().single();
+    return { data, error };
+  }
+
+  async function deleteRaciAtividade(id) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { error } = await db.from('raci_atividades').delete().eq('id', id);
+    return { error };
+  }
+
+  async function setRaciAtribuicao(atividade_id, membro_id, papel) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    if (!papel) {
+      const { error } = await db.from('raci_atribuicoes')
+        .delete().eq('atividade_id', atividade_id).eq('membro_id', membro_id);
+      return { error };
+    }
+    const { data, error } = await db.from('raci_atribuicoes')
+      .upsert({ atividade_id, membro_id, papel }, { onConflict: 'atividade_id,membro_id' })
+      .select().single();
+    return { data, error };
+  }
+
+  // ── SWOT de Equipe ──────────────────────────────────────────
+  async function getSwotEquipe(equipe_id) {
+    const db = getDB();
+    if (!db) return [];
+    const { data } = await db.from('swot_equipe_items')
+      .select('*').eq('equipe_id', equipe_id)
+      .order('ordem', { ascending: true }).order('created_at', { ascending: true });
+    return data || [];
+  }
+
+  async function addSwotEquipeItem(equipe_id, quadrante, texto) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { data, error } = await db.from('swot_equipe_items')
+      .insert({ equipe_id, quadrante, texto }).select().single();
+    return { data, error };
+  }
+
+  async function deleteSwotEquipeItem(id) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { error } = await db.from('swot_equipe_items').delete().eq('id', id);
+    return { error };
+  }
+
   // ── Exporta para escopo global ──────────────────────────────
   window.capsulaDB = {
     getDB,
@@ -671,6 +772,19 @@
     removeMembroEquipe,
     getEquipeDNA,
     saveEquipeDNA,
+    // 5W2H
+    getPlanoAcao,
+    savePlanoAcaoItem,
+    deletePlanoAcaoItem,
+    // RACI
+    getRACI,
+    addRaciAtividade,
+    deleteRaciAtividade,
+    setRaciAtribuicao,
+    // SWOT de Equipe
+    getSwotEquipe,
+    addSwotEquipeItem,
+    deleteSwotEquipeItem,
     // localStorage seguro
     lsGet,
     lsGetRaw,

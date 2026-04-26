@@ -981,18 +981,27 @@ function applyUser(nome,apelido){
     else                              { planoEl.textContent = 'Plano Gratuito';       planoEl.style.color = ''; }
   }
 
-  // Destrava visualmente as matrizes de equipe para admin/Gerencial
-  // (essas matrizes — 5W2H, RACI, SWOT de Equipe — ainda estão em desenvolvimento)
+  // Destrava as matrizes de equipe para admin/Gerencial
   if (window._payments && (_payments.isGerencial() || _payments.isAdmin())) {
     const note = document.getElementById('eqx-note');
-    if (note) { note.textContent = 'Em desenvolvimento'; note.style.color = '#C9A84C'; }
+    if (note) { note.textContent = 'Liberado · Plano Gerencial'; note.style.color = '#2EC4A0'; }
     document.querySelectorAll('.eqx-badge').forEach(el => {
-      el.textContent = 'EM BREVE'; el.style.background = 'rgba(201,168,76,0.12)'; el.style.color = '#C9A84C'; el.style.borderColor = 'rgba(201,168,76,0.3)';
+      el.textContent = 'GERENCIAL'; el.style.background = 'rgba(46,196,160,0.12)'; el.style.color = '#2EC4A0'; el.style.borderColor = 'rgba(46,196,160,0.3)';
     });
     document.querySelectorAll('.eqx-status').forEach(el => {
-      el.textContent = 'Em desenvolvimento'; el.style.color = '#C9A84C';
+      el.textContent = 'Acessar matriz'; el.style.color = '#2EC4A0';
     });
-    document.querySelectorAll('.eqx-arrow').forEach(el => { el.textContent = '⏳'; });
+    document.querySelectorAll('.eqx-arrow').forEach(el => { el.textContent = '→'; });
+    // Torna os cards clicáveis
+    const links = { 'card-5w2h': '5w2h.html', 'card-raci': 'raci.html', 'card-swot-eq': 'swot-equipe.html' };
+    Object.entries(links).forEach(([id, href]) => {
+      const card = document.getElementById(id);
+      if (card) {
+        card.classList.remove('locked');
+        card.style.cursor = 'pointer';
+        card.onclick = () => { window.location.href = href; };
+      }
+    });
   }
 }
 
@@ -1591,6 +1600,14 @@ async function eqVerDetalhes(id) {
     membros.length
       ? `<div style="display:flex;flex-direction:column;gap:0.5rem;">${membros.map(m => eqRenderMembroRow(m, id)).join('')}</div>`
       : '<p style="color:var(--muted);font-size:0.85rem;font-style:italic;">Nenhum membro adicionado ainda.</p>',
+
+    // Matrizes de equipe (atalhos)
+    '<h4 style="margin:1.5rem 0 0.6rem;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);">Matrizes de Equipe</h4>',
+    `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0.6rem;margin-bottom:1.5rem;">`,
+    `<a href="5w2h.html?equipe=${id}" style="display:block;padding:0.85rem;background:rgba(27,168,212,0.06);border:1px solid rgba(27,168,212,0.2);border-radius:9px;color:#1BA8D4;font-size:0.82rem;font-weight:600;text-align:center;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(27,168,212,0.12)'" onmouseout="this.style.background='rgba(27,168,212,0.06)'">📋 5W2H · Plano de Ação</a>`,
+    `<a href="raci.html?equipe=${id}" style="display:block;padding:0.85rem;background:rgba(232,96,58,0.06);border:1px solid rgba(232,96,58,0.2);border-radius:9px;color:#E8603A;font-size:0.82rem;font-weight:600;text-align:center;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(232,96,58,0.12)'" onmouseout="this.style.background='rgba(232,96,58,0.06)'">👥 Matriz RACI</a>`,
+    `<a href="swot-equipe.html?equipe=${id}" style="display:block;padding:0.85rem;background:rgba(46,196,160,0.06);border:1px solid rgba(46,196,160,0.2);border-radius:9px;color:#2EC4A0;font-size:0.82rem;font-weight:600;text-align:center;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(46,196,160,0.12)'" onmouseout="this.style.background='rgba(46,196,160,0.06)'">🎯 SWOT de Equipe</a>`,
+    '</div>',
 
     // DNA Estratégico
     '<h4 style="margin:1.5rem 0 0.6rem;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);">DNA Estratégico de Equipe</h4>',
