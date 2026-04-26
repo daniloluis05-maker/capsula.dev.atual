@@ -216,7 +216,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <div class="user-avatar" id="sb-avatar">—</div>
         <div>
           <div class="user-name" id="sb-nome">Carregando...</div>
-          <div class="user-plan">Plano Gratuito</div>
+          <div class="user-plan" id="sb-plano">Plano Gratuito</div>
         </div>
       </div>
     </div>
@@ -408,42 +408,42 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
           Convidar membro
         </button>
-        <span class="section-note">Disponível no plano Empresa</span>
+        <span class="section-note" id="eqx-note">Disponível no plano Gerencial</span>
       </div>
     </div>
 
     <div class="matrices-grid" style="margin-bottom:2.25rem;">
-      <div class="matrix-card locked" style="--card-accent:var(--C)">
+      <div class="matrix-card locked" id="card-5w2h" style="--card-accent:var(--C)">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(27,168,212,0.06);border:1px solid rgba(27,168,212,0.08);"><svg viewBox="0 0 24 24" style="stroke:#1BA8D4"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></div>
-          <span class="lock-badge">EMPRESA</span>
+          <span class="lock-badge eqx-badge">GERENCIAL</span>
         </div>
         <span class="card-category">Planejamento</span>
         <h3>5W2H</h3>
         <p>Plano de ação estruturado com acompanhamento visual de progresso para toda a equipe.</p>
-        <div class="card-foot"><span class="card-status locked-text">Disponível no plano Empresa</span><span class="card-arrow">🔒</span></div>
+        <div class="card-foot"><span class="card-status locked-text eqx-status">Disponível no plano Gerencial</span><span class="card-arrow eqx-arrow">🔒</span></div>
       </div>
 
-      <div class="matrix-card locked" style="--card-accent:var(--D)">
+      <div class="matrix-card locked" id="card-raci" style="--card-accent:var(--D)">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(232,96,58,0.06);border:1px solid rgba(232,96,58,0.08);"><svg viewBox="0 0 24 24" style="stroke:#E8603A"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-          <span class="lock-badge">EMPRESA</span>
+          <span class="lock-badge eqx-badge">GERENCIAL</span>
         </div>
         <span class="card-category">Papéis e Responsabilidades</span>
         <h3>Matriz RACI</h3>
         <p>Responsável, Autoridade, Consultado e Informado. Papéis claros geram menos conflito.</p>
-        <div class="card-foot"><span class="card-status locked-text">Disponível no plano Empresa</span><span class="card-arrow">🔒</span></div>
+        <div class="card-foot"><span class="card-status locked-text eqx-status">Disponível no plano Gerencial</span><span class="card-arrow eqx-arrow">🔒</span></div>
       </div>
 
-      <div class="matrix-card locked" style="--card-accent:var(--S)">
+      <div class="matrix-card locked" id="card-swot-eq" style="--card-accent:var(--S)">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(46,196,160,0.06);border:1px solid rgba(46,196,160,0.08);"><svg viewBox="0 0 24 24" style="stroke:#2EC4A0"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></div>
-          <span class="lock-badge">EMPRESA</span>
+          <span class="lock-badge eqx-badge">GERENCIAL</span>
         </div>
         <span class="card-category">Estratégia de Equipe</span>
         <h3>SWOT de Equipe</h3>
         <p>Análise estratégica coletiva. Forças, Fraquezas, Oportunidades e Ameaças do grupo.</p>
-        <div class="card-foot"><span class="card-status locked-text">Disponível no plano Empresa</span><span class="card-arrow">🔒</span></div>
+        <div class="card-foot"><span class="card-status locked-text eqx-status">Disponível no plano Gerencial</span><span class="card-arrow eqx-arrow">🔒</span></div>
       </div>
     </div>
 
@@ -972,6 +972,28 @@ function applyUser(nome,apelido){
   document.getElementById('greeting-nome').textContent=ex;
   document.getElementById('sb-nome').textContent=nome||ex;
   document.getElementById('sb-avatar').textContent=ex.charAt(0).toUpperCase();const mob=document.getElementById('mob-avatar');if(mob)mob.textContent=ex.charAt(0).toUpperCase();
+  // Atualiza badge de plano no sidebar
+  const planoEl = document.getElementById('sb-plano');
+  if (planoEl && window._payments) {
+    if (_payments.isAdmin())          { planoEl.textContent = 'Admin · Acesso total'; planoEl.style.color = '#C9A84C'; }
+    else if (_payments.isGerencial()) { planoEl.textContent = 'Plano Gerencial';      planoEl.style.color = '#2EC4A0'; }
+    else if (_payments.isPro())       { planoEl.textContent = 'Plano Profissional';   planoEl.style.color = 'var(--accent)'; }
+    else                              { planoEl.textContent = 'Plano Gratuito';       planoEl.style.color = ''; }
+  }
+
+  // Destrava visualmente as matrizes de equipe para admin/Gerencial
+  // (essas matrizes — 5W2H, RACI, SWOT de Equipe — ainda estão em desenvolvimento)
+  if (window._payments && (_payments.isGerencial() || _payments.isAdmin())) {
+    const note = document.getElementById('eqx-note');
+    if (note) { note.textContent = 'Em desenvolvimento'; note.style.color = '#C9A84C'; }
+    document.querySelectorAll('.eqx-badge').forEach(el => {
+      el.textContent = 'EM BREVE'; el.style.background = 'rgba(201,168,76,0.12)'; el.style.color = '#C9A84C'; el.style.borderColor = 'rgba(201,168,76,0.3)';
+    });
+    document.querySelectorAll('.eqx-status').forEach(el => {
+      el.textContent = 'Em desenvolvimento'; el.style.color = '#C9A84C';
+    });
+    document.querySelectorAll('.eqx-arrow').forEach(el => { el.textContent = '⏳'; });
+  }
 }
 
 function showToast(nome){
