@@ -19,11 +19,11 @@ const SUPABASE_KEY      = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 
 // Créditos concedidos por produto — deve refletir o PRODUCTS em create-mp-preference
 const CREDITS_MAP: Record<string, Record<string, number | string>> = {
-  avaliacao: { avulsos: 1 },
-  pacote3:   { disc: 1, soar: 1, ikigai: 1 },
-  dna:       { dna: 1 },
-  completo:  { disc: 1, soar: 1, ikigai: 1, ancoras: 1, johari: 1, bigfive: 1, pearson: 1, tci: 1, dna: 1 },
+  credito1:  { avulsos: 1 },
+  credito3:  { avulsos: 3 },
+  credito8:  { avulsos: 8 },
   pro:       { plano: 'profissional' },
+  gerencial: { plano: 'gerencial' },
 };
 
 // ── Verificação de assinatura MP (webhook v2) ─────────────────
@@ -77,9 +77,9 @@ async function addCredits(email: string, credits: Record<string, number | string
   let plano         = row.plano || 'free';
   let planoExpiraEm = row.plano_expira_em as string | null;
 
-  if (credits.plano === 'profissional') {
-    // Plano Pro: 31 dias a partir de agora (1 dia extra de folga)
-    plano         = 'profissional';
+  if (credits.plano === 'profissional' || credits.plano === 'gerencial') {
+    // Plano Pro / Gerencial: 31 dias a partir de agora (1 dia extra de folga)
+    plano         = credits.plano as string;
     planoExpiraEm = new Date(Date.now() + 31 * 24 * 60 * 60 * 1000).toISOString();
   } else {
     for (const [key, val] of Object.entries(credits)) {
@@ -119,6 +119,12 @@ Deno.serve(async (req: Request) => {
 
   console.log('[mp-webhook] Evento recebido:', JSON.stringify(event).slice(0, 300));
 
+  // Ignora eventos de teste do painel MP (live_mode: false)
+  if (event.live_mode === false) {
+    console.log('[mp-webhook] Evento de teste ignorado (live_mode=false)');
+    return new Response('ok', { status: 200 });
+  }
+
   // Extrai tipo e ID — suporta IPN legacy e webhook v2
   const type   = (event.type as string)  || (event.topic as string) || '';
   const dataId = ((event.data as Record<string, unknown>)?.id as string)
@@ -151,10 +157,17 @@ Deno.serve(async (req: Request) => {
       return new Response('ok', { status: 200 });
     }
 
-    const email      = payment.external_reference as string; // email do usuário
-    const productKey = (payment.metadata?.product_key as string)
-                    || (payment.additional_info?.items?.[0]?.id as string)
-                    || '';
+    // external_reference = "email|||product_key" (novo formato) ou só email (legado)
+    const ref        = (payment.external_reference as string) || '';
+    const hasSep     = ref.includes('|||');
+    const email      = hasSep ? ref.split('|||')[0] : ref;
+    const productKey = hasSep
+      ? ref.split('|||')[1]
+      : ((payment.metadata?.product_key as string)
+          || (payment.additional_info?.items?.[0]?.id as string)
+          || '');
+
+    console.log(`[mp-webhook] email="${email}" productKey="${productKey}" ref="${ref}"`);
 
     if (!email) {
       console.error('[mp-webhook] external_reference vazio — pagamento sem email');
@@ -162,7 +175,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (!productKey || !CREDITS_MAP[productKey]) {
-      console.error(`[mp-webhook] product_key inválido: "${productKey}"`);
+      console.error(`[mp-webhook] product_key inválido: "${productKey}" — ref completo: "${ref}"`);
       return new Response('ok', { status: 200 });
     }
 

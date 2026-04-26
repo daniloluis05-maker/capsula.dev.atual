@@ -12,3 +12,12 @@ Thumbs.db
 # Variáveis de ambiente locais
 .env
 .env.local
+
+# Claude Code state local
+.claude/
+
+# Supabase CLI cache
+supabase/.temp/
+
+# Zips de backup
+*.zip

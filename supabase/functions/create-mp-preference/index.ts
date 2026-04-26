@@ -14,11 +14,11 @@ const SITE_URL        = Deno.env.get('SITE_URL') ?? 'https://sistemagnosis.com.b
 const WEBHOOK_URL     = `${SUPABASE_URL}/functions/v1/mp-webhook`;
 
 const PRODUCTS: Record<string, { title: string; amount: number }> = {
-  avaliacao: { title: 'Avaliação Individual — 1 crédito',            amount: 29.90 },
-  pacote3:   { title: 'Pacote Essencial — DISC + SOAR + Ikigai',     amount: 79.90 },
-  dna:       { title: 'DNA Estratégico — análise IA',                amount: 67.90 },
-  completo:  { title: 'Pacote Completo + DNA Estratégico',           amount: 219.90 },
-  pro:       { title: 'Plano Profissional — 30 dias ilimitado',      amount: 129.90 },
+  credito1:  { title: '1 Crédito — acesso a qualquer matriz',              amount: 29.90 },
+  credito3:  { title: '3 Créditos — pacote essencial',                     amount: 69.90 },
+  credito8:  { title: '8 Créditos — pacote completo',                      amount: 129.90 },
+  pro:       { title: 'Plano Profissional — 30 dias ilimitado',            amount: 149.90 },
+  gerencial: { title: 'Plano Gerencial — 30 dias ilimitado + equipes',     amount: 179.90 },
 };
 
 const CORS = {
@@ -60,8 +60,8 @@ Deno.serve(async (req: Request) => {
       currency_id:'BRL',
     }],
     // Não pré-preenche payer para evitar conflito com contas MP do vendedor
-    external_reference: email,   // chave primária da tabela usuarios
-    metadata:           { product_key },
+    external_reference: `${email}|||${product_key}`,  // email|||product_key para o webhook
+    metadata:           { product_key, email },
     back_urls: {
       success: `${SITE_URL}/pagamento-sucesso.html?produto=${product_key}`,
       failure: `${SITE_URL}/index.html#planos`,

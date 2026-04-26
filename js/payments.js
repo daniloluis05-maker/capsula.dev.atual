@@ -31,12 +31,22 @@
     return !!(getUser()?.is_admin);
   }
 
+  function isGerencial() {
+    const u = getUser();
+    if (!u) return false;
+    if (u.is_admin) return true;
+    if (u.plano !== 'gerencial') return false;
+    if (!u.plano_expira_em) return true;
+    return new Date(u.plano_expira_em) > new Date();
+  }
+
+  // isPro retorna true também para Gerencial (Gerencial inclui tudo do Pro)
   function isPro() {
     const u = getUser();
     if (!u) return false;
-    if (u.is_admin) return true; // admin tem acesso ilimitado
-    if (u.plano !== 'profissional') return false;
-    if (!u.plano_expira_em) return true; // sem data = ativo
+    if (u.is_admin) return true;
+    if (u.plano !== 'profissional' && u.plano !== 'gerencial') return false;
+    if (!u.plano_expira_em) return true;
     return new Date(u.plano_expira_em) > new Date();
   }
 
@@ -193,11 +203,14 @@
             3 Créditos — R$ 69,90 <span style="font-size:0.72rem;opacity:0.7">(economize R$19,80)</span>
           </button>
           <button onclick="window._payments.openCheckout('credito8')" style="width:100%;padding:0.75rem;background:rgba(124,106,247,0.15);border:1px solid rgba(124,106,247,0.3);border-radius:8px;color:#7c6af7;font-weight:600;font-size:0.88rem;cursor:pointer;">
-            8 Créditos — R$ 159,90 <span style="font-size:0.72rem;opacity:0.7">(economize R$79,30)</span>
+            8 Créditos — R$ 129,90 <span style="font-size:0.72rem;opacity:0.7">(economize R$109,30)</span>
           </button>
         </div>
-        <button onclick="window._payments.openCheckout('pro')" style="width:100%;padding:0.8rem;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:rgba(232,232,240,0.6);font-size:0.85rem;cursor:pointer;">
-          Plano Profissional — R$ 129,90/mês (ilimitado)
+        <button onclick="window._payments.openCheckout('pro')" style="width:100%;padding:0.75rem;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:rgba(232,232,240,0.6);font-size:0.82rem;cursor:pointer;margin-bottom:0.4rem;">
+          Plano Profissional — R$149,90/mês · avaliações remotas ilimitadas
+        </button>
+        <button onclick="window._payments.openCheckout('gerencial')" style="width:100%;padding:0.75rem;background:rgba(46,196,160,0.08);border:1px solid rgba(46,196,160,0.25);border-radius:8px;color:#2EC4A0;font-size:0.82rem;font-weight:600;cursor:pointer;">
+          Plano Gerencial — R$179,90/mês · links ilimitados + equipes
         </button>
       </div>`;
     modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
@@ -241,11 +254,13 @@
   function renderPlanBadge(containerId) {
     const el = document.getElementById(containerId);
     if (!el) return;
-    if (isPro()) {
+    if (isGerencial()) {
+      el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.4rem;background:rgba(46,196,160,0.1);border:1px solid rgba(46,196,160,0.25);border-radius:6px;padding:0.25rem 0.7rem;font-size:0.75rem;color:#2EC4A0;font-weight:600;">◈ Gerencial</span>';
+    } else if (isPro()) {
       el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.4rem;background:rgba(124,106,247,0.12);border:1px solid rgba(124,106,247,0.25);border-radius:6px;padding:0.25rem 0.7rem;font-size:0.75rem;color:#7c6af7;font-weight:600;">⭐ Profissional</span>';
     } else {
       const c = getCredits();
-      const total = (c.avulsos || 0) + Object.values(c).filter((v,k) => k !== 'avulsos' && typeof v === 'number').reduce((a,b) => a+b, 0);
+      const total = (c.avulsos || 0) + Object.entries(c).filter(([k]) => k !== 'avulsos').reduce((s,[,v]) => s + (typeof v === 'number' ? v : 0), 0);
       el.innerHTML = `<span style="display:inline-flex;align-items:center;gap:0.4rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:0.25rem 0.7rem;font-size:0.75rem;color:rgba(232,232,240,0.5);">Gratuito · ${total} crédito${total !== 1 ? 's' : ''}</span>`;
     }
   }
@@ -255,6 +270,7 @@
   window._payments = {
     isAdmin,
     isPro,
+    isGerencial,
     getCredits,
     hasAccess,
     deductCredit,

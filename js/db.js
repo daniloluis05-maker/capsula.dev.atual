@@ -439,6 +439,195 @@
     return !error;
   }
 
+  // ── Links Remotos (Plano Profissional) ─────────────────────
+
+  async function createRemoteLink({ pro_email, matriz, etiqueta, max_completions = 20 }) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const token = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+    const { data, error } = await db
+      .from('remote_links')
+      .insert({ token, pro_email: pro_email.toLowerCase().trim(), matriz, etiqueta: etiqueta || null, max_completions })
+      .select()
+      .single();
+    return { data, error, token };
+  }
+
+  async function getMyRemoteLinks(pro_email) {
+    const db = getDB();
+    if (!db) return [];
+    const { data } = await db
+      .from('remote_links')
+      .select('*')
+      .eq('pro_email', pro_email.toLowerCase().trim())
+      .order('created_at', { ascending: false });
+    return data || [];
+  }
+
+  async function getRemoteLinkByToken(token) {
+    const db = getDB();
+    if (!db) return null;
+    const { data } = await db
+      .from('remote_links')
+      .select('*')
+      .eq('token', token)
+      .maybeSingle();
+    return data;
+  }
+
+  async function saveRemoteResult({ token, nome, email, resultado }) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { error } = await db
+      .from('remote_results')
+      .insert({
+        token,
+        respondente_nome:  nome,
+        respondente_email: email ? email.toLowerCase().trim() : null,
+        resultado,
+      });
+    if (!error) {
+      await db.rpc('increment_remote_completion', { link_token: token }).catch(() => {});
+    }
+    return { error };
+  }
+
+  async function getRemoteResults(token) {
+    const db = getDB();
+    if (!db) return [];
+    const { data } = await db
+      .from('remote_results')
+      .select('*')
+      .eq('token', token)
+      .order('completed_at', { ascending: false });
+    return data || [];
+  }
+
+  // ── Acompanhamento Semanal (Plano Gerencial) ────────────────
+
+  async function createIndicador({ gerencial_email, nome, unidade = '%', meta = null, cor = '#7c6af7', descricao = '' }) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { data, error } = await db
+      .from('indicadores')
+      .insert({ gerencial_email: gerencial_email.toLowerCase().trim(), nome, unidade, meta, cor, descricao: descricao || null })
+      .select()
+      .single();
+    return { data, error };
+  }
+
+  async function getIndicadores(gerencial_email) {
+    const db = getDB();
+    if (!db) return [];
+    const { data } = await db
+      .from('indicadores')
+      .select('*, registros_semanais(*)')
+      .eq('gerencial_email', gerencial_email.toLowerCase().trim())
+      .eq('ativo', true)
+      .order('created_at', { ascending: true });
+    return data || [];
+  }
+
+  async function addRegistroSemanal({ indicador_id, semana, valor, nota }) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { data, error } = await db
+      .from('registros_semanais')
+      .upsert({ indicador_id, semana, valor, nota: nota || null }, { onConflict: 'indicador_id,semana' })
+      .select()
+      .single();
+    return { data, error };
+  }
+
+  async function deleteIndicador(id) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { error } = await db
+      .from('indicadores')
+      .update({ ativo: false })
+      .eq('id', id);
+    return { error };
+  }
+
+  // ── Equipes (Plano Gerencial) ───────────────────────────────
+
+  async function createEquipe({ gerencial_email, nome, descricao }) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { data, error } = await db
+      .from('equipes')
+      .insert({ gerencial_email: gerencial_email.toLowerCase().trim(), nome, descricao: descricao || null })
+      .select()
+      .single();
+    return { data, error };
+  }
+
+  async function getEquipes(gerencial_email) {
+    const db = getDB();
+    if (!db) return [];
+    const { data } = await db
+      .from('equipes')
+      .select('*, equipe_membros(*)')
+      .eq('gerencial_email', gerencial_email.toLowerCase().trim())
+      .eq('ativo', true)
+      .order('created_at', { ascending: false });
+    return data || [];
+  }
+
+  async function deleteEquipe(id) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { error } = await db
+      .from('equipes')
+      .update({ ativo: false })
+      .eq('id', id);
+    return { error };
+  }
+
+  async function addMembroEquipe({ equipe_id, remote_result_id = null, nome, email, papel, resultado, matriz }) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { data, error } = await db
+      .from('equipe_membros')
+      .insert({
+        equipe_id, remote_result_id,
+        nome, email: email ? email.toLowerCase().trim() : null,
+        papel: papel || null, resultado, matriz: matriz || null,
+      })
+      .select()
+      .single();
+    return { data, error };
+  }
+
+  async function removeMembroEquipe(id) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { error } = await db.from('equipe_membros').delete().eq('id', id);
+    return { error };
+  }
+
+  async function getEquipeDNA(equipe_id) {
+    const db = getDB();
+    if (!db) return null;
+    const { data } = await db
+      .from('equipe_dna')
+      .select('*')
+      .eq('equipe_id', equipe_id)
+      .maybeSingle();
+    return data;
+  }
+
+  async function saveEquipeDNA(equipe_id, conteudo) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { data, error } = await db
+      .from('equipe_dna')
+      .upsert({ equipe_id, conteudo, created_at: new Date().toISOString() }, { onConflict: 'equipe_id' })
+      .select()
+      .single();
+    return { data, error };
+  }
+
   // ── Exporta para escopo global ──────────────────────────────
   window.capsulaDB = {
     getDB,
@@ -458,11 +647,30 @@
     // Créditos e plano
     syncCreditos,
     getCreditos,
-    // Avaliações remotas (Pro)
+    // Avaliações remotas (legacy)
     createAvaliacaoRemota,
     getAvaliacoesDoProf,
     getAvaliacaoByToken,
     saveResultadoRemoto,
+    // Links remotos (Pro)
+    createRemoteLink,
+    getMyRemoteLinks,
+    getRemoteLinkByToken,
+    saveRemoteResult,
+    getRemoteResults,
+    // Acompanhamento semanal (Gerencial)
+    createIndicador,
+    getIndicadores,
+    addRegistroSemanal,
+    deleteIndicador,
+    // Equipes (Gerencial)
+    createEquipe,
+    getEquipes,
+    deleteEquipe,
+    addMembroEquipe,
+    removeMembroEquipe,
+    getEquipeDNA,
+    saveEquipeDNA,
     // localStorage seguro
     lsGet,
     lsGetRaw,

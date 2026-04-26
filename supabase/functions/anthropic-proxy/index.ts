@@ -22,6 +22,8 @@ const ALLOWED_MODEL     = "claude-sonnet-4-20250514";
 const MAX_TOKENS_LIMIT  = 1500;
 
 const ALLOWED_ORIGINS = [
+  "https://sistemagnosis.com.br",
+  "https://www.sistemagnosis.com.br",
   "https://capsula.dev",
   "https://www.capsula.dev",
   "https://capsula-dev-atualizado.vercel.app",

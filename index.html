@@ -1052,83 +1052,95 @@
       <p class="section-desc">Compra única por matriz ou acesso ilimitado para profissionais.</p>
     </div>
 
-    <!-- Avulso -->
+    <!-- Créditos avulsos -->
     <div class="planos-avulso">
 
       <div class="plano-card animate-in">
-        <p class="plano-nome">Avaliação Individual</p>
+        <p class="plano-nome">1 Crédito</p>
         <div class="plano-preco">R$29<span>,90</span></div>
-        <p class="plano-desc">1 crédito para qualquer matriz. Gera 1 PDF. Sem recorrência.</p>
+        <p class="plano-desc">1 acesso completo a qualquer matriz. Gera 1 PDF. Sem recorrência.</p>
         <ul class="plano-features">
-          <li><span class="check">✓</span> Acesso a 1 matriz à sua escolha</li>
-          <li><span class="check">✓</span> 1 PDF gerado</li>
+          <li><span class="check">✓</span> Qualquer matriz à sua escolha</li>
+          <li><span class="check">✓</span> 1 PDF completo gerado</li>
           <li><span class="check">✓</span> Resultado salvo na conta</li>
-          <li><span class="check">✓</span> Compra única</li>
+          <li><span class="check">✓</span> Compra única, sem prazo</li>
         </ul>
-        <button class="plano-btn plano-btn-outline" onclick="planoCheckout('AVALIACAO')">Comprar acesso →</button>
+        <button class="plano-btn plano-btn-outline" onclick="planoCheckout('credito1')">Comprar 1 crédito →</button>
       </div>
 
       <div class="plano-card animate-in">
-        <p class="plano-nome">Pacote Essencial</p>
-        <div class="plano-preco">R$79<span>,90</span></div>
-        <p class="plano-desc">DISC + SOAR + Ikigai. As 3 matrizes mais transformadoras.</p>
+        <p class="plano-nome">3 Créditos <span style="font-size:0.65rem;background:rgba(46,196,160,0.12);color:#2EC4A0;border:1px solid rgba(46,196,160,0.25);border-radius:20px;padding:0.1rem 0.5rem;vertical-align:middle;font-weight:700;">−22%</span></p>
+        <div class="plano-preco">R$69<span>,90</span></div>
+        <p class="plano-desc">3 matrizes à sua escolha. Economia de R$19,80 vs compra avulsa.</p>
         <ul class="plano-features">
-          <li><span class="check">✓</span> DISC — Perfil comportamental</li>
-          <li><span class="check">✓</span> SOAR — Análise estratégica</li>
-          <li><span class="check">✓</span> Ikigai — Propósito de vida</li>
+          <li><span class="check">✓</span> 3 matrizes à sua escolha</li>
           <li><span class="check">✓</span> 3 PDFs incluídos</li>
+          <li><span class="check">✓</span> R$23,30 por matriz</li>
+          <li><span class="check">✓</span> Compra única, sem prazo</li>
         </ul>
-        <button class="plano-btn plano-btn-outline" onclick="planoCheckout('PACOTE3')">Comprar pacote →</button>
-      </div>
-
-      <div class="plano-card animate-in">
-        <p class="plano-nome">DNA Estratégico</p>
-        <div class="plano-preco">R$67<span>,90</span></div>
-        <p class="plano-desc">Análise completa com IA. Requer todas as 8 matrizes concluídas.</p>
-        <ul class="plano-features">
-          <li><span class="check">✓</span> Análise de perfil com IA</li>
-          <li><span class="check">✓</span> Direcionamento profissional</li>
-          <li><span class="check">✓</span> Plano de 90 dias</li>
-          <li><span class="check">✓</span> PDF completo 2 páginas</li>
-        </ul>
-        <button class="plano-btn plano-btn-outline" onclick="planoCheckout('DNA')">Comprar DNA →</button>
+        <button class="plano-btn plano-btn-outline" onclick="planoCheckout('credito3')">Comprar 3 créditos →</button>
       </div>
 
       <div class="plano-card destaque animate-in">
-        <p class="plano-nome">Pacote Completo</p>
-        <div class="plano-preco">R$219<span>,90</span></div>
-        <p class="plano-desc">Todas as 8 matrizes + DNA Estratégico. Economia de R$87.</p>
+        <p class="plano-nome">8 Créditos <span style="font-size:0.65rem;background:#7c6af7;color:#fff;border-radius:20px;padding:0.1rem 0.55rem;vertical-align:middle;font-weight:700;">−46%</span></p>
+        <div class="plano-preco">R$129<span>,90</span></div>
+        <p class="plano-desc">Todas as 8 matrizes + DNA Estratégico com IA. Melhor custo-benefício.</p>
         <ul class="plano-features">
-          <li><span class="check">✓</span> 8 matrizes completas</li>
-          <li><span class="check">✓</span> DNA Estratégico incluído</li>
-          <li><span class="check">✓</span> 9 PDFs gerados</li>
-          <li><span class="check">✓</span> Melhor custo-benefício</li>
+          <li><span class="check">✓</span> Todas as 8 matrizes</li>
+          <li><span class="check">✓</span> 8 PDFs gerados</li>
+          <li><span class="check">✓</span> DNA Estratégico com IA incluso</li>
+          <li><span class="check">✓</span> R$16,24 por matriz</li>
         </ul>
-        <button class="plano-btn plano-btn-filled" onclick="planoCheckout('COMPLETO')">Comprar tudo →</button>
+        <button class="plano-btn plano-btn-filled" onclick="planoCheckout('credito8')">Comprar 8 créditos →</button>
       </div>
 
     </div>
 
-    <!-- Divisor Pro -->
+    <!-- Divisor planos profissionais -->
     <div class="planos-divider">Para profissionais</div>
 
-    <!-- Plano Pro -->
+    <!-- Plano Profissional -->
     <div class="plano-pro-card animate-in">
       <div>
         <p class="plano-nome" style="color:var(--accent)">Plano Profissional</p>
-        <div class="plano-preco" style="font-size:2.4rem;">R$129<span>,90/30 dias</span></div>
-        <p class="plano-desc" style="margin-bottom:1rem;max-width:480px;">PDFs e testes ilimitados para você. Gere links de avaliação e envie para liderados ou pacientes — os resultados chegam direto no seu dashboard. Renove quando quiser.</p>
+        <div class="plano-preco" style="font-size:2.4rem;">R$149<span>,90/30 dias</span></div>
+        <p class="plano-desc" style="margin-bottom:1rem;max-width:480px;">PDFs e testes ilimitados. Gere links de avaliação e envie para pacientes ou clientes — resultados chegam direto no seu dashboard. Ideal para psicólogos, coaches e consultores.</p>
         <ul class="plano-features" style="columns:2;gap:1rem;">
-          <li><span class="check">✓</span> PDFs ilimitados</li>
+          <li><span class="check">✓</span> Matrizes e PDFs ilimitados</li>
           <li><span class="check">✓</span> Refazer testes sem limite</li>
           <li><span class="check">✓</span> Links de avaliação remota</li>
-          <li><span class="check">✓</span> Dashboard com resultados da equipe</li>
-          <li><span class="check">✓</span> Nome e etiqueta por avaliação</li>
+          <li><span class="check">✓</span> Até 20 respondentes por link</li>
+          <li><span class="check">✓</span> Etiqueta por avaliado</li>
           <li><span class="check">✓</span> Cancele quando quiser</li>
         </ul>
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;min-width:180px;">
-        <button class="plano-btn plano-btn-pro" onclick="planoCheckout('PRO')">Assinar agora →</button>
+        <button class="plano-btn plano-btn-pro" onclick="planoCheckout('pro')">Assinar agora →</button>
+        <span style="font-size:0.72rem;color:var(--muted);text-align:center;">Cancele a qualquer momento<br>Cobrado mensalmente</span>
+      </div>
+    </div>
+
+    <!-- Plano Gerencial -->
+    <div class="plano-pro-card animate-in" style="margin-top:1rem;border-color:rgba(46,196,160,0.3);background:linear-gradient(135deg,rgba(46,196,160,0.06) 0%,rgba(27,168,212,0.04) 100%);position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#2EC4A0,#1BA8D4,#2EC4A0);"></div>
+      <div>
+        <div style="display:flex;align-items:center;gap:0.65rem;margin-bottom:0.4rem;">
+          <p class="plano-nome" style="color:#2EC4A0;margin:0;">Plano Gerencial</p>
+          <span style="font-size:0.6rem;background:rgba(46,196,160,0.15);border:1px solid rgba(46,196,160,0.3);color:#2EC4A0;border-radius:20px;padding:0.15rem 0.6rem;font-weight:700;letter-spacing:0.04em;white-space:nowrap;">GESTÃO DE EQUIPES</span>
+        </div>
+        <div class="plano-preco" style="font-size:2.4rem;">R$179<span>,90/30 dias</span></div>
+        <p class="plano-desc" style="margin-bottom:1rem;max-width:480px;">Tudo do Profissional + links ilimitados, gestão de equipes, matrizes coletivas e acompanhamento semanal com gráficos de evolução. Para líderes e gestores de RH.</p>
+        <ul class="plano-features" style="columns:2;gap:1rem;">
+          <li><span class="check" style="color:#2EC4A0;">✓</span> Tudo do Profissional</li>
+          <li><span class="check" style="color:#2EC4A0;">✓</span> Links remotos ilimitados</li>
+          <li><span class="check" style="color:#2EC4A0;">✓</span> Gestão de equipes</li>
+          <li><span class="check" style="color:#2EC4A0;">✓</span> DNA Estratégico de Equipe</li>
+          <li><span class="check" style="color:#2EC4A0;">✓</span> Acompanhamento semanal</li>
+          <li><span class="check" style="color:#2EC4A0;">✓</span> Gráficos de evolução</li>
+        </ul>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;min-width:180px;">
+        <button style="padding:0.9rem 1.75rem;background:linear-gradient(135deg,#2EC4A0,#1BA8D4);border:none;border-radius:10px;color:#fff;font-weight:700;font-size:0.95rem;cursor:pointer;white-space:nowrap;box-shadow:0 4px 20px rgba(46,196,160,0.3);transition:all 0.15s;width:100%;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 26px rgba(46,196,160,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(46,196,160,0.3)'" onclick="planoCheckout('gerencial')">Assinar Gerencial →</button>
         <span style="font-size:0.72rem;color:var(--muted);text-align:center;">Cancele a qualquer momento<br>Cobrado mensalmente</span>
       </div>
     </div>
@@ -1138,9 +1150,8 @@
 
 <script>
 function planoCheckout(key) {
-  // Se payments.js carregado, usa checkout inteligente
   if (window._payments) { window._payments.openCheckout(key); return; }
-  // Fallback: abre modal de cadastro se não logado
+  // Usuário não logado → abre modal de cadastro
   const btn = document.querySelector('[data-modal-open]');
   if (btn) btn.click();
 }
