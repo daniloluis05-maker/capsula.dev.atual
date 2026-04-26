@@ -1044,16 +1044,24 @@ Estruture a resposta em 4 seções:
 Tom: direto, motivador, sem floreios. Use emojis como marcadores de tópico. Foque no concreto.`;
 
   try {
-    const groqUrl = 'https://api.groq.com/openai/v1/chat/completions';
-    const res = await fetch(groqUrl, {
+    const cfg = window.CAPSULA_CONFIG || {};
+    const u = (window.capsulaDB && capsulaDB.lsGetUser && capsulaDB.lsGetUser()) || {};
+    const proxyUrl = (cfg.supabaseUrl || '') + '/functions/v1/groq-proxy';
+    const res = await fetch(proxyUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${window.CAPSULA_CONFIG.groqKey}` },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (cfg.supabaseKey || '') },
       body: JSON.stringify({
+        email: u.email || 'anon@swot.local',
         model: 'llama-3.3-70b-versatile',
         max_tokens: 1500,
         messages: [{ role: 'user', content: prompt }]
       })
     });
+    if (res.status === 429) {
+      const errData = await res.json().catch(() => ({}));
+      panel.innerHTML = `<div class="ai-empty"><span class="ei">⏳</span><h3>Limite atingido</h3><p>${errData.error || 'Tente novamente em alguns minutos.'}</p></div>`;
+      return;
+    }
     const data = await res.json();
     const text = (data.choices?.[0]?.message?.content || '').trim() || 'Não foi possível gerar análise.';
     aiGenerated = true;

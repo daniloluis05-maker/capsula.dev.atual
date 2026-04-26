@@ -652,13 +652,16 @@ async function generateDNA() {
   startLoadingAnimation();
 
   try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const cfg = window.CAPSULA_CONFIG || {};
+    const proxyUrl = (cfg.supabaseUrl || '') + '/functions/v1/groq-proxy';
+    const response = await fetch(proxyUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${window.CAPSULA_CONFIG.groqKey}`
+        'Authorization': 'Bearer ' + (cfg.supabaseKey || ''),
       },
       body: JSON.stringify({
+        email: u.email,                         // necessário para rate limit
         model: 'llama-3.3-70b-versatile',
         max_tokens: 4000,
         messages: [
@@ -670,7 +673,10 @@ async function generateDNA() {
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      throw new Error(err.error?.message || `HTTP ${response.status}`);
+      if (response.status === 429) {
+        throw new Error(err.error || 'Você atingiu o limite de gerações por hora. Tente novamente mais tarde.');
+      }
+      throw new Error(err.error?.message || err.error || `HTTP ${response.status}`);
     }
 
     const data = await response.json();

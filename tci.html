@@ -502,15 +502,19 @@ INSTRUÇÕES:
 Tom: científico mas acessível. Sem listas ou tópicos — use parágrafos corridos. Máximo 200 palavras. Use <strong> para destacar termos-chave.`;
 
   try {
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const cfg = window.CAPSULA_CONFIG || {};
+    const u = (window.capsulaDB && capsulaDB.lsGetUser && capsulaDB.lsGetUser()) || {};
+    const res = await fetch((cfg.supabaseUrl || '') + '/functions/v1/groq-proxy', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${window.CAPSULA_CONFIG.groqKey}` },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (cfg.supabaseKey || '') },
       body: JSON.stringify({
+        email: u.email || 'remote@respondent.local',
         model: 'llama-3.3-70b-versatile',
         max_tokens: 400,
         messages: [{ role: 'user', content: prompt }]
       })
     });
+    if (res.status === 429) { block.innerHTML = interpretacaoLocal(scores); return; }
     const data = await res.json();
     const text = data.choices?.[0]?.message?.content || '';
     if (text) {

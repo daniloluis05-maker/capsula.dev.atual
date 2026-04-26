@@ -1,21 +1,30 @@
 // ─────────────────────────────────────────────────────────────
-// supabase/functions/anthropic-proxy/index.ts
-// Proxy seguro para a API da Anthropic com:
+// supabase/functions/groq-proxy/index.ts
+// Proxy seguro para a API da Groq com:
 //   - autenticação Supabase (sessão JWT ou anon key + email no body)
 //   - rate limiting (10 req/hora por email)
 //
 // Deploy:
-//   supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
-//   supabase functions deploy anthropic-proxy
+//   supabase secrets set GROQ_API_KEY=gsk_...
+//   supabase functions deploy groq-proxy
+//
+// Variáveis de ambiente automáticas:
+//   SUPABASE_URL                 (auto)
+//   SUPABASE_ANON_KEY            (auto)
+//   SUPABASE_SERVICE_ROLE_KEY    (auto)
 // ─────────────────────────────────────────────────────────────
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.103.1";
 
-const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
-const ANTHROPIC_VERSION = "2023-06-01";
-const ALLOWED_MODEL     = "claude-sonnet-4-20250514";
-const MAX_TOKENS_LIMIT  = 1500;
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+const ALLOWED_MODELS = new Set([
+  "llama-3.3-70b-versatile",
+  "llama-3.1-70b-versatile",
+  "llama-3.1-8b-instant",
+  "mixtral-8x7b-32768",
+]);
+const MAX_TOKENS_LIMIT = 4500;
 const RATE_LIMIT_PER_HOUR = 10;
 
 const ALLOWED_ORIGINS = [
@@ -54,7 +63,6 @@ serve(async (req: Request) => {
     return jsonRes({ error: "Origem não autorizada" }, 403, cors);
   }
 
-  // ── Auth: aceita JWT de usuário OU anon key ──────────────────
   const authHeader = req.headers.get("Authorization");
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return jsonRes({ error: "Não autenticado" }, 401, cors);
@@ -70,7 +78,6 @@ serve(async (req: Request) => {
   const token = authHeader.replace("Bearer ", "");
   const isAnonKey = token === supabaseAnonKey;
 
-  // Lê body uma vez
   let body: Record<string, unknown>;
   try {
     body = await req.json();
@@ -78,36 +85,28 @@ serve(async (req: Request) => {
     return jsonRes({ error: "JSON inválido" }, 400, cors);
   }
 
-  // Identifica o email do usuário para rate limit
   let userEmail = "";
   if (!isAnonKey) {
-    // JWT user — extrai email da sessão
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return jsonRes({ error: "Token inválido ou expirado" }, 401, cors);
-    }
+    if (authError || !user) return jsonRes({ error: "Token inválido ou expirado" }, 401, cors);
     userEmail = user.email || "";
   } else {
-    // Anon key — pega email do body
     userEmail = String(body.email || "").trim().toLowerCase();
-    if (!userEmail) {
-      return jsonRes({ error: "Email obrigatório no body para chamadas anônimas" }, 400, cors);
-    }
+    if (!userEmail) return jsonRes({ error: "Email obrigatório no body" }, 400, cors);
   }
 
-  // ── Rate limit (service_role bypassa RLS e chama a RPC) ──────
+  // Rate limit
   const adminClient = createClient(supabaseUrl, supabaseServiceKey);
   const { data: rl, error: rlError } = await adminClient.rpc("check_ai_rate_limit", {
     p_email:        userEmail,
-    p_provider:     "anthropic",
+    p_provider:     "groq",
     p_max_per_hour: RATE_LIMIT_PER_HOUR,
   });
   if (rlError) {
-    console.error("[anthropic-proxy] rate-limit RPC erro:", rlError);
-    // Não bloqueia em caso de falha da RPC (degradação suave)
+    console.error("[groq-proxy] rate-limit RPC erro:", rlError);
   } else if (rl && (rl as Record<string, unknown>).ok === false) {
     const reason = (rl as Record<string, unknown>).reason;
     if (reason === "rate_limit") {
@@ -118,37 +117,37 @@ serve(async (req: Request) => {
     }
   }
 
-  // ── Forward para Anthropic ───────────────────────────────────
-  const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
+  // Validação do modelo
+  const apiKey = Deno.env.get("GROQ_API_KEY");
   if (!apiKey) return jsonRes({ error: "Configuração do servidor incompleta" }, 500, cors);
 
-  // Remove campos internos antes de enviar
   delete body.email;
 
-  body.model = ALLOWED_MODEL;
+  if (!body.model || !ALLOWED_MODELS.has(String(body.model))) {
+    body.model = "llama-3.3-70b-versatile";
+  }
   if (!body.max_tokens || (body.max_tokens as number) > MAX_TOKENS_LIMIT) {
     body.max_tokens = MAX_TOKENS_LIMIT;
   }
 
-  let anthropicResponse: Response;
+  let groqResponse: Response;
   try {
-    anthropicResponse = await fetch(ANTHROPIC_API_URL, {
+    groqResponse = await fetch(GROQ_API_URL, {
       method: "POST",
       headers: {
-        "Content-Type":      "application/json",
-        "x-api-key":         apiKey,
-        "anthropic-version": ANTHROPIC_VERSION,
+        "Content-Type":  "application/json",
+        "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify(body),
     });
   } catch (err) {
-    console.error("[anthropic-proxy] Erro fetch:", err);
+    console.error("[groq-proxy] Erro fetch:", err);
     return jsonRes({ error: "Falha ao conectar com a API" }, 502, cors);
   }
 
-  const responseData = await anthropicResponse.json();
+  const responseData = await groqResponse.json();
   return new Response(JSON.stringify(responseData), {
-    status: anthropicResponse.status,
+    status: groqResponse.status,
     headers: { ...cors, "Content-Type": "application/json" },
   });
 });
