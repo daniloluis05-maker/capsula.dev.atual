@@ -445,6 +445,17 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <p>Análise estratégica coletiva. Forças, Fraquezas, Oportunidades e Ameaças do grupo.</p>
         <div class="card-foot"><span class="card-status locked-text eqx-status">Disponível no plano Gerencial</span><span class="card-arrow eqx-arrow">🔒</span></div>
       </div>
+
+      <div class="matrix-card locked" id="card-okrs" style="--card-accent:var(--I)">
+        <div class="card-top">
+          <div class="card-glyph" style="background:rgba(124,106,247,0.06);border:1px solid rgba(124,106,247,0.08);"><svg viewBox="0 0 24 24" style="stroke:#7c6af7"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+          <span class="lock-badge eqx-badge">GERENCIAL</span>
+        </div>
+        <span class="card-category">Objetivos & Resultados</span>
+        <h3>OKRs Trimestrais</h3>
+        <p>Defina objetivos e Key Results mensuráveis. Acompanhe progresso por ciclo trimestral.</p>
+        <div class="card-foot"><span class="card-status locked-text eqx-status">Disponível no plano Gerencial</span><span class="card-arrow eqx-arrow">🔒</span></div>
+      </div>
     </div>
 
     <div class="bottom-grid" id="resultados">
@@ -993,7 +1004,7 @@ function applyUser(nome,apelido){
     });
     document.querySelectorAll('.eqx-arrow').forEach(el => { el.textContent = '→'; });
     // Torna os cards clicáveis
-    const links = { 'card-5w2h': '5w2h.html', 'card-raci': 'raci.html', 'card-swot-eq': 'swot-equipe.html' };
+    const links = { 'card-5w2h': '5w2h.html', 'card-raci': 'raci.html', 'card-swot-eq': 'swot-equipe.html', 'card-okrs': 'okrs.html' };
     Object.entries(links).forEach(([id, href]) => {
       const card = document.getElementById(id);
       if (card) {
@@ -1604,6 +1615,7 @@ async function eqVerDetalhes(id) {
     // Matrizes de equipe (atalhos)
     '<h4 style="margin:1.5rem 0 0.6rem;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);">Matrizes de Equipe</h4>',
     `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0.6rem;margin-bottom:1.5rem;">`,
+    `<a href="okrs.html?equipe=${id}" style="display:block;padding:0.85rem;background:rgba(124,106,247,0.06);border:1px solid rgba(124,106,247,0.2);border-radius:9px;color:#7c6af7;font-size:0.82rem;font-weight:600;text-align:center;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(124,106,247,0.12)'" onmouseout="this.style.background='rgba(124,106,247,0.06)'">⊙ OKRs Trimestrais</a>`,
     `<a href="5w2h.html?equipe=${id}" style="display:block;padding:0.85rem;background:rgba(27,168,212,0.06);border:1px solid rgba(27,168,212,0.2);border-radius:9px;color:#1BA8D4;font-size:0.82rem;font-weight:600;text-align:center;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(27,168,212,0.12)'" onmouseout="this.style.background='rgba(27,168,212,0.06)'">📋 5W2H · Plano de Ação</a>`,
     `<a href="raci.html?equipe=${id}" style="display:block;padding:0.85rem;background:rgba(232,96,58,0.06);border:1px solid rgba(232,96,58,0.2);border-radius:9px;color:#E8603A;font-size:0.82rem;font-weight:600;text-align:center;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(232,96,58,0.12)'" onmouseout="this.style.background='rgba(232,96,58,0.06)'">👥 Matriz RACI</a>`,
     `<a href="swot-equipe.html?equipe=${id}" style="display:block;padding:0.85rem;background:rgba(46,196,160,0.06);border:1px solid rgba(46,196,160,0.2);border-radius:9px;color:#2EC4A0;font-size:0.82rem;font-weight:600;text-align:center;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(46,196,160,0.12)'" onmouseout="this.style.background='rgba(46,196,160,0.06)'">🎯 SWOT de Equipe</a>`,

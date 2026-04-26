@@ -729,6 +729,84 @@
     return { error };
   }
 
+  // ── OKRs (Objetivos + Key Results) ──────────────────────────
+  async function getObjetivos(gerencial_email, ciclo) {
+    const db = getDB();
+    if (!db) return [];
+    let q = db.from('objetivos')
+      .select('*, key_results(*)')
+      .eq('gerencial_email', gerencial_email.toLowerCase().trim())
+      .order('ordem', { ascending: true })
+      .order('created_at', { ascending: false });
+    if (ciclo) q = q.eq('ciclo', ciclo);
+    const { data } = await q;
+    return data || [];
+  }
+
+  async function saveObjetivo(obj) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    if (obj.id) {
+      const { id, ...rest } = obj;
+      const { data, error } = await db.from('objetivos').update(rest).eq('id', id).select().single();
+      return { data, error };
+    } else {
+      if (obj.gerencial_email) obj.gerencial_email = obj.gerencial_email.toLowerCase().trim();
+      const { data, error } = await db.from('objetivos').insert(obj).select().single();
+      return { data, error };
+    }
+  }
+
+  async function deleteObjetivo(id) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { error } = await db.from('objetivos').delete().eq('id', id);
+    return { error };
+  }
+
+  async function saveKeyResult(kr) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    if (kr.id) {
+      const { id, ...rest } = kr;
+      rest.updated_at = new Date().toISOString();
+      const { data, error } = await db.from('key_results').update(rest).eq('id', id).select().single();
+      return { data, error };
+    } else {
+      const { data, error } = await db.from('key_results').insert(kr).select().single();
+      return { data, error };
+    }
+  }
+
+  async function deleteKeyResult(id) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { error } = await db.from('key_results').delete().eq('id', id);
+    return { error };
+  }
+
+  async function addKrUpdate(kr_id, valor, comentario) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { error } = await db.from('kr_updates')
+      .insert({ kr_id, valor, comentario: comentario || null });
+    if (!error) {
+      await db.from('key_results')
+        .update({ valor_atual: valor, updated_at: new Date().toISOString() })
+        .eq('id', kr_id);
+    }
+    return { error };
+  }
+
+  async function getKrUpdates(kr_id) {
+    const db = getDB();
+    if (!db) return [];
+    const { data } = await db.from('kr_updates')
+      .select('*').eq('kr_id', kr_id)
+      .order('registrado_em', { ascending: true });
+    return data || [];
+  }
+
   // ── Exporta para escopo global ──────────────────────────────
   window.capsulaDB = {
     getDB,
@@ -785,6 +863,14 @@
     getSwotEquipe,
     addSwotEquipeItem,
     deleteSwotEquipeItem,
+    // OKRs
+    getObjetivos,
+    saveObjetivo,
+    deleteObjetivo,
+    saveKeyResult,
+    deleteKeyResult,
+    addKrUpdate,
+    getKrUpdates,
     // localStorage seguro
     lsGet,
     lsGetRaw,
