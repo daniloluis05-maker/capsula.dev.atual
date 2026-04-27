@@ -252,6 +252,8 @@ DO $$ BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'avaliacoes_remotas') THEN
     EXECUTE 'DROP POLICY IF EXISTS "prof_select_own" ON avaliacoes_remotas';
     EXECUTE 'DROP POLICY IF EXISTS "prof_insert_own" ON avaliacoes_remotas';
+    EXECUTE 'DROP POLICY IF EXISTS "ar_select_own" ON avaliacoes_remotas';
+    EXECUTE 'DROP POLICY IF EXISTS "ar_insert_own" ON avaliacoes_remotas';
     EXECUTE 'CREATE POLICY "ar_select_own" ON avaliacoes_remotas FOR SELECT TO authenticated USING (profissional_uid = (auth.uid())::text)';
     EXECUTE 'CREATE POLICY "ar_insert_own" ON avaliacoes_remotas FOR INSERT TO authenticated WITH CHECK (profissional_uid = (auth.uid())::text)';
   END IF;
