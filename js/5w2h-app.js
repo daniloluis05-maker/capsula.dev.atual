@@ -39,6 +39,8 @@ function esc(s) {
 async function onEquipeChange() {
   _equipeId = document.getElementById('sel-equipe').value;
   document.getElementById('btn-add').disabled = !_equipeId;
+  const pdfBtn = document.getElementById('btn-pdf');
+  if (pdfBtn) pdfBtn.style.display = 'none';
   if (!_equipeId) {
     document.getElementById('content-area').innerHTML = '<div class="empty">Selecione uma equipe.</div>';
     document.getElementById('stats').style.display = 'none';
@@ -51,6 +53,8 @@ async function loadItems() {
   _items = await capsulaDB.getPlanoAcao(_equipeId);
   renderStats();
   renderTable();
+  const pdfBtn = document.getElementById('btn-pdf');
+  if (pdfBtn) pdfBtn.style.display = _items.length ? 'inline-block' : 'none';
 }
 
 function renderStats() {

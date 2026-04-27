@@ -72,6 +72,8 @@ async function loadObjetivos() {
   if (equipeFilter) _objetivos = _objetivos.filter(o => o.equipe_id === equipeFilter);
   renderSummary();
   render();
+  const pdfBtn = document.getElementById('btn-pdf');
+  if (pdfBtn) pdfBtn.style.display = _objetivos.length ? 'inline-block' : 'none';
 }
 
 function krProgress(kr) {

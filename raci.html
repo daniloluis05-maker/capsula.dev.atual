@@ -72,6 +72,8 @@
 <div class="equipe-bar">
   <span style="font-size:0.78rem;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:0.05em;">Equipe:</span>
   <select id="sel-equipe" onchange="onEquipeChange()"></select>
+  <span style="flex:1;"></span>
+  <button onclick="pdfRACI()" id="btn-pdf" style="padding:0.65rem 1rem;background:rgba(232,96,58,0.1);border:1px solid rgba(232,96,58,0.3);border-radius:8px;color:#E8603A;font-weight:600;font-size:0.82rem;cursor:pointer;display:none;" title="Exportar PDF">↓ PDF</button>
 </div>
 
 <div class="warn-rule" id="warn-rule"></div>
@@ -86,5 +88,6 @@
 <script src="js/db.js"></script>
 <script src="js/payments.js"></script>
 <script src="js/raci-app.js" defer></script>
+<script src="js/gerencial-pdf.js" defer></script>
 </body>
 </html>

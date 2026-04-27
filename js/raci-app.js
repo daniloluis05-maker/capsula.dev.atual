@@ -52,6 +52,8 @@ async function loadRaci() {
   _atribuicoes = atribuicoes;
   renderMatrix();
   validateRules();
+  const pdfBtn = document.getElementById('btn-pdf');
+  if (pdfBtn) pdfBtn.style.display = _atividades.length && _membros.length ? 'inline-block' : 'none';
 }
 
 function getPapel(atividadeId, membroId) {
