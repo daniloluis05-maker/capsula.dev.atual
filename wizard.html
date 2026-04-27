@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wizard IA — Gerar Matrizes | Sistema Gnosis</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://*.ingest.sentry.io;">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="css/capsula.css">
+<style>
+  body { padding: 2rem 1rem 4rem; max-width: 720px; margin: 0 auto; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+  .topbar a { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
+  .badge-wizard { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(124,106,247,0.1); border: 1px solid rgba(124,106,247,0.25); color: #7c6af7; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.7rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+
+  /* Steps */
+  .step { display: none; }
+  .step.active { display: block; }
+
+  /* Progress */
+  .progress-bar { display: flex; gap: 0.4rem; margin-bottom: 2rem; }
+  .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background 0.3s; }
+  .progress-dot.done { background: #7c6af7; }
+  .progress-dot.active { background: #7c6af7; box-shadow: 0 0 0 3px rgba(124,106,247,0.25); }
+
+  /* Type cards */
+  .type-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+  .type-card { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1.25rem; cursor: pointer; transition: all 0.18s; text-align: left; }
+  .type-card:hover { border-color: rgba(124,106,247,0.4); background: rgba(124,106,247,0.04); }
+  .type-card.selected { border-color: #7c6af7; background: rgba(124,106,247,0.08); }
+  .type-card .type-icon { font-size: 1.6rem; margin-bottom: 0.6rem; }
+  .type-card .type-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .type-card .type-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.45; }
+
+  /* Mode cards */
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1.5rem 0; }
+  .mode-card { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1.4rem; cursor: pointer; transition: all 0.18s; text-align: left; }
+  .mode-card:hover { border-color: rgba(124,106,247,0.4); }
+  .mode-card.selected { border-color: #7c6af7; background: rgba(124,106,247,0.08); }
+  .mode-card .mode-icon { font-size: 1.4rem; margin-bottom: 0.6rem; }
+  .mode-card .mode-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.35rem; }
+  .mode-card .mode-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+
+  /* Form questions */
+  .question-block { margin-bottom: 1.25rem; }
+  .question-block label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.45rem; color: var(--text); }
+  .question-block .q-hint { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.45rem; font-style: italic; }
+  .question-block input, .question-block textarea, .question-block select {
+    width: 100%; padding: 0.65rem 0.85rem; background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+    font-size: 0.88rem; font-family: inherit; outline: none; resize: vertical;
+    transition: border-color 0.15s;
+  }
+  .question-block input:focus, .question-block textarea:focus, .question-block select:focus { border-color: rgba(124,106,247,0.5); }
+  .question-block textarea { min-height: 72px; }
+  .question-block .required { color: #E8603A; margin-left: 2px; }
+
+  /* Loading */
+  .loading-wrap { text-align: center; padding: 3rem 1rem; }
+  .loading-spinner { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: #7c6af7; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1.25rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-log { font-size: 0.78rem; color: var(--muted); font-family: var(--mono); margin-top: 0.75rem; min-height: 20px; }
+
+  /* Review items */
+  .review-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; margin-bottom: 0.65rem; position: relative; }
+  .review-item .ri-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; font-family: var(--mono); margin-bottom: 0.25rem; }
+  .review-item input, .review-item textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text); font-size: 0.88rem; font-family: inherit; padding: 0.2rem 0; outline: none; resize: vertical; }
+  .review-item input:focus, .review-item textarea:focus { border-bottom-color: #7c6af7; }
+  .review-item .ri-del { position: absolute; top: 0.75rem; right: 0.85rem; background: none; border: none; color: var(--muted); font-size: 1rem; cursor: pointer; opacity: 0.5; }
+  .review-item .ri-del:hover { opacity: 1; color: #E8603A; }
+  .review-item .ri-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 1rem; }
+  .review-item .ri-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; }
+
+  /* SWOT review */
+  .swot-review { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
+  .swot-review-quad { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem; }
+  .swot-review-quad .sq-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; font-family: var(--mono); font-weight: 700; margin-bottom: 0.65rem; }
+  .swot-review-quad .sq-item { display: flex; align-items: flex-start; gap: 0.4rem; margin-bottom: 0.4rem; }
+  .swot-review-quad .sq-item input { flex: 1; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text); font-size: 0.82rem; padding: 0.15rem 0; outline: none; font-family: inherit; }
+  .swot-review-quad .sq-item input:focus { border-bottom-color: #7c6af7; }
+  .swot-review-quad .sq-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.9rem; padding: 0; opacity: 0.4; line-height: 1.6; }
+  .swot-review-quad .sq-del:hover { opacity: 1; color: #E8603A; }
+  .swot-review-quad .sq-add { font-size: 0.72rem; color: var(--muted); cursor: pointer; padding: 0.3rem 0; display: block; text-align: center; border: 1px dashed rgba(255,255,255,0.1); border-radius: 6px; margin-top: 0.4rem; }
+  .swot-review-quad .sq-add:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+
+  /* OKR review */
+  .okr-obj { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden; }
+  .okr-obj-head { padding: 0.9rem 1.1rem; border-bottom: 1px solid var(--border); }
+  .okr-obj-head input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text); font-size: 0.95rem; font-weight: 600; padding: 0.2rem 0; outline: none; font-family: inherit; }
+  .okr-obj-head input:focus { border-bottom-color: #7c6af7; }
+  .okr-obj-head .obj-del { float: right; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; opacity: 0.4; }
+  .okr-obj-head .obj-del:hover { opacity: 1; color: #E8603A; }
+  .okr-kr-list { padding: 0.6rem 1.1rem; }
+  .okr-kr-item { display: grid; grid-template-columns: 1fr auto auto auto; gap: 0.5rem; align-items: center; padding: 0.45rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .okr-kr-item:last-child { border-bottom: none; }
+  .okr-kr-item input { background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text); font-size: 0.82rem; padding: 0.15rem 0; outline: none; font-family: inherit; }
+  .okr-kr-item input:focus { border-bottom-color: #7c6af7; }
+  .okr-kr-item .kr-meta { font-size: 0.72rem; color: var(--muted); font-family: var(--mono); white-space: nowrap; }
+  .okr-kr-item .kr-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.85rem; opacity: 0.4; }
+  .okr-kr-item .kr-del:hover { opacity: 1; color: #E8603A; }
+  .okr-add-kr { font-size: 0.72rem; color: var(--muted); cursor: pointer; padding: 0.4rem 0; display: block; text-align: center; border-top: 1px dashed rgba(255,255,255,0.07); margin-top: 0.3rem; }
+  .okr-add-kr:hover { color: var(--text); }
+
+  /* Buttons */
+  .btn-primary { padding: 0.75rem 1.5rem; background: #7c6af7; border: none; border-radius: 8px; color: #fff; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: opacity 0.2s; }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-ghost { padding: 0.7rem 1.25rem; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-size: 0.88rem; cursor: pointer; transition: color 0.15s; }
+  .btn-ghost:hover { color: var(--text); }
+  .btn-row { display: flex; gap: 0.65rem; justify-content: flex-end; margin-top: 1.5rem; flex-wrap: wrap; }
+  .btn-add-item { width: 100%; padding: 0.6rem; background: rgba(124,106,247,0.06); border: 1px dashed rgba(124,106,247,0.25); border-radius: 8px; color: var(--muted); font-size: 0.8rem; cursor: pointer; margin-bottom: 0.65rem; }
+  .btn-add-item:hover { color: #7c6af7; border-color: rgba(124,106,247,0.5); }
+
+  /* Success */
+  .success-wrap { text-align: center; padding: 2.5rem 1rem; }
+  .success-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(46,196,160,0.12); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 1.8rem; }
+  .success-links { display: flex; gap: 0.65rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem; }
+  .success-link { padding: 0.65rem 1.2rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-decoration: none; }
+
+  /* Misc */
+  .section-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-family: var(--mono); margin-bottom: 0.75rem; }
+  .info-box { background: rgba(124,106,247,0.06); border: 1px solid rgba(124,106,247,0.18); border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.8rem; color: rgba(232,232,240,0.6); margin-bottom: 1.25rem; line-height: 1.55; }
+  .err-msg { font-size: 0.82rem; color: #E8603A; margin-top: 0.5rem; display: none; }
+  @media (max-width: 500px) { .mode-grid { grid-template-columns: 1fr; } .swot-review { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="dashboard.html">← Dashboard</a>
+  <span class="badge-wizard">✦ Wizard IA</span>
+</div>
+
+<h1 style="font-size:1.75rem;margin-bottom:0.35rem;">Gerar com IA</h1>
+<p style="font-size:0.9rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.55;">Responda algumas perguntas ou cole um relatório — a IA monta o rascunho para você revisar e salvar.</p>
+
+<div class="progress-bar" id="progress-bar">
+  <div class="progress-dot active" id="dot-0"></div>
+  <div class="progress-dot" id="dot-1"></div>
+  <div class="progress-dot" id="dot-2"></div>
+  <div class="progress-dot" id="dot-3"></div>
+  <div class="progress-dot" id="dot-4"></div>
+</div>
+
+<!-- ── Step 0: Seleção ────────────────────────────────── -->
+<div class="step active" id="step-0">
+  <div class="section-title">Escolha a ferramenta</div>
+  <div class="type-grid">
+    <button class="type-card" data-type="5w2h" onclick="selectType(this)">
+      <div class="type-icon">📋</div>
+      <div class="type-name">5W2H</div>
+      <div class="type-desc">Plano de ação com O Quê, Por Quê, Onde, Quando, Quem, Como e R$</div>
+    </button>
+    <button class="type-card" data-type="okrs" onclick="selectType(this)">
+      <div class="type-icon">🎯</div>
+      <div class="type-name">OKRs</div>
+      <div class="type-desc">Objetivos e Key Results mensuráveis para o ciclo trimestral</div>
+    </button>
+    <button class="type-card" data-type="swot" onclick="selectType(this)">
+      <div class="type-icon">🧭</div>
+      <div class="type-name">SWOT de Equipe</div>
+      <div class="type-desc">Forças, Fraquezas, Oportunidades e Ameaças da sua equipe</div>
+    </button>
+  </div>
+
+  <div class="question-block" style="max-width:360px;">
+    <label>Equipe <span class="required">*</span></label>
+    <select id="sel-equipe-wiz">
+      <option value="">Carregando...</option>
+    </select>
+  </div>
+
+  <div class="question-block" id="ciclo-block" style="max-width:200px;display:none;">
+    <label>Ciclo OKR</label>
+    <select id="sel-ciclo-wiz"></select>
+  </div>
+
+  <div class="err-msg" id="err-step0">Selecione a ferramenta e uma equipe para continuar.</div>
+  <div class="btn-row">
+    <button class="btn-primary" onclick="goStep1()">Continuar →</button>
+  </div>
+</div>
+
+<!-- ── Step 1: Modo ───────────────────────────────────── -->
+<div class="step" id="step-1">
+  <div class="section-title">Como prefere fornecer as informações?</div>
+  <div class="mode-grid">
+    <button class="mode-card selected" id="mode-guided" onclick="selectMode('guided')">
+      <div class="mode-icon">💬</div>
+      <div class="mode-name">Formulário guiado</div>
+      <div class="mode-desc">Responda 4-6 perguntas contextuais. A IA usa suas respostas para montar o rascunho.</div>
+    </button>
+    <button class="mode-card" id="mode-report" onclick="selectMode('report')">
+      <div class="mode-icon">📄</div>
+      <div class="mode-name">Colar relatório</div>
+      <div class="mode-desc">Cole o texto de um relatório existente. A IA extrai as informações e gera as matrizes.</div>
+    </button>
+  </div>
+  <div class="btn-row">
+    <button class="btn-ghost" onclick="goStep(0)">← Voltar</button>
+    <button class="btn-primary" onclick="goStep2()">Continuar →</button>
+  </div>
+</div>
+
+<!-- ── Step 2: Coleta ─────────────────────────────────── -->
+<div class="step" id="step-2">
+  <div id="questions-container"></div>
+  <div class="err-msg" id="err-step2">Preencha ao menos os campos obrigatórios.</div>
+  <div class="btn-row">
+    <button class="btn-ghost" onclick="goStep(1)">← Voltar</button>
+    <button class="btn-primary" id="btn-gerar" onclick="gerar()">✦ Gerar com IA</button>
+  </div>
+</div>
+
+<!-- ── Step 3: Gerando ────────────────────────────────── -->
+<div class="step" id="step-3">
+  <div class="loading-wrap">
+    <div class="loading-spinner"></div>
+    <div style="font-size:1rem;font-weight:600;margin-bottom:0.4rem;">Gerando rascunho...</div>
+    <div style="font-size:0.82rem;color:var(--muted);margin-bottom:0.4rem;">A IA está analisando as informações e estruturando seu plano</div>
+    <div class="loading-log" id="loading-log">Conectando ao modelo...</div>
+  </div>
+</div>
+
+<!-- ── Step 4: Revisão ────────────────────────────────── -->
+<div class="step" id="step-4">
+  <div class="info-box" id="review-info"></div>
+  <div id="review-container"></div>
+  <div class="err-msg" id="err-step4">Erro ao salvar. Tente novamente.</div>
+  <div class="btn-row">
+    <button class="btn-ghost" onclick="goStep(2)">← Refazer</button>
+    <button class="btn-primary" id="btn-salvar" onclick="salvar()">✓ Salvar na equipe</button>
+  </div>
+</div>
+
+<!-- ── Step 5: Sucesso ────────────────────────────────── -->
+<div class="step" id="step-5">
+  <div class="success-wrap">
+    <div class="success-icon">✓</div>
+    <h2 style="font-size:1.3rem;margin-bottom:0.5rem;">Salvo com sucesso!</h2>
+    <p id="success-msg" style="font-size:0.88rem;color:var(--muted);line-height:1.6;max-width:380px;margin:0 auto;"></p>
+    <div class="success-links" id="success-links"></div>
+    <button class="btn-ghost" style="margin-top:1rem;" onclick="resetWizard()">Gerar outra matriz</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" integrity="sha384-IiV7lMrgUYFjr7nKnX1XDxweNl9p95vzrLcmfcQ8dMKM5kqqCi6iwxDaRcr+I9Vc" crossorigin="anonymous"></script>
+<script src="js/config.js"></script>
+<script src="js/sentry-init.js"></script>
+<script src="js/db.js"></script>
+<script src="js/payments.js"></script>
+<script src="js/wizard-app.js" defer></script>
+</body>
+</html>

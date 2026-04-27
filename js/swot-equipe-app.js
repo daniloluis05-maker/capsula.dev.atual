@@ -38,6 +38,8 @@ function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'
 
 async function onEquipeChange() {
   _equipeId = document.getElementById('sel-equipe').value;
+  const wizBtn = document.getElementById('btn-wizard');
+  if (wizBtn) wizBtn.href = 'wizard.html?tipo=swot' + (_equipeId ? '&equipe=' + _equipeId : '');
   if (!_equipeId) {
     document.getElementById('content-area').innerHTML = '<div class="empty">Selecione uma equipe.</div>';
     return;

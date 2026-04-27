@@ -39,6 +39,8 @@ function esc(s) {
 async function onEquipeChange() {
   _equipeId = document.getElementById('sel-equipe').value;
   document.getElementById('btn-add').disabled = !_equipeId;
+  const wizBtn = document.getElementById('btn-wizard');
+  if (wizBtn) wizBtn.href = 'wizard.html?tipo=5w2h' + (_equipeId ? '&equipe=' + _equipeId : '');
   const pdfBtn = document.getElementById('btn-pdf');
   if (pdfBtn) pdfBtn.style.display = 'none';
   if (!_equipeId) {

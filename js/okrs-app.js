@@ -74,6 +74,8 @@ async function loadObjetivos() {
   render();
   const pdfBtn = document.getElementById('btn-pdf');
   if (pdfBtn) pdfBtn.style.display = _objetivos.length ? 'inline-block' : 'none';
+  const wizBtn = document.getElementById('btn-wizard');
+  if (wizBtn) wizBtn.href = 'wizard.html?tipo=okrs' + (equipeFilter ? '&equipe=' + equipeFilter : '');
 }
 
 function krProgress(kr) {
