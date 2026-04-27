@@ -376,7 +376,7 @@ function rlRenderLinks(links) {
     const url  = origin + '/' + lk.matriz + '.html?token=' + lk.token;
     const full = lk.completion_count >= lk.max_completions;
     const pct  = Math.round((lk.completion_count / lk.max_completions) * 100);
-    const etiq = lk.etiqueta ? '<span style="font-size:0.8rem;color:var(--text);font-weight:500;">' + lk.etiqueta + '</span>' : '';
+    const etiq = lk.etiqueta ? '<span style="font-size:0.8rem;color:var(--text);font-weight:500;">' + eqEsc(lk.etiqueta) + '</span>' : '';
     return [
       '<div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;',
       'padding:1rem 1.25rem;margin-bottom:0.55rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">',
@@ -405,7 +405,7 @@ function rlRenderLinks(links) {
       'border-radius:6px;color:var(--accent);font-size:0.78rem;font-weight:600;cursor:pointer;"',
       ' onmouseover="this.style.background=\'rgba(124,106,247,0.2)\'" onmouseout="this.style.background=\'rgba(124,106,247,0.1)\'">',
       'Copiar</button>',
-      '<button onclick="rlVerResultados(\'' + lk.token + '\',\'' + (_RL_NOMES[lk.matriz]||lk.matriz).replace(/'/g,"\\'") + (lk.etiqueta?' — '+lk.etiqueta.replace(/'/g,"\\'"): '') + '\')"',
+      '<button onclick="rlVerResultados(\'' + lk.token + '\',\'' + (_RL_NOMES[lk.matriz]||lk.matriz).replace(/'/g,"\\'") + (lk.etiqueta?' — '+lk.etiqueta.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'): '') + '\')"',
       ' style="padding:0.42rem 0.8rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);',
       'border-radius:6px;color:var(--muted);font-size:0.78rem;cursor:pointer;"',
       ' onmouseover="this.style.color=\'var(--text)\'" onmouseout="this.style.color=\'var(--muted)\'">',
@@ -449,8 +449,8 @@ async function rlVerResultados(token, titulo) {
     return [
       '<div style="border:1px solid var(--border);border-radius:8px;padding:1rem 1.1rem;margin-bottom:0.65rem;">',
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:', preview?'0.6rem':'0', ';">',
-      '<div><span style="font-weight:600;font-size:0.9rem;color:var(--text);">', r.respondente_nome, '</span>',
-      r.respondente_email ? '<span style="font-size:0.76rem;color:var(--muted);margin-left:0.5rem;">' + r.respondente_email + '</span>' : '',
+      '<div><span style="font-weight:600;font-size:0.9rem;color:var(--text);">', eqEsc(r.respondente_nome), '</span>',
+      r.respondente_email ? '<span style="font-size:0.76rem;color:var(--muted);margin-left:0.5rem;">' + eqEsc(r.respondente_email) + '</span>' : '',
       '</div>',
       '<span style="font-size:0.68rem;color:var(--muted);font-family:monospace;white-space:nowrap;margin-left:0.5rem;">', dt, '</span>',
       '</div>',
