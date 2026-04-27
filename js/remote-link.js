@@ -26,8 +26,10 @@
   // falta de usuário autenticado ou de créditos.
 
   if (window._payments) {
-    window._payments.isPro   = () => true;
-    window._payments.isAdmin = () => false;
+    // Respondentes remotos não têm plano Pro — não devem gerar PDFs
+    window._payments.isPro      = () => false;
+    window._payments.isAdmin    = () => false;
+    window._payments.hasAccess  = () => false;
   }
   if (window.capsulaDB) {
     window.capsulaDB.ensureUserData = async () => ({

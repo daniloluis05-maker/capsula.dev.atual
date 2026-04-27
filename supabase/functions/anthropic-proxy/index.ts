@@ -91,11 +91,10 @@ serve(async (req: Request) => {
     }
     userEmail = user.email || "";
   } else {
-    // Anon key — pega email do body
-    userEmail = String(body.email || "").trim().toLowerCase();
-    if (!userEmail) {
-      return jsonRes({ error: "Email obrigatório no body para chamadas anônimas" }, 400, cors);
-    }
+    // Anon key: usa IP como chave de rate limit — impede spoofing de email
+    const forwarded = req.headers.get("x-forwarded-for");
+    const ip = forwarded ? forwarded.split(",")[0].trim() : (req.headers.get("x-real-ip") || "unknown");
+    userEmail = `anon:${ip}`;
   }
 
   // ── Rate limit (service_role bypassa RLS e chama a RPC) ──────

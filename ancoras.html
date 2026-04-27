@@ -389,8 +389,12 @@ document.addEventListener('DOMContentLoaded', async function(){
 });
 
 function generatePDF(){
-  if (window._payments && !_payments.isPro() && !_payments.isAdmin()) {
-    if (!_payments.deductCredit('ancoras')) { _payments.showPaywall('ancoras'); return; }
+  if (window._payments) {
+    _payments.serverDebitCredit('ancoras').then(function(ok) {
+      if (!ok) { _payments.showPaywall('ancoras'); return; }
+      _generatePDF();
+    });
+    return;
   }
   _generatePDF();
 }

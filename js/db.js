@@ -807,6 +807,18 @@
     return data || [];
   }
 
+  // ── Débito atômico de crédito (server-side, anti-bypass localStorage) ──
+  async function debitCredit(email, matrixKey) {
+    const db = getDB();
+    if (!db || !email) return { ok: false, reason: 'no_db' };
+    const { data, error } = await db.rpc('debit_credit', {
+      p_email:  email.toLowerCase().trim(),
+      p_matrix: matrixKey,
+    });
+    if (error) { console.warn('[db] debitCredit:', error); return { ok: false, reason: 'rpc_error' }; }
+    return data || { ok: false, reason: 'no_data' };
+  }
+
   // ── Exporta para escopo global ──────────────────────────────
   window.capsulaDB = {
     getDB,
@@ -826,6 +838,7 @@
     // Créditos e plano
     syncCreditos,
     getCreditos,
+    debitCredit,
     // Avaliações remotas (legacy)
     createAvaliacaoRemota,
     getAvaliacoesDoProf,

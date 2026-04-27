@@ -786,8 +786,12 @@ function getNomeExibido(userData) {
 }
 
 function generatePDF() {
-  if (window._payments && !_payments.isPro() && !_payments.isAdmin()) {
-    if (!_payments.deductCredit('soar')) { _payments.showPaywall('soar'); return; }
+  if (window._payments) {
+    _payments.serverDebitCredit('soar').then(function(ok) {
+      if (!ok) { _payments.showPaywall('soar'); return; }
+      _generatePDF();
+    });
+    return;
   }
   _generatePDF();
 }

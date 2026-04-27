@@ -1414,19 +1414,13 @@ document.addEventListener('DOMContentLoaded', initPage);
 // GENERATE PDF — DISC Blueprint v3
 // ══════════════════════════════════════
 function generatePDF() {
-  // ── Verificação de crédito (paywall) ──
-  if (window._payments && !_payments.hasAccess('disc')) {
-    _payments.showPaywall('disc');
-    // Quando usuário usa crédito via modal, ouve o evento e continua
-    document.addEventListener('payments:creditUsed', function handler(e) {
-      if (e.detail.matrixKey === 'disc') {
-        document.removeEventListener('payments:creditUsed', handler);
-        _generatePDFDisc();
-      }
-    }, { once: true });
+  if (window._payments) {
+    _payments.serverDebitCredit('disc').then(function(ok) {
+      if (!ok) { _payments.showPaywall('disc'); return; }
+      _generatePDFDisc();
+    });
     return;
   }
-  if (window._payments) _payments.deductCredit('disc');
   _generatePDFDisc();
 }
 function _generatePDFDisc() {

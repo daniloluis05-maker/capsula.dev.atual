@@ -665,8 +665,12 @@ function showResult(){
 // PDF
 // ══════════════════════════════════════
 function generatePDF(){
-  if (window._payments && !_payments.isPro() && !_payments.isAdmin()) {
-    if (!_payments.deductCredit('bigfive')) { _payments.showPaywall('bigfive'); return; }
+  if (window._payments) {
+    _payments.serverDebitCredit('bigfive').then(function(ok) {
+      if (!ok) { _payments.showPaywall('bigfive'); return; }
+      _generatePDF();
+    });
+    return;
   }
   _generatePDF();
 }

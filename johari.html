@@ -419,8 +419,12 @@ document.addEventListener('DOMContentLoaded', async function(){
 });
 
 function generatePDF(){
-  if (window._payments && !_payments.isPro() && !_payments.isAdmin()) {
-    if (!_payments.deductCredit('johari')) { _payments.showPaywall('johari'); return; }
+  if (window._payments) {
+    _payments.serverDebitCredit('johari').then(function(ok) {
+      if (!ok) { _payments.showPaywall('johari'); return; }
+      _generatePDF();
+    });
+    return;
   }
   _generatePDF();
 }

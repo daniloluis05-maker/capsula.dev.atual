@@ -436,8 +436,12 @@ document.addEventListener('DOMContentLoaded', async function(){
 });
 
 function generatePDF(){
-  if (window._payments && !_payments.isPro() && !_payments.isAdmin()) {
-    if (!_payments.deductCredit('ikigai')) { _payments.showPaywall('ikigai'); return; }
+  if (window._payments) {
+    _payments.serverDebitCredit('ikigai').then(function(ok) {
+      if (!ok) { _payments.showPaywall('ikigai'); return; }
+      _generatePDF();
+    });
+    return;
   }
   _generatePDF();
 }

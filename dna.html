@@ -15,6 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" integrity="sha384-IiV7lMrgUYFjr7nKnX1XDxweNl9p95vzrLcmfcQ8dMKM5kqqCi6iwxDaRcr+I9Vc" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js" integrity="sha384-+VfUPEb0PdtChMwmBcBmykRMDd+v6D/oFmB3rZM/puCMDYcIvF968OimRh4KQY9a" crossorigin="anonymous"></script>
 <script src="js/config.js"></script>
 <script src="js/sentry-init.js"></script>
 <script src="js/db.js"></script>
@@ -947,20 +948,21 @@ function renderDNA(rawText, payload, palette, isRestore) {
   setHTML('hc-4-content', parsed.helice4);
   if (parsed.keywords?.length) {
     const kw = parsed.keywords.map(k => `<span class="helix-keyword">${k}</span>`).join(' ');
-    document.getElementById('hc-4-content').innerHTML += '<br><br>' + kw;
+    const el4 = document.getElementById('hc-4-content');
+    if (el4) el4.innerHTML = (window.DOMPurify ? DOMPurify.sanitize(el4.innerHTML + '<br><br>' + kw) : el4.innerHTML + '<br><br>' + kw);
   }
 
   // B. Inteligência Emocional
   if (parsed.gatilhos?.length || parsed.protocolo_steps?.length) {
     if (parsed.gatilhos?.length) {
-      document.getElementById('em-gatilhos-content').innerHTML =
-        parsed.gatilhos.map(g => `<span class="em-trigger-tag">${g}</span>`).join(' ');
+      const raw1 = parsed.gatilhos.map(g => `<span class="em-trigger-tag">${g}</span>`).join(' ');
+      document.getElementById('em-gatilhos-content').innerHTML = window.DOMPurify ? DOMPurify.sanitize(raw1) : raw1;
     }
     if (parsed.protocolo_steps?.length) {
-      document.getElementById('em-protocolo-content').innerHTML =
-        parsed.protocolo_steps.map((s,i) =>
-          `<div class="em-step"><div class="em-step-num">${i+1}</div><div class="em-step-text">${s}</div></div>`
-        ).join('');
+      const raw2 = parsed.protocolo_steps.map((s,i) =>
+        `<div class="em-step"><div class="em-step-num">${i+1}</div><div class="em-step-text">${s}</div></div>`
+      ).join('');
+      document.getElementById('em-protocolo-content').innerHTML = window.DOMPurify ? DOMPurify.sanitize(raw2) : raw2;
     }
     document.getElementById('emocional-block').style.display = 'grid';
   }
@@ -974,8 +976,8 @@ function renderDNA(rawText, payload, palette, isRestore) {
   // D. Direcionamento Profissional
   if (parsed.papeis_ideais || parsed.cultura_fit) {
     if (parsed.papeis_ideais?.length) {
-      document.getElementById('db-papeis').innerHTML = parsed.papeis_ideais.map(p =>
-        `<span class="db-papel-tag">${p}</span>`).join('');
+      const raw3 = parsed.papeis_ideais.map(p => `<span class="db-papel-tag">${p}</span>`).join('');
+      document.getElementById('db-papeis').innerHTML = window.DOMPurify ? DOMPurify.sanitize(raw3) : raw3;
     }
     setText('db-cultura-fit', parsed.cultura_fit);
     setText('db-gap', parsed.gap_critico_pro);
@@ -1002,11 +1004,12 @@ function renderDNA(rawText, payload, palette, isRestore) {
 
   // G. Plano 90 Dias
   if (parsed.plano_90dias?.length) {
-    document.getElementById('plano-fases').innerHTML = parsed.plano_90dias.map((f,i) => `
+    const raw4 = parsed.plano_90dias.map((f,i) => `
       <div class="plano-fase">
         <div class="plano-fase-titulo">${f.titulo}</div>
         <div class="plano-fase-acao">${f.acao}</div>
       </div>`).join('');
+    document.getElementById('plano-fases').innerHTML = window.DOMPurify ? DOMPurify.sanitize(raw4) : raw4;
     document.getElementById('plano-block').style.display = 'block';
   }
 
@@ -1036,7 +1039,7 @@ function renderDNA(rawText, payload, palette, isRestore) {
 }
 
 function setText(id, val) { const el = document.getElementById(id); if (el && val != null) el.textContent = val; }
-function setHTML(id, html) { const el = document.getElementById(id); if (el && html) el.innerHTML = html; }
+function setHTML(id, html) { const el = document.getElementById(id); if (el && html) el.innerHTML = (window.DOMPurify ? DOMPurify.sanitize(html) : html); }
 
 // ── ERROR ─────────────────────────────────────────────────────────────────────
 function showError(msg) {
@@ -1048,17 +1051,13 @@ function showError(msg) {
 
 // ── PRINT PDF PREMIUM v4.0 ────────────────────────────────────────────────────
 function printDNA() {
-  if (window._payments && !_payments.hasAccess('dna')) {
-    _payments.showPaywall('dna');
-    document.addEventListener('payments:creditUsed', function handler(e) {
-      if (e.detail.matrixKey === 'dna') {
-        document.removeEventListener('payments:creditUsed', handler);
-        _printDNACore();
-      }
-    }, { once: true });
+  if (window._payments) {
+    _payments.serverDebitCredit('dna').then(function(ok) {
+      if (!ok) { _payments.showPaywall('dna'); return; }
+      _printDNACore();
+    });
     return;
   }
-  if (window._payments) _payments.deductCredit('dna');
   _printDNACore();
 }
 function _printDNACore() {

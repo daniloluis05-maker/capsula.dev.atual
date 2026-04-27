@@ -110,6 +110,19 @@
     return false;
   }
 
+  // Valida e debita 1 crédito no servidor (fonte da verdade: Supabase).
+  // Retorna Promise<boolean>. Substitui deductCredit nas páginas de PDF.
+  async function serverDebitCredit(matrixKey) {
+    if (isPro()) return true;
+    const u = getUser();
+    if (!u?.email) return false;
+    if (!window.capsulaDB?.debitCredit) return deductCredit(matrixKey); // fallback offline
+    const result = await window.capsulaDB.debitCredit(u.email, matrixKey);
+    if (!result.ok) return false;
+    if (result.creditos) { u.creditos = result.creditos; saveUser(u); }
+    return true;
+  }
+
   // ── Checkout (Mercado Pago Checkout Pro) ─────────────────────
 
   // productKey: 'avaliacao' | 'pacote3' | 'dna' | 'completo' | 'pro'
@@ -274,6 +287,7 @@
     getCredits,
     hasAccess,
     deductCredit,
+    serverDebitCredit,
     unlockMatrix,
     openCheckout,
     showPaywall,
