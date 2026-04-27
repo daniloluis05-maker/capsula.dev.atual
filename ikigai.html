@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Encontre sua razão de ser. Mapeie a interseção entre o que você ama, sabe fazer, o que o mundo precisa e o que pode gerar renda.">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://*.ingest.sentry.io;">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sistemagnosis.com.br/ikigai.html">
 <meta property="og:title" content="Ikigai | Sistema Gnosis">
@@ -130,8 +130,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .prog-wrap{max-width:160px;margin:0 0.75rem;}
 }
 </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" integrity="sha384-IiV7lMrgUYFjr7nKnX1XDxweNl9p95vzrLcmfcQ8dMKM5kqqCi6iwxDaRcr+I9Vc" crossorigin="anonymous"></script>
   <script src="js/config.js"></script>
+  <script src="js/sentry-init.js"></script>
   <script src="js/db.js"></script>
   <script src="js/payments.js"></script>
   <script src="js/remote-link.js"></script>

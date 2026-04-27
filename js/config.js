@@ -18,4 +18,10 @@ window.CAPSULA_CONFIG = {
   // Gerado por scripts/mercadopago-setup.js — não edite manualmente
   // ⚠️  NUNCA adicione MP_ACCESS_TOKEN aqui (só na Edge Function)
   MP_PUBLIC_KEY: 'APP_USR-2d867aca-2710-4594-af67-4e1f9e1184ff',
+
+  // ── Sentry (error tracking) ─────────────────────────────────
+  // Cole aqui o DSN do projeto Sentry (browser) e a integração ativa sozinha.
+  // Free tier: https://sentry.io  → New Project → Browser JavaScript
+  // Sem DSN, sentry-init.js apenas não faz nada (no-op).
+  sentryDsn: '',
 };
