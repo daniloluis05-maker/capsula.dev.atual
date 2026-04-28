@@ -394,13 +394,25 @@ async function rlCriarLink() {
     return;
   }
   document.getElementById('rl-input-etiqueta').value = '';
-  rlCarregarLinks();
+  btn.textContent = '✓ Link criado!';
+  btn.style.background = 'rgba(46,196,160,0.15)';
+  btn.style.color = '#2EC4A0';
+  btn.style.border = '1px solid rgba(46,196,160,0.3)';
+  setTimeout(function() {
+    btn.textContent = '+ Gerar link';
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.border = '';
+  }, 2500);
+  // Schema cache do PostgREST pode demorar ~2s após DDL — tenta duas vezes
+  await rlCarregarLinks();
+  setTimeout(rlCarregarLinks, 2500);
 }
 
 async function rlCarregarLinks() {
   if (!_rlProEmail) return;
   const links = await capsulaDB.getMyRemoteLinks(_rlProEmail);
-  rlRenderLinks(links);
+  if (links && links.length) rlRenderLinks(links);
 }
 
 function rlRenderLinks(links) {
