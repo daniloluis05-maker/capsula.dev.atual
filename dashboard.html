@@ -142,11 +142,28 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .prog-fill{height:100%;border-radius:100px;transition:width 1.2s cubic-bezier(0.34,1.56,0.64,1);}
 
 /* TOAST */
-.toast{position:fixed;bottom:2rem;right:2rem;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:0.9rem 1.25rem;display:flex;align-items:center;gap:0.65rem;font-size:0.82rem;z-index:999;transform:translateY(80px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);backdrop-filter:blur(20px);}
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:0.9rem 1.25rem;display:flex;align-items:center;gap:0.65rem;font-size:0.82rem;z-index:9999;transform:translateY(80px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);backdrop-filter:blur(20px);}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast-check{width:20px;height:20px;border-radius:50%;background:rgba(46,196,160,0.12);border:1px solid var(--S);display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--S);flex-shrink:0;}
+.toast.error .toast-check{background:rgba(232,96,58,0.12);border-color:#E8603A;color:#E8603A;}
 .toast strong{display:block;font-size:0.82rem;font-weight:600;}
 .toast-sub{color:var(--muted);font-size:0.72rem;font-family:var(--mono);}
+/* TABS equipe */
+.eq-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1.25rem;}
+.eq-tab{background:none;border:none;border-bottom:2px solid transparent;padding:0.6rem 1.1rem;color:var(--muted);font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;margin-bottom:-1px;font-family:inherit;}
+.eq-tab:hover{color:var(--text);}
+.eq-tab.active{color:#2EC4A0;border-bottom-color:#2EC4A0;}
+/* Modal campos */
+.eq-field{margin-bottom:0.9rem;}
+.eq-field label{display:block;font-size:0.7rem;color:var(--muted);margin-bottom:0.35rem;text-transform:uppercase;letter-spacing:0.05em;font-weight:600;}
+.eq-field input,.eq-field select,.eq-field textarea{width:100%;padding:0.65rem 0.9rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.88rem;box-sizing:border-box;outline:none;font-family:inherit;}
+.eq-field input:focus,.eq-field select:focus,.eq-field textarea:focus{border-color:rgba(46,196,160,0.5);}
+.eq-field select option{background:var(--surface2);}
+.eq-modal-actions{display:flex;gap:0.5rem;margin-top:1.25rem;}
+.eq-modal-actions button{flex:1;padding:0.75rem;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;border:none;transition:opacity 0.2s;}
+.eq-modal-actions button:hover{opacity:0.85;}
+.eq-btn-cancel{background:transparent;border:1px solid var(--border)!important;color:var(--muted);}
+.eq-btn-save{background:#2EC4A0;color:#fff;}
 
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
@@ -752,29 +769,72 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 
 <div class="toast" id="toast">
-  <div class="toast-check">✓</div>
+  <div class="toast-check" id="toast-icon">✓</div>
   <div>
     <strong id="toast-title">Bem-vindo(a)!</strong>
     <div class="toast-sub" id="toast-sub">Conta criada com sucesso.</div>
   </div>
 </div>
 
+<!-- MODAL: Adicionar membro manualmente -->
+<div id="eq-manual-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9500;align-items:center;justify-content:center;padding:1rem;" onclick="if(event.target===this)eqFecharManual()">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.75rem;max-width:420px;width:100%;position:relative;">
+    <button onclick="eqFecharManual()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1;width:32px;height:32px;">×</button>
+    <h3 style="margin:0 0 0.25rem;font-size:1rem;">Adicionar membro</h3>
+    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 1.25rem;">Informe os dados do membro que não possui link remoto ainda.</p>
+    <div class="eq-field">
+      <label>Nome *</label>
+      <input id="eq-m-nome" type="text" placeholder="Ex: Ana Silva" onkeydown="if(event.key==='Enter')eqSalvarManual()">
+    </div>
+    <div class="eq-field">
+      <label>E-mail (opcional)</label>
+      <input id="eq-m-email" type="email" placeholder="ana@empresa.com">
+    </div>
+    <div class="eq-field">
+      <label>Papel na equipe (opcional)</label>
+      <select id="eq-m-papel-sel" onchange="eqPapelSelChange()">
+        <option value="">Sem papel definido</option>
+        <option value="Líder">Líder</option>
+        <option value="Gestão">Gestão</option>
+        <option value="Product Manager">Product Manager</option>
+        <option value="Dev Backend">Dev Backend</option>
+        <option value="Dev Frontend">Dev Frontend</option>
+        <option value="Design">Design</option>
+        <option value="Data / BI">Data / BI</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Comercial">Comercial</option>
+        <option value="RH">RH</option>
+        <option value="Operações">Operações</option>
+        <option value="Financeiro">Financeiro</option>
+        <option value="outro">Outro...</option>
+      </select>
+      <input id="eq-m-papel-txt" type="text" placeholder="Digite o papel" style="display:none;margin-top:0.5rem;width:100%;padding:0.65rem 0.9rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.88rem;box-sizing:border-box;outline:none;">
+    </div>
+    <p id="eq-m-err" style="color:#ff6b6b;font-size:0.78rem;min-height:1em;margin:0;"></p>
+    <div class="eq-modal-actions">
+      <button class="eq-btn-cancel" onclick="eqFecharManual()">Cancelar</button>
+      <button class="eq-btn-save" onclick="eqSalvarManual()">Adicionar membro</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL CONVITE (P8) -->
 <div id="invite-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9100;align-items:center;justify-content:center;padding:1rem;" onclick="if(event.target===this)closeInviteModal()">
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:420px;width:100%;position:relative;box-shadow:0 16px 48px rgba(0,0,0,0.5);">
-    <button onclick="closeInviteModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1;">×</button>
+    <button onclick="closeInviteModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1;width:32px;height:32px;">×</button>
     <h3 style="margin:0 0 0.4rem;">Convidar membro</h3>
-    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1.25rem;">Compartilhe este link para que a pessoa crie a conta e entre na sua equipe.</p>
+    <div id="invite-equipe-badge" style="display:none;margin-bottom:0.75rem;padding:0.4rem 0.75rem;background:rgba(46,196,160,0.08);border:1px solid rgba(46,196,160,0.2);border-radius:6px;font-size:0.78rem;color:#2EC4A0;">Para a equipe: <strong id="invite-equipe-nome"></strong></div>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1.25rem;" id="invite-msg">Compartilhe este link. A pessoa cria a conta, completa o DISC e você a adiciona à equipe.</p>
     <div style="display:flex;gap:0.5rem;">
       <input id="invite-link-input" readonly style="flex:1;padding:0.65rem 0.75rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.8rem;font-family:monospace;outline:none;" />
-      <button onclick="copyInviteLink()" style="padding:0.65rem 1rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:600;font-size:0.85rem;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'" id="copy-invite-btn">Copiar</button>
+      <button onclick="copyInviteLink()" style="padding:0.65rem 1rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:600;font-size:0.85rem;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;" id="copy-invite-btn">Copiar</button>
     </div>
-    <p style="font-size:0.72rem;color:var(--muted);margin-top:0.75rem;font-family:monospace;" id="invite-copied-msg" style="display:none;"></p>
+    <p style="font-size:0.72rem;color:var(--muted);margin-top:0.75rem;font-family:monospace;display:none;" id="invite-copied-msg"></p>
     <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">
-      <p style="font-size:0.8rem;color:var(--muted);">Ou compartilhe diretamente:</p>
-      <div style="display:flex;gap:0.5rem;margin-top:0.6rem;flex-wrap:wrap;">
-        <button onclick="shareInviteWhatsApp()" style="padding:0.45rem 0.9rem;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.2);border-radius:6px;color:#25D366;font-size:0.8rem;cursor:pointer;">WhatsApp</button>
-        <button onclick="shareInviteNative()" style="padding:0.45rem 0.9rem;background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.2);border-radius:6px;color:var(--accent);font-size:0.8rem;cursor:pointer;">Compartilhar</button>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.6rem;">Ou compartilhe diretamente:</p>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <button onclick="shareInviteWhatsApp()" style="padding:0.5rem 1rem;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.2);border-radius:6px;color:#25D366;font-size:0.82rem;cursor:pointer;font-weight:600;">WhatsApp</button>
+        <button onclick="shareInviteNative()" style="padding:0.5rem 1rem;background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.2);border-radius:6px;color:var(--accent);font-size:0.82rem;cursor:pointer;font-weight:600;">Compartilhar</button>
       </div>
     </div>
   </div>

@@ -45,7 +45,15 @@ async function loadUser(){
   const u = JSON.parse(finalRaw);
   applyUser(u.nome, u.apelido);
 
-  if (isNew) showToast(u.apelido || (u.nome ? u.nome.split(' ')[0] : 'Usuário'));
+  if (isNew) {
+    showToast(u.apelido || (u.nome ? u.nome.split(' ')[0] : 'Usuário'));
+    const eqNome = localStorage.getItem('capsula_invitedEquipeNome');
+    if (eqNome) {
+      localStorage.removeItem('capsula_invitedEquipe');
+      localStorage.removeItem('capsula_invitedEquipeNome');
+      setTimeout(() => eqToast('Convidado para: ' + eqNome, 'Complete o DISC e peça ao gestor para te adicionar.'), 4500);
+    }
+  }
 
   loadMatrixState((capsulaDB.lsGetUser() || {}));
 
@@ -235,11 +243,23 @@ function applyUser(nome,apelido){
 }
 
 function showToast(nome){
-  const t=document.getElementById('toast');
-  document.getElementById('toast-title').textContent='Bem-vindo(a), '+nome+'!';
-  document.getElementById('toast-sub').textContent='Escolha uma matriz para começar.';
-  setTimeout(()=>t.classList.add('show'),600);
-  setTimeout(()=>t.classList.remove('show'),5000);
+  eqToast('Bem-vindo(a), ' + nome + '!', 'Escolha uma matriz para começar.', false, 600);
+}
+
+let _toastTimer = null;
+function eqToast(titulo, sub, isError, delay) {
+  if (_toastTimer) clearTimeout(_toastTimer);
+  const t = document.getElementById('toast');
+  const icon = document.getElementById('toast-icon');
+  document.getElementById('toast-title').textContent = titulo;
+  document.getElementById('toast-sub').textContent = sub || '';
+  if (icon) icon.textContent = isError ? '!' : '✓';
+  t.classList.toggle('error', !!isError);
+  t.classList.remove('show');
+  _toastTimer = setTimeout(() => {
+    t.classList.add('show');
+    _toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+  }, delay || 50);
 }
 
 async function logout(){
@@ -795,12 +815,16 @@ async function eqSalvarEquipe() {
   if (error) { err.textContent = 'Erro ao criar equipe. Tente novamente.'; return; }
   eqFecharNovo();
   await eqCarregar();
+  eqToast('Equipe criada!', nome);
 }
 
 async function eqDeletar(id) {
-  if (!confirm('Remover esta equipe? Os membros adicionados também serão removidos (mas os resultados originais continuam disponíveis).')) return;
+  const eq = _eqEquipes.find(e => e.id === id);
+  const nome = eq ? eq.nome : 'esta equipe';
+  if (!confirm(`Remover "${nome}"? Os membros adicionados também serão removidos (os resultados originais continuam disponíveis).`)) return;
   await capsulaDB.deleteEquipe(id);
   await eqCarregar();
+  eqToast('Equipe removida', nome);
 }
 
 async function eqVerDetalhes(id) {
@@ -811,42 +835,65 @@ async function eqVerDetalhes(id) {
   const membros = eq.equipe_membros || [];
   const dnaCache = await capsulaDB.getEquipeDNA(id).catch(() => null);
 
-  cont.innerHTML = [
-    `<h3 style="margin:0 0 0.3rem;font-size:1.15rem;color:var(--text);padding-right:2rem;">${eqEsc(eq.nome)}</h3>`,
-    eq.descricao ? `<p style="margin:0 0 1.25rem;color:var(--muted);font-size:0.85rem;">${eqEsc(eq.descricao)}</p>` : '<div style="height:0.75rem;"></div>',
-
-    // Estatística + adicionar
+  // Aba Membros
+  const tabMembros = [
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding:0.85rem 1rem;background:rgba(46,196,160,0.06);border:1px solid rgba(46,196,160,0.18);border-radius:10px;">',
     `<div><span style="font-size:1.2rem;font-weight:700;color:#2EC4A0;">${membros.length}</span> <span style="font-size:0.82rem;color:var(--muted);">membro${membros.length!==1?'s':''} na equipe</span></div>`,
-    `<button onclick="eqAbrirAdd('${id}')" style="padding:0.5rem 1rem;background:#2EC4A0;border:none;border-radius:7px;color:#fff;font-size:0.78rem;font-weight:600;cursor:pointer;">+ Adicionar membro</button>`,
+    `<div style="display:flex;gap:0.5rem;">`,
+    `<button onclick="openInviteModal('${id}','${eqEsc(eq.nome)}')" style="padding:0.5rem 0.9rem;background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.3);border-radius:7px;color:#7c6af7;font-size:0.75rem;font-weight:600;cursor:pointer;">✉ Convidar</button>`,
+    `<button onclick="eqAbrirAdd('${id}')" style="padding:0.5rem 1rem;background:#2EC4A0;border:none;border-radius:7px;color:#fff;font-size:0.75rem;font-weight:600;cursor:pointer;">+ Adicionar</button>`,
+    `</div>`,
     '</div>',
-
-    // DISC de Equipe
     eqRenderDISCEquipe(membros),
-
-    // Lista de membros
-    '<h4 style="margin:1.25rem 0 0.6rem;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);">Membros</h4>',
     membros.length
       ? `<div style="display:flex;flex-direction:column;gap:0.5rem;">${membros.map(m => eqRenderMembroRow(m, id)).join('')}</div>`
-      : '<p style="color:var(--muted);font-size:0.85rem;font-style:italic;">Nenhum membro adicionado ainda.</p>',
+      : '<p style="color:var(--muted);font-size:0.85rem;font-style:italic;text-align:center;padding:1.5rem 0;">Nenhum membro adicionado ainda.<br><span style="font-size:0.78rem;">Clique em "+ Adicionar" para começar.</span></p>',
+  ].join('');
 
-    // Matrizes de equipe (atalhos)
-    '<h4 style="margin:1.5rem 0 0.6rem;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);">Matrizes de Equipe</h4>',
-    `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0.6rem;margin-bottom:1.5rem;">`,
-    `<a href="okrs.html?equipe=${id}" style="display:block;padding:0.85rem;background:rgba(124,106,247,0.06);border:1px solid rgba(124,106,247,0.2);border-radius:9px;color:#7c6af7;font-size:0.82rem;font-weight:600;text-align:center;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(124,106,247,0.12)'" onmouseout="this.style.background='rgba(124,106,247,0.06)'">⊙ OKRs Trimestrais</a>`,
-    `<a href="5w2h.html?equipe=${id}" style="display:block;padding:0.85rem;background:rgba(27,168,212,0.06);border:1px solid rgba(27,168,212,0.2);border-radius:9px;color:#1BA8D4;font-size:0.82rem;font-weight:600;text-align:center;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(27,168,212,0.12)'" onmouseout="this.style.background='rgba(27,168,212,0.06)'">📋 5W2H · Plano de Ação</a>`,
-    `<a href="raci.html?equipe=${id}" style="display:block;padding:0.85rem;background:rgba(232,96,58,0.06);border:1px solid rgba(232,96,58,0.2);border-radius:9px;color:#E8603A;font-size:0.82rem;font-weight:600;text-align:center;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(232,96,58,0.12)'" onmouseout="this.style.background='rgba(232,96,58,0.06)'">👥 Matriz RACI</a>`,
-    `<a href="swot-equipe.html?equipe=${id}" style="display:block;padding:0.85rem;background:rgba(46,196,160,0.06);border:1px solid rgba(46,196,160,0.2);border-radius:9px;color:#2EC4A0;font-size:0.82rem;font-weight:600;text-align:center;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(46,196,160,0.12)'" onmouseout="this.style.background='rgba(46,196,160,0.06)'">🎯 SWOT de Equipe</a>`,
-    '</div>',
+  // Aba Matrizes
+  const tabMatrizes = [
+    `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem;">`,
+    `<a href="okrs.html?equipe=${id}" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1.25rem 1rem;background:rgba(124,106,247,0.06);border:1px solid rgba(124,106,247,0.2);border-radius:10px;color:#7c6af7;font-size:0.85rem;font-weight:600;text-align:center;text-decoration:none;">`,
+    `<span style="font-size:1.4rem;">⊙</span>OKRs Trimestrais</a>`,
+    `<a href="5w2h.html?equipe=${id}" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1.25rem 1rem;background:rgba(27,168,212,0.06);border:1px solid rgba(27,168,212,0.2);border-radius:10px;color:#1BA8D4;font-size:0.85rem;font-weight:600;text-align:center;text-decoration:none;">`,
+    `<span style="font-size:1.4rem;">📋</span>5W2H · Plano</a>`,
+    `<a href="raci.html?equipe=${id}" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1.25rem 1rem;background:rgba(232,96,58,0.06);border:1px solid rgba(232,96,58,0.2);border-radius:10px;color:#E8603A;font-size:0.85rem;font-weight:600;text-align:center;text-decoration:none;">`,
+    `<span style="font-size:1.4rem;">👥</span>Matriz RACI</a>`,
+    `<a href="swot-equipe.html?equipe=${id}" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1.25rem 1rem;background:rgba(46,196,160,0.06);border:1px solid rgba(46,196,160,0.2);border-radius:10px;color:#2EC4A0;font-size:0.85rem;font-weight:600;text-align:center;text-decoration:none;">`,
+    `<span style="font-size:1.4rem;">🎯</span>SWOT de Equipe</a>`,
+    `<a href="wizard.html?equipe=${id}" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1.25rem 1rem;background:rgba(124,106,247,0.06);border:1px solid rgba(124,106,247,0.2);border-radius:10px;color:#7c6af7;font-size:0.85rem;font-weight:600;text-align:center;text-decoration:none;">`,
+    `<span style="font-size:1.4rem;">✦</span>Gerar com IA</a>`,
+    `</div>`,
+  ].join('');
 
-    // DNA Estratégico
-    '<h4 style="margin:1.5rem 0 0.6rem;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);">DNA Estratégico de Equipe</h4>',
-    membros.length >= 2
-      ? `<div id="eq-dna-area">${dnaCache ? eqRenderDNA(dnaCache.conteudo, dnaCache.created_at) : eqDNAVazio()}</div>`
-      : '<p style="color:var(--muted);font-size:0.85rem;font-style:italic;">Adicione pelo menos 2 membros para gerar o DNA Estratégico de Equipe.</p>',
+  // Aba DNA
+  const tabDNA = membros.length >= 2
+    ? `<div id="eq-dna-area">${dnaCache ? eqRenderDNA(dnaCache.conteudo, dnaCache.created_at) : eqDNAVazio()}</div>`
+    : '<p style="color:var(--muted);font-size:0.85rem;font-style:italic;text-align:center;padding:2rem 0;">Adicione pelo menos 2 membros para gerar o DNA Estratégico de Equipe.</p>';
+
+  cont.innerHTML = [
+    `<h3 style="margin:0 0 0.2rem;font-size:1.15rem;color:var(--text);padding-right:2rem;">${eqEsc(eq.nome)}</h3>`,
+    eq.descricao ? `<p style="margin:0 0 1rem;color:var(--muted);font-size:0.82rem;">${eqEsc(eq.descricao)}</p>` : '<div style="height:0.85rem;"></div>',
+    `<div class="eq-tabs">`,
+    `<button class="eq-tab active" onclick="eqSwitchTab('membros',this)">Membros <span style="font-size:0.68rem;opacity:0.7;">(${membros.length})</span></button>`,
+    `<button class="eq-tab" onclick="eqSwitchTab('matrizes',this)">Matrizes</button>`,
+    `<button class="eq-tab" onclick="eqSwitchTab('dna',this)">DNA Estratégico</button>`,
+    `</div>`,
+    `<div id="eq-tab-membros">${tabMembros}</div>`,
+    `<div id="eq-tab-matrizes" style="display:none;">${tabMatrizes}</div>`,
+    `<div id="eq-tab-dna" style="display:none;">${tabDNA}</div>`,
   ].join('');
 
   document.getElementById('eq-det-modal').style.display = 'flex';
+}
+
+function eqSwitchTab(tab, btn) {
+  ['membros','matrizes','dna'].forEach(t => {
+    const el = document.getElementById('eq-tab-' + t);
+    if (el) el.style.display = t === tab ? '' : 'none';
+  });
+  document.querySelectorAll('.eq-tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
 }
 
 function eqFecharDet() {
@@ -859,23 +906,25 @@ function eqRenderMembroRow(m, equipeId) {
   const matrizLabel = m.matriz ? m.matriz.toUpperCase() : '—';
   return [
     '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0.85rem;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;">',
-    `<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#2EC4A0,#1BA8D4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.82rem;font-weight:700;flex-shrink:0;">${inicial}</div>`,
+    `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2EC4A0,#1BA8D4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.88rem;font-weight:700;flex-shrink:0;">${inicial}</div>`,
     '<div style="flex:1;min-width:0;">',
     `<div style="font-size:0.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${eqEsc(m.nome)}</div>`,
-    `<div style="font-size:0.68rem;color:var(--muted);font-family:monospace;">${eqEsc(m.email || '')} ${m.papel ? '· ' + eqEsc(m.papel) : ''}</div>`,
+    `<div style="font-size:0.7rem;color:var(--muted);font-family:monospace;">${eqEsc(m.email || '')}${m.papel ? ' · <span style="color:rgba(232,232,240,0.55);">' + eqEsc(m.papel) + '</span>' : ''}</div>`,
     '</div>',
-    `<span style="font-size:0.62rem;padding:0.18rem 0.55rem;background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.25);border-radius:20px;color:#7c6af7;font-family:monospace;">${matrizLabel}</span>`,
-    `<button onclick="eqRemoverMembro('${m.id}')" title="Remover" style="background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:0 0.3rem;opacity:0.4;line-height:1;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.4'">×</button>`,
+    m.matriz ? `<span style="font-size:0.62rem;padding:0.18rem 0.55rem;background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.25);border-radius:20px;color:#7c6af7;font-family:monospace;flex-shrink:0;">${matrizLabel}</span>` : '',
+    `<button onclick="eqRemoverMembro('${m.id}')" title="Remover membro" style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:1rem;cursor:pointer;padding:0;min-width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;" onmouseover="this.style.color='#E8603A';this.style.borderColor='rgba(232,96,58,0.4)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border)'">×</button>`,
     '</div>',
   ].join('');
 }
 
 async function eqRemoverMembro(id) {
   if (!confirm('Remover este membro da equipe?')) return;
+  const eq = _eqEquipes.find(e => e.id === _eqDetailId);
+  const m = eq && eq.equipe_membros ? eq.equipe_membros.find(x => x.id === id) : null;
   await capsulaDB.removeMembroEquipe(id);
   await eqCarregar();
-  // Reabre o detalhe atualizado
   if (_eqDetailId) eqVerDetalhes(_eqDetailId);
+  eqToast(m ? eqEsc(m.nome) + ' removido' : 'Membro removido', 'da equipe');
 }
 
 // ── DISC de Equipe (radar chart com médias) ─────────────────
@@ -1103,7 +1152,7 @@ async function eqAbrirAdd(equipeId) {
 
   lista.innerHTML = [
     '<div style="display:flex;flex-direction:column;gap:0.5rem;max-height:50vh;overflow-y:auto;margin:0 -0.25rem;padding:0 0.25rem;">',
-    disponiveis.map(r => {
+    disponiveis.map((r, i) => {
       const inicial = (r.respondente_nome || '?').charAt(0).toUpperCase();
       const data = r.completed_at ? new Date(r.completed_at).toLocaleDateString('pt-BR') : '';
       const resJson = JSON.stringify({
@@ -1111,19 +1160,24 @@ async function eqAbrirAdd(equipeId) {
         resultado: r.resultado, matriz: r.matriz, id: r.id,
       }).replace(/'/g, "&#39;").replace(/"/g, '&quot;');
       return [
-        `<div style="display:flex;align-items:center;gap:0.75rem;padding:0.7rem 0.85rem;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;">`,
-        `<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#7c6af7,#1BA8D4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.82rem;font-weight:700;flex-shrink:0;">${inicial}</div>`,
+        `<div style="padding:0.75rem 0.85rem;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;">`,
+        `<div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.55rem;">`,
+        `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7c6af7,#1BA8D4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.88rem;font-weight:700;flex-shrink:0;">${inicial}</div>`,
         '<div style="flex:1;min-width:0;">',
-        `<div style="font-size:0.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${eqEsc(r.respondente_nome)}</div>`,
-        `<div style="font-size:0.68rem;color:var(--muted);font-family:monospace;">${eqEsc(r.respondente_email||'')} · ${(r.matriz||'').toUpperCase()} · ${data}</div>`,
+        `<div style="font-size:0.85rem;font-weight:600;color:var(--text);">${eqEsc(r.respondente_nome)}</div>`,
+        `<div style="font-size:0.7rem;color:var(--muted);font-family:monospace;">${eqEsc(r.respondente_email||'')} · <strong style="color:#7c6af7;">${(r.matriz||'').toUpperCase()}</strong> · ${data}</div>`,
         '</div>',
-        `<button onclick='eqAdicionarRespondente(${resJson})' style="padding:0.4rem 0.8rem;background:#2EC4A0;border:none;border-radius:6px;color:#fff;font-size:0.72rem;font-weight:600;cursor:pointer;white-space:nowrap;">+ Adicionar</button>`,
+        `</div>`,
+        `<div style="display:flex;gap:0.5rem;align-items:center;">`,
+        `<input id="papel-resp-${i}" type="text" placeholder="Papel (ex: Dev, RH, Líder...)" style="flex:1;padding:0.45rem 0.7rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:0.78rem;outline:none;font-family:inherit;">`,
+        `<button onclick='eqAdicionarRespondente(${resJson},"papel-resp-${i}")' style="padding:0.45rem 1rem;background:#2EC4A0;border:none;border-radius:6px;color:#fff;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;">+ Adicionar</button>`,
+        `</div>`,
         '</div>',
       ].join('');
     }).join(''),
     '</div>',
     '<div style="text-align:center;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">',
-    `<button onclick="eqAdicionarManual('${equipeId}')" style="padding:0.5rem 1rem;background:transparent;border:1px solid var(--border);border-radius:7px;color:var(--muted);font-size:0.78rem;cursor:pointer;">+ Adicionar manualmente</button>`,
+    `<button onclick="eqAbrirManual('${equipeId}')" style="padding:0.55rem 1.1rem;background:transparent;border:1px solid rgba(46,196,160,0.35);border-radius:7px;color:#2EC4A0;font-size:0.82rem;font-weight:600;cursor:pointer;">+ Adicionar membro manualmente</button>`,
     '</div>',
   ].join('');
 }
@@ -1132,36 +1186,69 @@ function eqFecharAdd() {
   document.getElementById('eq-add-modal').style.display = 'none';
 }
 
-async function eqAdicionarRespondente(r) {
-  const papel = prompt('Papel do membro na equipe (opcional, ex: Líder, Backend, RH):', '') || '';
+async function eqAdicionarRespondente(r, papelInputId) {
+  const papel = papelInputId ? (document.getElementById(papelInputId)?.value || '').trim() : '';
   const { error } = await capsulaDB.addMembroEquipe({
     equipe_id: _eqDetailId,
     remote_result_id: r.id,
     nome: r.respondente_nome,
     email: r.respondente_email,
-    papel: papel.trim(),
+    papel,
     resultado: r.resultado,
     matriz: r.matriz,
   });
-  if (error) { alert('Erro ao adicionar membro.'); return; }
+  if (error) { eqToast('Erro ao adicionar membro', '', true); return; }
   eqFecharAdd();
   await eqCarregar();
   if (_eqDetailId) eqVerDetalhes(_eqDetailId);
+  eqToast(eqEsc(r.respondente_nome) + ' adicionado!', papel || '');
 }
 
-async function eqAdicionarManual(equipeId) {
-  const nome = prompt('Nome do membro:'); if (!nome) return;
-  const email = prompt('E-mail (opcional):') || '';
-  const papel = prompt('Papel na equipe (opcional, ex: Líder, Backend):') || '';
+// Abre o modal de adição manual (substitui os 3 prompts)
+let _eqManualEquipeId = '';
+function eqAbrirManual(equipeId) {
+  _eqManualEquipeId = equipeId;
+  document.getElementById('eq-m-nome').value = '';
+  document.getElementById('eq-m-email').value = '';
+  document.getElementById('eq-m-papel-sel').value = '';
+  document.getElementById('eq-m-papel-txt').value = '';
+  document.getElementById('eq-m-papel-txt').style.display = 'none';
+  document.getElementById('eq-m-err').textContent = '';
+  document.getElementById('eq-manual-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('eq-m-nome')?.focus(), 80);
+}
+
+function eqFecharManual() {
+  document.getElementById('eq-manual-modal').style.display = 'none';
+}
+
+function eqPapelSelChange() {
+  const sel = document.getElementById('eq-m-papel-sel');
+  const txt = document.getElementById('eq-m-papel-txt');
+  txt.style.display = sel.value === 'outro' ? 'block' : 'none';
+  if (sel.value === 'outro') setTimeout(() => txt.focus(), 50);
+}
+
+async function eqSalvarManual() {
+  const nome = (document.getElementById('eq-m-nome').value || '').trim();
+  const email = (document.getElementById('eq-m-email').value || '').trim();
+  const papelSel = document.getElementById('eq-m-papel-sel').value;
+  const papel = papelSel === 'outro'
+    ? (document.getElementById('eq-m-papel-txt').value || '').trim()
+    : papelSel;
+  const errEl = document.getElementById('eq-m-err');
+  if (!nome) { errEl.textContent = 'Informe o nome do membro.'; return; }
+  errEl.textContent = '';
   const { error } = await capsulaDB.addMembroEquipe({
-    equipe_id: equipeId, nome: nome.trim(),
-    email: email.trim(), papel: papel.trim(),
+    equipe_id: _eqManualEquipeId, nome, email, papel,
     resultado: null, matriz: null,
   });
-  if (error) { alert('Erro ao adicionar membro.'); return; }
+  if (error) { errEl.textContent = 'Erro ao adicionar. Tente novamente.'; return; }
+  eqFecharManual();
   eqFecharAdd();
   await eqCarregar();
   if (_eqDetailId) eqVerDetalhes(_eqDetailId);
+  eqToast(nome + ' adicionado!', papel || '');
 }
 
 // ══════════════════════════════════════
@@ -1221,19 +1308,30 @@ function renderDiscHistoryChart(userData) {
 // ══════════════════════════════════════
 // P8 — INVITE MODAL
 // ══════════════════════════════════════
-function getInviteLink() {
+function getInviteLink(equipeId, equipeName) {
   const raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || '{}';
   const userData = JSON.parse(raw);
   const uid = userData.uid || 'guest';
   const base = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/');
-  return base + 'convite.html?ref=' + uid;
+  let url = base + 'convite.html?ref=' + uid;
+  if (equipeId) url += '&equipe=' + encodeURIComponent(equipeId);
+  if (equipeName) url += '&equipe_nome=' + encodeURIComponent(equipeName);
+  return url;
 }
 
-function openInviteModal() {
+function openInviteModal(equipeId, equipeName) {
   const modal = document.getElementById('invite-modal');
   const input = document.getElementById('invite-link-input');
-  if (input) input.value = getInviteLink();
-  if (modal) { modal.style.display = 'flex'; }
+  const badge = document.getElementById('invite-equipe-badge');
+  const nomeEl = document.getElementById('invite-equipe-nome');
+  if (equipeId && equipeName) {
+    if (badge) badge.style.display = 'block';
+    if (nomeEl) nomeEl.textContent = equipeName;
+  } else {
+    if (badge) badge.style.display = 'none';
+  }
+  if (input) input.value = getInviteLink(equipeId, equipeName);
+  if (modal) modal.style.display = 'flex';
 }
 
 function closeInviteModal() {
@@ -1241,23 +1339,27 @@ function closeInviteModal() {
   if (modal) modal.style.display = 'none';
 }
 
+function _currentInviteLink() {
+  return (document.getElementById('invite-link-input') || {}).value || getInviteLink();
+}
+
 function copyInviteLink() {
-  const link = getInviteLink();
+  const link = _currentInviteLink();
   navigator.clipboard.writeText(link).then(() => {
     const btn = document.getElementById('copy-invite-btn');
     const msg = document.getElementById('invite-copied-msg');
     if (btn) { const orig = btn.textContent; btn.textContent = 'Copiado!'; setTimeout(() => { btn.textContent = orig; }, 2000); }
-    if (msg) { msg.textContent = 'Link copiado para a área de transferência ✓'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 3000); }
+    if (msg) { msg.style.display = 'block'; msg.textContent = 'Link copiado ✓'; setTimeout(() => { msg.style.display = 'none'; }, 3000); }
   });
 }
 
 function shareInviteWhatsApp() {
-  const link = encodeURIComponent(getInviteLink());
+  const link = encodeURIComponent(_currentInviteLink());
   window.open('https://wa.me/?text=Acesse%20o%20Sistema%20Gnosis%20e%20mapeie%20seu%20perfil%20comportamental%20gratuitamente%3A%20' + link, '_blank');
 }
 
 function shareInviteNative() {
-  const link = getInviteLink();
+  const link = _currentInviteLink();
   if (navigator.share) {
     navigator.share({ title: 'Sistema Gnosis', text: 'Mapeie seu perfil comportamental gratuitamente!', url: link });
   } else {
