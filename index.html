@@ -639,6 +639,10 @@
   .form-group select option { background: var(--surface2); }
   .form-group input.input--error,
   .form-group select.input--error { border-color: var(--accent3); }
+  .pw-wrap { position: relative; }
+  .pw-wrap input { padding-right: 2.75rem; }
+  .pw-toggle { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted); padding: 0; line-height: 1; }
+  .pw-toggle:hover { color: var(--text); }
   .field-error {
     display: block;
     font-size: 0.75rem;
@@ -1155,6 +1159,14 @@ function planoCheckout(key) {
   const btn = document.querySelector('[data-modal-open]');
   if (btn) btn.click();
 }
+
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  if (!inp) return;
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  btn.style.opacity = show ? '1' : '0.45';
+}
 </script>
 
 <!-- CTA FINAL -->
@@ -1216,7 +1228,7 @@ function planoCheckout(key) {
       </div>
       <div class="form-group">
         <label for="senha">Senha</label>
-        <input type="password" id="senha" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+        <div class="pw-wrap"><input type="password" id="senha" placeholder="Mínimo 6 caracteres" autocomplete="new-password" /><button type="button" class="pw-toggle" onclick="togglePw('senha',this)" tabindex="-1" aria-label="Mostrar senha">👁</button></div>
       </div>
       <div class="form-group">
         <label for="objetivo">Seu objetivo principal</label>
@@ -1249,7 +1261,7 @@ function planoCheckout(key) {
       </div>
       <div class="form-group">
         <label for="login-senha">Senha</label>
-        <input type="password" id="login-senha" placeholder="Sua senha" autocomplete="current-password" />
+        <div class="pw-wrap"><input type="password" id="login-senha" placeholder="Sua senha" autocomplete="current-password" /><button type="button" class="pw-toggle" onclick="togglePw('login-senha',this)" tabindex="-1" aria-label="Mostrar senha">👁</button></div>
       </div>
       <div class="forgot-row">
         <button class="link-btn" id="forgot-password-btn" type="button">Esqueci minha senha</button>

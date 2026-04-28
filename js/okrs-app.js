@@ -56,9 +56,17 @@ async function init() {
   // Pré-seleciona equipe via ?equipe=
   const params = new URLSearchParams(window.location.search);
   const preEq = params.get('equipe');
-  if (preEq && _equipes.find(e => e.id === preEq)) selE.value = preEq;
+  if (preEq && _equipes.find(e => e.id === preEq)) { selE.value = preEq; updateBackLink(preEq); }
 
   await loadObjetivos();
+}
+
+function updateBackLink(equipeId) {
+  const lnk = document.getElementById('back-link');
+  if (!lnk) return;
+  const eq = _equipes.find(e => e.id === equipeId);
+  if (eq) { lnk.href = 'equipe.html?id=' + equipeId; lnk.textContent = '← ' + eq.nome; }
+  else { lnk.href = 'dashboard.html'; lnk.textContent = '← Dashboard'; }
 }
 
 async function onCicloChange() {
@@ -69,7 +77,7 @@ async function onCicloChange() {
 async function loadObjetivos() {
   _objetivos = await capsulaDB.getObjetivos(_user.email, _ciclo);
   const equipeFilter = document.getElementById('sel-equipe').value;
-  if (equipeFilter) _objetivos = _objetivos.filter(o => o.equipe_id === equipeFilter);
+  if (equipeFilter) { _objetivos = _objetivos.filter(o => o.equipe_id === equipeFilter); updateBackLink(equipeFilter); }
   renderSummary();
   render();
   const pdfBtn = document.getElementById('btn-pdf');
@@ -175,6 +183,7 @@ function render() {
                     <span>${kr.valor_atual} / ${kr.valor_meta} ${esc(kr.unidade || '%')}</span>
                     ${kr.peso > 1 ? `<span>· peso ${kr.peso}</span>` : ''}
                     ${kr.responsavel ? `<span class="resp">${esc(kr.responsavel)}</span>` : ''}
+                    ${(()=>{ const upd=kr.updated_at||kr.created_at; if(!upd)return ''; const dias=Math.floor((Date.now()-new Date(upd).getTime())/(86400000)); return dias>15?`<span style="color:#E8603A;font-size:0.65rem;font-family:var(--mono);">⚠ sem atualização há ${dias}d</span>`:''; })()}
                   </div>
                 </div>
                 <div class="kr-actions">
@@ -264,9 +273,16 @@ async function excluirObjetivo(id) {
 }
 
 async function salvarObjetivo() {
-  const titulo = document.getElementById('o-titulo').value.trim();
+  const tituloEl = document.getElementById('o-titulo');
+  const titulo = tituloEl.value.trim();
   const err = document.getElementById('o-err');
-  if (!titulo) { err.textContent = 'Título é obrigatório.'; return; }
+  if (!titulo) {
+    err.textContent = 'Título é obrigatório.';
+    tituloEl.style.borderColor = '#E8603A';
+    tituloEl.focus();
+    return;
+  }
+  tituloEl.style.borderColor = '';
   const obj = {
     gerencial_email: _user.email,
     titulo,

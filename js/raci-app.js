@@ -31,8 +31,17 @@ async function init() {
 
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
+function updateBackLink(equipeId) {
+  const lnk = document.getElementById('back-link');
+  if (!lnk) return;
+  const eq = _equipes.find(e => e.id === equipeId);
+  if (eq) { lnk.href = 'equipe.html?id=' + equipeId; lnk.textContent = '← ' + eq.nome; }
+  else { lnk.href = 'dashboard.html'; lnk.textContent = '← Dashboard'; }
+}
+
 async function onEquipeChange() {
   _equipeId = document.getElementById('sel-equipe').value;
+  updateBackLink(_equipeId);
   if (!_equipeId) {
     document.getElementById('content-area').innerHTML = '<div class="empty">Selecione uma equipe acima para ver a matriz RACI.</div>';
     return;

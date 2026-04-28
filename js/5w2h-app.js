@@ -36,8 +36,22 @@ function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+function updateBackLink(equipeId) {
+  const lnk = document.getElementById('back-link');
+  if (!lnk) return;
+  const eq = _equipes.find(e => e.id === equipeId);
+  if (eq) {
+    lnk.href = 'equipe.html?id=' + equipeId;
+    lnk.textContent = '← ' + eq.nome;
+  } else {
+    lnk.href = 'dashboard.html';
+    lnk.textContent = '← Dashboard';
+  }
+}
+
 async function onEquipeChange() {
   _equipeId = document.getElementById('sel-equipe').value;
+  updateBackLink(_equipeId);
   document.getElementById('btn-add').disabled = !_equipeId;
   const wizBtn = document.getElementById('btn-wizard');
   if (wizBtn) wizBtn.href = 'wizard.html?tipo=5w2h' + (_equipeId ? '&equipe=' + _equipeId : '');
@@ -153,9 +167,16 @@ async function delItem(id) {
 }
 
 async function saveItem() {
-  const what = document.getElementById('f-what').value.trim();
+  const whatEl = document.getElementById('f-what');
+  const what = whatEl.value.trim();
   const err = document.getElementById('f-err');
-  if (!what) { err.textContent = 'O campo "O quê" é obrigatório.'; return; }
+  if (!what) {
+    err.textContent = 'O campo "O quê" é obrigatório.';
+    whatEl.style.borderColor = '#E8603A';
+    whatEl.focus();
+    return;
+  }
+  whatEl.style.borderColor = '';
   const item = {
     equipe_id:  _equipeId,
     what,
