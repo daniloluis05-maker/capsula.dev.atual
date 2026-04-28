@@ -394,8 +394,8 @@ async function rlCriarLink() {
     return;
   }
   document.getElementById('rl-input-etiqueta').value = '';
-  // Exibe o banner imediatamente — token gerado localmente, sem SELECT
-  const url = window.location.origin + '/' + matriz + '.html?token=' + token;
+  // URL compartilhada passa por /api/r para gerar OG tags personalizadas no servidor
+  const url = window.location.origin + '/api/r?token=' + token;
   rlMostrarBannerLink(url, matriz, etiqueta);
   // Após 2.5 s vai para "Meus links" e recarrega a lista completa
   setTimeout(function() {
@@ -472,7 +472,7 @@ function rlRenderLinks(links) {
   }
   const origin = window.location.origin;
   el.innerHTML = links.filter(function(lk) { return lk.matriz; }).map(function(lk) {
-    const url  = origin + '/' + lk.matriz + '.html?token=' + lk.token;
+    const url  = origin + '/api/r?token=' + lk.token;
     const full = lk.completion_count >= lk.max_completions;
     const etiq = lk.etiqueta ? '<span style="font-size:0.8rem;color:var(--text);font-weight:500;">' + eqEsc(lk.etiqueta) + '</span>' : '';
     return [
@@ -506,7 +506,7 @@ function rlRenderListaFull(links) {
   }
   const origin = window.location.origin;
   el.innerHTML = links.filter(function(lk){return lk.matriz;}).map(function(lk) {
-    const url   = origin + '/' + lk.matriz + '.html?token=' + lk.token;
+    const url   = origin + '/api/r?token=' + lk.token;
     const full  = lk.completion_count >= lk.max_completions;
     const pct   = lk.max_completions >= 9999 ? null : Math.min(100, Math.round((lk.completion_count / lk.max_completions) * 100));
     const dt    = lk.created_at ? new Date(lk.created_at).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
