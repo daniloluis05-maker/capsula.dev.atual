@@ -1462,7 +1462,7 @@ function renderDiscHistoryChart(userData) {
 // ══════════════════════════════════════
 // P8 — INVITE MODAL
 // ══════════════════════════════════════
-function getInviteLink(equipeId, equipeName) {
+function getInviteLink(equipeId, equipeName, paraName) {
   const raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user') || '{}';
   const userData = JSON.parse(raw);
   const uid = userData.uid || 'guest';
@@ -1470,6 +1470,7 @@ function getInviteLink(equipeId, equipeName) {
   let url = base + 'convite.html?ref=' + uid;
   if (equipeId) url += '&equipe=' + encodeURIComponent(equipeId);
   if (equipeName) url += '&equipe_nome=' + encodeURIComponent(equipeName);
+  if (paraName) url += '&para=' + encodeURIComponent(paraName);
   return url;
 }
 
@@ -1478,14 +1479,30 @@ function openInviteModal(equipeId, equipeName) {
   const input = document.getElementById('invite-link-input');
   const badge = document.getElementById('invite-equipe-badge');
   const nomeEl = document.getElementById('invite-equipe-nome');
+  const paraInput = document.getElementById('invite-para-input');
   if (equipeId && equipeName) {
     if (badge) badge.style.display = 'block';
     if (nomeEl) nomeEl.textContent = equipeName;
   } else {
     if (badge) badge.style.display = 'none';
   }
-  if (input) input.value = getInviteLink(equipeId, equipeName);
+  if (paraInput) paraInput.value = '';
+  if (input) {
+    input.dataset.equipeId = equipeId || '';
+    input.dataset.equipeName = equipeName || '';
+    input.value = getInviteLink(equipeId, equipeName);
+  }
   if (modal) modal.style.display = 'flex';
+}
+
+function atualizarLinkConvite() {
+  const input = document.getElementById('invite-link-input');
+  const paraInput = document.getElementById('invite-para-input');
+  if (!input) return;
+  const equipeId = input.dataset.equipeId || undefined;
+  const equipeName = input.dataset.equipeName || undefined;
+  const paraName = (paraInput && paraInput.value.trim()) || undefined;
+  input.value = getInviteLink(equipeId, equipeName, paraName);
 }
 
 function closeInviteModal() {
@@ -1508,8 +1525,13 @@ function copyInviteLink() {
 }
 
 function shareInviteWhatsApp() {
-  const link = encodeURIComponent(_currentInviteLink());
-  window.open('https://wa.me/?text=Acesse%20o%20Sistema%20Gnosis%20e%20mapeie%20seu%20perfil%20comportamental%20gratuitamente%3A%20' + link, '_blank');
+  const link = _currentInviteLink();
+  const paraInput = document.getElementById('invite-para-input');
+  const nome = paraInput && paraInput.value.trim();
+  const texto = nome
+    ? `Olá ${nome}! Acesse o Sistema Gnosis e mapeie seu perfil comportamental gratuitamente: ${link}`
+    : `Acesse o Sistema Gnosis e mapeie seu perfil comportamental gratuitamente: ${link}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(texto), '_blank');
 }
 
 function shareInviteNative() {

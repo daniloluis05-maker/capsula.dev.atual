@@ -856,6 +856,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     <h3 style="margin:0 0 0.4rem;">Convidar membro</h3>
     <div id="invite-equipe-badge" style="display:none;margin-bottom:0.75rem;padding:0.4rem 0.75rem;background:rgba(46,196,160,0.08);border:1px solid rgba(46,196,160,0.2);border-radius:6px;font-size:0.78rem;color:#2EC4A0;">Para a equipe: <strong id="invite-equipe-nome"></strong></div>
     <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1.25rem;" id="invite-msg">Compartilhe este link. A pessoa cria a conta, completa o DISC e você a adiciona à equipe.</p>
+    <div style="margin-bottom:1rem;">
+      <label style="display:block;font-size:0.78rem;color:var(--muted);margin-bottom:0.35rem;">Nome do convidado <span style="opacity:0.55;">(opcional — personaliza o link)</span></label>
+      <input id="invite-para-input" type="text" placeholder="Ex: João Silva" autocomplete="off" oninput="atualizarLinkConvite()" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" style="width:100%;padding:0.65rem 0.75rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.88rem;font-family:inherit;outline:none;transition:border-color 0.2s;box-sizing:border-box;" />
+    </div>
     <div style="display:flex;gap:0.5rem;">
       <input id="invite-link-input" readonly style="flex:1;padding:0.65rem 0.75rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.8rem;font-family:monospace;outline:none;" />
       <button onclick="copyInviteLink()" style="padding:0.65rem 1rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:600;font-size:0.85rem;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;" id="copy-invite-btn">Copiar</button>

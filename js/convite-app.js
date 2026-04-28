@@ -3,6 +3,7 @@
   const ref = params.get('ref');
   const equipeId = params.get('equipe');
   const equipeNome = params.get('equipe_nome');
+  const para = params.get('para');
   if (ref) {
     document.getElementById('invited-by-badge').style.display = 'inline-block';
   }
@@ -11,6 +12,15 @@
     const nomeEl = document.getElementById('equipe-nome-badge');
     if (badge) badge.style.display = 'block';
     if (nomeEl) nomeEl.textContent = decodeURIComponent(equipeNome);
+  }
+  if (para) {
+    const nome = decodeURIComponent(para);
+    const title = document.getElementById('invite-title');
+    const sub = document.getElementById('invite-sub');
+    const nomeInput = document.getElementById('nome');
+    if (title) title.textContent = `Olá, ${nome}!`;
+    if (sub) sub.textContent = 'Este convite é especialmente para você. Crie sua conta e comece seu mapeamento de perfil.';
+    if (nomeInput) nomeInput.value = nome;
   }
 
   const pwBtn = document.getElementById('btn-pw-toggle');
