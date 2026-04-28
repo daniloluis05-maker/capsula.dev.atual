@@ -375,17 +375,17 @@ async function rlCriarLink() {
   const btn           = document.getElementById('rl-btn-criar');
   const maxCompletions = (window._payments && (_payments.isGerencial() || _payments.isAdmin())) ? 9999 : 20;
   btn.disabled = true; btn.textContent = 'Gerando...';
-  const { error } = await capsulaDB.createRemoteLink({ pro_email: _rlProEmail, matriz, etiqueta, max_completions: maxCompletions });
+  const { error, token } = await capsulaDB.createRemoteLink({ pro_email: _rlProEmail, matriz, etiqueta, max_completions: maxCompletions });
   btn.disabled = false; btn.textContent = '+ Gerar link';
   if (error) {
     console.error('[rlCriarLink] erro Supabase:', error);
-    const isAuth    = error === 'offline' || (error && (error.code === 'auth' || error.message === 'session_expired'));
-    const noTable   = error && (error.code === '42P01' || (error.message || '').includes('does not exist'));
-    const isRLS     = error && (error.code === '42501' || (error.message || '').toLowerCase().includes('row-level security'));
+    const isAuth  = error === 'offline' || (error && (error.code === 'auth' || error.message === 'session_expired'));
+    const noTable = error && (error.code === '42P01' || (error.message || '').includes('does not exist'));
+    const isRLS   = error && (error.code === '42501' || (error.message || '').toLowerCase().includes('row-level security'));
     if (isAuth) {
       if (confirm('Sessão expirada. Fazer login novamente?')) window.location.href = 'index.html';
     } else if (noTable) {
-      alert('Tabela remote_links não encontrada no banco de dados.\nExecute a migration 003_remote_links.sql no Supabase.');
+      alert('Tabela remote_links não encontrada.\nExecute a migration 003_remote_links.sql no Supabase.');
     } else if (isRLS) {
       alert('Permissão negada pelo banco (RLS).\nVerifique se as policies da migration 005 foram aplicadas.');
     } else {
@@ -394,25 +394,44 @@ async function rlCriarLink() {
     return;
   }
   document.getElementById('rl-input-etiqueta').value = '';
-  btn.textContent = '✓ Link criado!';
-  btn.style.background = 'rgba(46,196,160,0.15)';
-  btn.style.color = '#2EC4A0';
-  btn.style.border = '1px solid rgba(46,196,160,0.3)';
-  setTimeout(function() {
-    btn.textContent = '+ Gerar link';
-    btn.style.background = '';
-    btn.style.color = '';
-    btn.style.border = '';
-  }, 2500);
-  // Schema cache do PostgREST pode demorar ~2s após DDL — tenta duas vezes
-  await rlCarregarLinks();
-  setTimeout(rlCarregarLinks, 2500);
+  // Exibe o link imediatamente a partir do token local — não depende do SELECT
+  const url = window.location.origin + '/' + matriz + '.html?token=' + token;
+  rlMostrarBannerLink(url, matriz, etiqueta);
+  // Recarrega a lista completa em background
+  setTimeout(rlCarregarLinks, 2000);
+}
+
+function rlMostrarBannerLink(url, matriz, etiqueta) {
+  const el = document.getElementById('rl-links-list');
+  const nome = _RL_NOMES[matriz] || matriz;
+  const label = etiqueta ? ' — ' + eqEsc(etiqueta) : '';
+  el.innerHTML = [
+    '<div id="rl-novo-banner" style="background:rgba(46,196,160,0.07);border:1px solid rgba(46,196,160,0.35);',
+    'border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:0.75rem;">',
+    '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.7rem;">',
+    '<span style="font-size:0.8rem;color:#2EC4A0;font-weight:700;">✓ Link criado!</span>',
+    '<span style="font-size:0.72rem;color:var(--muted);">',nome,label,'</span>',
+    '</div>',
+    '<div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">',
+    '<div style="flex:1;min-width:0;font-size:0.72rem;font-family:monospace;color:var(--muted);',
+    'background:rgba(0,0,0,0.25);padding:0.45rem 0.75rem;border-radius:6px;',
+    'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="',eqEsc(url),'">',eqEsc(url),'</div>',
+    '<button id="rl-banner-copy" onclick="rlCopiarLink(\''+url.replace(/'/g,"\\'")+"',this)\"",
+    ' style="flex-shrink:0;padding:0.55rem 1.1rem;background:var(--accent);color:#fff;border:none;',
+    'border-radius:8px;font-size:0.85rem;font-weight:700;cursor:pointer;white-space:nowrap;">',
+    'Copiar link</button>',
+    '</div>',
+    '<div style="font-size:0.72rem;color:var(--muted);margin-top:0.55rem;">',
+    'Compartilhe este link com a pessoa. Quando ela concluir o questionário, o resultado aparece em <strong style="color:var(--text)">Ver resultados</strong>.',
+    '</div>',
+    '</div>',
+  ].join('') + el.innerHTML;
 }
 
 async function rlCarregarLinks() {
   if (!_rlProEmail) return;
   const links = await capsulaDB.getMyRemoteLinks(_rlProEmail);
-  if (links && links.length) rlRenderLinks(links);
+  rlRenderLinks(links || []);
 }
 
 function rlRenderLinks(links) {
@@ -422,10 +441,9 @@ function rlRenderLinks(links) {
     return;
   }
   const origin = window.location.origin;
-  el.innerHTML = links.filter(function(lk) { return lk.matriz; }).map(function(lk) {
+  const rows = links.filter(function(lk) { return lk.matriz; }).map(function(lk) {
     const url  = origin + '/' + lk.matriz + '.html?token=' + lk.token;
     const full = lk.completion_count >= lk.max_completions;
-    const pct  = Math.round((lk.completion_count / lk.max_completions) * 100);
     const etiq = lk.etiqueta ? '<span style="font-size:0.8rem;color:var(--text);font-weight:500;">' + eqEsc(lk.etiqueta) + '</span>' : '';
     return [
       '<div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;',
@@ -440,10 +458,10 @@ function rlRenderLinks(links) {
       full ? '<span style="font-size:0.65rem;color:#ff6b6b;font-family:var(--mono);">LOTADO</span>' : '',
       '</div>',
       '<div style="font-size:0.7rem;color:var(--muted);font-family:monospace;overflow:hidden;',
-      'text-overflow:ellipsis;white-space:nowrap;max-width:300px;">', url, '</div>',
+      'text-overflow:ellipsis;white-space:nowrap;max-width:320px;" title="',eqEsc(url),'">', eqEsc(url), '</div>',
       '</div>',
 
-      '<div style="display:flex;align-items:center;gap:0.5rem;">',
+      '<div style="display:flex;align-items:center;gap:0.5rem;margin-right:0.25rem;">',
       '<div style="text-align:center;min-width:44px;">',
       '<div style="font-size:1.05rem;font-weight:700;color:', (full ? '#ff6b6b' : 'var(--S)'), ';">', lk.completion_count, '</div>',
       '<div style="font-size:0.6rem;color:var(--muted);font-family:var(--mono);">', (lk.max_completions >= 9999 ? '/∞' : '/' + lk.max_completions), '</div>',
@@ -464,7 +482,8 @@ function rlRenderLinks(links) {
 
       '</div>',
     ].join('');
-  }).join('');
+  });
+  el.innerHTML = rows.join('');
 }
 
 async function rlCopiarLink(url, btnEl) {
