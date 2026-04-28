@@ -16,18 +16,19 @@ function esc(s) {
 
 function cicloAtualPadrao() {
   const now = new Date();
-  const q = Math.ceil((now.getMonth() + 1) / 3);
-  return `Q${q} ${now.getFullYear()}`;
+  const q = Math.floor(now.getMonth() / 3) + 1;
+  return `${now.getFullYear()}-Q${q}`;
 }
 
 function gerarCiclos() {
-  const y = new Date().getFullYear();
+  const now = new Date();
   const ciclos = [];
-  [y - 1, y, y + 1].forEach(yr => {
-    [1, 2, 3, 4].forEach(q => ciclos.push(`Q${q} ${yr}`));
-    ciclos.push(`Anual ${yr}`);
-  });
-  return ciclos;
+  for (let i = -2; i <= 4; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + i * 3, 1);
+    const q = Math.floor(d.getMonth() / 3) + 1;
+    ciclos.push(`${d.getFullYear()}-Q${q}`);
+  }
+  return [...new Set(ciclos)];
 }
 
 async function init() {
@@ -116,8 +117,8 @@ function renderPage() {
 function renderStats(membros) {
   const concluidos = _itens5w2h.filter(i => i.status === 'concluido').length;
   const atrasados = _itens5w2h.filter(i => {
-    if (i.status === 'concluido' || i.status === 'cancelado' || !i.quando) return false;
-    return new Date(i.quando) < new Date();
+    if (i.status === 'concluido' || i.status === 'cancelado' || !i.when_data) return false;
+    return new Date(i.when_data) < new Date();
   }).length;
 
   const totalKRs = _objetivos.reduce((s, o) => s + (o.key_results || []).length, 0);
@@ -185,7 +186,7 @@ function renderOKRs() {
     const cor = pct >= 70 ? '#2EC4A0' : pct >= 40 ? '#7c6af7' : '#E8A03A';
     return `<div class="okr-item">
       <div class="okr-row">
-        <span class="okr-nome">${esc(obj.objetivo)}</span>
+        <span class="okr-nome">${esc(obj.titulo)}</span>
         <span class="okr-pct" style="color:${cor};">${pct}%</span>
       </div>
       <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:linear-gradient(90deg,${cor},${cor}99);"></div></div>
@@ -206,8 +207,8 @@ function renderAcoes() {
   const concluidos = _itens5w2h.filter(i => i.status === 'concluido').length;
   const now = new Date();
   const atrasadas = _itens5w2h.filter(i => {
-    if (i.status === 'concluido' || i.status === 'cancelado' || !i.quando) return false;
-    return new Date(i.quando) < now;
+    if (i.status === 'concluido' || i.status === 'cancelado' || !i.when_data) return false;
+    return new Date(i.when_data) < now;
   });
 
   const statusBar = `<div class="status-row">
@@ -219,21 +220,21 @@ function renderAcoes() {
 
   // Prioridade: atrasadas primeiro, depois em andamento, depois pendentes
   const ordenadas = [
-    ..._itens5w2h.filter(i => i.status !== 'concluido' && i.status !== 'cancelado' && i.quando && new Date(i.quando) < now),
-    ..._itens5w2h.filter(i => i.status === 'em_andamento' && (!i.quando || new Date(i.quando) >= now)),
-    ..._itens5w2h.filter(i => i.status === 'pendente' && (!i.quando || new Date(i.quando) >= now)),
+    ..._itens5w2h.filter(i => i.status !== 'concluido' && i.status !== 'cancelado' && i.when_data && new Date(i.when_data) < now),
+    ..._itens5w2h.filter(i => i.status === 'em_andamento' && (!i.when_data || new Date(i.when_data) >= now)),
+    ..._itens5w2h.filter(i => i.status === 'pendente' && (!i.when_data || new Date(i.when_data) >= now)),
     ..._itens5w2h.filter(i => i.status === 'concluido'),
   ].slice(0, 8);
 
+  const statusMap = { pendente: 'pill-pendente', em_andamento: 'pill-andamento', concluido: 'pill-concluido', cancelado: '' };
+  const statusLabel = { pendente: 'Pendente', em_andamento: 'Andamento', concluido: 'Concluído', cancelado: 'Cancelado' };
   const listHtml = ordenadas.map(i => {
-    const atrasado = i.status !== 'concluido' && i.status !== 'cancelado' && i.quando && new Date(i.quando) < now;
-    const statusMap = { pendente: 'pill-pendente', em_andamento: 'pill-andamento', concluido: 'pill-concluido', cancelado: '' };
-    const statusLabel = { pendente: 'Pendente', em_andamento: 'Andamento', concluido: 'Concluído', cancelado: 'Cancelado' };
-    const dateFmt = i.quando ? new Date(i.quando).toLocaleDateString('pt-BR') : '';
+    const atrasado = i.status !== 'concluido' && i.status !== 'cancelado' && i.when_data && new Date(i.when_data) < now;
+    const dateFmt = i.when_data ? new Date(i.when_data + 'T00:00:00').toLocaleDateString('pt-BR') : '';
     return `<div class="acao-row">
       <span class="${atrasado ? 'status-pill pill-atrasado' : 'status-pill ' + (statusMap[i.status] || '')} " style="font-size:0.62rem;padding:0.12rem 0.45rem;flex-shrink:0;">${atrasado ? '⚠' : (statusLabel[i.status] || i.status)}</span>
-      <span class="acao-what">${esc(i.o_que || i.what || '')}</span>
-      ${i.quem ? `<span class="acao-meta">${esc(i.quem)}</span>` : ''}
+      <span class="acao-what">${esc(i.what || '')}</span>
+      ${i.who ? `<span class="acao-meta">${esc(i.who)}</span>` : ''}
       ${dateFmt ? `<span class="acao-meta">${dateFmt}</span>` : ''}
     </div>`;
   }).join('');

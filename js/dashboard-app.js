@@ -763,7 +763,7 @@ async function eqCheckOverdue() {
     let maxAtrasos = 0;
     planos.forEach((itens, i) => {
       const atrasadas = itens.filter(it =>
-        it.status !== 'concluido' && it.status !== 'cancelado' && it.quando && new Date(it.quando) < now
+        it.status !== 'concluido' && it.status !== 'cancelado' && it.when_data && new Date(it.when_data) < now
       ).length;
       totalAtrasadas += atrasadas;
       if (atrasadas > maxAtrasos) { maxAtrasos = atrasadas; equipeComMaisAtrasos = _eqEquipes[i]; }
