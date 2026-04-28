@@ -473,6 +473,7 @@
       .eq('pro_email', pro_email.toLowerCase().trim())
       .order('created_at', { ascending: false });
     if (error) console.warn('[db] getMyRemoteLinks error:', error);
+    console.log('[db] getMyRemoteLinks →', (data || []).length, 'registros para', pro_email, data);
     return data || [];
   }
 
