@@ -63,11 +63,11 @@ module.exports = async (req, res) => {
   const targetUrl  = `/${matriz}.html?token=${encodeURIComponent(token)}`;
 
   const title = nome
-    ? `${nome}, você foi convidado — ${matrizNome} | Sistema Gnosis`
+    ? `${matrizNome} | Sistema Gnosis — Convite para ${nome}`
     : `Avaliação ${matrizNome} — Sistema Gnosis`;
 
   const desc = nome
-    ? `${nome}, você foi convidado para responder a avaliação ${matrizNome} (${sub}). Clique para começar.`
+    ? `Você foi convidado para responder o ${matrizNome}. Descubra seu ${sub.toLowerCase()} agora.`
     : `Você foi convidado para a avaliação ${matrizNome} — ${sub}. Responda e descubra seu perfil.`;
 
   const html = `<!DOCTYPE html>
