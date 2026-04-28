@@ -202,6 +202,26 @@ function formatDate(iso) {
   return d.toLocaleDateString('pt-BR');
 }
 
+const OKR_TEMPLATES = {
+  Q1: ['Estabelecer base estratégica do time', 'Aumentar previsibilidade operacional', 'Definir metas e processos do ano'],
+  Q2: ['Acelerar crescimento e expansão', 'Melhorar satisfação dos clientes', 'Aumentar eficiência da equipe'],
+  Q3: ['Consolidar e otimizar processos', 'Reduzir gargalos e desperdícios', 'Desenvolver competências do time'],
+  Q4: ['Entregar metas anuais', 'Planejar ciclo do próximo ano', 'Celebrar conquistas e aprendizados'],
+  Anual: ['Crescer receita e base de clientes', 'Fortalecer cultura e time', 'Aumentar excelência operacional'],
+};
+
+function renderOKRSugestoes(ciclo) {
+  const el = document.getElementById('o-sugestoes');
+  if (!el) return;
+  const q = ciclo.startsWith('Anual') ? 'Anual' : ciclo.split('-')[1];
+  const templates = OKR_TEMPLATES[q] || [];
+  if (!templates.length) { el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  el.innerHTML = templates.map(t =>
+    `<span onclick="document.getElementById('o-titulo').value='${t.replace(/'/g, "\\'")}'" style="cursor:pointer;font-size:0.68rem;padding:0.2rem 0.6rem;border-radius:20px;background:rgba(124,106,247,0.08);border:1px solid rgba(124,106,247,0.2);color:#7c6af7;white-space:nowrap;" title="Usar como título">${esc(t)}</span>`
+  ).join('');
+}
+
 // ── Modal Objetivo ──
 function abrirObjetivo(id) {
   _editObjId = id || '';
@@ -216,6 +236,7 @@ function abrirObjetivo(id) {
     document.getElementById('o-equipe').value = o.equipe_id || '';
     document.getElementById('o-prazo').value = o.prazo || '';
     document.getElementById('o-status').value = o.status || 'ativo';
+    document.getElementById('o-sugestoes').style.display = 'none';
   } else {
     document.getElementById('o-titulo').value = '';
     document.getElementById('o-descricao').value = '';
@@ -223,6 +244,7 @@ function abrirObjetivo(id) {
     document.getElementById('o-equipe').value = document.getElementById('sel-equipe').value || '';
     document.getElementById('o-prazo').value = '';
     document.getElementById('o-status').value = 'ativo';
+    renderOKRSugestoes(_ciclo);
   }
   document.getElementById('modal-obj-bg').classList.add('show');
   setTimeout(() => document.getElementById('o-titulo').focus(), 100);

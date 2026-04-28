@@ -111,6 +111,7 @@
     <div class="field">
       <label>Título *</label>
       <input id="o-titulo" placeholder="Ex: Tornar o time autônomo em deploys">
+      <div id="o-sugestoes" style="display:none;margin-top:0.5rem;display:flex;flex-wrap:wrap;gap:0.35rem;"></div>
     </div>
     <div class="field">
       <label>Descrição</label>
@@ -119,7 +120,7 @@
     <div class="grid-2">
       <div class="field">
         <label>Ciclo *</label>
-        <select id="o-ciclo"></select>
+        <select id="o-ciclo" onchange="if(!document.getElementById('o-titulo').value)renderOKRSugestoes(this.value)"></select>
       </div>
       <div class="field">
         <label>Equipe (opcional)</label>

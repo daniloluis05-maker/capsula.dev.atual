@@ -749,6 +749,32 @@ async function eqCarregar() {
   if (!_eqEmail) return;
   _eqEquipes = await capsulaDB.getEquipes(_eqEmail);
   eqRenderGrid();
+  eqCheckOverdue();
+}
+
+async function eqCheckOverdue() {
+  const alertEl = document.getElementById('eq-overdue-alert');
+  if (!alertEl || !_eqEquipes.length) return;
+  try {
+    const now = new Date();
+    const planos = await Promise.all(_eqEquipes.map(eq => capsulaDB.getPlanoAcao(eq.id).catch(() => [])));
+    let totalAtrasadas = 0;
+    let equipeComMaisAtrasos = null;
+    let maxAtrasos = 0;
+    planos.forEach((itens, i) => {
+      const atrasadas = itens.filter(it =>
+        it.status !== 'concluido' && it.status !== 'cancelado' && it.quando && new Date(it.quando) < now
+      ).length;
+      totalAtrasadas += atrasadas;
+      if (atrasadas > maxAtrasos) { maxAtrasos = atrasadas; equipeComMaisAtrasos = _eqEquipes[i]; }
+    });
+    if (totalAtrasadas === 0) { alertEl.style.display = 'none'; return; }
+    const textEl = document.getElementById('eq-overdue-text');
+    const linkEl = document.getElementById('eq-overdue-link');
+    if (textEl) textEl.textContent = `${totalAtrasadas} ação${totalAtrasadas !== 1 ? 'ões' : ''} em atraso em ${_eqEquipes.length === 1 ? 'sua equipe' : _eqEquipes.length + ' equipes'}.`;
+    if (linkEl && equipeComMaisAtrasos) linkEl.href = `5w2h.html?equipe=${equipeComMaisAtrasos.id}`;
+    alertEl.style.display = 'flex';
+  } catch (_) {}
 }
 
 function eqRenderGrid() {
