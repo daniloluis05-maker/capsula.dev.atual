@@ -1264,3 +1264,23 @@ function shareInviteNative() {
     copyInviteLink();
   }
 }
+
+// ══════════════════════════════════════
+// MODAL PLANOS
+// ══════════════════════════════════════
+function abrirModalPlanos() {
+  document.getElementById('modal-planos').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+function fecharModalPlanos() {
+  document.getElementById('modal-planos').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function abrirCheckout(key) {
+  fecharModalPlanos();
+  if (window._payments) { window._payments.openCheckout(key); return; }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const m = document.getElementById('modal-planos');
+  if (m) m.addEventListener('click', e => { if (e.target === m) fecharModalPlanos(); });
+});
