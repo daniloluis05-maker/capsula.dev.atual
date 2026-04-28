@@ -31,14 +31,15 @@ const COLORS = { D:'#E8603A', I:'#6C5FE6', S:'#2EC4A0', C:'#1BA8D4' };
     // Scores
     const sg = document.getElementById('s-scores');
     ['D','I','S','C'].forEach(k => {
-      const pct = scores[k] || 0;
-      sg.innerHTML += `<div class="score-item">
-        <div class="score-label">${LABELS[k]}</div>
+      const pct = Math.max(0, Math.min(100, Number(scores[k]) || 0));
+      const item = document.createElement('div');
+      item.className = 'score-item';
+      item.innerHTML = `<div class="score-label">${LABELS[k]}</div>
         <div class="score-bar-wrap">
           <div class="score-bar"><div class="score-fill" style="width:${pct}%;background:${COLORS[k]};"></div></div>
           <span class="score-val" style="color:${COLORS[k]}">${pct}%</span>
-        </div>
-      </div>`;
+        </div>`;
+      sg.appendChild(item);
     });
 
     // Archetype
