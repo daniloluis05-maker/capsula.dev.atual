@@ -394,11 +394,13 @@ async function rlCriarLink() {
     return;
   }
   document.getElementById('rl-input-etiqueta').value = '';
-  // Exibe o link imediatamente a partir do token local — não depende do SELECT
+  // Exibe o banner imediatamente — token gerado localmente, sem SELECT
   const url = window.location.origin + '/' + matriz + '.html?token=' + token;
   rlMostrarBannerLink(url, matriz, etiqueta);
-  // Recarrega a lista completa em background e vai para aba "Meus links"
-  setTimeout(function() { rlCarregarLinks(true); }, 1800);
+  // Após 2.5 s vai para "Meus links" e recarrega a lista completa
+  setTimeout(function() {
+    rlSwitchTab('lista');
+  }, 2500);
 }
 
 function rlSwitchTab(tab) {
@@ -415,15 +417,19 @@ function rlSwitchTab(tab) {
 }
 
 function rlMostrarBannerLink(url, matriz, etiqueta) {
-  const el = document.getElementById('rl-links-list');
+  const el = document.getElementById('rl-banner');
+  if (!el) return;
   const nome = _RL_NOMES[matriz] || matriz;
   const label = etiqueta ? ' — ' + eqEsc(etiqueta) : '';
-  const banner = [
+  el.style.display = '';
+  el.innerHTML = [
     '<div style="background:rgba(46,196,160,0.07);border:1px solid rgba(46,196,160,0.35);',
-    'border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:0.75rem;">',
+    'border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:0.85rem;">',
     '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.7rem;">',
     '<span style="font-size:0.8rem;color:#2EC4A0;font-weight:700;">✓ Link criado!</span>',
     '<span style="font-size:0.72rem;color:var(--muted);">',nome,label,'</span>',
+    '<span style="font-size:0.65rem;color:var(--muted);margin-left:auto;font-family:var(--mono);">',
+    'Indo para Meus links em 2s…</span>',
     '</div>',
     '<div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">',
     '<div style="flex:1;min-width:0;font-size:0.72rem;font-family:monospace;color:var(--muted);',
@@ -434,12 +440,8 @@ function rlMostrarBannerLink(url, matriz, etiqueta) {
     'border-radius:8px;font-size:0.85rem;font-weight:700;cursor:pointer;white-space:nowrap;">',
     'Copiar link</button>',
     '</div>',
-    '<div style="font-size:0.72rem;color:var(--muted);margin-top:0.55rem;">',
-    'Compartilhe com a pessoa. Quando ela concluir, veja o resultado na aba <strong style="color:var(--text)">Meus links → Ver resultados</strong>.',
-    '</div>',
     '</div>',
   ].join('');
-  el.innerHTML = banner + el.innerHTML;
 }
 
 async function rlCarregarLinks(full) {
@@ -458,8 +460,13 @@ async function rlCarregarLinks(full) {
 
 function rlRenderLinks(links) {
   const el = document.getElementById('rl-links-list');
+  if (!el) return;
   if (!links || !links.length) {
-    el.innerHTML = '<div style="text-align:center;padding:2rem 1rem;color:var(--muted);font-size:0.85rem;">Nenhum link gerado ainda. Crie o primeiro acima.</div>';
+    // Só mostra placeholder se não há banner visível
+    const banner = document.getElementById('rl-banner');
+    if (!banner || banner.style.display === 'none') {
+      el.innerHTML = '<div style="text-align:center;padding:2rem 1rem;color:var(--muted);font-size:0.85rem;">Nenhum link gerado ainda. Crie o primeiro acima.</div>';
+    }
     return;
   }
   const origin = window.location.origin;
