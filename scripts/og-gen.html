@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>OG Generator — Sistema Gnosis</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #111120; font-family: 'Outfit', sans-serif; padding: 2.5rem; color: white; }
+  h1 { font-size: 1.2rem; font-weight: 600; color: rgba(255,255,255,0.5); margin-bottom: 2.5rem; letter-spacing: 0.05em; text-transform: uppercase; }
+  .grid { display: flex; flex-direction: column; gap: 2.5rem; }
+  .item { display: flex; flex-direction: column; gap: 0.75rem; }
+  .item-label { font-size: 0.75rem; color: rgba(255,255,255,0.3); letter-spacing: 0.1em; text-transform: uppercase; }
+  .card-wrap { width: 1200px; height: 630px; overflow: hidden; border-radius: 8px; }
+
+  /* ── OG CARD ────────────────────────────── */
+  .og-card {
+    width: 1200px; height: 630px;
+    background: #0b0b14;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    font-family: 'Outfit', sans-serif;
+  }
+  .og-dots {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+  .og-glow {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 640px; height: 640px; border-radius: 50%;
+    opacity: 0.16; filter: blur(90px);
+    pointer-events: none;
+  }
+  .og-line {
+    position: absolute; left: 0; right: 0; height: 1px;
+    background: rgba(255,255,255,0.045);
+  }
+  .og-brand {
+    position: absolute; top: 2.2rem; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 0.45rem;
+    font-size: 0.82rem; color: rgba(255,255,255,0.35);
+    z-index: 10; white-space: nowrap; letter-spacing: 0.02em;
+  }
+  .og-brand-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    flex-shrink: 0;
+  }
+  .og-content {
+    position: relative; z-index: 10;
+    text-align: center; display: flex;
+    flex-direction: column; align-items: center;
+  }
+  .og-name {
+    font-size: 6rem; font-weight: 800;
+    line-height: 1; letter-spacing: -0.03em;
+    margin-bottom: 1.1rem;
+  }
+  .og-divider {
+    width: 48px; height: 2px; border-radius: 2px;
+    margin-bottom: 1.1rem; opacity: 0.5;
+  }
+  .og-sub {
+    font-size: 1.65rem; font-weight: 400;
+    color: rgba(255,255,255,0.75);
+    letter-spacing: 0.01em;
+  }
+  .og-domain {
+    position: absolute; bottom: 1.6rem; left: 50%; transform: translateX(-50%);
+    font-size: 0.72rem; color: rgba(255,255,255,0.18);
+    letter-spacing: 0.1em; font-family: monospace;
+    z-index: 10; white-space: nowrap;
+  }
+
+  /* ── DOWNLOAD BTN ───────────────────────── */
+  .btn-dl {
+    align-self: flex-start;
+    padding: 0.55rem 1.25rem;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px; color: rgba(255,255,255,0.7);
+    font-size: 0.82rem; cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: background 0.2s, color 0.2s;
+  }
+  .btn-dl:hover { background: rgba(255,255,255,0.14); color: white; }
+  .btn-dl:active { transform: scale(0.98); }
+
+  .btn-all {
+    margin-bottom: 2.5rem;
+    padding: 0.7rem 2rem;
+    background: rgba(124,106,247,0.15);
+    border: 1px solid rgba(124,106,247,0.3);
+    border-radius: 8px; color: #a89ef8;
+    font-size: 0.9rem; cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600; transition: background 0.2s;
+  }
+  .btn-all:hover { background: rgba(124,106,247,0.25); }
+</style>
+</head>
+<body>
+<h1>OG Image Generator — Sistema Gnosis</h1>
+<button class="btn-all" onclick="baixarTodos()">Baixar todas as imagens</button>
+<div class="grid" id="grid"></div>
+
+<script>
+const matrizes = [
+  { key: 'disc',    nome: 'DISC',                sub: 'Perfil Comportamental',       cor: '#7c6af7' },
+  { key: 'soar',   nome: 'SOAR',                sub: 'Análise Estratégica Pessoal',  cor: '#2EC4A0' },
+  { key: 'ikigai', nome: 'Ikigai',              sub: 'Propósito de Vida e Carreira', cor: '#f5a623' },
+  { key: 'ancoras',nome: 'Âncoras de Carreira', sub: 'Motivadores Profissionais',    cor: '#4a9eff' },
+  { key: 'johari', nome: 'Janela de Johari',    sub: 'Autoconhecimento e Feedback',  cor: '#e879a0' },
+  { key: 'bigfive',nome: 'Big Five',            sub: 'Os Cinco Grandes Traços',      cor: '#5b9bf7' },
+  { key: 'pearson',nome: 'Pearson-Marr',        sub: 'Estilos de Pensamento',        cor: '#00bcd4' },
+  { key: 'tci',    nome: 'TCI',                 sub: 'Temperamento e Caráter',       cor: '#c9a800' },
+];
+
+const grid = document.getElementById('grid');
+
+matrizes.forEach(m => {
+  const item = document.createElement('div');
+  item.className = 'item';
+  item.innerHTML = `
+    <div class="item-label">${m.key} &rarr; og-${m.key}.png</div>
+    <div class="card-wrap">
+      <div class="og-card" id="card-${m.key}">
+        <div class="og-dots"></div>
+        <div class="og-glow" style="background:${m.cor};"></div>
+        <div class="og-line" style="top:28%;"></div>
+        <div class="og-line" style="top:72%;"></div>
+        <div class="og-brand">
+          <div class="og-brand-dot"></div>
+          Sistema Gnosis
+        </div>
+        <div class="og-content">
+          <div class="og-name" style="color:${m.cor};">${m.nome}</div>
+          <div class="og-divider" style="background:${m.cor};"></div>
+          <div class="og-sub">${m.sub}</div>
+        </div>
+        <div class="og-domain">sistemagnosis.com.br</div>
+      </div>
+    </div>
+    <button class="btn-dl" onclick="baixar('${m.key}')">↓ Baixar og-${m.key}.png</button>
+  `;
+  grid.appendChild(item);
+});
+
+async function baixar(key) {
+  await document.fonts.ready;
+  const el = document.getElementById('card-' + key);
+  const canvas = await html2canvas(el, {
+    scale: 1,
+    width: 1200,
+    height: 630,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: '#0b0b14',
+    logging: false,
+  });
+  const link = document.createElement('a');
+  link.download = 'og-' + key + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+async function baixarTodos() {
+  for (const m of matrizes) {
+    await baixar(m.key);
+    await new Promise(r => setTimeout(r, 400));
+  }
+}
+</script>
+</body>
+</html>

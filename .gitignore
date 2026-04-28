@@ -21,3 +21,6 @@ supabase/.temp/
 
 # Zips de backup
 *.zip
+scripts/node_modules/
+scripts/package-lock.json
+scripts/package.json
