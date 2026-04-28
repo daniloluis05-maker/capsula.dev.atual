@@ -470,11 +470,15 @@
     const { data, error } = await db
       .from('remote_links')
       .select('*')
-      .eq('pro_email', pro_email.toLowerCase().trim())
-      .order('created_at', { ascending: false });
+      .eq('pro_email', pro_email.toLowerCase().trim());
     if (error) console.warn('[db] getMyRemoteLinks error:', error);
-    console.log('[db] getMyRemoteLinks →', (data || []).length, 'registros para', pro_email, data);
-    return data || [];
+    const rows = data || [];
+    // Ordena no cliente (evita quebrar se created_at ainda não existe no banco)
+    rows.sort(function(a, b) {
+      return (b.created_at || b.id || '') > (a.created_at || a.id || '') ? 1 : -1;
+    });
+    console.log('[db] getMyRemoteLinks →', rows.length, 'registros para', pro_email);
+    return rows;
   }
 
   async function getRemoteLinkByToken(token) {
