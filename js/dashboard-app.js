@@ -397,16 +397,29 @@ async function rlCriarLink() {
   // Exibe o link imediatamente a partir do token local — não depende do SELECT
   const url = window.location.origin + '/' + matriz + '.html?token=' + token;
   rlMostrarBannerLink(url, matriz, etiqueta);
-  // Recarrega a lista completa em background
-  setTimeout(rlCarregarLinks, 2000);
+  // Recarrega a lista completa em background e vai para aba "Meus links"
+  setTimeout(function() { rlCarregarLinks(true); }, 1800);
+}
+
+function rlSwitchTab(tab) {
+  const isGerar = tab === 'gerar';
+  document.getElementById('rl-panel-gerar').style.display  = isGerar ? '' : 'none';
+  document.getElementById('rl-panel-lista').style.display  = isGerar ? 'none' : '';
+  const tGerar = document.getElementById('rl-tab-gerar');
+  const tLista = document.getElementById('rl-tab-lista');
+  tGerar.style.borderBottomColor = isGerar ? 'var(--accent)' : 'transparent';
+  tGerar.style.color             = isGerar ? 'var(--text)'   : 'var(--muted)';
+  tLista.style.borderBottomColor = isGerar ? 'transparent'   : 'var(--accent)';
+  tLista.style.color             = isGerar ? 'var(--muted)'  : 'var(--text)';
+  if (!isGerar) rlCarregarLinks(true);
 }
 
 function rlMostrarBannerLink(url, matriz, etiqueta) {
   const el = document.getElementById('rl-links-list');
   const nome = _RL_NOMES[matriz] || matriz;
   const label = etiqueta ? ' — ' + eqEsc(etiqueta) : '';
-  el.innerHTML = [
-    '<div id="rl-novo-banner" style="background:rgba(46,196,160,0.07);border:1px solid rgba(46,196,160,0.35);',
+  const banner = [
+    '<div style="background:rgba(46,196,160,0.07);border:1px solid rgba(46,196,160,0.35);',
     'border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:0.75rem;">',
     '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.7rem;">',
     '<span style="font-size:0.8rem;color:#2EC4A0;font-weight:700;">✓ Link criado!</span>',
@@ -416,22 +429,31 @@ function rlMostrarBannerLink(url, matriz, etiqueta) {
     '<div style="flex:1;min-width:0;font-size:0.72rem;font-family:monospace;color:var(--muted);',
     'background:rgba(0,0,0,0.25);padding:0.45rem 0.75rem;border-radius:6px;',
     'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="',eqEsc(url),'">',eqEsc(url),'</div>',
-    '<button id="rl-banner-copy" onclick="rlCopiarLink(\''+url.replace(/'/g,"\\'")+"',this)\"",
+    '<button onclick="rlCopiarLink(\''+url.replace(/'/g,"\\'")+"',this)\"",
     ' style="flex-shrink:0;padding:0.55rem 1.1rem;background:var(--accent);color:#fff;border:none;',
     'border-radius:8px;font-size:0.85rem;font-weight:700;cursor:pointer;white-space:nowrap;">',
     'Copiar link</button>',
     '</div>',
     '<div style="font-size:0.72rem;color:var(--muted);margin-top:0.55rem;">',
-    'Compartilhe este link com a pessoa. Quando ela concluir o questionário, o resultado aparece em <strong style="color:var(--text)">Ver resultados</strong>.',
+    'Compartilhe com a pessoa. Quando ela concluir, veja o resultado na aba <strong style="color:var(--text)">Meus links → Ver resultados</strong>.',
     '</div>',
     '</div>',
-  ].join('') + el.innerHTML;
+  ].join('');
+  el.innerHTML = banner + el.innerHTML;
 }
 
-async function rlCarregarLinks() {
+async function rlCarregarLinks(full) {
   if (!_rlProEmail) return;
   const links = await capsulaDB.getMyRemoteLinks(_rlProEmail);
-  rlRenderLinks(links || []);
+  const arr = links || [];
+  // Atualiza badge de contagem
+  const badge = document.getElementById('rl-count-badge');
+  if (badge) {
+    badge.textContent = arr.length;
+    badge.style.display = arr.length ? '' : 'none';
+  }
+  rlRenderLinks(arr);
+  if (full) rlRenderListaFull(arr);
 }
 
 function rlRenderLinks(links) {
@@ -441,49 +463,90 @@ function rlRenderLinks(links) {
     return;
   }
   const origin = window.location.origin;
-  const rows = links.filter(function(lk) { return lk.matriz; }).map(function(lk) {
+  el.innerHTML = links.filter(function(lk) { return lk.matriz; }).map(function(lk) {
     const url  = origin + '/' + lk.matriz + '.html?token=' + lk.token;
     const full = lk.completion_count >= lk.max_completions;
     const etiq = lk.etiqueta ? '<span style="font-size:0.8rem;color:var(--text);font-weight:500;">' + eqEsc(lk.etiqueta) + '</span>' : '';
     return [
       '<div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;',
       'padding:1rem 1.25rem;margin-bottom:0.55rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">',
-
       '<div style="flex:1;min-width:200px;">',
       '<div style="display:flex;align-items:center;gap:0.45rem;margin-bottom:0.3rem;flex-wrap:wrap;">',
       '<span style="font-size:0.68rem;font-family:var(--mono);background:rgba(124,106,247,0.1);',
       'color:var(--accent);padding:0.1rem 0.5rem;border-radius:4px;text-transform:uppercase;">',
-      (_RL_NOMES[lk.matriz] || lk.matriz), '</span>',
-      etiq,
-      full ? '<span style="font-size:0.65rem;color:#ff6b6b;font-family:var(--mono);">LOTADO</span>' : '',
+      (_RL_NOMES[lk.matriz]||lk.matriz),'</span>',etiq,
+      full?'<span style="font-size:0.65rem;color:#ff6b6b;font-family:var(--mono);">LOTADO</span>':'',
       '</div>',
-      '<div style="font-size:0.7rem;color:var(--muted);font-family:monospace;overflow:hidden;',
-      'text-overflow:ellipsis;white-space:nowrap;max-width:320px;" title="',eqEsc(url),'">', eqEsc(url), '</div>',
+      '<div style="font-size:0.7rem;color:var(--muted);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:320px;" title="',eqEsc(url),'">',eqEsc(url),'</div>',
       '</div>',
-
-      '<div style="display:flex;align-items:center;gap:0.5rem;margin-right:0.25rem;">',
-      '<div style="text-align:center;min-width:44px;">',
-      '<div style="font-size:1.05rem;font-weight:700;color:', (full ? '#ff6b6b' : 'var(--S)'), ';">', lk.completion_count, '</div>',
-      '<div style="font-size:0.6rem;color:var(--muted);font-family:var(--mono);">', (lk.max_completions >= 9999 ? '/∞' : '/' + lk.max_completions), '</div>',
-      '</div></div>',
-
       '<div style="display:flex;gap:0.5rem;flex-wrap:wrap;">',
-      '<button onclick="rlCopiarLink(\'' + url.replace(/'/g,"\\'") + '\',this)"',
-      ' style="padding:0.42rem 0.8rem;background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.2);',
-      'border-radius:6px;color:var(--accent);font-size:0.78rem;font-weight:600;cursor:pointer;"',
-      ' onmouseover="this.style.background=\'rgba(124,106,247,0.2)\'" onmouseout="this.style.background=\'rgba(124,106,247,0.1)\'">',
-      'Copiar</button>',
-      '<button onclick="rlVerResultados(\'' + lk.token + '\',\'' + (_RL_NOMES[lk.matriz]||lk.matriz).replace(/'/g,"\\'") + (lk.etiqueta?' — '+lk.etiqueta.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'): '') + '\')"',
-      ' style="padding:0.42rem 0.8rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);',
-      'border-radius:6px;color:var(--muted);font-size:0.78rem;cursor:pointer;"',
-      ' onmouseover="this.style.color=\'var(--text)\'" onmouseout="this.style.color=\'var(--muted)\'">',
-      'Ver resultados (', lk.completion_count, ')</button>',
+      '<button onclick="rlCopiarLink(\''+url.replace(/'/g,"\\'")+'\',this)" style="padding:0.42rem 0.8rem;background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.2);border-radius:6px;color:var(--accent);font-size:0.78rem;font-weight:600;cursor:pointer;">Copiar</button>',
+      '<button onclick="rlVerResultados(\''+lk.token+'\',\''+(_RL_NOMES[lk.matriz]||lk.matriz).replace(/'/g,"\\'")+( lk.etiqueta?' — '+lk.etiqueta.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'):''  )+'\') " style="padding:0.42rem 0.8rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:0.78rem;cursor:pointer;">Ver resultados (',lk.completion_count,')</button>',
+      '</div></div>',
+    ].join('');
+  }).join('');
+}
+
+function rlRenderListaFull(links) {
+  const el = document.getElementById('rl-lista-full');
+  if (!el) return;
+  if (!links || !links.length) {
+    el.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:var(--muted);font-size:0.85rem;">Nenhum link gerado ainda.<br><button onclick="rlSwitchTab(\'gerar\')" style="margin-top:0.75rem;padding:0.5rem 1.1rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit;">+ Gerar primeiro link</button></div>';
+    return;
+  }
+  const origin = window.location.origin;
+  el.innerHTML = links.filter(function(lk){return lk.matriz;}).map(function(lk) {
+    const url   = origin + '/' + lk.matriz + '.html?token=' + lk.token;
+    const full  = lk.completion_count >= lk.max_completions;
+    const pct   = lk.max_completions >= 9999 ? null : Math.min(100, Math.round((lk.completion_count / lk.max_completions) * 100));
+    const dt    = lk.created_at ? new Date(lk.created_at).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+    const etiq  = lk.etiqueta ? eqEsc(lk.etiqueta) : '';
+    const esc_token = lk.token.replace(/'/g,"\\'");
+    const tituloModal = (_RL_NOMES[lk.matriz]||lk.matriz).replace(/'/g,"\\'")+( lk.etiqueta ? ' — '+lk.etiqueta.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;') : '');
+    return [
+      '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:0.65rem;">',
+
+      // Linha 1 — matriz + etiqueta + status + data
+      '<div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.6rem;">',
+      '<span style="font-size:0.7rem;font-family:var(--mono);background:rgba(124,106,247,0.12);color:var(--accent);padding:0.12rem 0.55rem;border-radius:4px;text-transform:uppercase;font-weight:700;">',(_RL_NOMES[lk.matriz]||lk.matriz),'</span>',
+      etiq ? '<span style="font-size:0.82rem;color:var(--text);font-weight:600;">'+etiq+'</span>' : '',
+      full ? '<span style="font-size:0.65rem;color:#ff6b6b;background:rgba(255,107,107,0.1);padding:0.1rem 0.45rem;border-radius:4px;font-family:var(--mono);">LOTADO</span>'
+           : '<span style="font-size:0.65rem;color:#2EC4A0;background:rgba(46,196,160,0.08);padding:0.1rem 0.45rem;border-radius:4px;font-family:var(--mono);">ATIVO</span>',
+      '<span style="flex:1"></span>',
+      dt ? '<span style="font-size:0.65rem;color:var(--muted);font-family:var(--mono);">'+dt+'</span>' : '',
       '</div>',
+
+      // Linha 2 — URL copiável
+      '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">',
+      '<div style="flex:1;min-width:0;font-size:0.7rem;font-family:monospace;color:var(--muted);background:rgba(0,0,0,0.2);padding:0.4rem 0.65rem;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="',eqEsc(url),'">',eqEsc(url),'</div>',
+      '<button onclick="rlCopiarLink(\''+url.replace(/'/g,"\\'")+'\',this)" style="flex-shrink:0;padding:0.38rem 0.75rem;background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.25);border-radius:6px;color:var(--accent);font-size:0.75rem;font-weight:600;cursor:pointer;white-space:nowrap;">Copiar</button>',
+      '</div>',
+
+      // Linha 3 — barra de progresso + botões
+      '<div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">',
+      pct !== null ? [
+        '<div style="flex:1;min-width:80px;">',
+        '<div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--muted);margin-bottom:0.25rem;font-family:var(--mono);">',
+        '<span>Respostas</span><span>',lk.completion_count,'/',lk.max_completions,'</span></div>',
+        '<div style="height:4px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;">',
+        '<div style="height:100%;width:'+pct+'%;background:'+(full?'#ff6b6b':'var(--accent)')+';border-radius:2px;transition:width 0.6s;"></div>',
+        '</div></div>',
+      ].join('') : '<span style="font-size:0.72rem;color:var(--muted);font-family:var(--mono);">'+lk.completion_count+' respostas</span>',
+      '<div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-left:auto;">',
+      '<button onclick="rlVerResultados(\''+esc_token+'\',\''+tituloModal+'\')" style="padding:0.38rem 0.75rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:0.75rem;cursor:pointer;" onmouseover="this.style.color=\'var(--text)\'" onmouseout="this.style.color=\'var(--muted)\'">Ver resultados ('+lk.completion_count+')</button>',
+      '<button onclick="rlDeletarLink(\''+esc_token+'\')" style="padding:0.38rem 0.6rem;background:rgba(224,82,82,0.06);border:1px solid rgba(224,82,82,0.2);border-radius:6px;color:rgba(224,82,82,0.7);font-size:0.75rem;cursor:pointer;" onmouseover="this.style.color=\'#e05252\';this.style.borderColor=\'rgba(224,82,82,0.5)\'" onmouseout="this.style.color=\'rgba(224,82,82,0.7)\';this.style.borderColor=\'rgba(224,82,82,0.2)\'">Deletar</button>',
+      '</div></div>',
 
       '</div>',
     ].join('');
-  });
-  el.innerHTML = rows.join('');
+  }).join('');
+}
+
+async function rlDeletarLink(token) {
+  if (!confirm('Deletar este link? Os resultados já coletados também serão removidos.')) return;
+  const { error } = await capsulaDB.deleteRemoteLink(token);
+  if (error) { alert('Erro ao deletar: ' + (error.message || JSON.stringify(error))); return; }
+  rlCarregarLinks(true);
 }
 
 async function rlCopiarLink(url, btnEl) {

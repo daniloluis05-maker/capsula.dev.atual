@@ -530,40 +530,63 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <span class="section-note">Envie links de avaliação para qualquer pessoa</span>
       </div>
 
-      <!-- Criar novo link -->
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1rem;">
-        <span style="font-family:var(--mono);font-size:0.62rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);display:block;margin-bottom:1rem;">Gerar novo link</span>
-        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:flex-end;">
-          <div style="flex:1;min-width:130px;">
-            <label style="display:block;font-size:0.72rem;color:var(--muted);margin-bottom:0.3rem;">Matriz</label>
-            <select id="rl-select-matriz" style="width:100%;padding:0.6rem 0.75rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.85rem;cursor:pointer;outline:none;">
-              <option value="disc">DISC</option>
-              <option value="soar">SOAR</option>
-              <option value="ikigai">Ikigai</option>
-              <option value="ancoras">Âncoras de Carreira</option>
-              <option value="johari">Janela de Johari</option>
-              <option value="bigfive">Big Five</option>
-              <option value="pearson">Pearson-Marr</option>
-              <option value="tci">TCI</option>
-            </select>
+      <!-- Abas -->
+      <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1.25rem;">
+        <button id="rl-tab-gerar" onclick="rlSwitchTab('gerar')"
+          style="padding:0.6rem 1.2rem;background:none;border:none;border-bottom:2px solid var(--accent);color:var(--text);font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;margin-bottom:-1px;">
+          + Gerar link
+        </button>
+        <button id="rl-tab-lista" onclick="rlSwitchTab('lista')"
+          style="padding:0.6rem 1.2rem;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;margin-bottom:-1px;">
+          Meus links <span id="rl-count-badge" style="display:none;font-size:0.65rem;background:rgba(124,106,247,0.18);color:var(--accent);padding:0.1rem 0.45rem;border-radius:10px;margin-left:0.3rem;font-family:var(--mono);"></span>
+        </button>
+      </div>
+
+      <!-- Painel: Gerar -->
+      <div id="rl-panel-gerar">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1rem;">
+          <span style="font-family:var(--mono);font-size:0.62rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);display:block;margin-bottom:1rem;">Novo link de avaliação</span>
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:flex-end;">
+            <div style="flex:1;min-width:130px;">
+              <label style="display:block;font-size:0.72rem;color:var(--muted);margin-bottom:0.3rem;">Matriz</label>
+              <select id="rl-select-matriz" style="width:100%;padding:0.6rem 0.75rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.85rem;cursor:pointer;outline:none;">
+                <option value="disc">DISC</option>
+                <option value="soar">SOAR</option>
+                <option value="ikigai">Ikigai</option>
+                <option value="ancoras">Âncoras de Carreira</option>
+                <option value="johari">Janela de Johari</option>
+                <option value="bigfive">Big Five</option>
+                <option value="pearson">Pearson-Marr</option>
+                <option value="tci">TCI</option>
+              </select>
+            </div>
+            <div style="flex:2;min-width:180px;">
+              <label style="display:block;font-size:0.72rem;color:var(--muted);margin-bottom:0.3rem;">Etiqueta (opcional)</label>
+              <input id="rl-input-etiqueta" type="text" placeholder="Ex: João — Processo Seletivo"
+                style="width:100%;padding:0.6rem 0.75rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.85rem;box-sizing:border-box;outline:none;"
+                onfocus="this.style.borderColor='rgba(124,106,247,0.5)'" onblur="this.style.borderColor='var(--border)'">
+            </div>
+            <button id="rl-btn-criar" onclick="rlCriarLink()"
+              style="padding:0.65rem 1.25rem;background:var(--accent);border:none;border-radius:8px;color:#fff;font-weight:600;font-size:0.85rem;cursor:pointer;transition:opacity 0.2s;white-space:nowrap;"
+              onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+              + Gerar link
+            </button>
           </div>
-          <div style="flex:2;min-width:180px;">
-            <label style="display:block;font-size:0.72rem;color:var(--muted);margin-bottom:0.3rem;">Etiqueta (opcional)</label>
-            <input id="rl-input-etiqueta" type="text" placeholder="Ex: João — Processo Seletivo"
-              style="width:100%;padding:0.6rem 0.75rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.85rem;box-sizing:border-box;outline:none;"
-              onfocus="this.style.borderColor='rgba(124,106,247,0.5)'" onblur="this.style.borderColor='var(--border)'">
-          </div>
-          <button id="rl-btn-criar" onclick="rlCriarLink()"
-            style="padding:0.65rem 1.25rem;background:var(--accent);border:none;border-radius:8px;color:#fff;font-weight:600;font-size:0.85rem;cursor:pointer;transition:opacity 0.2s;white-space:nowrap;"
-            onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
-            + Gerar link
-          </button>
+        </div>
+        <div id="rl-links-list">
+          <div style="text-align:center;padding:2rem;color:var(--muted);font-size:0.85rem;">Nenhum link gerado ainda.</div>
         </div>
       </div>
 
-      <!-- Lista de links -->
-      <div id="rl-links-list">
-        <div style="text-align:center;padding:2rem;color:var(--muted);font-size:0.85rem;">Nenhum link gerado ainda.</div>
+      <!-- Painel: Meus links -->
+      <div id="rl-panel-lista" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.85rem;">
+          <span style="font-size:0.78rem;color:var(--muted);">Links que você gerou. Clique em <strong style="color:var(--text)">Copiar</strong> para compartilhar.</span>
+          <button onclick="rlCarregarLinks(true)" style="background:none;border:none;color:var(--muted);font-size:0.75rem;cursor:pointer;font-family:inherit;padding:0.2rem 0.4rem;border-radius:4px;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">↺ Atualizar</button>
+        </div>
+        <div id="rl-lista-full">
+          <div style="text-align:center;padding:3rem 1rem;color:var(--muted);font-size:0.85rem;">Carregando...</div>
+        </div>
       </div>
     </div>
 

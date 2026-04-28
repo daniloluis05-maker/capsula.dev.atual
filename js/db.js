@@ -515,6 +515,17 @@
     return data || [];
   }
 
+  async function deleteRemoteLink(token) {
+    const db = getDB();
+    if (!db) return { error: 'offline' };
+    const { error } = await db
+      .from('remote_links')
+      .delete()
+      .eq('token', token);
+    if (error) console.warn('[db] deleteRemoteLink:', error);
+    return { error };
+  }
+
   // ── Acompanhamento Semanal (Plano Gerencial) ────────────────
 
   async function createIndicador({ gerencial_email, nome, unidade = '%', meta = null, cor = '#7c6af7', descricao = '' }) {
@@ -862,6 +873,7 @@
     getRemoteLinkByToken,
     saveRemoteResult,
     getRemoteResults,
+    deleteRemoteLink,
     // Acompanhamento semanal (Gerencial)
     createIndicador,
     getIndicadores,
