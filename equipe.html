@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://*.ingest.sentry.io;">
+<title>Resumo de Equipe | Sistema Gnosis</title>
+<link rel="stylesheet" href="css/capsula.css">
+<meta name="robots" content="noindex">
+<style>
+  body { padding: 2rem 1rem 4rem; max-width: 1100px; margin: 0 auto; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+  .topbar a { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
+  .topbar a:hover { color: var(--text); }
+  .badge { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(46,196,160,0.1); border: 1px solid rgba(46,196,160,0.25); color: #2EC4A0; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.7rem; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+  .team-header { margin-bottom: 2rem; }
+  .team-header h1 { font-size: 1.9rem; margin-bottom: 0.3rem; }
+  .team-header p { color: var(--muted); font-size: 0.92rem; }
+  /* Stats */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-bottom: 2rem; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; position: relative; overflow: hidden; }
+  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--stat-color, #2EC4A0); }
+  .stat-val { font-size: 1.6rem; font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: var(--stat-color, #2EC4A0); }
+  .stat-lbl { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.35rem; font-family: var(--mono); }
+  /* Sections */
+  .section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
+  .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .section-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-family: var(--mono); }
+  .section-link { font-size: 0.78rem; color: var(--accent); text-decoration: none; font-weight: 600; }
+  .section-link:hover { text-decoration: underline; }
+  /* Membros */
+  .member-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .member-chip { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 20px; font-size: 0.8rem; }
+  .member-avatar { width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg,#2EC4A0,#1BA8D4); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.62rem; font-weight: 700; flex-shrink: 0; }
+  .member-papel { font-size: 0.68rem; color: var(--muted); margin-left: 0.15rem; }
+  /* OKR progress */
+  .okr-item { margin-bottom: 1rem; }
+  .okr-item:last-child { margin-bottom: 0; }
+  .okr-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; gap: 0.75rem; }
+  .okr-nome { font-size: 0.87rem; font-weight: 600; flex: 1; }
+  .okr-pct { font-size: 0.78rem; font-weight: 800; color: #7c6af7; font-family: var(--mono); flex-shrink: 0; }
+  .progress-bar { height: 5px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg,#7c6af7,#1BA8D4); transition: width 0.6s ease; }
+  .okr-krs { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .kr-chip { font-size: 0.68rem; padding: 0.15rem 0.55rem; border-radius: 20px; font-family: var(--mono); background: rgba(124,106,247,0.08); border: 1px solid rgba(124,106,247,0.2); color: #7c6af7; }
+  /* 5W2H */
+  .status-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.75rem; }
+  .status-pill { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.75rem; border-radius: 20px; font-size: 0.72rem; font-weight: 700; font-family: var(--mono); }
+  .pill-pendente { background: rgba(107,105,128,0.15); color: #8c8aa0; border: 1px solid rgba(107,105,128,0.3); }
+  .pill-andamento { background: rgba(27,168,212,0.1); color: #1BA8D4; border: 1px solid rgba(27,168,212,0.3); }
+  .pill-concluido { background: rgba(46,196,160,0.1); color: #2EC4A0; border: 1px solid rgba(46,196,160,0.3); }
+  .pill-atrasado { background: rgba(232,96,58,0.1); color: #E8603A; border: 1px solid rgba(232,96,58,0.3); }
+  .acao-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.83rem; }
+  .acao-row:last-child { border-bottom: none; }
+  .acao-what { flex: 1; font-weight: 600; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .acao-meta { font-size: 0.7rem; color: var(--muted); font-family: var(--mono); flex-shrink: 0; }
+  /* SWOT */
+  .swot-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .swot-q { padding: 0.75rem; border-radius: 8px; font-size: 0.8rem; }
+  .swot-q-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; font-family: var(--mono); }
+  .swot-q-count { font-size: 1.3rem; font-weight: 800; line-height: 1; }
+  .swot-q-items { margin-top: 0.4rem; display: flex; flex-direction: column; gap: 0.2rem; }
+  .swot-q-item { font-size: 0.75rem; color: rgba(232,232,240,0.7); line-height: 1.35; }
+  .sq-f { background: rgba(46,196,160,0.06); border: 1px solid rgba(46,196,160,0.2); }
+  .sq-f .swot-q-title { color: #2EC4A0; }
+  .sq-fr { background: rgba(232,96,58,0.06); border: 1px solid rgba(232,96,58,0.2); }
+  .sq-fr .swot-q-title { color: #E8603A; }
+  .sq-o { background: rgba(27,168,212,0.06); border: 1px solid rgba(27,168,212,0.2); }
+  .sq-o .swot-q-title { color: #1BA8D4; }
+  .sq-a { background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.2); }
+  .sq-a .swot-q-title { color: #C9A84C; }
+  /* RACI */
+  .raci-stat { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.83rem; }
+  .raci-stat:last-child { border-bottom: none; }
+  .raci-atividade { flex: 1; font-weight: 600; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .raci-pills { display: flex; gap: 0.25rem; flex-shrink: 0; }
+  .rp { width: 22px; height: 22px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 800; color: #fff; }
+  .rp-R { background: #E8603A; }
+  .rp-A { background: #7c6af7; }
+  .rp-C { background: #1BA8D4; }
+  .rp-I { background: #2EC4A0; }
+  /* DNA */
+  .dna-box { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-size: 0.85rem; color: rgba(232,232,240,0.8); line-height: 1.65; }
+  /* Matrizes atalhos */
+  .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.6rem; }
+  .tool-card { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; padding: 0.9rem 0.75rem; border-radius: 9px; text-decoration: none; font-size: 0.8rem; font-weight: 600; text-align: center; border: 1px solid; transition: background 0.15s; }
+  .empty-sec { color: var(--muted); font-size: 0.83rem; font-style: italic; text-align: center; padding: 0.75rem 0; }
+  .ciclo-sel { padding: 0.35rem 0.65rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.78rem; font-family: var(--mono); outline: none; cursor: pointer; }
+  @media (max-width: 600px) { .swot-mini { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: repeat(2,1fr); } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="dashboard.html">← Dashboard</a>
+  <span class="badge" id="top-badge">Resumo de Equipe</span>
+</div>
+
+<div id="loading" style="text-align:center;padding:4rem 1rem;color:var(--muted);">Carregando equipe...</div>
+
+<div id="page" style="display:none;">
+
+  <div class="team-header">
+    <h1 id="team-nome"></h1>
+    <p id="team-desc"></p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" id="stats-grid"></div>
+
+  <!-- Membros -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Membros</span>
+      <a href="dashboard.html" class="section-link" id="link-dashboard">Gerenciar →</a>
+    </div>
+    <div class="member-list" id="member-list"></div>
+  </div>
+
+  <!-- OKRs -->
+  <div class="section" id="sec-okrs">
+    <div class="section-header">
+      <span class="section-title">OKRs</span>
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <select id="sel-ciclo" class="ciclo-sel" onchange="renderOKRs()"></select>
+        <a id="link-okrs" href="okrs.html" class="section-link">Ver todos →</a>
+      </div>
+    </div>
+    <div id="okrs-area"></div>
+  </div>
+
+  <!-- 5W2H -->
+  <div class="section" id="sec-5w2h">
+    <div class="section-header">
+      <span class="section-title">5W2H · Plano de Ação</span>
+      <a id="link-5w2h" href="5w2h.html" class="section-link">Ver todos →</a>
+    </div>
+    <div id="acoes-area"></div>
+  </div>
+
+  <!-- SWOT -->
+  <div class="section" id="sec-swot">
+    <div class="section-header">
+      <span class="section-title">SWOT de Equipe</span>
+      <a id="link-swot" href="swot-equipe.html" class="section-link">Editar →</a>
+    </div>
+    <div id="swot-area"></div>
+  </div>
+
+  <!-- RACI -->
+  <div class="section" id="sec-raci">
+    <div class="section-header">
+      <span class="section-title">Matriz RACI</span>
+      <a id="link-raci" href="raci.html" class="section-link">Editar →</a>
+    </div>
+    <div id="raci-area"></div>
+  </div>
+
+  <!-- DNA -->
+  <div class="section" id="sec-dna" style="display:none;">
+    <div class="section-header">
+      <span class="section-title">DNA Estratégico de Equipe</span>
+    </div>
+    <div id="dna-area"></div>
+  </div>
+
+  <!-- Acessar ferramentas -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Acessar Ferramentas</span>
+    </div>
+    <div class="tool-grid" id="tool-grid"></div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" integrity="sha384-IiV7lMrgUYFjr7nKnX1XDxweNl9p95vzrLcmfcQ8dMKM5kqqCi6iwxDaRcr+I9Vc" crossorigin="anonymous"></script>
+<script src="js/config.js"></script>
+<script src="js/sentry-init.js"></script>
+<script src="js/db.js"></script>
+<script src="js/payments.js"></script>
+<script src="js/equipe-app.js" defer></script>
+</body>
+</html>

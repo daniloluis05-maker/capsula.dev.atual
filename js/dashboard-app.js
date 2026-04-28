@@ -786,6 +786,9 @@ function eqBuildCard(eq) {
     membros.length
       ? `<div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-top:0.5rem;">${membros.slice(0,5).map(m=>`<span style="font-size:0.65rem;padding:0.2rem 0.55rem;background:rgba(46,196,160,0.08);border:1px solid rgba(46,196,160,0.2);border-radius:20px;color:#2EC4A0;">${eqEsc(m.nome.split(' ')[0])}</span>`).join('')}${membros.length>5?`<span style="font-size:0.65rem;padding:0.2rem 0.55rem;color:var(--muted);">+${membros.length-5}</span>`:''}</div>`
       : `<div style="font-size:0.72rem;color:var(--muted);font-style:italic;margin-top:0.4rem;">Clique para adicionar membros</div>`,
+    `<div style="margin-top:0.85rem;padding-top:0.65rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">`,
+    `<a href="equipe.html?id=${eq.id}" onclick="event.stopPropagation();" style="font-size:0.72rem;color:var(--accent);text-decoration:none;font-weight:600;opacity:0.8;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">Ver Resumo →</a>`,
+    `</div>`,
   ].join('');
   return card;
 }
@@ -872,7 +875,10 @@ async function eqVerDetalhes(id) {
     : '<p style="color:var(--muted);font-size:0.85rem;font-style:italic;text-align:center;padding:2rem 0;">Adicione pelo menos 2 membros para gerar o DNA Estratégico de Equipe.</p>';
 
   cont.innerHTML = [
-    `<h3 style="margin:0 0 0.2rem;font-size:1.15rem;color:var(--text);padding-right:2rem;">${eqEsc(eq.nome)}</h3>`,
+    `<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;margin-bottom:0.2rem;padding-right:2rem;">`,
+    `<h3 style="margin:0;font-size:1.15rem;color:var(--text);flex:1;">${eqEsc(eq.nome)}</h3>`,
+    `<a href="equipe.html?id=${id}" style="flex-shrink:0;font-size:0.72rem;color:var(--accent);text-decoration:none;font-weight:600;padding:0.3rem 0.7rem;border:1px solid rgba(46,196,160,0.3);border-radius:6px;background:rgba(46,196,160,0.06);white-space:nowrap;margin-top:0.15rem;">Ver Resumo →</a>`,
+    `</div>`,
     eq.descricao ? `<p style="margin:0 0 1rem;color:var(--muted);font-size:0.82rem;">${eqEsc(eq.descricao)}</p>` : '<div style="height:0.85rem;"></div>',
     `<div class="eq-tabs">`,
     `<button class="eq-tab active" onclick="eqSwitchTab('membros',this)">Membros <span style="font-size:0.68rem;opacity:0.7;">(${membros.length})</span></button>`,
@@ -1144,7 +1150,7 @@ async function eqAbrirAdd(equipeId) {
       todos.length ? 'Todos os respondentes já foram adicionados a esta equipe.' : 'Nenhum respondente disponível ainda. Compartilhe seus links remotos primeiro.',
       '</div>',
       '<div style="text-align:center;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">',
-      `<button onclick="eqAdicionarManual('${equipeId}')" style="padding:0.6rem 1.25rem;background:transparent;border:1px solid rgba(46,196,160,0.4);border-radius:8px;color:#2EC4A0;font-size:0.82rem;font-weight:600;cursor:pointer;">+ Adicionar membro manualmente</button>`,
+      `<button onclick="eqAbrirManual('${equipeId}')" style="padding:0.6rem 1.25rem;background:transparent;border:1px solid rgba(46,196,160,0.4);border-radius:8px;color:#2EC4A0;font-size:0.82rem;font-weight:600;cursor:pointer;">+ Adicionar membro manualmente</button>`,
       '</div>',
     ].join('');
     return;
