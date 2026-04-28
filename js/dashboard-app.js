@@ -410,7 +410,7 @@ function rlRenderLinks(links) {
     return;
   }
   const origin = window.location.origin;
-  el.innerHTML = links.map(function(lk) {
+  el.innerHTML = links.filter(function(lk) { return lk.matriz; }).map(function(lk) {
     const url  = origin + '/' + lk.matriz + '.html?token=' + lk.token;
     const full = lk.completion_count >= lk.max_completions;
     const pct  = Math.round((lk.completion_count / lk.max_completions) * 100);

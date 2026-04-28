@@ -457,23 +457,22 @@
     }
 
     const token = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
-    const { data, error } = await db
+    const { error } = await db
       .from('remote_links')
-      .insert({ token, pro_email: pro_email.toLowerCase().trim(), matriz, etiqueta: etiqueta || null, max_completions })
-      .select()
-      .single();
+      .insert({ token, pro_email: pro_email.toLowerCase().trim(), matriz, etiqueta: etiqueta || null, max_completions });
     if (error) console.warn('[db] createRemoteLink error:', error);
-    return { data, error, token };
+    return { error, token };
   }
 
   async function getMyRemoteLinks(pro_email) {
     const db = getDB();
     if (!db) return [];
-    const { data } = await db
+    const { data, error } = await db
       .from('remote_links')
       .select('*')
       .eq('pro_email', pro_email.toLowerCase().trim())
       .order('created_at', { ascending: false });
+    if (error) console.warn('[db] getMyRemoteLinks error:', error);
     return data || [];
   }
 
