@@ -4,6 +4,8 @@
    Inclua ANTES dos estilos específicos de cada página.
 ───────────────────────────────────────────────────────────── */
 
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
+
 /* Reset */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -19,6 +21,12 @@
   --warning:  #e8603a;
   --radius:   12px;
   --shadow:   0 4px 24px rgba(0,0,0,0.4);
+  --mono:     'Space Mono', monospace;
+  /* DISC profile colors */
+  --D: #E8603A;
+  --I: #6C5FE6;
+  --S: #2EC4A0;
+  --C: #1BA8D4;
 }
 
 /* Tipografia base */

@@ -180,14 +180,14 @@ function render() {
                 <div class="kr-info">
                   <div class="kr-titulo">${esc(kr.titulo)}</div>
                   <div class="kr-track">
-                    <span>${kr.valor_atual} / ${kr.valor_meta} ${esc(kr.unidade || '%')}</span>
+                    <span>${kr.valor_atual ?? 0} / ${kr.valor_meta ?? 0} ${esc(kr.unidade || '%')}</span>
                     ${kr.peso > 1 ? `<span>· peso ${kr.peso}</span>` : ''}
                     ${kr.responsavel ? `<span class="resp">${esc(kr.responsavel)}</span>` : ''}
                     ${(()=>{ const upd=kr.updated_at||kr.created_at; if(!upd)return ''; const dias=Math.floor((Date.now()-new Date(upd).getTime())/(86400000)); return dias>15?`<span style="color:#E8603A;font-size:0.65rem;font-family:var(--mono);">⚠ sem atualização há ${dias}d</span>`:''; })()}
                   </div>
                 </div>
                 <div class="kr-actions">
-                  <button class="upd" onclick="abrirUpd('${kr.id}','${esc(kr.titulo).replace(/'/g,"\\'")}', ${kr.valor_atual})">+ Atualizar</button>
+                  <button class="upd" onclick="abrirUpd('${kr.id}','${esc(kr.titulo).replace(/'/g,"\\'")}', ${kr.valor_atual ?? 0})">+ Atualizar</button>
                   <button onclick="editarKR('${o.id}','${kr.id}')" title="Editar">✎</button>
                   <button onclick="excluirKR('${kr.id}')" title="Remover">×</button>
                 </div>
