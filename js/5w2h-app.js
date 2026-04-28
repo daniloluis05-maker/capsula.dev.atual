@@ -44,7 +44,7 @@ async function onEquipeChange() {
   const pdfBtn = document.getElementById('btn-pdf');
   if (pdfBtn) pdfBtn.style.display = 'none';
   if (!_equipeId) {
-    document.getElementById('content-area').innerHTML = '<div class="empty">Selecione uma equipe.</div>';
+    document.getElementById('content-area').innerHTML = '<div class="empty">Selecione uma equipe acima para ver o plano de ação.</div>';
     document.getElementById('stats').style.display = 'none';
     return;
   }

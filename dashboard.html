@@ -288,9 +288,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     </div>
 
     <div class="matrices-grid">
-      <div class="matrix-card" style="--card-accent:var(--D)" onclick="window.location.href='disc.html'">
+      <div class="matrix-card" id="card-disc" style="--card-accent:var(--D)" onclick="window.location.href='disc.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(232,96,58,0.1);border:1px solid rgba(232,96,58,0.18);"><svg viewBox="0 0 24 24" style="stroke:#E8603A"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></div>
+          <span id="disc-start-badge" style="display:none;font-size:0.62rem;font-weight:800;padding:0.2rem 0.55rem;background:rgba(232,96,58,0.15);border:1px solid rgba(232,96,58,0.4);border-radius:20px;color:#E8603A;letter-spacing:0.04em;text-transform:uppercase;font-family:var(--mono);">Comece aqui</span>
         </div>
         <span class="card-category">Personalidade</span>
         <h3>Perfil DISC</h3>
@@ -482,7 +483,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <div id="activity-list">
           <div class="activity-empty">
             <span class="e-icon">◎</span>
-            <p>Nenhuma atividade registrada ainda.<br>Complete sua primeira matriz para começar.</p>
+            <p>Nenhuma atividade registrada ainda.</p>
+            <p style="font-size:0.73rem;color:var(--muted);margin-top:0.5rem;line-height:1.6;">Comece pelo DISC — leva menos de 5 minutos e desbloqueia insights personalizados para todas as outras matrizes.</p>
+            <a href="disc.html" style="display:inline-block;margin-top:0.85rem;padding:0.5rem 1rem;background:rgba(232,96,58,0.1);border:1px solid rgba(232,96,58,0.3);border-radius:8px;color:#E8603A;font-size:0.78rem;font-weight:700;text-decoration:none;">Começar com DISC →</a>
           </div>
         </div>
       </div>

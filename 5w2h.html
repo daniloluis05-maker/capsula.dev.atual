@@ -62,6 +62,29 @@
   .modal-actions button { padding: 0.65rem 1.2rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; }
   .btn-cancel { background: transparent; border: 1px solid var(--border); color: var(--muted); }
   .btn-save { background: #1BA8D4; color: #fff; }
+  /* Mobile: cards em vez de tabela */
+  @media (max-width: 640px) {
+    .equipe-bar { gap: 0.5rem; }
+    .equipe-bar select { min-width: 0; flex: 1; }
+    .table-wrap { background: none; border: none; border-radius: 0; overflow-x: visible; }
+    table, thead, tbody, tr { display: block; }
+    thead { display: none; }
+    tr { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.75rem; padding: 0.85rem 1rem; position: relative; }
+    tr:hover td { background: transparent; }
+    td { display: block; padding: 0.2rem 0; border: none; font-size: 0.85rem; }
+    td:empty, td:has(> :empty) { display: none; }
+    .what-cell { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.4rem; max-width: none; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .text-cell { color: rgba(232,232,240,0.65); max-width: none; }
+    td:nth-child(3):before { content: "Onde: "; font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono); }
+    td:nth-child(4):before { content: "Quando: "; font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono); }
+    td:nth-child(5):before { content: "Quem: "; font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono); }
+    td:nth-child(7):before { content: "Custo: "; font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono); }
+    td:nth-child(8) { display: inline-block; margin-right: 0.4rem; }
+    td:nth-child(9) { display: inline-block; }
+    td:nth-child(10) { position: absolute; top: 0.75rem; right: 0.75rem; padding: 0; }
+    .row-actions button { padding: 0.3rem 0.5rem; }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>

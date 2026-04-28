@@ -123,6 +123,9 @@ function loadMatrixState(userData){
     const sub=total===1?'1 relatório disponível':`${total} relatórios disponíveis`;
     document.getElementById('stat-insights-sub').textContent=sub;
   }
+  // Badge "Comece aqui" no DISC para usuários sem nenhuma matriz
+  const startBadge = document.getElementById('disc-start-badge');
+  if (startBadge) startBadge.style.display = total === 0 ? 'inline-block' : 'none';
 
   function setStatus(id,done,inProgress){
     const el=document.getElementById(id);

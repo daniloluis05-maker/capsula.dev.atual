@@ -41,7 +41,7 @@ async function onEquipeChange() {
   const wizBtn = document.getElementById('btn-wizard');
   if (wizBtn) wizBtn.href = 'wizard.html?tipo=swot' + (_equipeId ? '&equipe=' + _equipeId : '');
   if (!_equipeId) {
-    document.getElementById('content-area').innerHTML = '<div class="empty">Selecione uma equipe.</div>';
+    document.getElementById('content-area').innerHTML = '<div class="empty">Selecione uma equipe acima para ver a análise SWOT.</div>';
     return;
   }
   await loadItems();

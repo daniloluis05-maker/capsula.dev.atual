@@ -28,6 +28,12 @@ window.addEventListener('DOMContentLoaded', function() {
 
   // Badge de testes realizados
   renderTestsBadges();
+
+  // Auto-skip intro se já tem SWOT salva
+  const s = userData.swot && userData.swot.items;
+  if (s && (s.f?.length || s.fk?.length || s.o?.length || s.a?.length)) {
+    startSWOT();
+  }
 });
 
 function renderTestsBadges() {

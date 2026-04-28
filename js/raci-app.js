@@ -34,13 +34,13 @@ function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'
 async function onEquipeChange() {
   _equipeId = document.getElementById('sel-equipe').value;
   if (!_equipeId) {
-    document.getElementById('content-area').innerHTML = '<div class="empty">Selecione uma equipe.</div>';
+    document.getElementById('content-area').innerHTML = '<div class="empty">Selecione uma equipe acima para ver a matriz RACI.</div>';
     return;
   }
   const eq = _equipes.find(e => e.id === _equipeId);
   _membros = (eq && eq.equipe_membros) ? eq.equipe_membros : [];
   if (!_membros.length) {
-    document.getElementById('content-area').innerHTML = '<div class="empty">Adicione membros a esta equipe no dashboard antes de montar a matriz RACI.</div>';
+    document.getElementById('content-area').innerHTML = `<div class="empty">Esta equipe ainda não tem membros.<br><a href="dashboard.html" style="color:var(--accent);font-weight:600;">← Adicionar membros no Dashboard</a></div>`;
     return;
   }
   await loadRaci();
