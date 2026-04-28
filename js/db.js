@@ -444,12 +444,25 @@
   async function createRemoteLink({ pro_email, matriz, etiqueta, max_completions = 20 }) {
     const db = getDB();
     if (!db) return { error: 'offline' };
+
+    // RLS exige role=authenticated; verifica sessão antes de tentar
+    try {
+      const { data: { session } } = await db.auth.getSession();
+      if (!session) {
+        console.warn('[db] createRemoteLink: sem sessão ativa — RLS bloquearia o insert');
+        return { error: { message: 'session_expired', code: 'auth' } };
+      }
+    } catch (e) {
+      console.warn('[db] createRemoteLink: erro ao checar sessão', e);
+    }
+
     const token = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
     const { data, error } = await db
       .from('remote_links')
       .insert({ token, pro_email: pro_email.toLowerCase().trim(), matriz, etiqueta: etiqueta || null, max_completions })
       .select()
       .single();
+    if (error) console.warn('[db] createRemoteLink error:', error);
     return { data, error, token };
   }
 

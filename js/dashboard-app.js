@@ -377,7 +377,22 @@ async function rlCriarLink() {
   btn.disabled = true; btn.textContent = 'Gerando...';
   const { error } = await capsulaDB.createRemoteLink({ pro_email: _rlProEmail, matriz, etiqueta, max_completions: maxCompletions });
   btn.disabled = false; btn.textContent = '+ Gerar link';
-  if (error) { alert('Erro ao criar link. Tente novamente.'); return; }
+  if (error) {
+    console.error('[rlCriarLink] erro Supabase:', error);
+    const isAuth    = error === 'offline' || (error && (error.code === 'auth' || error.message === 'session_expired'));
+    const noTable   = error && (error.code === '42P01' || (error.message || '').includes('does not exist'));
+    const isRLS     = error && (error.code === '42501' || (error.message || '').toLowerCase().includes('row-level security'));
+    if (isAuth) {
+      if (confirm('Sessão expirada. Fazer login novamente?')) window.location.href = 'index.html';
+    } else if (noTable) {
+      alert('Tabela remote_links não encontrada no banco de dados.\nExecute a migration 003_remote_links.sql no Supabase.');
+    } else if (isRLS) {
+      alert('Permissão negada pelo banco (RLS).\nVerifique se as policies da migration 005 foram aplicadas.');
+    } else {
+      alert('Erro ao criar link: ' + (error.message || JSON.stringify(error)));
+    }
+    return;
+  }
   document.getElementById('rl-input-etiqueta').value = '';
   rlCarregarLinks();
 }
