@@ -13,6 +13,17 @@
     if (nomeEl) nomeEl.textContent = decodeURIComponent(equipeNome);
   }
 
+  const pwBtn = document.getElementById('btn-pw-toggle');
+  if (pwBtn) {
+    pwBtn.addEventListener('click', function() {
+      const inp = document.getElementById('senha');
+      if (!inp) return;
+      const show = inp.type === 'password';
+      inp.type = show ? 'text' : 'password';
+      pwBtn.style.opacity = show ? '1' : '0.45';
+    });
+  }
+
   document.getElementById('btn-submit').addEventListener('click', async function() {
     const nome  = document.getElementById('nome').value.trim();
     const email = document.getElementById('email').value.trim();

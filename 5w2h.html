@@ -68,11 +68,12 @@
     .equipe-bar select { min-width: 0; flex: 1; }
     .table-wrap { background: none; border: none; border-radius: 0; overflow-x: visible; }
     table, thead, tbody, tr { display: block; }
+    table { min-width: 0; width: 100%; }
     thead { display: none; }
     tr { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.75rem; padding: 0.85rem 1rem; position: relative; }
     tr:hover td { background: transparent; }
     td { display: block; padding: 0.2rem 0; border: none; font-size: 0.85rem; }
-    td:empty, td:has(> :empty) { display: none; }
+    td:empty { display: none; }
     .what-cell { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.4rem; max-width: none; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
     .text-cell { color: rgba(232,232,240,0.65); max-width: none; }
     td:nth-child(3):before { content: "Onde: "; font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono); }

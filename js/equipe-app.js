@@ -164,7 +164,7 @@ function krProgressObj(obj) {
   if (!krs.length) return 0;
   const sum = krs.reduce((s, kr) => {
     const ini = Number(kr.valor_inicial || 0);
-    const meta = Number(kr.meta || 100);
+    const meta = Number(kr.valor_meta || 100);
     const atual = Number(kr.valor_atual == null ? ini : kr.valor_atual);
     if (meta === ini) return s + 100;
     return s + Math.min(100, Math.max(0, Math.round(((atual - ini) / (meta - ini)) * 100)));
