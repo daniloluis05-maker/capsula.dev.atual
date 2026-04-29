@@ -26,10 +26,15 @@
   // falta de usuário autenticado ou de créditos.
 
   if (window._payments) {
-    // Respondentes remotos não têm plano Pro — não devem gerar PDFs
-    window._payments.isPro      = () => false;
+    // Respondente em modo remoto: usamos um "Pro virtual" (isPro=true) só para
+    // bypassar a proteção de rota que ancoras/bigfive/ikigai/johari/pearson/soar
+    // checam no DOMContentLoaded — caso contrário, o respondente cai num paywall
+    // antes mesmo de ver o teste. Os PDFs continuam bloqueados pelos overrides
+    // de window.generatePDF / _generatePDF / _generatePDFDisc (em onStart abaixo)
+    // que mostram a CTA de criação de conta em vez de gerar.
+    window._payments.isPro      = () => true;
     window._payments.isAdmin    = () => false;
-    window._payments.hasAccess  = () => false;
+    window._payments.hasAccess  = () => true;
   }
   if (window.capsulaDB) {
     window.capsulaDB.ensureUserData = async () => ({
