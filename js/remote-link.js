@@ -249,6 +249,19 @@
       'button[onclick*="generatePDF"], button[onclick*="_generatePDF"]'
     ).forEach(b => { b.style.display = 'none'; });
 
+    // Substitui ".btn-dashboard" da result-actions por CTA "Criar conta gratuita".
+    // A classe é consistente nas 8 matrizes (anchor em 7, button onclick no DISC).
+    // Sem isso, respondente cairia no dashboard de usuário e seria classificado
+    // como "respondente" — UX confuso e fluxo morto.
+    document.querySelectorAll('.btn-dashboard').forEach(function(btn) {
+      if (btn.tagName === 'A') {
+        btn.setAttribute('href', 'convite.html');
+      } else {
+        btn.setAttribute('onclick', "window.location.href='convite.html'");
+      }
+      btn.textContent = '✨ Criar conta gratuita';
+    });
+
     const btn = document.createElement('button');
     btn.id = '_rl-submit-btn';
     btn.textContent = '✓ Enviar Resultado ao Avaliador';
@@ -332,6 +345,14 @@
 
   async function init() {
     try {
+      // Esconde links que mandariam o respondente pro dashboard pessoal
+      // (top-nav, intro back-link, side nav) — respondente remoto não tem
+      // conta, então clicar geraria UX morto. .btn-dashboard da result-page
+      // é tratado em injectSubmitButton (substitui por "Criar conta").
+      document.querySelectorAll('a[href*="dashboard"]:not(.btn-dashboard)').forEach(function(a) {
+        a.style.display = 'none';
+      });
+
       if (!window.capsulaDB) { showError('Erro ao conectar ao servidor.'); return; }
 
       const linkData = await capsulaDB.getRemoteLinkByToken(TOKEN);
