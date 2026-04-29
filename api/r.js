@@ -51,9 +51,20 @@ module.exports = async (req, res) => {
   let nome   = '';
 
   try {
+    // Via RPC (em vez de SELECT direto) — após migration 016, anon
+    // não enumera mais a tabela remote_links. RPC retorna só a row
+    // do token exato.
     const resp = await fetch(
-      `${SUPABASE_URL}/rest/v1/remote_links?token=eq.${encodeURIComponent(token)}&select=matriz,etiqueta&limit=1`,
-      { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
+      `${SUPABASE_URL}/rest/v1/rpc/get_remote_link_by_token`,
+      {
+        method:  'POST',
+        headers: {
+          apikey:          SUPABASE_KEY,
+          Authorization:   `Bearer ${SUPABASE_KEY}`,
+          'Content-Type':  'application/json',
+        },
+        body: JSON.stringify({ p_token: token }),
+      }
     );
     const rows = await resp.json();
     if (Array.isArray(rows) && rows[0]) {
