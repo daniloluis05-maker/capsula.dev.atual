@@ -152,7 +152,9 @@
     }
 
     // Intercepta geração de PDF — respondente remoto não paga, mas pode criar conta
-    window.generatePDF = showPdfCta;
+    window.generatePDF     = showPdfCta;
+    window._generatePDF    = showPdfCta; // nome usado pela maioria das matrizes
+    window._generatePDFDisc = showPdfCta; // nome específico do DISC
 
     _overlay.remove();
     watchForResult();
