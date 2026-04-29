@@ -12,10 +12,14 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const MP_ACCESS_TOKEN   = Deno.env.get('MP_ACCESS_TOKEN') ?? '';
-const MP_WEBHOOK_SECRET = Deno.env.get('MP_WEBHOOK_SECRET') ?? '';
-const SUPABASE_URL      = Deno.env.get('SUPABASE_URL') ?? '';
-const SUPABASE_KEY      = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+const MP_ACCESS_TOKEN     = Deno.env.get('MP_ACCESS_TOKEN') ?? '';
+const MP_WEBHOOK_SECRET   = Deno.env.get('MP_WEBHOOK_SECRET') ?? '';
+// Quando 'true', recusa qualquer webhook sem assinatura válida (fail-closed).
+// Default 'false' até MP_WEBHOOK_SECRET ser confirmada nos secrets de produção,
+// para não derrubar pagamentos durante a janela de migração. Promova após validar.
+const MP_REQUIRE_SIGNATURE = (Deno.env.get('MP_REQUIRE_SIGNATURE') ?? '').toLowerCase() === 'true';
+const SUPABASE_URL        = Deno.env.get('SUPABASE_URL') ?? '';
+const SUPABASE_KEY        = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 
 // Créditos concedidos por produto — deve refletir o PRODUCTS em create-mp-preference
 const CREDITS_MAP: Record<string, Record<string, number | string>> = {
@@ -26,11 +30,18 @@ const CREDITS_MAP: Record<string, Record<string, number | string>> = {
   gerencial: { plano: 'gerencial' },
 };
 
+// Comparação constant-time para defender contra timing attacks em HMAC
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return result === 0;
+}
+
 // ── Verificação de assinatura MP (webhook v2) ─────────────────
 // Documentação: https://www.mercadopago.com.br/developers/pt/docs/your-integrations/notifications/webhooks
+// Pré-condição: MP_WEBHOOK_SECRET e xSignature já validados pelo caller como não-vazios.
 async function verifySignature(xSignature: string, xRequestId: string, dataId: string): Promise<boolean> {
-  if (!MP_WEBHOOK_SECRET || !xSignature) return true; // sem secret → aceita (dev)
-
   const ts = xSignature.split(',').find(p => p.startsWith('ts='))?.slice(3) ?? '';
   const v1 = xSignature.split(',').find(p => p.startsWith('v1='))?.slice(3) ?? '';
   if (!ts || !v1) return false;
@@ -42,7 +53,7 @@ async function verifySignature(xSignature: string, xRequestId: string, dataId: s
   );
   const computed = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(manifest));
   const hex = Array.from(new Uint8Array(computed)).map(b => b.toString(16).padStart(2, '0')).join('');
-  return hex === v1;
+  return timingSafeEqual(hex, v1);
 }
 
 // ── Busca dados do pagamento na API MP ────────────────────────
@@ -137,14 +148,49 @@ Deno.serve(async (req: Request) => {
     return new Response('ok', { status: 200 });
   }
 
-  // Verifica assinatura se secret estiver configurado
+  // C4: validação de assinatura.
+  // Modo estrito (MP_REQUIRE_SIGNATURE=true): recusa qualquer request sem assinatura válida.
+  // Modo permissivo (default): exige se secret estiver configurado, mas não derruba o fluxo
+  //   se a env var ainda não foi setada — apenas loga em alta visibilidade. Use o estrito
+  //   após confirmar MP_WEBHOOK_SECRET em produção.
   const xSig = req.headers.get('x-signature') ?? '';
   const xReq = req.headers.get('x-request-id') ?? '';
-  if (MP_WEBHOOK_SECRET && xSig) {
+  if (MP_REQUIRE_SIGNATURE) {
+    if (!MP_WEBHOOK_SECRET) {
+      console.error('[mp-webhook] MP_REQUIRE_SIGNATURE=true mas MP_WEBHOOK_SECRET ausente — recusando');
+      return new Response('Server misconfigured', { status: 500 });
+    }
+    if (!xSig) return new Response('Missing signature', { status: 400 });
     const valid = await verifySignature(xSig, xReq, dataId);
     if (!valid) {
-      console.error('[mp-webhook] Assinatura inválida');
+      console.error('[mp-webhook] Assinatura inválida (modo estrito)');
       return new Response('Invalid signature', { status: 400 });
+    }
+  } else if (MP_WEBHOOK_SECRET && xSig) {
+    // Modo permissivo, mas com secret + sig presentes: validamos mesmo assim.
+    const valid = await verifySignature(xSig, xReq, dataId);
+    if (!valid) {
+      console.error('[mp-webhook] Assinatura inválida (modo permissivo)');
+      return new Response('Invalid signature', { status: 400 });
+    }
+  } else if (!MP_WEBHOOK_SECRET) {
+    console.warn('[mp-webhook] ⚠️  MP_WEBHOOK_SECRET não configurada — aceitando sem assinatura. ' +
+                 'Configure o secret em Supabase secrets e habilite MP_REQUIRE_SIGNATURE=true.');
+  }
+
+  // C2: idempotência — early skip se já processamos este payment id.
+  // Evita roundtrip à API MP em retries.
+  const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+  {
+    const { data: existing } = await db
+      .from('processed_payments')
+      .select('external_id')
+      .eq('provider', 'mp')
+      .eq('external_id', String(dataId))
+      .maybeSingle();
+    if (existing) {
+      console.log('[mp-webhook] payment já processado:', dataId);
+      return new Response('ok', { status: 200 });
     }
   }
 
@@ -176,6 +222,16 @@ Deno.serve(async (req: Request) => {
 
     if (!productKey || !CREDITS_MAP[productKey]) {
       console.error(`[mp-webhook] product_key inválido: "${productKey}" — ref completo: "${ref}"`);
+      return new Response('ok', { status: 200 });
+    }
+
+    // C2: registra processamento ANTES de creditar — PK violation aborta concorrência.
+    const { error: lockErr } = await db
+      .from('processed_payments')
+      .insert({ provider: 'mp', external_id: String(payment.id), email, product_key: productKey });
+
+    if (lockErr) {
+      console.log('[mp-webhook] race detectada, skip:', payment.id, lockErr.code);
       return new Response('ok', { status: 200 });
     }
 

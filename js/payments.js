@@ -163,9 +163,10 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
-      // Em teste usa sandbox_init_point; em produção usa init_point
-      const IS_TEST = (cfg().MP_PUBLIC_KEY || '').startsWith('TEST-');
-      const url = IS_TEST ? (data.sandbox_init_point || data.init_point) : data.init_point;
+      // O ambiente (test/live) é determinado server-side pelo MP_ACCESS_TOKEN
+      // da edge function. init_point já reflete o ambiente correto; sandbox_init_point
+      // serve apenas como fallback quando MP não retorna init_point.
+      const url = data.init_point || data.sandbox_init_point;
       if (!url) throw new Error('URL de checkout não retornada');
 
       window.location.href = url;

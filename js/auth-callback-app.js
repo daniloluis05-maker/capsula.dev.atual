@@ -25,14 +25,16 @@
 
     // O SDK Supabase v2 troca automaticamente o code/hash por sessão
     // quando detectSessionInUrl = true (padrão). Aguardamos a sessão.
+    // Backoff progressivo cobre até ~12s para conexões lentas (3G, OAuth do Google).
     let session = null;
     let attempts = 0;
+    const MAX_ATTEMPTS = 10;
 
-    while (!session && attempts < 5) {
+    while (!session && attempts < MAX_ATTEMPTS) {
       const result = await capsulaDB.authGetSession();
       session = result.session;
       if (!session) {
-        await new Promise(r => setTimeout(r, 600));
+        await new Promise(r => setTimeout(r, 400 + attempts * 200));
       }
       attempts++;
     }

@@ -26,6 +26,14 @@ const PRICE_CREDITS: Record<string, Record<string, number | string>> = {
   [Deno.env.get('STRIPE_PRICE_PRO')       ?? '']: { plano: 'profissional' },
 };
 
+// Comparação constant-time para defender contra timing attacks em HMAC
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return result === 0;
+}
+
 // ── Verificação da assinatura do webhook (segurança) ──────────
 async function verifyStripeSignature(body: string, header: string, secret: string): Promise<boolean> {
   try {
@@ -42,7 +50,7 @@ async function verifyStripeSignature(body: string, header: string, secret: strin
     const computed  = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(payload));
     const hex       = Array.from(new Uint8Array(computed)).map(b => b.toString(16).padStart(2, '0')).join('');
 
-    return hex === sig;
+    return timingSafeEqual(hex, sig);
   } catch {
     return false;
   }
@@ -133,10 +141,24 @@ Deno.serve(async (req: Request) => {
     return new Response('Invalid JSON', { status: 400 });
   }
 
-  const type = event.type as string;
-  const obj  = (event.data as Record<string, unknown>)?.object as Record<string, unknown>;
+  const type    = event.type as string;
+  const eventId = event.id as string;
+  const obj     = (event.data as Record<string, unknown>)?.object as Record<string, unknown>;
 
-  console.log(`[webhook] Evento recebido: ${type}`);
+  console.log(`[webhook] Evento recebido: ${type} id=${eventId}`);
+
+  // C2: idempotência — registra event.id ANTES de processar.
+  // PK violation = retry duplicado, retorna 200 ok sem reprocessar.
+  if (eventId) {
+    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const { error: lockErr } = await db
+      .from('processed_payments')
+      .insert({ provider: 'stripe', external_id: eventId, product_key: type });
+    if (lockErr) {
+      console.log('[webhook] event já processado:', eventId, lockErr.code);
+      return new Response('ok', { status: 200 });
+    }
+  }
 
   try {
     // ── Pagamento único via Payment Link ───────────────────────
