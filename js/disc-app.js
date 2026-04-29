@@ -780,7 +780,7 @@ function _generatePDFDisc() {
       </div>
     </div>
   </div>
-  <div class="ft"><span class="ft-l">Sistema Gnosis // Perfil DISC // Comportamento // Confidencial</span><span class="ft-r">sistemagnosis.com.br</span></div>
+  <div class="ft"><span class="ft-l">Sistema Gnosis // Perfil DISC // Comportamento // Confidencial</span><span class="ft-r">capsula-dev-atualizado.vercel.app</span></div>
   </div>
   <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
   </body></html>`);
@@ -824,7 +824,7 @@ function shareResult() {
     }
   } catch(e) {
     // fallback
-    const text = `Meu perfil DISC no Sistema Gnosis: ${profile.title} (${profile.code} ${scores[dominant]}%) — sistemagnosis.com.br`;
+    const text = `Meu perfil DISC no Sistema Gnosis: ${profile.title} (${profile.code} ${scores[dominant]}%) — capsula-dev-atualizado.vercel.app`;
     navigator.clipboard && navigator.clipboard.writeText(text).then(() => showCopyToast('Resultado copiado!'));
   }
 }

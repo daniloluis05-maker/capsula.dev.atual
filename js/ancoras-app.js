@@ -323,7 +323,7 @@ function _generatePDF(){
       </div>
     </div>
   </div>
-  <div class="ft"><span class="ft-l">Sistema Gnosis // Âncoras de Carreira // Edgar Schein // Confidencial</span><span class="ft-r">sistemagnosis.com.br</span></div>
+  <div class="ft"><span class="ft-l">Sistema Gnosis // Âncoras de Carreira // Edgar Schein // Confidencial</span><span class="ft-r">capsula-dev-atualizado.vercel.app</span></div>
   </div>
   <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
   </body></html>`);

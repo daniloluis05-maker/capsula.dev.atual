@@ -749,7 +749,7 @@ function _printDNACore() {
   const footerHTML = `
     <div style="padding-top:11px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;">
       <span style="font-family:'Space Mono',monospace;font-size:6px;color:#71717a;letter-spacing:0.05em;text-transform:uppercase;">Cápsula de Desenvolvimento · Dossiê de Autogestão Comportamental · Confidencial</span>
-      <span style="font-family:'Space Mono',monospace;font-size:7px;font-weight:700;color:#000;">sistemagnosis.com.br</span>
+      <span style="font-family:'Space Mono',monospace;font-size:7px;font-weight:700;color:#000;">capsula-dev-atualizado.vercel.app</span>
     </div>`;
 
   const w = window.open('', '_blank');

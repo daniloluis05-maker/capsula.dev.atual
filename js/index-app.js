@@ -116,7 +116,7 @@
         to_name: nome,
         to_email: email,
         from_name: 'Sistema Gnosis',
-        reply_to: 'suporte@sistemagnosis.com.br',
+        reply_to: 'suporte@capsula-dev-atualizado.vercel.app',
       });
     } catch(_) { /* silencioso — não bloqueia o fluxo */ }
   }

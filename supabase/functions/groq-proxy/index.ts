@@ -28,8 +28,8 @@ const MAX_TOKENS_LIMIT = 4500;
 const RATE_LIMIT_PER_HOUR = 10;
 
 const ALLOWED_ORIGINS = [
-  "https://sistemagnosis.com.br",
-  "https://www.sistemagnosis.com.br",
+  "https://capsula-dev-atualizado.vercel.app",
+  "https://www.capsula-dev-atualizado.vercel.app",
   "https://capsula.dev",
   "https://www.capsula.dev",
   "https://capsula-dev-atualizado.vercel.app",

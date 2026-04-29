@@ -88,7 +88,7 @@ async function main() {
     '#',
     '# SITE_URL (use a URL de produção quando for ao ar):',
     IS_PROD
-      ? 'SITE_URL=https://sistemagnosis.com.br'
+      ? 'SITE_URL=https://capsula-dev-atualizado.vercel.app'
       : 'SITE_URL=http://localhost:3000',
     '#',
     '# Como aplicar (depois de instalar a Supabase CLI):',

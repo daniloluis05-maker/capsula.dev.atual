@@ -471,7 +471,7 @@ function _generatePDF() {
       </div>
     </div>
   </div>
-  <div class="ft"><span class="ft-l">Sistema Gnosis // Análise SOAR // Planejamento Estratégico // Confidencial</span><span class="ft-r">sistemagnosis.com.br</span></div>
+  <div class="ft"><span class="ft-l">Sistema Gnosis // Análise SOAR // Planejamento Estratégico // Confidencial</span><span class="ft-r">capsula-dev-atualizado.vercel.app</span></div>
   </div>
   <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
   </body></html>`);
@@ -485,7 +485,7 @@ function shareResult() {
   const totalFilled = QUADRANTS.reduce((acc, q) => {
     return acc + Object.values(answers[q.key] || {}).filter(v => v && v.length > 0).length;
   }, 0);
-  const text = `Concluí minha Análise SOAR no Sistema Gnosis — ${totalFilled} respostas estratégicas mapeadas. Descubra o seu em sistemagnosis.com.br`;
+  const text = `Concluí minha Análise SOAR no Sistema Gnosis — ${totalFilled} respostas estratégicas mapeadas. Descubra o seu em capsula-dev-atualizado.vercel.app`;
   if (navigator.share) {
     navigator.share({ title: 'Minha Análise SOAR', text });
   } else {

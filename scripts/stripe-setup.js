@@ -23,7 +23,7 @@ if (!SECRET_KEY || (!SECRET_KEY.startsWith('sk_test_') && !SECRET_KEY.startsWith
 const IS_LIVE      = SECRET_KEY.startsWith('sk_live_');
 const CONFIG_PATH  = path.join(__dirname, '..', 'js', 'config.js');
 const SUPABASE_URL = 'https://dfnmofzbpdmnvlyowtmp.supabase.co';
-const SITE_URL     = IS_LIVE ? 'https://sistemagnosis.com.br' : 'http://localhost:3000';
+const SITE_URL     = IS_LIVE ? 'https://capsula-dev-atualizado.vercel.app' : 'http://localhost:3000';
 const WEBHOOK_URL  = `${SUPABASE_URL}/functions/v1/stripe-webhook`;
 
 const PRODUCTS = [

@@ -76,7 +76,7 @@ async function main() {
   const pairs = [
     `MP_ACCESS_TOKEN=${secrets.MP_ACCESS_TOKEN}`,
     `MP_PUBLIC_KEY=${secrets.MP_PUBLIC_KEY || ''}`,
-    `SITE_URL=${secrets.SITE_URL || 'https://sistemagnosis.com.br'}`,
+    `SITE_URL=${secrets.SITE_URL || 'https://capsula-dev-atualizado.vercel.app'}`,
   ];
   if (secrets.MP_WEBHOOK_SECRET) {
     pairs.push(`MP_WEBHOOK_SECRET=${secrets.MP_WEBHOOK_SECRET}`);
