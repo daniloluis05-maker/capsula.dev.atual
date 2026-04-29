@@ -484,12 +484,11 @@
   async function getRemoteLinkByToken(token) {
     const db = getDB();
     if (!db) return null;
-    const { data } = await db
-      .from('remote_links')
-      .select('*')
-      .eq('token', token)
-      .maybeSingle();
-    return data;
+    // Via RPC (em vez de SELECT direto) para evitar que anon enumere
+    // toda a tabela. RPC retorna apenas a row do token exato.
+    const { data, error } = await db.rpc('get_remote_link_by_token', { p_token: token });
+    if (error) { console.warn('[db] getRemoteLinkByToken:', error); return null; }
+    return Array.isArray(data) && data.length ? data[0] : null;
   }
 
   async function saveRemoteResult({ token, nome, email, resultado }) {
