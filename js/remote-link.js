@@ -151,8 +151,63 @@
       });
     }
 
+    // Intercepta geração de PDF — respondente remoto não paga, mas pode criar conta
+    window.generatePDF = showPdfCta;
+
     _overlay.remove();
     watchForResult();
+  }
+
+  // ── CTA para criação de conta ao tentar gerar PDF ─────────────
+
+  function showPdfCta() {
+    const existing = document.getElementById('_rl-pdf-cta');
+    if (existing) { existing.style.display = 'flex'; return; }
+
+    const modal = document.createElement('div');
+    modal.id = '_rl-pdf-cta';
+    modal.style.cssText = [
+      'position:fixed;inset:0;z-index:99998;',
+      'background:rgba(0,0,0,0.75);',
+      'display:flex;align-items:center;justify-content:center;padding:1rem;',
+    ].join('');
+    modal.innerHTML = [
+      '<div style="background:#13131a;border:1px solid rgba(255,255,255,0.1);border-radius:16px;',
+      'padding:2rem;max-width:400px;width:100%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,0.5);position:relative;">',
+      '<button onclick="document.getElementById(\'_rl-pdf-cta\').style.display=\'none\'" ',
+      'style="position:absolute;top:1rem;right:1rem;background:none;border:none;',
+      'color:rgba(255,255,255,0.4);font-size:1.4rem;cursor:pointer;line-height:1;">×</button>',
+
+      '<div style="width:52px;height:52px;border-radius:50%;background:rgba(124,106,247,0.12);',
+      'display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">',
+      '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7c6af7" stroke-width="1.75" ',
+      'stroke-linecap="round" stroke-linejoin="round">',
+      '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>',
+      '<polyline points="14 2 14 8 20 8"/>',
+      '<line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+      '</svg></div>',
+
+      '<h3 style="margin:0 0 0.5rem;font-size:1.15rem;color:#e8e8f0;">Quer seu PDF completo?</h3>',
+      '<p style="font-size:0.88rem;color:rgba(232,232,240,0.55);line-height:1.6;margin-bottom:1.75rem;">',
+      'Crie uma conta gratuita no Sistema Gnosis e adquira acesso ao relatório completo em PDF.',
+      '</p>',
+
+      '<a href="convite.html" ',
+      'style="display:block;width:100%;padding:0.85rem;background:#7c6af7;border:none;border-radius:8px;',
+      'color:#fff;font-weight:700;font-size:0.95rem;cursor:pointer;text-decoration:none;',
+      'box-sizing:border-box;transition:opacity 0.2s;"',
+      ' onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">',
+      'Criar conta gratuita →</a>',
+
+      '<p style="font-size:0.75rem;color:rgba(232,232,240,0.25);margin-top:1rem;">',
+      'Não é necessário cartão de crédito para criar a conta.</p>',
+      '</div>',
+    ].join('');
+
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+    document.body.appendChild(modal);
   }
 
   // ── 5. Observa a página de resultado ─────────────────────────
@@ -182,6 +237,11 @@
   }
 
   function injectSubmitButton(container) {
+    // Esconde todos os botões de PDF — respondente remoto não pode gerar PDF
+    document.querySelectorAll(
+      'button[onclick*="generatePDF"], button[onclick*="_generatePDF"]'
+    ).forEach(b => { b.style.display = 'none'; });
+
     const btn = document.createElement('button');
     btn.id = '_rl-submit-btn';
     btn.textContent = '✓ Enviar Resultado ao Avaliador';
@@ -199,9 +259,15 @@
       actions.insertBefore(btn, actions.firstChild);
     } else {
       const pdfBtn = container.querySelector('button[onclick*="generatePDF"], button[onclick*="_generatePDF"]');
-      if (pdfBtn) pdfBtn.parentNode.insertBefore(btn, pdfBtn.nextSibling);
+      if (pdfBtn) pdfBtn.parentNode.insertBefore(btn, pdfBtn);
       else container.appendChild(btn);
     }
+
+    // CTA sutil para criar conta
+    const cta = document.createElement('p');
+    cta.style.cssText = 'font-size:0.72rem;color:rgba(232,232,240,0.3);margin-top:0.75rem;text-align:center;';
+    cta.innerHTML = '<a href="convite.html" style="color:rgba(124,106,247,0.6);text-decoration:none;" onmouseover="this.style.color=\'#7c6af7\'" onmouseout="this.style.color=\'rgba(124,106,247,0.6)\'">Crie uma conta gratuita</a> para acessar o PDF completo.';
+    btn.parentNode.insertBefore(cta, btn.nextSibling);
   }
 
   // ── 6. Envio do resultado ─────────────────────────────────────
