@@ -823,6 +823,30 @@
   <script src="js/ui.js"></script>
 <!-- EmailJS SDK (P6 — ativo apenas quando EMAILJS_PUBLIC_KEY definido em js/config.js) -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
+<!-- Schema.org structured data (Organization + WebSite) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.sistema-gnosis.com.br/#organization",
+      "name": "Sistema Gnosis",
+      "url": "https://www.sistema-gnosis.com.br",
+      "logo": "https://www.sistema-gnosis.com.br/og-image.png",
+      "description": "Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes."
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.sistema-gnosis.com.br/#website",
+      "url": "https://www.sistema-gnosis.com.br",
+      "name": "Sistema Gnosis",
+      "publisher": { "@id": "https://www.sistema-gnosis.com.br/#organization" },
+      "inLanguage": "pt-BR"
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
