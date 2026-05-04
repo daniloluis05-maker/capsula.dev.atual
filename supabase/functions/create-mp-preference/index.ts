@@ -5,12 +5,12 @@
 //
 // Variáveis de ambiente necessárias (Supabase → Edge Functions → Secrets):
 //   MP_ACCESS_TOKEN   ACCESS TOKEN do app (TEST-... ou APP_USR-...)
-//   SITE_URL          https://capsula-dev-atualizado.vercel.app (produção) ou http://localhost:3000
+//   SITE_URL          https://www.sistema-gnosis.com.br (produção) ou http://localhost:3000
 // ─────────────────────────────────────────────────────────────
 
 const MP_ACCESS_TOKEN = Deno.env.get('MP_ACCESS_TOKEN') ?? '';
 const SUPABASE_URL    = Deno.env.get('SUPABASE_URL') ?? '';
-const SITE_URL        = Deno.env.get('SITE_URL') ?? 'https://capsula-dev-atualizado.vercel.app';
+const SITE_URL        = Deno.env.get('SITE_URL') ?? 'https://www.sistema-gnosis.com.br';
 const WEBHOOK_URL     = `${SUPABASE_URL}/functions/v1/mp-webhook`;
 
 const PRODUCTS: Record<string, { title: string; amount: number }> = {

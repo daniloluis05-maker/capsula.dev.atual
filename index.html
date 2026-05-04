@@ -13,21 +13,21 @@
 <meta name="description" content="Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes. DISC, Ikigai, SOAR, SWOT, RACI e mais. Comece grátis.">
 <meta name="robots" content="index, follow">
 <link rel="stylesheet" href="css/capsula.css">
-<link rel="canonical" href="https://capsula-dev-atualizado.vercel.app/">
+<link rel="canonical" href="https://www.sistema-gnosis.com.br/">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://capsula-dev-atualizado.vercel.app/">
+<meta property="og:url" content="https://www.sistema-gnosis.com.br/">
 <meta property="og:title" content="Sistema Gnosis | Matrizes de Alta Performance">
 <meta property="og:description" content="Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes. Comece grátis.">
-<meta property="og:image" content="https://capsula-dev-atualizado.vercel.app/apple-touch-icon.png">
+<meta property="og:image" content="https://www.sistema-gnosis.com.br/apple-touch-icon.png">
 <meta property="og:locale" content="pt_BR">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Sistema Gnosis | Matrizes de Alta Performance">
 <meta name="twitter:description" content="Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes. Comece grátis.">
-<meta name="twitter:image" content="https://capsula-dev-atualizado.vercel.app/apple-touch-icon.png">
+<meta name="twitter:image" content="https://www.sistema-gnosis.com.br/apple-touch-icon.png">
 
 <!-- Fonte otimizada (não bloqueante) -->
 <link rel="dns-prefetch" href="https://fonts.gstatic.com">
@@ -575,9 +575,11 @@
     inset: 0;
     background: rgba(0,0,0,0.75);
     z-index: 200;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    padding: 1rem;
+    padding: 2rem 1rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .modal-overlay.open { display: flex; }
   .modal {
@@ -588,6 +590,12 @@
     max-width: 480px;
     width: 100%;
     position: relative;
+    margin: auto;
+  }
+  @media (max-width: 480px) {
+    .modal { padding: 1.75rem 1.25rem; border-radius: 12px; }
+    .modal-close { top: 0.85rem; right: 0.85rem; }
+    .modal h2 { font-size: 1.4rem; }
   }
   .modal-tabs {
     display: flex;
@@ -1185,13 +1193,13 @@ function togglePw(id, btn) {
   <div style="display:flex;flex-wrap:wrap;gap:1.25rem;align-items:center;">
     <a href="termos.html" style="font-size:0.8rem;color:var(--muted2,rgba(255,255,255,0.35));text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted2,rgba(255,255,255,0.35))'">Termos de Uso</a>
     <a href="privacidade.html" style="font-size:0.8rem;color:var(--muted2,rgba(255,255,255,0.35));text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted2,rgba(255,255,255,0.35))'">Privacidade</a>
-    <a href="mailto:suporte@capsula-dev-atualizado.vercel.app" style="font-size:0.8rem;color:var(--muted2,rgba(255,255,255,0.35));text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted2,rgba(255,255,255,0.35))'">suporte@capsula-dev-atualizado.vercel.app</a>
+    <a href="mailto:suporte@www.sistema-gnosis.com.br" style="font-size:0.8rem;color:var(--muted2,rgba(255,255,255,0.35));text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted2,rgba(255,255,255,0.35))'">suporte@www.sistema-gnosis.com.br</a>
   </div>
   <p>© 2025 Sistema Gnosis. Todos os direitos reservados.</p>
 </footer>
 
 <!-- BOTÃO FLUTUANTE DE SUPORTE -->
-<a href="mailto:suporte@capsula-dev-atualizado.vercel.app" id="support-fab" title="Falar com suporte" style="position:fixed;bottom:1.5rem;right:1.5rem;width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(124,106,247,0.4);z-index:9000;transition:transform 0.2s,box-shadow 0.2s;text-decoration:none;" onmouseover="this.style.transform='scale(1.1)';this.style.boxShadow='0 6px 24px rgba(124,106,247,0.55)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 16px rgba(124,106,247,0.4)'">
+<a href="mailto:suporte@www.sistema-gnosis.com.br" id="support-fab" title="Falar com suporte" style="position:fixed;bottom:1.5rem;right:1.5rem;width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(124,106,247,0.4);z-index:9000;transition:transform 0.2s,box-shadow 0.2s;text-decoration:none;" onmouseover="this.style.transform='scale(1.1)';this.style.boxShadow='0 6px 24px rgba(124,106,247,0.55)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 16px rgba(124,106,247,0.4)'">
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
 </a>
 

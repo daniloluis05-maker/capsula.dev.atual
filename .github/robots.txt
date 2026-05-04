@@ -3,4 +3,4 @@ Allow: /
 Disallow: /dashboard.html
 Disallow: /dna.html
 
-Sitemap: https://capsula-dev-atualizado.vercel.app/sitemap.xml
+Sitemap: https://www.sistema-gnosis.com.br/sitemap.xml

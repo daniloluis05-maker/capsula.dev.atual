@@ -7,7 +7,7 @@
 // não quebrar deploy caso as vars ainda não estejam configuradas no painel.
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://dfnmofzbpdmnvlyowtmp.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbm1vZnpicGRtbnZseW93dG1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NjQ4MzIsImV4cCI6MjA5MTE0MDgzMn0.KXcRmhpPFwpQGXkYIVjXPJvMh5w1KpIlZiwyIEUBrvU';
-const BASE_URL    = process.env.SITE_URL || 'https://capsula-dev-atualizado.vercel.app';
+const BASE_URL    = process.env.SITE_URL || 'https://www.sistema-gnosis.com.br';
 
 if (!process.env.SUPABASE_ANON_KEY) {
   console.warn('[api/r] SUPABASE_ANON_KEY env var não configurada — usando fallback hardcoded.');

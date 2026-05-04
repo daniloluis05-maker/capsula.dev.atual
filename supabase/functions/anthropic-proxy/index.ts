@@ -19,11 +19,11 @@ const MAX_TOKENS_LIMIT  = 1500;
 const RATE_LIMIT_PER_HOUR = 10;
 
 const ALLOWED_ORIGINS = [
-  "https://capsula-dev-atualizado.vercel.app",
-  "https://www.capsula-dev-atualizado.vercel.app",
+  "https://www.sistema-gnosis.com.br",
+  "https://www.www.sistema-gnosis.com.br",
   "https://capsula.dev",
   "https://www.capsula.dev",
-  "https://capsula-dev-atualizado.vercel.app",
+  "https://www.sistema-gnosis.com.br",
 ];
 
 function corsHeaders(origin: string | null): Record<string, string> {

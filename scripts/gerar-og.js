@@ -95,7 +95,7 @@ body { width:1200px; height:630px; overflow:hidden; }
     <div class="divider"></div>
     <div class="sub">${m.sub}</div>
   </div>
-  <div class="domain">capsula-dev-atualizado.vercel.app</div>
+  <div class="domain">www.sistema-gnosis.com.br</div>
 </div>
 </body>
 </html>`;
