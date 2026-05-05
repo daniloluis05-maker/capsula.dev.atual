@@ -24,4 +24,11 @@ window.CAPSULA_CONFIG = {
   // Free tier: https://sentry.io  → New Project → Browser JavaScript
   // Sem DSN, sentry-init.js apenas não faz nada (no-op).
   sentryDsn: '',
+
+  // ── Google Analytics 4 ──────────────────────────────────────
+  // Cole o Measurement ID (formato G-XXXXXXXXXX) gerado em
+  // https://analytics.google.com → Admin → Property → Data Streams.
+  // Sem ID, js/analytics.js não carrega o gtag e o cookie banner
+  // não aparece — privacidade por padrão.
+  gaMeasurementId: '',
 };
