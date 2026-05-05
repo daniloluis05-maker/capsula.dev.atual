@@ -217,30 +217,120 @@
     document.body.appendChild(modal);
   }
 
-  // ── 5. Observa a página de resultado ─────────────────────────
-  // As matrizes usam showPage('page-result') que adiciona a classe
-  // 'active' ao div#page-result.
+  // ── Substitui/esconde elementos que vão pro dashboard ────────
+  // Regra:
+  //  - Dentro de .result-actions → SUBSTITUI texto por "Criar conta"
+  //  - Fora (top-nav, logo, intro-back) → ESCONDE
+  // Roda em init() (estático) e dentro de injectSubmitButton (dinâmico).
+
+  function processDashboardElements() {
+    document.querySelectorAll(
+      '.btn-dashboard, button[onclick*="dashboard"], a[href*="dashboard.html"], a[href*="dashboard"]'
+    ).forEach(function (el) {
+      if (el.dataset.rlProcessed === '1') return;
+
+      var goesToDashboard = el.classList.contains('btn-dashboard')
+        || (el.getAttribute('href') || '').indexOf('dashboard') !== -1
+        || (el.getAttribute('onclick') || '').indexOf('dashboard') !== -1;
+      if (!goesToDashboard) return;
+
+      el.dataset.rlProcessed = '1';
+      var inActions = !!el.closest('.result-actions, [class*="actions"]');
+
+      if (inActions) {
+        if (el.tagName === 'A') {
+          el.setAttribute('href', 'convite.html');
+        } else {
+          el.setAttribute('onclick', "window.location.href='convite.html'");
+        }
+        el.textContent = '✨ Criar conta gratuita';
+        el.style.display = '';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  // ── Detecta result-page com 4 estratégias paralelas ──────────
+  // Necessário porque cada matriz tem timing diferente entre
+  // showPage('page-result') e o DOM ficar realmente pronto.
 
   function watchForResult() {
-    const resultPage = document.getElementById('page-result');
-    if (resultPage) {
-      // Já está ativo?
-      if (resultPage.classList.contains('active')) {
-        injectSubmitButton(resultPage); return;
+    var injected = false;
+
+    function tryInject() {
+      if (injected || document.getElementById('_rl-submit-btn')) return false;
+
+      var container = null;
+
+      // Estratégia 1: #page-result.active
+      var pageResult = document.getElementById('page-result');
+      if (pageResult && pageResult.classList.contains('active')) {
+        container = pageResult;
       }
-      new MutationObserver(function(_, obs) {
-        if (resultPage.classList.contains('active') && !document.getElementById('_rl-submit-btn')) {
-          injectSubmitButton(resultPage);
-          obs.disconnect();
+
+      // Estratégia 2: qualquer .result-actions visível
+      if (!container) {
+        var actions = document.querySelector('.result-actions');
+        if (actions && actions.offsetParent !== null) {
+          container = actions.closest('.page') || actions.parentElement;
         }
-      }).observe(resultPage, { attributes: true, attributeFilter: ['class'] });
-    } else {
-      // Fallback para matrizes com estrutura diferente
-      new MutationObserver(function() {
-        const el = document.querySelector('.result-page, [id*="result"].active, [id*="result"][style*="flex"]');
-        if (el && !document.getElementById('_rl-submit-btn')) injectSubmitButton(el);
-      }).observe(document.body, { childList: true, subtree: true, attributes: true });
+      }
+
+      // Estratégia 3: qualquer .page.active ou [id*=result].active que contenha .result-actions
+      if (!container) {
+        var actives = document.querySelectorAll('.page.active, [id*="result"].active, [id*="result"][style*="flex"]');
+        for (var i = 0; i < actives.length; i++) {
+          if (actives[i].querySelector('.result-actions')) {
+            container = actives[i];
+            break;
+          }
+        }
+      }
+
+      if (container) {
+        injectSubmitButton(container);
+        injected = true;
+        return true;
+      }
+      return false;
     }
+
+    // Tenta imediatamente
+    tryInject();
+
+    // Estratégia A: hook em window.showPage (se a matriz expôs)
+    if (typeof window.showPage === 'function' && !window.showPage.__rlHooked) {
+      var originalShowPage = window.showPage;
+      window.showPage = function (id) {
+        var result = originalShowPage.apply(this, arguments);
+        // Aguarda DOM assentar (matriz às vezes renderiza conteúdo após showPage)
+        setTimeout(tryInject, 50);
+        setTimeout(tryInject, 200);
+        return result;
+      };
+      window.showPage.__rlHooked = true;
+    }
+
+    // Estratégia B: MutationObserver em body — captura mudanças de classe/style
+    if (!injected) {
+      var obs = new MutationObserver(function () {
+        if (tryInject()) obs.disconnect();
+      });
+      obs.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style'],
+        subtree: true,
+        childList: true,
+      });
+    }
+
+    // Estratégia C: polling de fallback (500ms × 120 = 60s)
+    var polls = 0;
+    var interval = setInterval(function () {
+      polls++;
+      if (tryInject() || polls >= 120 || injected) clearInterval(interval);
+    }, 500);
   }
 
   function injectSubmitButton(container) {
@@ -249,27 +339,8 @@
       'button[onclick*="generatePDF"], button[onclick*="_generatePDF"]'
     ).forEach(b => { b.style.display = 'none'; });
 
-    // Substitui qualquer botão/link que vai pro dashboard por CTA "Criar conta".
-    // .btn-dashboard cobre 7 matrizes (anchor) + DISC (button onclick). swot.html
-    // usa class="btn-green" com onclick — pegamos via [onclick*="dashboard"].
-    // Anchors com href dashboard fora do .btn-dashboard já são escondidos no
-    // init() (top-nav, intro back-link, logo).
-    document.querySelectorAll(
-      '.btn-dashboard, button[onclick*="dashboard"], a[href*="dashboard.html"]'
-    ).forEach(function(btn) {
-      // Pula se está em área de result-actions ou intro? Não — substituir tudo
-      // que aponta pra dashboard com texto de "Criar conta" mantém UX consistente.
-      if (btn.tagName === 'A') {
-        btn.setAttribute('href', 'convite.html');
-        // Força exibir caso o init() tenha escondido (queremos o CTA visível na result page)
-        if (btn.closest('.result-actions, [class*="actions"]')) {
-          btn.style.display = '';
-        }
-      } else {
-        btn.setAttribute('onclick', "window.location.href='convite.html'");
-      }
-      btn.textContent = '✨ Criar conta gratuita';
-    });
+    // Re-processa dashboard buttons (caso algo tenha sido adicionado depois do init)
+    processDashboardElements();
 
     const btn = document.createElement('button');
     btn.id = '_rl-submit-btn';
@@ -354,12 +425,13 @@
 
   async function init() {
     try {
-      // Esconde links que mandariam o respondente pro dashboard pessoal
-      // (top-nav, intro back-link, side nav) — respondente remoto não tem
-      // conta, então clicar geraria UX morto. .btn-dashboard da result-page
-      // é tratado em injectSubmitButton (substitui por "Criar conta").
-      document.querySelectorAll('a[href*="dashboard"]:not(.btn-dashboard)').forEach(function(a) {
-        a.style.display = 'none';
+      // Processa elementos pro dashboard imediatamente (substitui na result-actions,
+      // esconde no resto). Roda também via MutationObserver pra cobrir DOM mudanças
+      // dinâmicas (ex: matriz que renderiza result-actions só depois de showPage).
+      processDashboardElements();
+      new MutationObserver(processDashboardElements).observe(document.body, {
+        childList: true,
+        subtree: true,
       });
 
       if (!window.capsulaDB) { showError('Erro ao conectar ao servidor.'); return; }
