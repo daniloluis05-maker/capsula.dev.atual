@@ -116,7 +116,7 @@
         to_name: nome,
         to_email: email,
         from_name: 'Sistema Gnosis',
-        reply_to: 'suporte@www.sistema-gnosis.com.br',
+        reply_to: 'suporte@sistema-gnosis.com.br',
       });
     } catch(_) { /* silencioso — não bloqueia o fluxo */ }
   }
