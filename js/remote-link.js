@@ -249,13 +249,22 @@
       'button[onclick*="generatePDF"], button[onclick*="_generatePDF"]'
     ).forEach(b => { b.style.display = 'none'; });
 
-    // Substitui ".btn-dashboard" da result-actions por CTA "Criar conta gratuita".
-    // A classe é consistente nas 8 matrizes (anchor em 7, button onclick no DISC).
-    // Sem isso, respondente cairia no dashboard de usuário e seria classificado
-    // como "respondente" — UX confuso e fluxo morto.
-    document.querySelectorAll('.btn-dashboard').forEach(function(btn) {
+    // Substitui qualquer botão/link que vai pro dashboard por CTA "Criar conta".
+    // .btn-dashboard cobre 7 matrizes (anchor) + DISC (button onclick). swot.html
+    // usa class="btn-green" com onclick — pegamos via [onclick*="dashboard"].
+    // Anchors com href dashboard fora do .btn-dashboard já são escondidos no
+    // init() (top-nav, intro back-link, logo).
+    document.querySelectorAll(
+      '.btn-dashboard, button[onclick*="dashboard"], a[href*="dashboard.html"]'
+    ).forEach(function(btn) {
+      // Pula se está em área de result-actions ou intro? Não — substituir tudo
+      // que aponta pra dashboard com texto de "Criar conta" mantém UX consistente.
       if (btn.tagName === 'A') {
         btn.setAttribute('href', 'convite.html');
+        // Força exibir caso o init() tenha escondido (queremos o CTA visível na result page)
+        if (btn.closest('.result-actions, [class*="actions"]')) {
+          btn.style.display = '';
+        }
       } else {
         btn.setAttribute('onclick', "window.location.href='convite.html'");
       }
