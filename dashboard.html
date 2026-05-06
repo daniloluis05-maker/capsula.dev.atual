@@ -541,6 +541,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           style="padding:0.6rem 1.2rem;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;margin-bottom:-1px;">
           Meus links <span id="rl-count-badge" style="display:none;font-size:0.65rem;background:rgba(124,106,247,0.18);color:var(--accent);padding:0.1rem 0.45rem;border-radius:10px;margin-left:0.3rem;font-family:var(--mono);"></span>
         </button>
+        <button id="rl-tab-respondentes" onclick="rlSwitchTab('respondentes')"
+          style="padding:0.6rem 1.2rem;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;margin-bottom:-1px;">
+          Respondentes <span id="rl-novos-badge" style="display:none;font-size:0.65rem;background:#E8603A;color:#fff;padding:0.1rem 0.45rem;border-radius:10px;margin-left:0.3rem;font-family:var(--mono);font-weight:700;"></span>
+        </button>
       </div>
 
       <!-- Painel: Gerar -->
@@ -586,6 +590,17 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <button onclick="rlCarregarLinks(true)" style="background:none;border:none;color:var(--muted);font-size:0.75rem;cursor:pointer;font-family:inherit;padding:0.2rem 0.4rem;border-radius:4px;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">↺ Atualizar</button>
         </div>
         <div id="rl-lista-full">
+          <div style="text-align:center;padding:3rem 1rem;color:var(--muted);font-size:0.85rem;">Carregando...</div>
+        </div>
+      </div>
+
+      <!-- Painel: Respondentes (agregado de todos os links) -->
+      <div id="rl-panel-respondentes" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.85rem;">
+          <span style="font-size:0.78rem;color:var(--muted);">Todos os respondentes dos seus links, ordenados pelo mais recente.</span>
+          <button onclick="rlCarregarRespondentes(true)" style="background:none;border:none;color:var(--muted);font-size:0.75rem;cursor:pointer;font-family:inherit;padding:0.2rem 0.4rem;border-radius:4px;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">↺ Atualizar</button>
+        </div>
+        <div id="rl-respondentes-list">
           <div style="text-align:center;padding:3rem 1rem;color:var(--muted);font-size:0.85rem;">Carregando...</div>
         </div>
       </div>

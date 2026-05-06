@@ -366,6 +366,34 @@ function rlInitSection(proEmail) {
   const sec = document.getElementById('pro-remote-section');
   if (sec) sec.style.display = 'block';
   rlCarregarLinks();
+  // Atualiza badge de "novos respondentes" em background (não bloqueia render)
+  rlAtualizarBadgeNovos();
+}
+
+// Storage key por usuário pra rastrear o último respondente já visto
+function _rlLastSeenKey() {
+  return 'gnosis_last_seen_remote_results::' + (_rlProEmail || 'anon').toLowerCase();
+}
+
+async function rlAtualizarBadgeNovos() {
+  if (!_rlProEmail) return;
+  try {
+    const links = await capsulaDB.getMyRemoteLinks(_rlProEmail) || [];
+    if (!links.length) return;
+    const arrays = await Promise.all(links.map(l => capsulaDB.getRemoteResults(l.token)));
+    const todos = arrays.flat ? arrays.flat() : [].concat.apply([], arrays);
+    if (!todos.length) return;
+    const lastSeen = localStorage.getItem(_rlLastSeenKey()) || '';
+    const novos = todos.filter(r => (r.completed_at || '') > lastSeen).length;
+    const badge = document.getElementById('rl-novos-badge');
+    if (!badge) return;
+    if (novos > 0) {
+      badge.textContent = novos > 99 ? '99+' : String(novos);
+      badge.style.display = '';
+    } else {
+      badge.style.display = 'none';
+    }
+  } catch (e) { /* badge é best-effort */ }
 }
 
 async function rlCriarLink() {
@@ -404,16 +432,26 @@ async function rlCriarLink() {
 }
 
 function rlSwitchTab(tab) {
-  const isGerar = tab === 'gerar';
-  document.getElementById('rl-panel-gerar').style.display  = isGerar ? '' : 'none';
-  document.getElementById('rl-panel-lista').style.display  = isGerar ? 'none' : '';
-  const tGerar = document.getElementById('rl-tab-gerar');
-  const tLista = document.getElementById('rl-tab-lista');
-  tGerar.style.borderBottomColor = isGerar ? 'var(--accent)' : 'transparent';
-  tGerar.style.color             = isGerar ? 'var(--text)'   : 'var(--muted)';
-  tLista.style.borderBottomColor = isGerar ? 'transparent'   : 'var(--accent)';
-  tLista.style.color             = isGerar ? 'var(--muted)'  : 'var(--text)';
-  if (!isGerar) rlCarregarLinks(true);
+  const t = (tab === 'gerar' || tab === 'lista' || tab === 'respondentes') ? tab : 'gerar';
+  const panels = {
+    gerar:        document.getElementById('rl-panel-gerar'),
+    lista:        document.getElementById('rl-panel-lista'),
+    respondentes: document.getElementById('rl-panel-respondentes'),
+  };
+  const tabs = {
+    gerar:        document.getElementById('rl-tab-gerar'),
+    lista:        document.getElementById('rl-tab-lista'),
+    respondentes: document.getElementById('rl-tab-respondentes'),
+  };
+  Object.keys(panels).forEach(function (k) {
+    if (panels[k]) panels[k].style.display = (k === t) ? '' : 'none';
+    if (tabs[k]) {
+      tabs[k].style.borderBottomColor = (k === t) ? 'var(--accent)' : 'transparent';
+      tabs[k].style.color             = (k === t) ? 'var(--text)'   : 'var(--muted)';
+    }
+  });
+  if (t === 'lista')        rlCarregarLinks(true);
+  if (t === 'respondentes') rlCarregarRespondentes(true);
 }
 
 function rlMostrarBannerLink(url, matriz, etiqueta) {
@@ -604,6 +642,86 @@ async function rlVerResultados(token, titulo) {
 
 function rlFecharResultados() {
   document.getElementById('rl-results-modal').style.display = 'none';
+}
+
+// ── Aba "Respondentes" — agrega TODOS os resultados de TODOS os links ──
+async function rlCarregarRespondentes(force) {
+  if (!_rlProEmail) return;
+  const el = document.getElementById('rl-respondentes-list');
+  if (!el) return;
+  if (force) el.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:var(--muted);font-size:0.85rem;">Carregando...</div>';
+
+  const links = await capsulaDB.getMyRemoteLinks(_rlProEmail) || [];
+  if (!links.length) {
+    el.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:var(--muted);font-size:0.85rem;">Nenhum link gerado ainda.<br><button onclick="rlSwitchTab(\'gerar\')" style="margin-top:0.75rem;padding:0.5rem 1.1rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit;">+ Gerar primeiro link</button></div>';
+    return;
+  }
+
+  const arrays = await Promise.all(links.map(function (l) {
+    return capsulaDB.getRemoteResults(l.token).then(function (rs) {
+      return (rs || []).map(function (r) {
+        return Object.assign({}, r, { _matriz: l.matriz, _etiqueta: l.etiqueta || '', _token: l.token });
+      });
+    });
+  }));
+  const todos = (arrays.flat ? arrays.flat() : [].concat.apply([], arrays))
+    .sort(function (a, b) { return (b.completed_at || '').localeCompare(a.completed_at || ''); });
+
+  if (!todos.length) {
+    el.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:var(--muted);font-size:0.85rem;">Nenhum respondente ainda.<br><span style="font-size:0.75rem;">Compartilhe um link da aba <strong style="color:var(--text)">Meus links</strong> para começar a coletar respostas.</span></div>';
+    rlMarcarRespondentesVistos(todos);
+    return;
+  }
+
+  // Marca o timestamp do mais recente como "visto" e zera badge
+  const lastSeenKey = _rlLastSeenKey();
+  const prevLastSeen = localStorage.getItem(lastSeenKey) || '';
+
+  el.innerHTML = todos.map(function (r) {
+    const dt = new Date(r.completed_at).toLocaleString('pt-BR');
+    const matrizNome = _RL_NOMES[r._matriz] || r._matriz;
+    const isNovo = (r.completed_at || '') > prevLastSeen;
+    const preview = (r.resultado && r.resultado.texto)
+      ? r.resultado.texto.substring(0, 240) + (r.resultado.texto.length > 240 ? '…' : '')
+      : '';
+    return [
+      '<div style="border:1px solid ', isNovo ? 'rgba(232,96,58,0.4)' : 'var(--border)', ';',
+      'border-radius:10px;padding:1rem 1.15rem;margin-bottom:0.65rem;background:', isNovo ? 'rgba(232,96,58,0.04)' : 'transparent', ';">',
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;margin-bottom:', preview ? '0.65rem' : '0', ';flex-wrap:wrap;">',
+      '<div style="flex:1;min-width:0;">',
+      isNovo ? '<span style="display:inline-block;background:#E8603A;color:#fff;font-size:0.6rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:10px;margin-right:0.5rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.06em;">NOVO</span>' : '',
+      '<span style="font-weight:600;font-size:0.92rem;color:var(--text);">', eqEsc(r.respondente_nome || '—'), '</span>',
+      r.respondente_email ? '<div style="font-size:0.74rem;color:var(--muted);margin-top:0.15rem;">' + eqEsc(r.respondente_email) + '</div>' : '',
+      '</div>',
+      '<div style="text-align:right;flex-shrink:0;">',
+      '<div style="display:inline-flex;align-items:center;gap:0.4rem;font-size:0.7rem;color:var(--accent);background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.25);padding:0.2rem 0.55rem;border-radius:6px;font-family:var(--mono);">',
+      eqEsc(matrizNome),
+      r._etiqueta ? '<span style="color:var(--muted);">· ' + eqEsc(r._etiqueta) + '</span>' : '',
+      '</div>',
+      '<div style="font-size:0.66rem;color:var(--muted);font-family:monospace;margin-top:0.3rem;">', dt, '</div>',
+      '</div>',
+      '</div>',
+      preview ? '<div style="font-size:0.78rem;color:rgba(232,232,240,0.55);white-space:pre-wrap;max-height:90px;overflow-y:auto;background:rgba(0,0,0,0.25);padding:0.55rem 0.75rem;border-radius:6px;font-family:monospace;line-height:1.5;">' + preview.replace(/</g,'&lt;') + '</div>' : '',
+      '</div>',
+    ].join('');
+  }).join('');
+
+  rlMarcarRespondentesVistos(todos);
+}
+
+function rlMarcarRespondentesVistos(todos) {
+  if (!todos || !todos.length) return;
+  // Persiste o completed_at máximo como "última visita"
+  let max = '';
+  for (let i = 0; i < todos.length; i++) {
+    const t = todos[i].completed_at || '';
+    if (t > max) max = t;
+  }
+  if (max) {
+    try { localStorage.setItem(_rlLastSeenKey(), max); } catch (_) {}
+  }
+  const badge = document.getElementById('rl-novos-badge');
+  if (badge) badge.style.display = 'none';
 }
 
 // ══════════════════════════════════════
