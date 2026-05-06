@@ -20,6 +20,7 @@
 
   let _linkData    = null;
   let _respondente = null;
+  let _isAuthed    = false; // decidido em init() — vide bloco abaixo
 
   // ── 1. Patches síncronos — rodam ANTES do DOMContentLoaded ───
   // Necessário para que o init() das páginas não redirecione por
@@ -37,17 +38,32 @@
     window._payments.hasAccess  = () => true;
   }
   if (window.capsulaDB) {
-    window.capsulaDB.ensureUserData = async () => ({
-      email: 'remote@respondent.local', nome: 'Respondente',
-      creditos: {}, plano: 'free',
-    });
-    // Respondente é anon — RLS bloqueia INSERT/UPDATE em `usuarios` (401).
-    // No-op nas escritas em `usuarios` pra evitar "permission denied" + status
-    // visual "Erro ao sincronizar" que aparece quando a matriz tenta persistir.
-    const _noop = async () => ({ data: null, error: null });
-    window.capsulaDB.saveUser              = _noop;
-    window.capsulaDB.syncMatrizes          = async () => {};
-    window.capsulaDB.migrateLocalToSupabase = async () => {};
+    // Wrappers condicionais: anon (convidado) → no-op silencioso pra não quebrar
+    // com 401 "permission denied for table usuarios"; authed → flui pro original
+    // pra que o resultado seja salvo no perfil próprio do usuário também.
+    const _origEnsure  = window.capsulaDB.ensureUserData;
+    const _origSave    = window.capsulaDB.saveUser;
+    const _origSync    = window.capsulaDB.syncMatrizes;
+    const _origMigrate = window.capsulaDB.migrateLocalToSupabase;
+
+    window.capsulaDB.ensureUserData = async function () {
+      if (_isAuthed && _origEnsure) return _origEnsure.call(this);
+      return {
+        email: (_respondente && _respondente.email) || 'remote@respondent.local',
+        nome:  (_respondente && _respondente.nome)  || 'Respondente',
+        creditos: {}, plano: 'free',
+      };
+    };
+    window.capsulaDB.saveUser = async function (userData) {
+      if (_isAuthed && _origSave) return _origSave.call(this, userData);
+      return { data: null, error: null };
+    };
+    window.capsulaDB.syncMatrizes = async function (userData) {
+      if (_isAuthed && _origSync) return _origSync.call(this, userData);
+    };
+    window.capsulaDB.migrateLocalToSupabase = async function (email) {
+      if (_isAuthed && _origMigrate) return _origMigrate.call(this, email);
+    };
   }
 
   // ── 2. Overlay de carregamento ────────────────────────────────
@@ -83,7 +99,71 @@
     ].join('');
   }
 
-  // ── 4. Formulário de identificação ───────────────────────────
+  // ── 4a. Overlay de boas-vindas — 2 caminhos (criar conta vs convidado) ──
+
+  function showWelcomeOverlay(linkData) {
+    _linkData = linkData;
+    const nome = MATRIX_NAMES[linkData.matriz] || linkData.matriz;
+    const slots = linkData.max_completions - linkData.completion_count;
+    // Preserva o link original (com token) pra retornar após cadastro
+    const next = encodeURIComponent(window.location.pathname + window.location.search);
+
+    _overlay.innerHTML = [
+      '<div style="background:#13131a;border:1px solid rgba(255,255,255,0.1);border-radius:16px;',
+      'padding:2rem;max-width:440px;width:100%;text-align:center;">',
+
+      '<div style="width:52px;height:52px;border-radius:50%;background:rgba(124,106,247,0.12);',
+      'display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">',
+      '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7c6af7" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">',
+      '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>',
+      '<polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>',
+      '<line x1="16" y1="17" x2="8" y2="17"/></svg></div>',
+
+      `<h2 style="margin:0 0 0.4rem;font-size:1.2rem;color:#e8e8f0;">Avaliação: ${nome}</h2>`,
+      linkData.etiqueta
+        ? `<p style="font-size:0.75rem;color:rgba(232,232,240,0.3);margin:0 0 0.6rem;font-family:monospace;">${linkData.etiqueta}</p>`
+        : '',
+      '<p style="color:rgba(232,232,240,0.55);font-size:0.88rem;margin-bottom:1.5rem;line-height:1.55;">',
+      'Você foi convidado a fazer esta avaliação.<br>',
+      'Como prefere continuar?</p>',
+
+      '<div style="display:flex;flex-direction:column;gap:0.6rem;text-align:left;">',
+
+      // Caminho recomendado: criar conta
+      `<a id="_rl-go-signup" href="convite.html?next=${next}" `,
+      'style="display:block;padding:1rem 1.15rem;background:#7c6af7;border-radius:10px;',
+      'color:#fff;text-decoration:none;transition:opacity 0.2s;"',
+      ' onmouseover="this.style.opacity=\'0.88\'" onmouseout="this.style.opacity=\'1\'">',
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">',
+      '<div><div style="font-weight:700;font-size:0.95rem;">✨ Criar conta gratuita</div>',
+      '<div style="font-size:0.74rem;opacity:0.85;margin-top:0.2rem;">Acesso ao PDF + dashboard pessoal</div></div>',
+      '<span style="font-size:1.2rem;opacity:0.7;">→</span>',
+      '</div></a>',
+
+      // Caminho rápido: convidado
+      '<button id="_rl-go-guest" type="button" ',
+      'style="display:block;width:100%;padding:0.85rem 1.15rem;background:rgba(255,255,255,0.04);',
+      'border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#e8e8f0;cursor:pointer;',
+      'text-align:left;font-family:inherit;transition:background 0.2s;"',
+      ' onmouseover="this.style.background=\'rgba(255,255,255,0.07)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.04)\'">',
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">',
+      '<div><div style="font-weight:600;font-size:0.92rem;">Continuar como convidado</div>',
+      '<div style="font-size:0.74rem;color:rgba(232,232,240,0.45);margin-top:0.2rem;">Pode criar conta depois e manter seu resultado</div></div>',
+      '<span style="font-size:1.2rem;color:rgba(232,232,240,0.4);">→</span>',
+      '</div></button>',
+
+      '</div>',
+
+      `<p style="font-size:0.7rem;color:rgba(232,232,240,0.25);margin-top:1.1rem;">${slots} vaga${slots!==1?'s':''} restante${slots!==1?'s':''} neste link</p>`,
+      '</div>',
+    ].join('');
+
+    document.getElementById('_rl-go-guest').addEventListener('click', function () {
+      showIdentificationForm(linkData);
+    });
+  }
+
+  // ── 4b. Formulário de identificação (caminho convidado) ──────
 
   function showIdentificationForm(linkData) {
     _linkData = linkData;
@@ -161,13 +241,18 @@
 
     _respondente = { nome, email };
 
-    // Atualiza mock com dados reais do respondente
-    if (window.capsulaDB) {
-      window.capsulaDB.ensureUserData = async () => ({
-        email: _respondente.email, nome: _respondente.nome,
-        creditos: {}, plano: 'free',
+    // Persiste capsula_user em localStorage com email/nome reais. Isso permite
+    // que migrateLocalToSupabase puxe o resultado do teste pro perfil do usuário
+    // se o convidado decidir criar conta depois (mesmo email).
+    try {
+      const existing = JSON.parse(localStorage.getItem('capsula_user') || '{}');
+      const merged = Object.assign({}, existing, {
+        email: email.toLowerCase(),
+        nome: nome,
+        criado_em: existing.criado_em || new Date().toISOString(),
       });
-    }
+      localStorage.setItem('capsula_user', JSON.stringify(merged));
+    } catch (_) {}
 
     // Intercepta geração de PDF — respondente remoto não paga, mas pode criar conta
     window.generatePDF     = showPdfCta;
@@ -456,6 +541,24 @@
 
       if (!window.capsulaDB) { showError('Erro ao conectar ao servidor.'); return; }
 
+      // Detecta sessão ativa antes de mostrar overlay. Se o user já está logado
+      // (ex: voltou pra cá após criar conta via convite.html?next=…), pula
+      // direto pro teste e os wrappers acima passam a delegar pros métodos
+      // originais (saveUser/syncMatrizes), gravando o resultado no perfil dele.
+      try {
+        if (capsulaDB.authGetSession) {
+          const { session } = await capsulaDB.authGetSession();
+          if (session && session.user && session.user.email) {
+            _isAuthed = true;
+            _respondente = {
+              email: session.user.email,
+              nome: (session.user.user_metadata && session.user.user_metadata.nome)
+                || session.user.email.split('@')[0],
+            };
+          }
+        }
+      } catch (_) { /* sem session — segue como convidado */ }
+
       const linkData = await capsulaDB.getRemoteLinkByToken(TOKEN);
       if (!linkData) { showError('Link inválido ou não encontrado.'); return; }
       if (linkData.completion_count >= linkData.max_completions) {
@@ -472,7 +575,20 @@
         return;
       }
 
-      showIdentificationForm(linkData);
+      _linkData = linkData;
+
+      if (_isAuthed) {
+        // Pula overlay — o user real faz o teste como ele mesmo. O resultado
+        // vai pro remote_results do avaliador (saveRemoteResult continua) E
+        // pro perfil próprio dele (saveUser passa a fluir pelo wrapper).
+        window.generatePDF      = showPdfCta;
+        window._generatePDF     = showPdfCta;
+        window._generatePDFDisc = showPdfCta;
+        _overlay.remove();
+        watchForResult();
+      } else {
+        showWelcomeOverlay(linkData);
+      }
     } catch (e) {
       console.error('[remote-link] init:', e);
       showError('Erro inesperado. Tente novamente.');

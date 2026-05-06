@@ -4,6 +4,22 @@
   const equipeId = params.get('equipe');
   const equipeNome = params.get('equipe_nome');
   const para = params.get('para');
+  const nextParam = params.get('next');
+
+  // Valida `next`: aceita só caminhos relativos do mesmo site (não URL externa)
+  // pra evitar open-redirect. Aceita formatos como "disc.html?token=...",
+  // "/disc.html?...", mas rejeita "https://..." ou "//evil.com".
+  function safeNext(v) {
+    if (!v) return '';
+    let dec = '';
+    try { dec = decodeURIComponent(v); } catch (_) { return ''; }
+    if (!dec) return '';
+    if (/^[a-z][a-z0-9+.-]*:/i.test(dec)) return ''; // schema (http:, javascript:, …)
+    if (dec.startsWith('//')) return '';             // protocol-relative
+    if (dec.startsWith('/'))  return dec;            // absolute path local
+    return dec;                                       // relativo — ok
+  }
+  const safeNextHref = safeNext(nextParam);
   if (ref) {
     document.getElementById('invited-by-badge').style.display = 'inline-block';
   }
@@ -49,6 +65,13 @@
     btn.disabled = true;
     btn.textContent = 'Criando conta...';
 
+    // Persiste destino pós-login antes de chamar signup. Se o Supabase exigir
+    // confirmação de e-mail, o usuário voltará via auth-callback.html — que
+    // lê esse mesmo key e redireciona pro lugar certo.
+    if (safeNextHref) {
+      try { localStorage.setItem('gnosis_post_login_next', safeNextHref); } catch(_) {}
+    }
+
     try {
       const { data, error, confirmEmail } = await capsulaDB.authSignUp(email, senha, nome, 'individual');
       if (error) { showErr(error.message || 'Erro ao criar conta.'); return; }
@@ -62,9 +85,23 @@
           try { localStorage.setItem('capsula_invitedEquipe', equipeId); } catch(_) {}
           try { localStorage.setItem('capsula_invitedEquipeNome', decodeURIComponent(equipeNome || '')); } catch(_) {}
         }
+
+        // Mescla dados locais (de testes feitos como convidado) pro perfil novo.
+        // Best-effort: não bloqueia o redirect.
+        try {
+          if (capsulaDB.migrateLocalToSupabase) {
+            await capsulaDB.migrateLocalToSupabase(email);
+          }
+        } catch(_) {}
+
         document.getElementById('form-state').style.display = 'none';
         document.getElementById('success-state').style.display = 'block';
-        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1400);
+
+        // Se veio com `?next=...` (típico do fluxo de avaliação remota),
+        // volta pra lá; do contrário, dashboard. Como agora há sessão ativa,
+        // o remote-link detecta authed e pula o overlay direto pro teste.
+        const target = safeNextHref || 'dashboard.html';
+        setTimeout(() => { window.location.href = target; }, 1400);
       }
     } catch(e) {
       showErr('Erro inesperado. Tente novamente.');

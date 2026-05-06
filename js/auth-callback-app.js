@@ -73,8 +73,21 @@
       localStorage.setItem('capsula_users', JSON.stringify(users));
     } catch(e) { console.warn('[callback] localStorage:', e); }
 
-    msgEl.textContent = 'Redirecionando para o dashboard…';
-    setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+    // Se um fluxo anterior (ex: convite.html?next=disc.html?token=…) salvou
+    // um destino, vai pra ele em vez do dashboard. Validamos pra evitar
+    // open-redirect — só caminhos relativos do mesmo site.
+    let nextHref = '';
+    try {
+      const raw = localStorage.getItem('gnosis_post_login_next') || '';
+      if (raw && !/^[a-z][a-z0-9+.-]*:/i.test(raw) && !raw.startsWith('//')) {
+        nextHref = raw;
+      }
+      localStorage.removeItem('gnosis_post_login_next');
+    } catch(_) {}
+
+    const target = nextHref || 'dashboard.html';
+    msgEl.textContent = nextHref ? 'Redirecionando…' : 'Redirecionando para o dashboard…';
+    setTimeout(() => { window.location.href = target; }, 800);
 
   } catch (e) {
     console.error('[auth-callback]', e);
