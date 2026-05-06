@@ -133,7 +133,7 @@
     if (!existing) {
       // Não existe no banco → sobe tudo
       await saveUser(local);
-      console.log('[db] Migração localStorage → Supabase concluída para', email);
+      console.debug('[db] Migração localStorage → Supabase concluída para', email);
     } else {
       // Já existe → mescla: Supabase ganha nos campos de perfil; para matrizes, ganha a versão mais recente (por completedAt)
       function pickNewest(a, b) {
@@ -164,7 +164,7 @@
       await saveUser(merged);
       // Atualiza localStorage com dado mesclado
       localStorage.setItem('capsula_user', JSON.stringify(merged));
-      console.log('[db] Mesclagem localStorage ↔ Supabase concluída para', email);
+      console.debug('[db] Mesclagem localStorage ↔ Supabase concluída para', email);
       return merged;
     }
   }
@@ -477,7 +477,7 @@
     rows.sort(function(a, b) {
       return (b.created_at || b.id || '') > (a.created_at || a.id || '') ? 1 : -1;
     });
-    console.log('[db] getMyRemoteLinks →', rows.length, 'registros para', pro_email);
+    console.debug('[db] getMyRemoteLinks →', rows.length, 'registros para', pro_email);
     return rows;
   }
 

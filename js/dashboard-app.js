@@ -486,7 +486,7 @@ async function rlCarregarLinks(full) {
   if (!_rlProEmail) return;
   const links = await capsulaDB.getMyRemoteLinks(_rlProEmail);
   const arr = links || [];
-  console.log('[rl] rlCarregarLinks → arr.length =', arr.length, '| full =', !!full);
+  console.debug('[rl] rlCarregarLinks → arr.length =', arr.length, '| full =', !!full);
   // Atualiza badge de contagem
   const badge = document.getElementById('rl-count-badge');
   if (badge) {
@@ -537,7 +537,7 @@ function rlRenderListaFull(links) {
   const el = document.getElementById('rl-lista-full');
   if (!el) return;
   const renderables = (links || []).filter(function(lk){ return lk.matriz; });
-  console.log('[rl] rlRenderListaFull → total =', (links||[]).length, '| com matriz =', renderables.length);
+  console.debug('[rl] rlRenderListaFull → total =', (links||[]).length, '| com matriz =', renderables.length);
   if (!links || !links.length) {
     el.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:var(--muted);font-size:0.85rem;">Nenhum link gerado ainda.<br><button onclick="rlSwitchTab(\'gerar\')" style="margin-top:0.75rem;padding:0.5rem 1.1rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit;">+ Gerar primeiro link</button></div>';
     return;

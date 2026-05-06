@@ -50,7 +50,11 @@
     });
   }
 
-  document.getElementById('btn-submit').addEventListener('click', async function() {
+  // Listener no <form> permite que Enter em qualquer campo dispare o submit.
+  // O botão é type="submit" → propaga pro form. O click direto também funciona,
+  // pois browser converte click em submit event.
+  document.getElementById('signup-form').addEventListener('submit', async function(ev) {
+    ev.preventDefault();
     const nome  = document.getElementById('nome').value.trim();
     const email = document.getElementById('email').value.trim();
     const senha = document.getElementById('senha').value;
