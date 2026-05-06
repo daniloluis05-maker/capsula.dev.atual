@@ -43,7 +43,13 @@
     });
   }
 
-  // ── 2. Overlay de carregamento — exibido imediatamente ────────
+  // ── 2. Overlay de carregamento ────────────────────────────────
+  // 🚨 CRITICAL: este script é incluído em <head>, então document.body
+  // é null aqui. Criamos o elemento orfão (createElement é safe sem
+  // body), configuramos os atributos, e ADIAMOS o appendChild pra
+  // dentro de init() (DOMContentLoaded). Antes da correção: a linha
+  // de appendChild lançava TypeError silencioso, o IIFE bailava sem
+  // registrar o DOMContentLoaded handler, e nada funcionava.
 
   const _overlay = document.createElement('div');
   _overlay.id = '_rl-overlay';
@@ -56,7 +62,7 @@
   _overlay.innerHTML = '<div style="color:rgba(232,232,240,0.4);font-size:0.9rem;text-align:center;">'
     + '<div style="font-size:2rem;margin-bottom:1rem;animation:spin 1.2s linear infinite;">⏳</div>'
     + 'Verificando link de avaliação...</div>';
-  document.body.appendChild(_overlay);
+  // appendChild fica em init() — vide bloco abaixo.
 
   // ── 3. Tela de erro ───────────────────────────────────────────
 
@@ -425,7 +431,10 @@
 
   async function init() {
     try {
-      // Processa elementos pro dashboard imediatamente (substitui na result-actions,
+      // 1. Anexa overlay ao body (deferred — body só existe agora, em DOMContentLoaded).
+      if (!_overlay.isConnected) document.body.appendChild(_overlay);
+
+      // 2. Processa elementos pro dashboard imediatamente (substitui na result-actions,
       // esconde no resto). Roda também via MutationObserver pra cobrir DOM mudanças
       // dinâmicas (ex: matriz que renderiza result-actions só depois de showPage).
       processDashboardElements();
