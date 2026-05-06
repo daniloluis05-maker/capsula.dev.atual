@@ -41,6 +41,13 @@
       email: 'remote@respondent.local', nome: 'Respondente',
       creditos: {}, plano: 'free',
     });
+    // Respondente é anon — RLS bloqueia INSERT/UPDATE em `usuarios` (401).
+    // No-op nas escritas em `usuarios` pra evitar "permission denied" + status
+    // visual "Erro ao sincronizar" que aparece quando a matriz tenta persistir.
+    const _noop = async () => ({ data: null, error: null });
+    window.capsulaDB.saveUser              = _noop;
+    window.capsulaDB.syncMatrizes          = async () => {};
+    window.capsulaDB.migrateLocalToSupabase = async () => {};
   }
 
   // ── 2. Overlay de carregamento ────────────────────────────────
@@ -244,11 +251,15 @@
       var inActions = !!el.closest('.result-actions, [class*="actions"]');
 
       if (inActions) {
-        if (el.tagName === 'A') {
-          el.setAttribute('href', 'convite.html');
-        } else {
-          el.setAttribute('onclick', "window.location.href='convite.html'");
-        }
+        // Limpa onclick atributo + property pra evitar herdar a navegação ao
+        // dashboard. setAttribute('onclick', ...) é frágil — usamos a property.
+        el.removeAttribute('onclick');
+        el.onclick = function (e) {
+          if (e && e.preventDefault) e.preventDefault();
+          if (e && e.stopPropagation) e.stopPropagation();
+          window.location.href = 'convite.html';
+        };
+        if (el.tagName === 'A') el.setAttribute('href', 'convite.html');
         el.textContent = '✨ Criar conta gratuita';
         el.style.display = '';
       } else {

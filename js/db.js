@@ -503,7 +503,9 @@
         resultado,
       });
     if (!error) {
-      await db.rpc('increment_remote_completion', { link_token: token }).catch(() => {});
+      // .catch direto no PostgrestBuilder do supabase-js v2 lança "is not a function"
+      // — o builder só expõe .then(). Try/catch envolvendo o await é a forma correta.
+      try { await db.rpc('increment_remote_completion', { link_token: token }); } catch (_) {}
     }
     return { error };
   }
