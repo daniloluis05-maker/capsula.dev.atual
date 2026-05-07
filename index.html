@@ -74,6 +74,7 @@
     backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border);
   }
+  .nav-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 0.05rem; line-height: 1.1; }
   .nav-logo {
     font-family: var(--serif);
     font-size: 1.25rem;
@@ -82,6 +83,15 @@
     letter-spacing: -0.01em;
   }
   .nav-logo span { color: var(--accent); }
+  .nav-tagline {
+    font-family: var(--serif);
+    font-size: 0.74rem;
+    color: var(--muted2, rgba(255,255,255,0.4));
+    letter-spacing: 0.01em;
+    margin-top: 0.05rem;
+  }
+  .nav-tagline em { font-style: italic; color: var(--accent); opacity: 0.8; }
+  @media (max-width: 700px) { .nav-tagline { display: none; } }
   .nav-links { display: flex; gap: 2rem; list-style: none; }
   .nav-links a {
     color: var(--muted);
@@ -573,6 +583,7 @@
     flex-wrap: wrap;
     gap: 1rem;
   }
+  .footer-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 0.1rem; line-height: 1.1; }
   .footer-logo {
     font-family: var(--serif);
     font-size: 1.1rem;
@@ -580,6 +591,13 @@
     text-decoration: none;
   }
   .footer-logo span { color: var(--accent); }
+  .footer-tagline {
+    font-family: var(--serif);
+    font-size: 0.72rem;
+    color: var(--muted2, rgba(255,255,255,0.35));
+    letter-spacing: 0.01em;
+  }
+  .footer-tagline em { font-style: italic; color: var(--accent); opacity: 0.8; }
   footer p { font-size: 0.8rem; color: var(--muted2); }
 
   /* MODAL */
@@ -921,7 +939,10 @@
 
 <!-- NAVEGAÇÃO -->
 <nav aria-label="Navegação principal">
-  <a href="#" class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" aria-label="Sistema Gnosis — voltar ao topo">Sistema <span>Gnosis</span></a>
+  <div class="nav-brand">
+    <a href="#" class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" aria-label="Sistema Gnosis — voltar ao topo">Sistema <span>Gnosis</span></a>
+    <span class="nav-tagline">Conheça-se. <em>Conheça seu time.</em></span>
+  </div>
   <ul class="nav-links">
     <li><a href="#matrizes">Matrizes</a></li>
     <li><a href="#como-funciona">Como funciona</a></li>
@@ -1282,7 +1303,10 @@ function togglePw(id, btn) {
 
 <!-- FOOTER -->
 <footer>
-  <a href="#" class="footer-logo" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" aria-label="Sistema Gnosis — voltar ao topo">Sistema <span>Gnosis</span></a>
+  <div class="footer-brand">
+    <a href="#" class="footer-logo" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" aria-label="Sistema Gnosis — voltar ao topo">Sistema <span>Gnosis</span></a>
+    <span class="footer-tagline">Conheça-se. <em>Conheça seu time.</em></span>
+  </div>
   <div style="display:flex;flex-wrap:wrap;gap:1.25rem;align-items:center;">
     <a href="termos.html" style="font-size:0.8rem;color:var(--muted2,rgba(255,255,255,0.35));text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted2,rgba(255,255,255,0.35))'">Termos de Uso</a>
     <a href="privacidade.html" style="font-size:0.8rem;color:var(--muted2,rgba(255,255,255,0.35));text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted2,rgba(255,255,255,0.35))'">Privacidade</a>
