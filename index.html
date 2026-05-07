@@ -146,15 +146,29 @@
   }
   .hero h1 {
     font-family: var(--serif);
-    font-size: clamp(2.8rem, 7vw, 5.5rem);
-    line-height: 1.08;
+    font-size: clamp(2.4rem, 6vw, 4.6rem);
+    line-height: 1.12;
     letter-spacing: -0.02em;
-    max-width: 900px;
+    max-width: 940px;
     margin-bottom: 1.5rem;
+    min-height: 2.5em; /* reserva espaço pra rotação não causar layout shift */
   }
   .hero h1 em {
     font-style: italic;
     color: var(--accent);
+  }
+  .hero h1 .verb-rotator {
+    display: inline-block;
+    color: var(--accent);
+    font-style: italic;
+    border-right: 3px solid var(--accent);
+    padding-right: 6px;
+    animation: heroBlink 0.85s step-end infinite;
+    transition: opacity 0.22s ease;
+  }
+  @keyframes heroBlink { 50% { border-color: transparent; } }
+  @media (prefers-reduced-motion: reduce) {
+    .hero h1 .verb-rotator { animation: none; border-right-color: transparent; }
   }
   .hero-sub {
     color: var(--muted);
@@ -919,8 +933,8 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-badge">✦ Análise de Alta Precisão Comportamental</div>
-  <h1>Engenharia Humana para<br><em>Alta Performance.</em></h1>
-  <p class="hero-sub">Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes que querem resultados reais e duradouros.</p>
+  <h1>Sistema Gnosis te ajuda a<br><span class="verb-rotator" id="hero-verb-rotator" data-verbs="descobrir seu potencial.|dominar suas habilidades.|impulsionar seus resultados.">descobrir seu potencial.</span></h1>
+  <p class="hero-sub">9 matrizes psicométricas profissionais — DISC, Big Five, Ikigai, Pearson e mais — num só dashboard. Aplique em você, em clientes ou no time.</p>
   <div class="hero-actions">
     <button class="btn-primary" data-modal-open>Iniciar meu diagnóstico</button>
     <a href="#matrizes" class="btn-secondary">Ver as matrizes →</a>
@@ -1404,5 +1418,25 @@ function togglePw(id, btn) {
 </div>
 
 <script src="js/index-app.js"></script>
+<script>
+  // Hero verb rotator — alterna o verbo+objeto a cada ~2.5s.
+  // Respeita prefers-reduced-motion (não roda se o user pedir).
+  (function () {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var el = document.getElementById('hero-verb-rotator');
+    if (!el) return;
+    var verbs = (el.dataset.verbs || '').split('|').filter(Boolean);
+    if (verbs.length < 2) return;
+    var i = 0;
+    setInterval(function () {
+      i = (i + 1) % verbs.length;
+      el.style.opacity = '0';
+      setTimeout(function () {
+        el.textContent = verbs[i];
+        el.style.opacity = '1';
+      }, 220);
+    }, 2500);
+  })();
+</script>
 </body>
 </html>
