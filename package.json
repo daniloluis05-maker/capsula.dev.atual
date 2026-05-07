@@ -1,0 +1,23 @@
+{
+  "name": "sistema-gnosis",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sistema Gnosis — 9 matrizes psicométricas profissionais. Site estático servido por Vercel + Supabase.",
+  "homepage": "https://www.sistema-gnosis.com.br",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daniloluis05-maker/capsula.dev.atual.git"
+  },
+  "scripts": {
+    "lint": "eslint js api",
+    "lint:fix": "eslint js api --fix",
+    "format": "prettier --write \"js/**/*.js\" \"api/**/*.js\"",
+    "format:check": "prettier --check \"js/**/*.js\" \"api/**/*.js\"",
+    "syntax": "node -e \"const fs=require('fs'),cp=require('child_process');let fail=0;for(const d of ['js','api']){for(const f of fs.readdirSync(d)){if(f.endsWith('.js')){try{cp.execSync('node --check '+d+'/'+f,{stdio:'pipe'})}catch(e){console.error('FAIL',d+'/'+f);fail++}}}}process.exit(fail);\"",
+    "check": "npm run syntax && npm run lint"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.3"
+  }
+}

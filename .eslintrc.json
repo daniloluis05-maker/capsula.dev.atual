@@ -1,0 +1,36 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2022": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "script"
+  },
+  "globals": {
+    "supabase": "readonly",
+    "Sentry": "readonly",
+    "Gnosis": "writable",
+    "capsulaDB": "writable",
+    "capsulaUI": "writable",
+    "_payments": "writable",
+    "CAPSULA_CONFIG": "readonly",
+    "DOMPurify": "readonly"
+  },
+  "rules": {
+    "no-undef": "warn",
+    "no-unused-vars": ["warn", { "args": "none", "varsIgnorePattern": "^_" }],
+    "no-empty": ["warn", { "allowEmptyCatch": true }],
+    "no-prototype-builtins": "off",
+    "no-inner-declarations": "off",
+    "no-useless-escape": "off",
+    "no-control-regex": "off"
+  },
+  "overrides": [
+    {
+      "files": ["api/**/*.js"],
+      "env": { "node": true, "browser": false }
+    }
+  ]
+}

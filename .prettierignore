@@ -1,0 +1,7 @@
+# Não formatar — código gerado, vendor, ou padrão de build externo
+node_modules/
+.github/
+docs/
+supabase/migrations/
+*.html
+*.css
