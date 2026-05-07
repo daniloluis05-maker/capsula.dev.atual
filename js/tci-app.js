@@ -1,3 +1,7 @@
+
+// Etapa 2 — era window.* global; convertido pra let no escopo do script.
+let _autoNext;
+
 ﻿const DIMS = {
   BN: { name:'Busca de Novidade', color:'var(--BN)', hex:'#E8603A', neurochem:'Dopamina',
     low:'Reflexivo, consistente, econômico, metódico. Prefere profundidade a diversidade e resistência à impulsividade.',
@@ -151,8 +155,8 @@ function selectAnswer(id, val, idx) {
   document.querySelector(`.scale-btn[data-val="${val}"]`).classList.add('selected');
   document.getElementById('scale-hint').textContent = HINTS[val - 1];
   document.getElementById('btn-next').classList.add('ready');
-  clearTimeout(window._autoNext);
-  window._autoNext = setTimeout(() => nextQuestion(), 750);
+  clearTimeout(_autoNext);
+  _autoNext = setTimeout(() => nextQuestion(), 750);
 }
 
 function nextQuestion() {

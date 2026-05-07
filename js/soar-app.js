@@ -1,6 +1,10 @@
 ﻿// ══════════════════════════════════════
 // DEFINIÇÃO DOS QUADRANTES SOAR
 // ══════════════════════════════════════
+
+// Etapa 2 — eram window.* globais; convertidos pra let no escopo do script.
+let _draftFeedbackTimer;
+
 const QUADRANTS = [
   {
     key: 'S',
@@ -569,8 +573,8 @@ function autosaveDraft() {
       const original = counter.textContent;
       counter.textContent = '✓ salvo automaticamente';
       counter.style.color = 'var(--S)';
-      clearTimeout(window._draftFeedbackTimer);
-      window._draftFeedbackTimer = setTimeout(function() {
+      clearTimeout(_draftFeedbackTimer);
+      _draftFeedbackTimer = setTimeout(function() {
         counter.textContent = original;
         counter.style.color = '';
       }, 1800);

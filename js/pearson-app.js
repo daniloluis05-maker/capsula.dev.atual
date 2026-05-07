@@ -1,6 +1,10 @@
 ﻿// ══════════════════════════════════════
 // ARQUÉTIPOS — definições completas
 // ══════════════════════════════════════
+
+// Etapa 2 — eram window.* globais; convertidos pra let no escopo do script.
+let _autoNext;
+
 const ARCHETYPES = {
   innocente: { name:'Inocente',      icon:'☀', group:'ego',  groupName:'Ego',      color:'#F0C96B', theme:'Otimismo e fé no bem',
     hi:'Você mantém uma crença genuína de que as coisas tendem a se resolver e que as pessoas, no fundo, têm boas intenções. Sua presença transmite esperança e leveza — você enxerga possibilidades onde outros veem obstáculos.',
@@ -211,8 +215,8 @@ function selectAnswer(idx, val){
   selBtn.style.background = arch.color + '15';
   document.getElementById('scale-hint').textContent = HINTS[val - 1];
   document.getElementById('btn-next').classList.add('ready');
-  clearTimeout(window._autoNext);
-  window._autoNext = setTimeout(() => nextQuestion(), 700);
+  clearTimeout(_autoNext);
+  _autoNext = setTimeout(() => nextQuestion(), 700);
 }
 
 function nextQuestion(){

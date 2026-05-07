@@ -1,3 +1,7 @@
+
+// Etapa 2 — eram window.* globais; convertidos pra let no escopo do script.
+let _autoNext;
+
 ﻿const ANCHORS = [
   {id:'tecnica', icon:'🔬', name:'Competência Técnica', color:'#1BA8D4',
     desc:'Ser especialista e reconhecido pela excelência no que faz. Prefere profundidade a amplitude.',
@@ -93,8 +97,8 @@ function selectScore(id,val,idx){
   document.querySelector(`.scale-btn[data-val="${val}"]`).classList.add('selected');
   document.getElementById('scale-hint').textContent=HINTS[val-1];
   document.getElementById('btn-next').classList.add('ready');
-  clearTimeout(window._autoNext);
-  window._autoNext=setTimeout(()=>nextAnchor(),700);
+  clearTimeout(_autoNext);
+  _autoNext=setTimeout(()=>nextAnchor(),700);
 }
 
 function nextAnchor(){

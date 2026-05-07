@@ -4,6 +4,10 @@
 // score: dimensão que a pergunta mede
 // reverse: se true, 5 pontos = baixa pontuação nessa dim
 // ══════════════════════════════════════
+
+// Etapa 2 — eram window.* globais; convertidos pra let no escopo do script.
+let _autoAdvance;
+
 const QUESTIONS = [
   // ── DOMINÂNCIA (D) ──
   {
@@ -307,8 +311,8 @@ function selectAnswer(idx, val) {
   if (btn) btn.classList.add('ready');
 
   // Auto-advance after 600ms
-  clearTimeout(window._autoAdvance);
-  window._autoAdvance = setTimeout(() => nextQuestion(), 650);
+  clearTimeout(_autoAdvance);
+  _autoAdvance = setTimeout(() => nextQuestion(), 650);
 }
 
 // ══════════════════════════════════════

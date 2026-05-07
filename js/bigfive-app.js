@@ -4,6 +4,10 @@
 // ══════════════════════════════════════
 
 // Dimensões
+
+// Etapa 2 — eram window.* globais; convertidos pra let no escopo do script.
+let _autoNext;
+
 const DIMS = {
   O: { key:'O', name:'Abertura',           short:'Abertura à Experiência', icon:'🔭', color:'#E8603A',
        hi:'Criativo, curioso, aberto a novas ideias e experiências. Aprecia arte, imaginação e variedade.',
@@ -155,8 +159,8 @@ function selectAnswer(idx, val){
   selBtn.style.background = dim.color + '15';
   document.getElementById('scale-hint').textContent = HINTS[val - 1];
   document.getElementById('btn-next').classList.add('ready');
-  clearTimeout(window._autoNext);
-  window._autoNext = setTimeout(() => nextQuestion(), 700);
+  clearTimeout(_autoNext);
+  _autoNext = setTimeout(() => nextQuestion(), 700);
 }
 
 function nextQuestion(){

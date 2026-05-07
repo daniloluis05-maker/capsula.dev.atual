@@ -1,6 +1,10 @@
 ﻿// ══════════════════════════════════════
 // ESTADO
 // ══════════════════════════════════════
+
+// Etapa 2 — eram window.* globais; convertidos pra let no escopo do script.
+let _removeTimer;
+
 const SWOT = { f: [], fk: [], o: [], a: [] };
 let showSug = true;
 let userData = {};
@@ -172,13 +176,13 @@ function removeItem(type, idx) {
   const t = document.getElementById('toast');
   const prevTitle = document.getElementById('toast-title').textContent;
   const prevSub   = document.getElementById('toast-sub').textContent;
-  clearTimeout(window._removeTimer);
+  clearTimeout(_removeTimer);
 
   document.getElementById('toast-title').textContent = 'Item removido';
   document.getElementById('toast-sub').innerHTML =
     `<span style="cursor:pointer;text-decoration:underline;color:var(--S)" onclick="undoRemove('${type}',${idx},'${removed.replace(/'/g,"\\'")}')" id="undo-link">↩ Desfazer</span>`;
   t.classList.add('show');
-  window._removeTimer = setTimeout(() => t.classList.remove('show'), 4000);
+  _removeTimer = setTimeout(() => t.classList.remove('show'), 4000);
 }
 
 function undoRemove(type, idx, text) {
@@ -187,7 +191,7 @@ function undoRemove(type, idx, text) {
   updateProgress();
   renderSuggestionsFor(type);
   updateMobileBadges();
-  clearTimeout(window._removeTimer);
+  clearTimeout(_removeTimer);
   document.getElementById('toast').classList.remove('show');
 }
 
