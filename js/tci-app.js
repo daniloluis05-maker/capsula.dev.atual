@@ -383,7 +383,7 @@ function _generatePDF() {
 
   const chipsHTML2 = sorted2.slice(0,2).map(d=>`<span class="chip" style="color:${DIMS[d].hex};border-color:${DIMS[d].hex}40;background:${DIMS[d].hex}08;">${DIMS[d].name}</span>`).join('');
 
-  _imprimirPDF(`<!DOCTYPE html><html lang="pt-BR"><head>
+  Gnosis.pdf.printOrDownload(`<!DOCTYPE html><html lang="pt-BR"><head>
   <meta charset="UTF-8"><title>Temperamento TCI — ${nome} · Sistema Gnosis</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>${_gnCss2}</style></head><body><div class="page">
@@ -458,7 +458,7 @@ function _generatePDF() {
   <div class="ft"><span class="ft-l">Sistema Gnosis // Temperamento TCI // Cloninger // Confidencial</span><span class="ft-r">www.sistema-gnosis.com.br</span></div>
   </div>
   <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
-  </body></html>`);
+  </body></html>`, "tci-resultado.html");
   return;
 }
 

@@ -436,7 +436,7 @@ function _generatePDF() {
     ? `${nome} mapeou ${totalItems2} elemento${totalItems2!==1?'s':''} estratégicos: ${_sArr2.length} força${_sArr2.length!==1?'s':''}, ${_oArr2.length} oportunidade${_oArr2.length!==1?'s':''}, ${_aArr2.length} aspiração/aspirações e ${_rArr2.length} resultado${_rArr2.length!==1?'s':''} esperados. A análise SOAR foca no positivo para construir uma visão estratégica acionável.`
     : 'A análise SOAR mapeia seu posicionamento estratégico a partir de quatro dimensões positivas: forças, oportunidades, aspirações e resultados concretos.';
 
-  _imprimirPDF(`<!DOCTYPE html><html lang="pt-BR"><head>
+  Gnosis.pdf.printOrDownload(`<!DOCTYPE html><html lang="pt-BR"><head>
   <meta charset="UTF-8"><title>Análise SOAR — ${nome} · Sistema Gnosis</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>${_gnCss_so}</style></head><body><div class="page">
@@ -474,7 +474,7 @@ function _generatePDF() {
   <div class="ft"><span class="ft-l">Sistema Gnosis // Análise SOAR // Planejamento Estratégico // Confidencial</span><span class="ft-r">www.sistema-gnosis.com.br</span></div>
   </div>
   <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
-  </body></html>`);
+  </body></html>`, "soar-resultado.html");
   return;
 }
 
@@ -593,13 +593,4 @@ function showCopyToast(msg) {
   t._timer = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(12px)'; }, 2800);
 }
 
-function _imprimirPDF(html){
-  var old=document.getElementById('_pdf_frame');if(old)old.remove();
-  var iframe=document.createElement('iframe');iframe.id='_pdf_frame';
-  iframe.setAttribute('style','position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;border:none;');
-  document.body.appendChild(iframe);
-  var doc=iframe.contentDocument||iframe.contentWindow.document;
-  doc.open();doc.write(html);doc.close();
-  iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='soar-resultado.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
-}
 document.addEventListener('DOMContentLoaded', initPage);

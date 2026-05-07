@@ -500,7 +500,7 @@ function _generatePDF(){
 
   const chipsHTML = sorted.slice(0,3).map(d=>`<span class="chip" style="color:${d.color};border-color:${d.color}40;background:${d.color}08;">${chipLabels[d.key]}</span>`).join('');
 
-  _imprimirPDF(`<!DOCTYPE html><html lang="pt-BR"><head>
+  Gnosis.pdf.printOrDownload(`<!DOCTYPE html><html lang="pt-BR"><head>
   <meta charset="UTF-8"><title>Big Five OCEAN — ${nome} · Sistema Gnosis</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>${_gnCss}</style></head><body><div class="page">
@@ -576,17 +576,7 @@ function _generatePDF(){
   <div class="ft"><span class="ft-l">Sistema Gnosis // Big Five OCEAN // Personalidade // Confidencial</span><span class="ft-r">www.sistema-gnosis.com.br</span></div>
   </div>
   <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
-  </body></html>`);
-}
-
-function _imprimirPDF(html){
-  var old=document.getElementById('_pdf_frame');if(old)old.remove();
-  var iframe=document.createElement('iframe');iframe.id='_pdf_frame';
-  iframe.setAttribute('style','position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;border:none;');
-  document.body.appendChild(iframe);
-  var doc=iframe.contentDocument||iframe.contentWindow.document;
-  doc.open();doc.write(html);doc.close();
-  iframe.onload=function(){setTimeout(function(){try{iframe.contentWindow.focus();iframe.contentWindow.print();}catch(e){var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='bigfive-ocean.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}},700);};
+  </body></html>`, "bigfive-ocean.html");
 }
 
 // ── Proteção de rota
