@@ -156,29 +156,37 @@
   }
   .hero h1 {
     font-family: var(--serif);
-    font-size: clamp(2.4rem, 6vw, 4.6rem);
-    line-height: 1.12;
+    font-size: clamp(2.6rem, 6.5vw, 5rem);
+    line-height: 1.08;
     letter-spacing: -0.02em;
     max-width: 940px;
-    margin-bottom: 1.5rem;
-    min-height: 2.5em; /* reserva espaço pra rotação não causar layout shift */
-  }
-  .hero h1 em {
-    font-style: italic;
-    color: var(--accent);
+    margin: 0 0 1.25rem;
+    min-height: 1.3em;
   }
   .hero h1 .verb-rotator {
     display: inline-block;
     color: var(--accent);
     font-style: italic;
-    border-right: 3px solid var(--accent);
-    padding-right: 6px;
-    animation: heroBlink 0.85s step-end infinite;
-    transition: opacity 0.22s ease;
+    transition: opacity 0.25s ease;
   }
-  @keyframes heroBlink { 50% { border-color: transparent; } }
+  .hero-brand-line {
+    font-family: var(--serif);
+    font-size: clamp(1.4rem, 3vw, 2.1rem);
+    color: var(--text);
+    letter-spacing: -0.01em;
+    margin-bottom: 1.5rem;
+    animation: brandPulse 2.4s ease-in-out infinite;
+  }
+  .hero-brand-line em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  @keyframes brandPulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.55; }
+  }
   @media (prefers-reduced-motion: reduce) {
-    .hero h1 .verb-rotator { animation: none; border-right-color: transparent; }
+    .hero-brand-line { animation: none; }
   }
   .hero-sub {
     color: var(--muted);
@@ -954,8 +962,9 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-badge">✦ Análise de Alta Precisão Comportamental</div>
-  <h1>Sistema Gnosis te ajuda a<br><span class="verb-rotator" id="hero-verb-rotator" data-verbs="descobrir seu potencial.|dominar suas habilidades.|impulsionar seus resultados.">descobrir seu potencial.</span></h1>
-  <p class="hero-sub">9 matrizes psicométricas profissionais — DISC, Big Five, Ikigai, Pearson e mais — num só dashboard. Aplique em você, em clientes ou no time.</p>
+  <h1><span class="verb-rotator" id="hero-verb-rotator" data-verbs="Descubra seu potencial.|Domine suas habilidades.|Impulsione seus resultados.">Descubra seu potencial.</span></h1>
+  <div class="hero-brand-line">Sistema <em>Gnosis</em></div>
+  <p class="hero-sub">9 matrizes profissionais. Aplique em você ou no time.</p>
   <div class="hero-actions">
     <button class="btn-primary" data-modal-open>Iniciar meu diagnóstico</button>
     <a href="#matrizes" class="btn-secondary">Ver as matrizes →</a>
