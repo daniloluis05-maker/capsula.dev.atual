@@ -30,5 +30,5 @@ window.CAPSULA_CONFIG = {
   // https://analytics.google.com → Admin → Property → Data Streams.
   // Sem ID, js/analytics.js não carrega o gtag e o cookie banner
   // não aparece — privacidade por padrão.
-  gaMeasurementId: '',
+  gaMeasurementId: 'G-WHE327XZ4Y',
 };
