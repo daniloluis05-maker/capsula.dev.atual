@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Preview de fontes — Sistema Gnosis</title>
+
+<!-- Carrega TODAS as fontes das 3 opções (A, B, C) num só link pra reduzir requests -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #0A0A0F;
+    --text: #F0EEF8;
+    --muted: #8B899E;
+    --muted2: rgba(255,255,255,0.4);
+    --accent: #7C6FF7;
+    --border: rgba(255,255,255,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, sans-serif;
+    padding: 2rem 1rem 4rem;
+    line-height: 1.5;
+  }
+
+  .preview-header {
+    max-width: 1100px;
+    margin: 0 auto 2rem;
+    padding: 1.25rem 1.5rem;
+    background: rgba(124,111,247,0.06);
+    border: 1px solid rgba(124,111,247,0.25);
+    border-radius: 12px;
+  }
+  .preview-header h1 {
+    font-family: 'Outfit', system-ui, sans-serif;
+    font-size: 1.4rem;
+    margin: 0 0 0.4rem;
+  }
+  .preview-header p {
+    font-family: 'Outfit', system-ui, sans-serif;
+    font-size: 0.92rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .preview-header code {
+    background: rgba(255,255,255,0.06);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* CARD: hero simulado em cada opção */
+  .font-card {
+    max-width: 1100px;
+    margin: 0 auto 2.5rem;
+    padding: 2.5rem 2rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .font-card::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(124,111,247,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .font-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .font-card-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+  }
+  .font-card-id .num {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-right: 0.4rem;
+  }
+  .font-stack {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .font-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    border: 1px solid;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .font-pill.serif  { color: #E8603A; border-color: rgba(232,96,58,0.4);  background: rgba(232,96,58,0.06); }
+  .font-pill.sans   { color: #2EC4A0; border-color: rgba(46,196,160,0.4); background: rgba(46,196,160,0.06); }
+  .font-pill.mono   { color: var(--accent); border-color: rgba(124,111,247,0.4); background: rgba(124,111,247,0.06); }
+
+  /* Bloco da "marca" simulada */
+  .brand-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+  .brand-block { display: flex; flex-direction: column; gap: 0.05rem; }
+  .brand-name { font-size: 1.25rem; letter-spacing: -0.01em; }
+  .brand-name .accent { color: var(--accent); }
+  .brand-tagline { font-size: 0.74rem; color: var(--muted2); }
+  .brand-tagline em { color: var(--accent); opacity: 0.85; }
+  .nav-mock {
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(124,111,247,0.12);
+    border: 1px solid rgba(124,111,247,0.3);
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.85rem;
+    border-radius: 100px;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-h1 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.25rem;
+    min-height: 2.6em;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-h1 .verb {
+    display: inline-block;
+    color: var(--accent);
+    font-style: italic;
+    border-right: 3px solid var(--accent);
+    padding-right: 5px;
+    animation: blink 0.85s step-end infinite;
+    transition: opacity 0.22s ease;
+  }
+  @keyframes blink { 50% { border-color: transparent; } }
+
+  .hero-sub {
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    max-width: 620px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+  .btn-p, .btn-s {
+    padding: 0.65rem 1.35rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-p { background: var(--accent); color: #fff; }
+  .btn-s { background: transparent; color: var(--text); border: 1px solid rgba(255,255,255,0.18); }
+
+  .label-mono {
+    margin-top: 1.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    position: relative;
+    z-index: 1;
+  }
+  .label-mono .stat {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* ── OPÇÃO A — DM Serif Display + Outfit + Space Mono (atual) ── */
+  .opt-a .brand-name,
+  .opt-a .brand-tagline,
+  .opt-a .hero-h1 { font-family: 'DM Serif Display', Georgia, serif; }
+  .opt-a .nav-mock,
+  .opt-a .hero-sub,
+  .opt-a .btn-p,
+  .opt-a .btn-s { font-family: 'Outfit', system-ui, sans-serif; }
+  .opt-a .badge,
+  .opt-a .label-mono,
+  .opt-a .font-card-id { font-family: 'Space Mono', monospace; }
+
+  /* ── OPÇÃO B — DM Serif Display + Inter + JetBrains Mono ── */
+  .opt-b .brand-name,
+  .opt-b .brand-tagline,
+  .opt-b .hero-h1 { font-family: 'DM Serif Display', Georgia, serif; }
+  .opt-b .nav-mock,
+  .opt-b .hero-sub,
+  .opt-b .btn-p,
+  .opt-b .btn-s { font-family: 'Inter', system-ui, sans-serif; }
+  .opt-b .badge,
+  .opt-b .label-mono,
+  .opt-b .font-card-id { font-family: 'JetBrains Mono', monospace; }
+
+  /* ── OPÇÃO C — Fraunces + Manrope + JetBrains Mono ── */
+  .opt-c .brand-name,
+  .opt-c .brand-tagline,
+  .opt-c .hero-h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-variation-settings: 'opsz' 110, 'SOFT' 50;
+  }
+  .opt-c .nav-mock,
+  .opt-c .hero-sub,
+  .opt-c .btn-p,
+  .opt-c .btn-s { font-family: 'Manrope', system-ui, sans-serif; }
+  .opt-c .badge,
+  .opt-c .label-mono,
+  .opt-c .font-card-id { font-family: 'JetBrains Mono', monospace; }
+
+  .preview-footer {
+    max-width: 1100px;
+    margin: 3rem auto 0;
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-family: 'Outfit', system-ui, sans-serif;
+    border-top: 1px solid var(--border);
+  }
+  .preview-footer strong { color: var(--text); }
+  .preview-footer code {
+    background: rgba(255,255,255,0.06);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="preview-header">
+  <h1>Preview — comparação de fontes</h1>
+  <p>3 versões do hero renderizadas com pilhas tipográficas diferentes. Mesma estrutura, mesmo texto — só muda a fonte. As pílulas coloridas mostram qual fonte está sendo usada onde (<span style="color:#E8603A">serif</span> · <span style="color:#2EC4A0">sans</span> · <span style="color:#7C6FF7">mono</span>). Esta página tem <code>noindex</code>. Me responda no chat com o número (<strong>A</strong>, <strong>B</strong> ou <strong>C</strong>) que prefere.</p>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- OPÇÃO A — Atual                          -->
+<!-- ════════════════════════════════════════ -->
+<section class="font-card opt-a">
+  <div class="font-card-header">
+    <span class="font-card-id"><span class="num">A</span>· atual (status quo)</span>
+    <div class="font-stack">
+      <span class="font-pill serif">DM Serif Display</span>
+      <span class="font-pill sans">Outfit</span>
+      <span class="font-pill mono">Space Mono</span>
+    </div>
+  </div>
+
+  <div class="brand-row">
+    <div class="brand-block">
+      <span class="brand-name">Sistema <span class="accent">Gnosis</span></span>
+      <span class="brand-tagline">Conheça-se. <em>Conheça seu time.</em></span>
+    </div>
+    <div class="nav-mock">Matrizes &nbsp; Como funciona &nbsp; Planos</div>
+  </div>
+
+  <span class="badge">✦ Análise de Alta Precisão Comportamental</span>
+  <h1 class="hero-h1">Sistema Gnosis te ajuda a<br><span class="verb" data-verbs="descobrir seu potencial.|dominar suas habilidades.|impulsionar seus resultados.">descobrir seu potencial.</span></h1>
+  <p class="hero-sub">9 matrizes psicométricas profissionais — DISC, Big Five, Ikigai, Pearson e mais — num só dashboard. Aplique em você, em clientes ou no time.</p>
+  <div class="actions">
+    <button class="btn-p">Iniciar meu diagnóstico</button>
+    <button class="btn-s">Ver as matrizes →</button>
+  </div>
+  <div class="label-mono">// <span class="stat">9</span> matrizes &nbsp; · &nbsp; <span class="stat">2</span> planos &nbsp; · &nbsp; <span class="stat">1</span> dashboard</div>
+</section>
+
+
+<!-- ════════════════════════════════════════ -->
+<!-- OPÇÃO B — Inter + JetBrains Mono        -->
+<!-- ════════════════════════════════════════ -->
+<section class="font-card opt-b">
+  <div class="font-card-header">
+    <span class="font-card-id"><span class="num">B</span>· recomendada — atualiza só sans+mono</span>
+    <div class="font-stack">
+      <span class="font-pill serif">DM Serif Display</span>
+      <span class="font-pill sans">Inter</span>
+      <span class="font-pill mono">JetBrains Mono</span>
+    </div>
+  </div>
+
+  <div class="brand-row">
+    <div class="brand-block">
+      <span class="brand-name">Sistema <span class="accent">Gnosis</span></span>
+      <span class="brand-tagline">Conheça-se. <em>Conheça seu time.</em></span>
+    </div>
+    <div class="nav-mock">Matrizes &nbsp; Como funciona &nbsp; Planos</div>
+  </div>
+
+  <span class="badge">✦ Análise de Alta Precisão Comportamental</span>
+  <h1 class="hero-h1">Sistema Gnosis te ajuda a<br><span class="verb" data-verbs="descobrir seu potencial.|dominar suas habilidades.|impulsionar seus resultados.">descobrir seu potencial.</span></h1>
+  <p class="hero-sub">9 matrizes psicométricas profissionais — DISC, Big Five, Ikigai, Pearson e mais — num só dashboard. Aplique em você, em clientes ou no time.</p>
+  <div class="actions">
+    <button class="btn-p">Iniciar meu diagnóstico</button>
+    <button class="btn-s">Ver as matrizes →</button>
+  </div>
+  <div class="label-mono">// <span class="stat">9</span> matrizes &nbsp; · &nbsp; <span class="stat">2</span> planos &nbsp; · &nbsp; <span class="stat">1</span> dashboard</div>
+</section>
+
+
+<!-- ════════════════════════════════════════ -->
+<!-- OPÇÃO C — Fraunces + Manrope + JetBrains Mono -->
+<!-- ════════════════════════════════════════ -->
+<section class="font-card opt-c">
+  <div class="font-card-header">
+    <span class="font-card-id"><span class="num">C</span>· editorial premium — pivot completo</span>
+    <div class="font-stack">
+      <span class="font-pill serif">Fraunces</span>
+      <span class="font-pill sans">Manrope</span>
+      <span class="font-pill mono">JetBrains Mono</span>
+    </div>
+  </div>
+
+  <div class="brand-row">
+    <div class="brand-block">
+      <span class="brand-name">Sistema <span class="accent">Gnosis</span></span>
+      <span class="brand-tagline">Conheça-se. <em>Conheça seu time.</em></span>
+    </div>
+    <div class="nav-mock">Matrizes &nbsp; Como funciona &nbsp; Planos</div>
+  </div>
+
+  <span class="badge">✦ Análise de Alta Precisão Comportamental</span>
+  <h1 class="hero-h1">Sistema Gnosis te ajuda a<br><span class="verb" data-verbs="descobrir seu potencial.|dominar suas habilidades.|impulsionar seus resultados.">descobrir seu potencial.</span></h1>
+  <p class="hero-sub">9 matrizes psicométricas profissionais — DISC, Big Five, Ikigai, Pearson e mais — num só dashboard. Aplique em você, em clientes ou no time.</p>
+  <div class="actions">
+    <button class="btn-p">Iniciar meu diagnóstico</button>
+    <button class="btn-s">Ver as matrizes →</button>
+  </div>
+  <div class="label-mono">// <span class="stat">9</span> matrizes &nbsp; · &nbsp; <span class="stat">2</span> planos &nbsp; · &nbsp; <span class="stat">1</span> dashboard</div>
+</section>
+
+
+<div class="preview-footer">
+  Compare e me responda no chat: <strong>"vai de A"</strong>, <strong>"vai de B"</strong> ou <strong>"vai de C"</strong>. Aplico em todo o site (não só na home — afeta CSS global) e removo este preview.
+</div>
+
+<script>
+  // Verbo rotativo em todos os cards. Cada .verb tem seu próprio data-verbs.
+  (function () {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var spans = document.querySelectorAll('.verb');
+    spans.forEach(function (el) {
+      var verbs = (el.dataset.verbs || '').split('|').filter(Boolean);
+      if (verbs.length < 2) return;
+      var i = 0;
+      setInterval(function () {
+        i = (i + 1) % verbs.length;
+        el.style.opacity = '0';
+        setTimeout(function () {
+          el.textContent = verbs[i];
+          el.style.opacity = '1';
+        }, 220);
+      }, 2500);
+    });
+  })();
+</script>
+
+</body>
+</html>
