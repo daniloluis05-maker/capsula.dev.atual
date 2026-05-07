@@ -16,11 +16,12 @@
     "capsulaUI": "writable",
     "_payments": "writable",
     "CAPSULA_CONFIG": "readonly",
-    "DOMPurify": "readonly"
+    "DOMPurify": "readonly",
+    "emailjs": "readonly"
   },
   "rules": {
     "no-undef": "warn",
-    "no-unused-vars": ["warn", { "args": "none", "varsIgnorePattern": "^_" }],
+    "no-unused-vars": "off",
     "no-empty": ["warn", { "allowEmptyCatch": true }],
     "no-prototype-builtins": "off",
     "no-inner-declarations": "off",
