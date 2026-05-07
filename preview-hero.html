@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Preview de Hero — Sistema Gnosis</title>
+<link rel="stylesheet" href="css/capsula.css">
+<style>
+  body {
+    background: var(--bg, #0A0A0F);
+    color: var(--text, #F0EEF8);
+    font-family: 'Outfit', system-ui, sans-serif;
+    margin: 0;
+    padding: 2rem 1rem 4rem;
+  }
+  .preview-header {
+    max-width: 1100px;
+    margin: 0 auto 2rem;
+    padding: 1.25rem 1.5rem;
+    background: rgba(124,111,247,0.06);
+    border: 1px solid rgba(124,111,247,0.25);
+    border-radius: 12px;
+  }
+  .preview-header h1 {
+    font-size: 1.4rem;
+    margin: 0 0 0.4rem;
+    color: var(--text);
+    font-family: 'Outfit', system-ui, sans-serif;
+  }
+  .preview-header p {
+    font-size: 0.92rem;
+    color: var(--muted, #8B899E);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .preview-header code {
+    background: rgba(255,255,255,0.06);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    color: var(--accent, #7C6FF7);
+  }
+  .preview-card {
+    max-width: 1100px;
+    margin: 0 auto 2rem;
+    padding: 3rem 2rem 2.5rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0) 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .preview-card::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(124,111,247,0.10) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .preview-label {
+    position: absolute;
+    top: 1.1rem;
+    left: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted, #8B899E);
+  }
+  .preview-label .num {
+    color: var(--accent, #7C6FF7);
+    font-weight: 700;
+  }
+  .preview-philosophy {
+    position: absolute;
+    top: 1.1rem;
+    right: 1.5rem;
+    font-size: 0.72rem;
+    color: var(--muted, #8B899E);
+    font-style: italic;
+  }
+  .preview-card h1 {
+    font-family: var(--serif, 'Crimson Pro', serif);
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    max-width: 900px;
+    margin: 1.5rem 0 1.25rem;
+    position: relative;
+    z-index: 1;
+  }
+  .preview-card h1 em {
+    font-style: italic;
+    color: var(--accent, #7C6FF7);
+  }
+  .preview-card .sub {
+    color: var(--muted, #8B899E);
+    font-size: 1.05rem;
+    max-width: 620px;
+    line-height: 1.65;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .preview-footer {
+    max-width: 1100px;
+    margin: 2.5rem auto 0;
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--muted, #8B899E);
+    font-size: 0.88rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .preview-footer strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="preview-header">
+  <h1>Preview — escolha sua headline</h1>
+  <p>6 versões renderizadas no estilo real do hero. Compare e me diga qual número aplicar no <code>index.html</code>. Esta página tem <code>noindex</code> — não aparece no Google. Vai ser deletada após você decidir.</p>
+</div>
+
+<!-- VERSÃO 0 — atual (referência) -->
+<section class="preview-card">
+  <span class="preview-label"><span class="num">0</span> · atual</span>
+  <span class="preview-philosophy">referência (no ar hoje)</span>
+  <h1>Engenharia Humana para<br><em>Alta Performance.</em></h1>
+  <p class="sub">Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes que querem resultados reais e duradouros.</p>
+</section>
+
+<!-- VERSÃO 1 — sua proposta -->
+<section class="preview-card">
+  <span class="preview-label"><span class="num">1</span> · sua proposta</span>
+  <span class="preview-philosophy">trinômio aspiracional</span>
+  <h1>Descubra seu potencial.<br>Domine suas habilidades.<br><em>Impulsione seus resultados.</em></h1>
+  <p class="sub">9 matrizes psicométricas profissionais — DISC, Big Five, Ikigai, Pearson e mais — num só dashboard. Aplique em você, em clientes ou no time.</p>
+</section>
+
+<!-- VERSÃO 2 — refinamento -->
+<section class="preview-card">
+  <span class="preview-label"><span class="num">2</span> · refinamento</span>
+  <span class="preview-philosophy">trinômio com vocabulário mais técnico</span>
+  <h1>Revele seu potencial.<br>Aprimore suas competências.<br><em>Multiplique seus resultados.</em></h1>
+  <p class="sub">9 matrizes psicométricas — DISC, Big Five, Ikigai, Pearson e mais — pra quem leva autoconhecimento a sério.</p>
+</section>
+
+<!-- VERSÃO 3 — mais profissional -->
+<section class="preview-card">
+  <span class="preview-label"><span class="num">3</span> · profissional</span>
+  <span class="preview-philosophy">trinômio com tom de método</span>
+  <h1>Mapeie seu perfil.<br>Refine suas decisões.<br><em>Conquiste seu próximo nível.</em></h1>
+  <p class="sub">9 matrizes profissionais num só sistema. Aplique em você, em clientes ou no time.</p>
+</section>
+
+<!-- VERSÃO 4 — curta (Nike-style) -->
+<section class="preview-card">
+  <span class="preview-label"><span class="num">4</span> · curta</span>
+  <span class="preview-philosophy">3 palavras só — máximo punch</span>
+  <h1><em>Descubra. Domine. Conquiste.</em></h1>
+  <p class="sub">9 matrizes psicométricas para mapear pessoas e equipes com método. DISC, Big Five, Ikigai e mais 6.</p>
+</section>
+
+<!-- VERSÃO 5 — aspiracional + lastro -->
+<section class="preview-card">
+  <span class="preview-label"><span class="num">5</span> · aspiracional + lastro</span>
+  <span class="preview-philosophy">tom de autoridade técnica</span>
+  <h1>Conheça-se com método.<br>Decida com lastro.<br><em>Lidere com clareza.</em></h1>
+  <p class="sub">9 matrizes psicométricas — DISC, Big Five, Ikigai, Pearson — num só dashboard. Pra você, clientes e equipes.</p>
+</section>
+
+<!-- VERSÃO 6 — escopo crescente (eu→time→resultado) -->
+<section class="preview-card">
+  <span class="preview-label"><span class="num">6</span> · escopo crescente</span>
+  <span class="preview-philosophy">jornada eu → equipe → resultado</span>
+  <h1>Mapeie pessoas.<br>Forme equipes.<br><em>Multiplique resultados.</em></h1>
+  <p class="sub">9 matrizes psicométricas, link compartilhável e dashboard de equipe. A operação completa de avaliação humana.</p>
+</section>
+
+<div class="preview-footer">
+  Me responda no chat com o <strong>número</strong> da versão que prefere. Se quiser combinar (H1 da #2 com sub da #6, por exemplo), também dá. Aplico no <code>index.html</code> oficial e removo este preview.
+</div>
+
+</body>
+</html>
