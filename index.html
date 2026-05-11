@@ -33,14 +33,14 @@
 <meta property="og:url" content="https://www.sistema-gnosis.com.br/">
 <meta property="og:title" content="Sistema Gnosis | Matrizes de Alta Performance">
 <meta property="og:description" content="Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes. Comece grátis.">
-<meta property="og:image" content="https://www.sistema-gnosis.com.br/apple-touch-icon.png">
+<meta property="og:image" content="https://www.sistema-gnosis.com.br/logo-gnosis-512.png">
 <meta property="og:locale" content="pt_BR">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Sistema Gnosis | Matrizes de Alta Performance">
 <meta name="twitter:description" content="Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes. Comece grátis.">
-<meta name="twitter:image" content="https://www.sistema-gnosis.com.br/apple-touch-icon.png">
+<meta name="twitter:image" content="https://www.sistema-gnosis.com.br/logo-gnosis-512.png">
 
 <!-- Fonte otimizada (não bloqueante) -->
 <link rel="dns-prefetch" href="https://fonts.gstatic.com">
@@ -321,6 +321,32 @@
     letter-spacing: 0.08em;
     line-height: 1.45;
   }
+
+  /* HERO QUICK NAV — só aparece em mobile, substitui o menu hambúrguer */
+  .hero-quick-nav {
+    display: none;
+    flex-direction: column;
+    gap: 0.4rem;
+    width: 100%;
+    max-width: 360px;
+    margin: 1.25rem auto 0;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+  .hero-quick-nav a {
+    display: block;
+    text-align: center;
+    padding: 0.7rem 1rem;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: color 0.2s ease, background 0.2s ease;
+    font-family: var(--sans);
+  }
+  .hero-quick-nav a:hover,
+  .hero-quick-nav a:active { color: var(--text); background: rgba(255,255,255,0.03); }
 
   /* SUPPORT FAB — botão flutuante discreto, presente mas não invasivo */
   #support-fab {
@@ -913,13 +939,8 @@
   }
 
   @media (max-width: 768px) {
-    nav {
-      padding: 0.5rem 5%;
-      min-height: 60px; /* garante altura constante — evita "torto" visual */
-    }
-    .nav-brand { display: none; } /* esconde texto "Sistema Gnosis" do nav em mobile — evita corte + redundância com H1 do hero */
-    .nav-icon-mobile { display: flex; } /* logo PNG à esquerda, mesmo tamanho 44x44 do hambúrguer */
-    .nav-hamburger { display: flex; align-items: center; justify-content: center; }
+    nav { display: none; } /* mobile usa o hero-quick-nav (abaixo dos CTAs) — sem hambúrguer */
+    .hero-quick-nav { display: flex; } /* aparece só em mobile */
     .nav-cta { display: none; }
     .nav-links {
       display: flex;
@@ -1159,6 +1180,11 @@
     <button class="btn-primary" data-modal-open>Iniciar análise</button>
     <a href="#matrizes" class="btn-secondary">Ver as matrizes →</a>
   </div>
+  <nav class="hero-quick-nav" aria-label="Navegação rápida">
+    <a href="#matrizes">Matrizes</a>
+    <a href="#como-funciona">Como funciona</a>
+    <a href="#planos">Planos</a>
+  </nav>
   <div class="hero-stats">
     <div class="stat">
       <span class="stat-num">9</span>
