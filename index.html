@@ -87,6 +87,12 @@
     border-bottom: 1px solid var(--border);
   }
   .nav-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 0.05rem; line-height: 1.1; }
+  .nav-icon-mobile {
+    display: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
   .nav-hamburger {
     display: none;
     background: none;
@@ -851,11 +857,9 @@
   }
 
   @media (max-width: 768px) {
-    nav {
-      padding: 1rem 5%;
-      justify-content: flex-end; /* hambúrguer fica à direita, sem logo competindo */
-    }
-    .nav-brand { display: none; } /* esconde Sistema Gnosis do nav em mobile — evita corte + redundância com H1 do hero */
+    nav { padding: 0.75rem 5%; }
+    .nav-brand { display: none; } /* esconde texto "Sistema Gnosis" do nav em mobile — evita corte + redundância com H1 do hero */
+    .nav-icon-mobile { display: inline-flex; align-items: center; } /* logo PNG à esquerda em mobile */
     .nav-hamburger { display: block; }
     .nav-cta { display: none; }
     .nav-links {
@@ -900,15 +904,13 @@
     .statement-section { padding: 4rem 5%; }
     .hero { padding: 5rem 5% 3rem; }
     .cta-final-section { padding: 4rem 5%; }
-    /* B: badge encurta automaticamente em mobile */
+    /* B: badge mais discreto em mobile */
     .hero-badge {
-      font-size: 0.65rem;
-      letter-spacing: 0.06em;
-      padding: 0.35rem 0.85rem;
+      font-size: 0.62rem;
+      letter-spacing: 0.05em;
+      padding: 0.3rem 0.75rem;
       margin-bottom: 1.25rem;
     }
-    .hero-badge .badge-full { display: none; }
-    .hero-badge .badge-short { display: inline; }
     /* C: verbo rotativo vira sub-headline em mobile (não compete com H1) */
     .hero-rotator-line {
       font-size: 1.15rem;
@@ -919,11 +921,7 @@
       font-size: 1.15rem;
     }
     /* E: gaps internos do hero reduzidos */
-    .hero-sub { font-size: 0.95rem; margin-bottom: 1.75rem; }
-    .hero-actions { gap: 0.65rem; }
-  }
-  @media (min-width: 769px) {
-    .hero-badge .badge-short { display: none; }
+    .hero-actions { gap: 0.65rem; margin-top: 0.5rem; }
   }
   @media (max-width: 520px) {
     /* Fix #4 — Hero buttons 100% e empilhados */
@@ -1074,6 +1072,9 @@
 
 <!-- NAVEGAÇÃO -->
 <nav aria-label="Navegação principal">
+  <a href="#" class="nav-icon-mobile" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" aria-label="Sistema Gnosis — voltar ao topo">
+    <img src="logo-gnosis-180.png" alt="Sistema Gnosis" width="36" height="36">
+  </a>
   <div class="nav-brand">
     <a href="#" class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" aria-label="Sistema Gnosis — voltar ao topo">Sistema <span>Gnosis</span></a>
     <span class="nav-tagline">Descubra, Domine e <em>Lidere.</em></span>
@@ -1092,10 +1093,9 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge"><span class="badge-full">✦ Análise de Alta Precisão Comportamental</span><span class="badge-short">✦ Psicometria Profissional</span></div>
+  <div class="hero-badge"><span class="badge-full">✦ Análise de Alta Precisão Comportamental</span></div>
   <h1>Sistema <em>Gnosis</em></h1>
   <div class="hero-rotator-line"><span class="verb-rotator" id="hero-verb-rotator" data-verbs="Descubra seu potencial.|Domine suas habilidades.|Impulsione seus resultados.">Descubra seu potencial.</span></div>
-  <p class="hero-sub">Matrizes profissionais para desenvolvimento pessoal e gestão de equipes.</p>
   <div class="hero-actions">
     <button class="btn-primary" data-modal-open>Iniciar análise</button>
     <a href="#matrizes" class="btn-secondary">Ver as matrizes →</a>
