@@ -16,12 +16,23 @@ async function loadUser(){
 
   // Caminho rápido: dados locais existem → carrega sem aguardar Auth
   if (!lsRaw && !ssRaw) {
-    // Sem dados locais → verifica se há sessão Supabase Auth ativa
+    // Sem dados locais — pode ser:
+    //   (a) user veio de Google OAuth e o supabase-js ainda está
+    //       persistindo o token (race com auth-callback) → retry resolve
+    //   (b) user nunca logou → redireciona pra index
+    // Por isso fazemos retry com backoff antes de desistir.
     let authUser = null;
-    try {
-      const { session } = await capsulaDB.authGetSession();
-      if (session) authUser = session.user;
-    } catch(e) { console.warn('[dashboard] authGetSession:', e); }
+    const MAX_ATTEMPTS = 5;
+    for (let attempt = 0; attempt < MAX_ATTEMPTS && !authUser; attempt++) {
+      try {
+        const { session } = await capsulaDB.authGetSession();
+        if (session) { authUser = session.user; break; }
+      } catch(e) { console.warn('[dashboard] authGetSession:', e); }
+      // Backoff: 0ms, 300ms, 600ms, 1000ms, 1500ms (total ~3.4s)
+      if (attempt < MAX_ATTEMPTS - 1) {
+        await new Promise(r => setTimeout(r, 300 + attempt * 200));
+      }
+    }
 
     if (!authUser) {
       window.location.href = 'index.html';

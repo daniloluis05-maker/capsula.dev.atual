@@ -87,7 +87,21 @@
 
     const target = nextHref || 'dashboard.html';
     msgEl.textContent = nextHref ? 'Redirecionando…' : 'Redirecionando para o dashboard…';
-    setTimeout(() => { window.location.href = target; }, 800);
+
+    // Confirma que a session do supabase-js está realmente persistida em
+    // localStorage ANTES de redirecionar (evita race em conexões rápidas
+    // onde o dashboard carregava antes do setItem do token finalizar).
+    let confirmAttempts = 0;
+    const _waitPersist = setInterval(() => {
+      confirmAttempts++;
+      const _storedSession = Object.keys(localStorage).some(k =>
+        k.startsWith('sb-') && k.endsWith('-auth-token')
+      );
+      if (_storedSession || confirmAttempts >= 6) {
+        clearInterval(_waitPersist);
+        setTimeout(() => { window.location.href = target; }, 200);
+      }
+    }, 150); // checa a cada 150ms — máx ~900ms
 
   } catch (e) {
     console.error('[auth-callback]', e);
