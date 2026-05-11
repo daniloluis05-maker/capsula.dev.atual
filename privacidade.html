@@ -19,7 +19,8 @@
   li { margin-bottom: 0.4rem; }
   a { color: var(--accent); }
   .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
-  table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+  table { width: 100%; min-width: 480px; border-collapse: collapse; }
   th, td { border: 1px solid var(--border); padding: 0.6rem 0.8rem; font-size: 0.85rem; text-align: left; }
   th { background: rgba(124,106,247,0.08); color: var(--accent); }
 </style>
@@ -40,6 +41,7 @@
 Contato do encarregado (DPO): <a href="mailto:privacidade@sistema-gnosis.com.br">privacidade@sistema-gnosis.com.br</a></p>
 
 <h2>2. Dados que Coletamos</h2>
+<div class="table-wrap">
 <table>
   <tr><th>Dado</th><th>Finalidade</th><th>Base Legal</th></tr>
   <tr><td>Nome e e-mail</td><td>Criação e gestão da conta</td><td>Execução de contrato</td></tr>
@@ -47,6 +49,7 @@ Contato do encarregado (DPO): <a href="mailto:privacidade@sistema-gnosis.com.br"
   <tr><td>Respostas às matrizes</td><td>Geração de relatórios comportamentais</td><td>Consentimento</td></tr>
   <tr><td>Dados de uso (acesso, cliques)</td><td>Melhoria da plataforma</td><td>Legítimo interesse</td></tr>
 </table>
+</div>
 
 <h2>3. Como Usamos seus Dados</h2>
 <ul>

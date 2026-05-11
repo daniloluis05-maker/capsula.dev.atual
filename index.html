@@ -75,6 +75,28 @@
     border-bottom: 1px solid var(--border);
   }
   .nav-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 0.05rem; line-height: 1.1; }
+  .nav-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    width: 44px;
+    height: 44px;
+    position: relative;
+    z-index: 102;
+  }
+  .nav-hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--text);
+    margin: 5px auto;
+    transition: transform 0.25s, opacity 0.2s;
+  }
+  .nav-hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .nav-hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
   .nav-logo {
     font-family: var(--serif);
     font-size: 1.25rem;
@@ -135,6 +157,7 @@
     left: 50%;
     transform: translateX(-50%);
     width: 700px;
+    max-width: 100%;
     height: 700px;
     background: radial-gradient(circle, rgba(124,111,247,0.18) 0%, transparent 70%);
     pointer-events: none;
@@ -539,6 +562,16 @@
     font-size: 2rem; line-height: 1; margin-bottom: 0.25rem;
   }
   .plano-preco span { font-size: 0.9rem; color: var(--muted); font-family: var(--sans); font-weight: 400; }
+  .plano-preco .periodo {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-weight: 400;
+    margin-top: 0.3rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
   .plano-desc { font-size: 0.82rem; color: var(--muted); margin-bottom: 1.25rem; line-height: 1.5; flex:1; }
   .plano-features { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; margin-bottom: 1.25rem; }
   .plano-features li {
@@ -807,10 +840,62 @@
 
   @media (max-width: 768px) {
     nav { padding: 1rem 5%; }
-    .nav-links { display: none; }
+    .nav-hamburger { display: block; }
+    .nav-cta { display: none; }
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 64px;
+      left: 0; right: 0;
+      background: rgba(10,10,15,0.97);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 5%;
+      gap: 1rem;
+      transform: translateY(-110%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 99;
+    }
+    nav.nav-open .nav-links { transform: translateY(0); }
+    .nav-links li { width: 100%; }
+    .nav-links a {
+      display: block;
+      padding: 0.65rem 0;
+      font-size: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-links li:last-child a { border-bottom: none; }
+    .nav-links .nav-cta-mobile {
+      display: block;
+      margin-top: 0.5rem;
+      padding: 0.85rem 1rem;
+      background: var(--accent);
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      font-weight: 600;
+      border-bottom: none;
+    }
     .eixos-grid { grid-template-columns: 1fr; }
     .steps::before { display: none; }
     .hero h1 { font-size: 2.5rem; }
+    /* Padding vertical reduzido em mobile (Fix #2) */
+    .statement-section { padding: 4rem 5%; }
+    .hero { padding: 5rem 5% 3rem; }
+    .cta-final-section { padding: 4rem 5%; }
+  }
+  @media (max-width: 520px) {
+    /* Fix #4 — Hero buttons 100% e empilhados */
+    .hero-actions { flex-direction: column; align-items: stretch; }
+    .hero-actions .btn-primary,
+    .hero-actions .btn-secondary { width: 100%; text-align: center; }
+    /* Fix #6 — CTA cards dos planos sem min-width em mobile */
+    .plano-card-cta-col { min-width: 0 !important; width: 100%; }
+  }
+  @media (max-width: 400px) {
+    /* Fix #7 — Hero h1 menor em telas pequenas */
+    .hero h1 { font-size: 2rem; }
   }
 
   /* ── SEÇÕES DE TRANSIÇÃO EDITORIAL ─────────────────────── */
@@ -957,8 +1042,12 @@
     <li><a href="#matrizes">Matrizes</a></li>
     <li><a href="#como-funciona">Como funciona</a></li>
     <li><a href="#planos">Planos</a></li>
+    <li><a href="#" class="nav-cta-mobile" data-modal-open>Começar agora</a></li>
   </ul>
   <button class="nav-cta" data-modal-open>Começar agora</button>
+  <button class="nav-hamburger" aria-label="Abrir menu" aria-expanded="false" onclick="(function(b){const n=b.closest('nav');const o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',!o);n.classList.toggle('nav-open',!o);b.setAttribute('aria-label',!o?'Fechar menu':'Abrir menu');})(this)">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <!-- HERO -->
@@ -1240,7 +1329,7 @@
     <div class="plano-pro-card animate-in">
       <div>
         <p class="plano-nome" style="color:var(--accent)">Plano Profissional</p>
-        <div class="plano-preco" style="font-size:2.4rem;">R$149<span>,90/30 dias</span></div>
+        <div class="plano-preco" style="font-size:2.4rem;">R$149<span>,90</span><span class="periodo">a cada 30 dias</span></div>
         <p class="plano-desc" style="margin-bottom:1rem;max-width:480px;">PDFs e testes ilimitados. Gere links de avaliação e envie para pacientes ou clientes — resultados chegam direto no seu dashboard. Ideal para psicólogos, coaches e consultores.</p>
         <ul class="plano-features" style="columns:2;gap:1rem;">
           <li><span class="check">✓</span> Matrizes e PDFs ilimitados</li>
@@ -1251,7 +1340,7 @@
           <li><span class="check">✓</span> Cancele quando quiser</li>
         </ul>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;min-width:180px;">
+      <div class="plano-card-cta-col" style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;min-width:180px;">
         <button class="plano-btn plano-btn-pro" onclick="planoCheckout('pro')">Assinar agora →</button>
         <span style="font-size:0.72rem;color:var(--muted);text-align:center;">Cancele a qualquer momento<br>Cobrado mensalmente</span>
       </div>
@@ -1265,7 +1354,7 @@
           <p class="plano-nome" style="color:#2EC4A0;margin:0;">Plano Gerencial</p>
           <span style="font-size:0.6rem;background:rgba(46,196,160,0.15);border:1px solid rgba(46,196,160,0.3);color:#2EC4A0;border-radius:20px;padding:0.15rem 0.6rem;font-weight:700;letter-spacing:0.04em;white-space:nowrap;">GESTÃO DE EQUIPES</span>
         </div>
-        <div class="plano-preco" style="font-size:2.4rem;">R$179<span>,90/30 dias</span></div>
+        <div class="plano-preco" style="font-size:2.4rem;">R$179<span>,90</span><span class="periodo">a cada 30 dias</span></div>
         <p class="plano-desc" style="margin-bottom:1rem;max-width:480px;">Tudo do Profissional + links ilimitados, gestão de equipes, matrizes coletivas e acompanhamento semanal com gráficos de evolução. Para líderes e gestores de RH.</p>
         <ul class="plano-features" style="columns:2;gap:1rem;">
           <li><span class="check" style="color:#2EC4A0;">✓</span> Tudo do Profissional</li>
@@ -1276,7 +1365,7 @@
           <li><span class="check" style="color:#2EC4A0;">✓</span> Gráficos de evolução</li>
         </ul>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;min-width:180px;">
+      <div class="plano-card-cta-col" style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;min-width:180px;">
         <button style="padding:0.9rem 1.75rem;background:linear-gradient(135deg,#2EC4A0,#1BA8D4);border:none;border-radius:10px;color:#fff;font-weight:700;font-size:0.95rem;cursor:pointer;white-space:nowrap;box-shadow:0 4px 20px rgba(46,196,160,0.3);transition:all 0.15s;width:100%;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 26px rgba(46,196,160,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(46,196,160,0.3)'" onclick="planoCheckout('gerencial')">Assinar Gerencial →</button>
         <span style="font-size:0.72rem;color:var(--muted);text-align:center;">Cancele a qualquer momento<br>Cobrado mensalmente</span>
       </div>
