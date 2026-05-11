@@ -276,24 +276,74 @@
   .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
   .hero-stats {
-    display: flex;
-    gap: 3rem;
-    margin-top: 4rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    border-top: 1px solid var(--border);
-    padding-top: 2.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.85rem;
+    margin-top: 3rem;
     width: 100%;
-    max-width: 700px;
+    max-width: 760px;
+    border-top: 1px solid var(--border);
+    padding-top: 2.25rem;
   }
-  .stat { text-align: center; }
+  .stat {
+    text-align: center;
+    padding: 1.1rem 0.85rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+  }
+  .stat:hover {
+    border-color: rgba(124,111,247,0.35);
+    transform: translateY(-2px);
+    background: rgba(124,111,247,0.04);
+  }
   .stat-num {
     font-family: var(--serif);
-    font-size: 2rem;
+    font-size: clamp(1.75rem, 5vw, 2.6rem);
     color: var(--text);
     display: block;
+    line-height: 1;
+    margin-bottom: 0.55rem;
+    background: linear-gradient(135deg, var(--text) 30%, #b4abff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
-  .stat-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+  .stat-label {
+    font-size: clamp(0.65rem, 1.3vw, 0.74rem);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    line-height: 1.45;
+  }
+
+  /* SUPPORT FAB — botão flutuante discreto, presente mas não invasivo */
+  #support-fab {
+    position: fixed;
+    bottom: 1.25rem; right: 1.25rem;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: rgba(20,21,30,0.85);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    z-index: 9000;
+    text-decoration: none;
+    transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+  }
+  #support-fab:hover {
+    color: var(--accent);
+    border-color: rgba(124,111,247,0.5);
+    background: rgba(20,21,30,0.95);
+    transform: translateY(-2px);
+  }
+  @media (max-width: 768px) {
+    #support-fab { width: 40px; height: 40px; bottom: 1rem; right: 1rem; }
+  }
 
   /* SECTION BASE */
   section { padding: min(8rem, 10vw) 8%; }
@@ -1458,8 +1508,8 @@ function togglePw(id, btn) {
 </footer>
 
 <!-- BOTÃO FLUTUANTE DE SUPORTE -->
-<a href="mailto:suporte@sistema-gnosis.com.br" id="support-fab" title="Falar com suporte" style="position:fixed;bottom:1.5rem;right:1.5rem;width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(124,106,247,0.4);z-index:9000;transition:transform 0.2s,box-shadow 0.2s;text-decoration:none;" onmouseover="this.style.transform='scale(1.1)';this.style.boxShadow='0 6px 24px rgba(124,106,247,0.55)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 16px rgba(124,106,247,0.4)'">
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+<a href="mailto:suporte@sistema-gnosis.com.br" id="support-fab" title="Falar com suporte" aria-label="Falar com suporte por email">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
 </a>
 
 <!-- MODAL DE CADASTRO -->
