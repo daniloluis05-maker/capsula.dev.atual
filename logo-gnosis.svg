@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Gradiente principal: roxo accent → verde -->
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C6FF7"/>
+      <stop offset="100%" stop-color="#4FC9A0"/>
+    </linearGradient>
+    <!-- Sombra interna sutil pra dar profundidade -->
+    <filter id="innerGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
+    </filter>
+  </defs>
+
+  <!-- Fundo: rounded square escuro com leve borda -->
+  <rect width="512" height="512" rx="112" fill="#0A0A0F"/>
+  <rect x="2" y="2" width="508" height="508" rx="110" fill="none"
+        stroke="rgba(124,111,247,0.15)" stroke-width="2"/>
+
+  <!-- Círculo concêntrico sutil — referência a "matriz / sistema" -->
+  <circle cx="256" cy="256" r="180" fill="none"
+          stroke="url(#brandGrad)" stroke-width="3"
+          stroke-dasharray="6 14" opacity="0.18"/>
+
+  <!-- Letra G em serif italic — alinhada com a identidade do site -->
+  <text x="256" y="358"
+        font-family="'DM Serif Display', Georgia, 'Times New Roman', serif"
+        font-size="340"
+        font-weight="400"
+        font-style="italic"
+        text-anchor="middle"
+        fill="url(#brandGrad)"
+        letter-spacing="-12">G</text>
+</svg>
