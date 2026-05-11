@@ -1,6 +1,18 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-BR" dir="ltr">
 <head>
+<script>
+  // OAuth guard: se o Supabase devolveu o usuário pra cá em vez de
+  // /auth-callback.html (acontece quando o domínio atual não está na
+  // whitelist de Redirect URLs do Supabase), redireciona mantendo o hash.
+  (function () {
+    var h = window.location.hash || '';
+    if (h.indexOf('access_token=') >= 0 || h.indexOf('error=') >= 0
+        || h.indexOf('type=recovery') >= 0) {
+      window.location.replace('/auth-callback.html' + h);
+    }
+  })();
+</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
