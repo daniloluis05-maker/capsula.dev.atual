@@ -851,7 +851,11 @@
   }
 
   @media (max-width: 768px) {
-    nav { padding: 1rem 5%; }
+    nav {
+      padding: 1rem 5%;
+      justify-content: flex-end; /* hambúrguer fica à direita, sem logo competindo */
+    }
+    .nav-brand { display: none; } /* esconde Sistema Gnosis do nav em mobile — evita corte + redundância com H1 do hero */
     .nav-hamburger { display: block; }
     .nav-cta { display: none; }
     .nav-links {
@@ -891,11 +895,35 @@
     }
     .eixos-grid { grid-template-columns: 1fr; }
     .steps::before { display: none; }
-    .hero h1 { font-size: 2.5rem; }
-    /* Padding vertical reduzido em mobile (Fix #2) */
+    .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    /* Padding vertical reduzido em mobile */
     .statement-section { padding: 4rem 5%; }
     .hero { padding: 5rem 5% 3rem; }
     .cta-final-section { padding: 4rem 5%; }
+    /* B: badge encurta automaticamente em mobile */
+    .hero-badge {
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      padding: 0.35rem 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+    .hero-badge .badge-full { display: none; }
+    .hero-badge .badge-short { display: inline; }
+    /* C: verbo rotativo vira sub-headline em mobile (não compete com H1) */
+    .hero-rotator-line {
+      font-size: 1.15rem;
+      margin-bottom: 1rem;
+      color: rgba(232,232,240,0.85);
+    }
+    .hero-rotator-line .verb-rotator {
+      font-size: 1.15rem;
+    }
+    /* E: gaps internos do hero reduzidos */
+    .hero-sub { font-size: 0.95rem; margin-bottom: 1.75rem; }
+    .hero-actions { gap: 0.65rem; }
+  }
+  @media (min-width: 769px) {
+    .hero-badge .badge-short { display: none; }
   }
   @media (max-width: 520px) {
     /* Fix #4 — Hero buttons 100% e empilhados */
@@ -1064,7 +1092,7 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge">✦ Análise de Alta Precisão Comportamental</div>
+  <div class="hero-badge"><span class="badge-full">✦ Análise de Alta Precisão Comportamental</span><span class="badge-short">✦ Psicometria Profissional</span></div>
   <h1>Sistema <em>Gnosis</em></h1>
   <div class="hero-rotator-line"><span class="verb-rotator" id="hero-verb-rotator" data-verbs="Descubra seu potencial.|Domine suas habilidades.|Impulsione seus resultados.">Descubra seu potencial.</span></div>
   <p class="hero-sub">Matrizes profissionais para desenvolvimento pessoal e gestão de equipes.</p>
