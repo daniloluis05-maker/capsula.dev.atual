@@ -783,7 +783,7 @@ function _printDNACore() {
 
   <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:2px solid #000;margin-bottom:14px;">
     <div style="display:flex;align-items:center;gap:9px;">
-      <svg viewBox="0 0 100 100" fill="none" width="24" height="24"><path d="M85 50C85 69.33 69.33 85 50 85C30.67 85 15 69.33 15 50C15 30.67 30.67 15 50 15C59.66 15 68.38 18.91 74.72 25.22" stroke="${GOLD}" stroke-width="6" stroke-linecap="round"/><path d="M85 50H55" stroke="${GOLD}" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="50" r="4" fill="${GOLD}"/></svg>
+      <svg viewBox="0 0 100 100" fill="none" width="24" height="24"><path d="M 50 22 A 28 28 0 1 0 78 50" stroke="${GOLD}" stroke-width="9" stroke-linecap="round"/><rect x="58" y="46" width="20" height="8" rx="1" fill="${GOLD}"/></svg>
       <span style="font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;">SISTEMA <span style="color:${GOLD};font-style:italic;font-weight:300;">Gnosis</span></span>
     </div>
     <div style="font-family:'Space Mono',monospace;font-size:6.5px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;text-align:right;line-height:1.85;">

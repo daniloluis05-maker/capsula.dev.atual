@@ -161,7 +161,7 @@
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <div style="margin-top:16px;font-size:8px;color:#bbb;text-align:center;">capsula.dev · Sistema Gnosis · Plano Gerencial</div>
+      <div style="margin-top:16px;font-size:8px;color:#bbb;text-align:center;">sistema-gnosis.com.br · Sistema Gnosis · Plano Gerencial</div>
     </div></body></html>`;
 
     _imprimirPDF(html, '5w2h-' + eqNome.replace(/\s+/g, '-').toLowerCase() + '.html');
@@ -225,7 +225,7 @@
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <div style="margin-top:16px;font-size:8px;color:#bbb;text-align:center;">capsula.dev · Sistema Gnosis · Plano Gerencial</div>
+      <div style="margin-top:16px;font-size:8px;color:#bbb;text-align:center;">sistema-gnosis.com.br · Sistema Gnosis · Plano Gerencial</div>
     </div></body></html>`;
 
     _imprimirPDF(html, 'raci-' + eqNome.replace(/\s+/g, '-').toLowerCase() + '.html');
@@ -351,7 +351,7 @@
       ${_headerHtml('OKRs — Objectives & Key Results', 'Ciclo: ' + esc(ciclo), '#7c6af7')}
       ${statsHtml}
       ${objHtml}
-      <div style="margin-top:16px;font-size:8px;color:#bbb;text-align:center;">capsula.dev · Sistema Gnosis · Plano Gerencial</div>
+      <div style="margin-top:16px;font-size:8px;color:#bbb;text-align:center;">sistema-gnosis.com.br · Sistema Gnosis · Plano Gerencial</div>
     </div></body></html>`;
 
     _imprimirPDF(html, 'okrs-' + esc(ciclo) + '.html');
