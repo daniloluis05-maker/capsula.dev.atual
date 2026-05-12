@@ -19,7 +19,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0A0A0F">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://browser.sentry-cdn.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.emailjs.com https://*.ingest.sentry.io https://www.google-analytics.com https://*.analytics.google.com https://*.google-analytics.com;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://browser.sentry-cdn.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.emailjs.com https://*.ingest.sentry.io https://www.google-analytics.com https://*.analytics.google.com https://*.google-analytics.com;">
 <title>Sistema Gnosis | Matrizes de Alta Performance</title>
 
 <!-- SEO -->
@@ -134,6 +134,82 @@
   .theme-toggle .icon-sun { display: none; }
   :root[data-theme="light"] .theme-toggle .icon-sun { display: block; }
   :root[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+
+  /* NAV TOUR BUTTON */
+  .nav-tour-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.78rem;
+    font-family: var(--sans);
+    margin-right: 0.6rem;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .nav-tour-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--card-bg-hover); }
+  .nav-tour-btn svg { flex-shrink: 0; }
+  @media (max-width: 900px) {
+    .nav-tour-label { display: none; }
+    .nav-tour-btn { padding: 0.4rem; width: 32px; height: 32px; justify-content: center; }
+  }
+
+  /* SHEPHERD TOUR CUSTOM THEME — alinhado com Sistema Gnosis */
+  .shepherd-element {
+    background: var(--surface) !important;
+    border: 1px solid var(--accent) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.5) !important;
+    color: var(--text) !important;
+    font-family: var(--sans) !important;
+    max-width: 380px !important;
+  }
+  .shepherd-arrow:before { background: var(--surface) !important; border: 1px solid var(--accent) !important; }
+  .shepherd-header {
+    background: transparent !important;
+    padding: 1.25rem 1.5rem 0.5rem !important;
+  }
+  .shepherd-title {
+    color: var(--text) !important;
+    font-family: var(--serif) !important;
+    font-size: 1.15rem !important;
+    font-weight: 600 !important;
+  }
+  .shepherd-text {
+    color: var(--muted) !important;
+    padding: 0.5rem 1.5rem 1rem !important;
+    font-size: 0.92rem !important;
+    line-height: 1.6 !important;
+  }
+  .shepherd-text strong { color: var(--text) !important; }
+  .shepherd-footer { padding: 0.5rem 1.5rem 1.25rem !important; gap: 0.5rem !important; }
+  .shepherd-button {
+    background: var(--accent) !important;
+    color: #fff !important;
+    border-radius: 6px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    border: none !important;
+    font-family: var(--sans) !important;
+    cursor: pointer !important;
+  }
+  .shepherd-button.shepherd-button-secondary {
+    background: transparent !important;
+    color: var(--muted) !important;
+    border: 1px solid var(--border) !important;
+  }
+  .shepherd-button.shepherd-button-secondary:hover { color: var(--text) !important; }
+  .shepherd-cancel-icon { color: var(--muted) !important; opacity: 0.6 !important; }
+  .shepherd-cancel-icon:hover { opacity: 1 !important; color: var(--text) !important; }
+  .shepherd-modal-overlay-container.shepherd-modal-is-visible {
+    background: rgba(0,0,0,0.55) !important;
+    backdrop-filter: blur(4px);
+  }
   .nav-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 0.05rem; line-height: 1.1; }
   .nav-icon-mobile {
     display: none;
@@ -1210,8 +1286,17 @@
     <li><a href="#matrizes">Matrizes</a></li>
     <li><a href="#como-funciona">Como funciona</a></li>
     <li><a href="#planos">Planos</a></li>
+    <li><a href="tutorial.html">Tutorial</a></li>
     <li><a href="#" class="nav-cta-mobile" data-modal-open>Começar agora</a></li>
   </ul>
+  <button class="nav-tour-btn" aria-label="Iniciar tour guiado" onclick="window.__startTour && window.__startTour()" title="Tour guiado">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="16" x2="12" y2="12"/>
+      <line x1="12" y1="8" x2="12.01" y2="8"/>
+    </svg>
+    <span class="nav-tour-label">Tour</span>
+  </button>
   <button class="theme-toggle" aria-label="Alternar tema claro/escuro" onclick="window.__toggleTheme && window.__toggleTheme()">
     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
@@ -1224,10 +1309,10 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge"><span class="badge-full">✦ Análise de Alta Precisão Comportamental</span></div>
-  <h1>Sistema <em>Gnosis</em></h1>
+  <div class="hero-badge" data-tour="badge"><span class="badge-full">✦ Análise de Alta Precisão Comportamental</span></div>
+  <h1 data-tour="hero-title">Sistema <em>Gnosis</em></h1>
   <div class="hero-rotator-line"><span class="verb-rotator" id="hero-verb-rotator" data-verbs="Descubra seu potencial.|Domine suas habilidades.|Impulsione seus resultados.">Descubra seu potencial.</span></div>
-  <div class="hero-actions">
+  <div class="hero-actions" data-tour="cta">
     <button class="btn-primary" data-modal-open>Iniciar análise</button>
     <a href="#matrizes" class="btn-secondary">Ver as matrizes →</a>
   </div>
@@ -1235,6 +1320,7 @@
     <a href="#matrizes">Matrizes</a>
     <a href="#como-funciona">Como funciona</a>
     <a href="#planos">Planos</a>
+    <a href="tutorial.html">Tutorial</a>
   </nav>
   <div class="hero-stats">
     <div class="stat">
@@ -1584,6 +1670,7 @@ function togglePw(id, btn) {
     <span class="footer-tagline">Descubra, Domine e <em>Lidere.</em></span>
   </div>
   <div style="display:flex;flex-wrap:wrap;gap:1.25rem;align-items:center;">
+    <a href="tutorial.html" style="font-size:0.8rem;color:var(--muted2,rgba(255,255,255,0.35));text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted2,rgba(255,255,255,0.35))'">Tutorial</a>
     <a href="termos.html" style="font-size:0.8rem;color:var(--muted2,rgba(255,255,255,0.35));text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted2,rgba(255,255,255,0.35))'">Termos de Uso</a>
     <a href="privacidade.html" style="font-size:0.8rem;color:var(--muted2,rgba(255,255,255,0.35));text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted2,rgba(255,255,255,0.35))'">Privacidade</a>
     <a href="mailto:suporte@sistema-gnosis.com.br" style="font-size:0.8rem;color:var(--muted2,rgba(255,255,255,0.35));text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted2,rgba(255,255,255,0.35))'">suporte@sistema-gnosis.com.br</a>
@@ -1737,6 +1824,79 @@ function togglePw(id, btn) {
       }, 220);
     }, 2500);
   })();
+
+  // SHEPHERD TOUR — guia interativo passo a passo
+  window.__startTour = function () {
+    function init() {
+      if (typeof Shepherd === 'undefined') { console.warn('[tour] Shepherd não carregou'); return; }
+      var tour = new Shepherd.Tour({
+        useModalOverlay: true,
+        defaultStepOptions: {
+          cancelIcon: { enabled: true },
+          scrollTo: { behavior: 'smooth', block: 'center' },
+        },
+      });
+      var btns = function (next) {
+        var arr = [{ text: 'Anterior', classes: 'shepherd-button-secondary', action: function() { return tour.back(); } }];
+        if (next) arr.push({ text: next, action: function() { return tour.next(); } });
+        else arr.push({ text: 'Concluir', action: function() { return tour.complete(); } });
+        return arr;
+      };
+      tour.addStep({
+        id: 'welcome', title: 'Bem-vindo ao Sistema Gnosis',
+        text: 'Vou te mostrar como funciona em <strong>5 passos rápidos</strong>. Você pode pular a qualquer momento.',
+        buttons: [
+          { text: 'Pular', classes: 'shepherd-button-secondary', action: function() { return tour.cancel(); } },
+          { text: 'Começar', action: function() { return tour.next(); } },
+        ],
+      });
+      tour.addStep({
+        id: 'badge', title: 'Análise comportamental profissional',
+        text: 'O Sistema Gnosis aplica <strong>9 matrizes psicométricas</strong> validadas cientificamente.',
+        attachTo: { element: '[data-tour="badge"]', on: 'bottom' },
+        buttons: btns('Próximo'),
+      });
+      tour.addStep({
+        id: 'cta', title: 'Comece com 1 clique',
+        text: 'Clique aqui pra criar conta gratuita e começar sua primeira análise.',
+        attachTo: { element: '[data-tour="cta"]', on: 'top' },
+        buttons: btns('Próximo'),
+      });
+      tour.addStep({
+        id: 'matrizes', title: 'Escolha sua matriz',
+        text: 'DISC, Big Five, Ikigai, e mais 6. Cada matriz mapeia uma dimensão diferente do comportamento.',
+        attachTo: { element: '#matrizes', on: 'top' },
+        buttons: btns('Próximo'),
+      });
+      tour.addStep({
+        id: 'planos', title: 'Planos flexíveis',
+        text: 'Cadastro grátis. PDFs a partir de R$ 29,90 ou planos com tudo incluído.',
+        attachTo: { element: '#planos', on: 'top' },
+        buttons: btns('Próximo'),
+      });
+      tour.addStep({
+        id: 'tutorial', title: 'Quer ver mais?',
+        text: 'Confira o <a href="tutorial.html" style="color:var(--accent);">tutorial completo</a> ou clique no botão abaixo pra começar.',
+        buttons: [
+          { text: 'Fechar', classes: 'shepherd-button-secondary', action: function() { return tour.complete(); } },
+          { text: 'Começar agora →', action: function() { tour.complete(); document.querySelector('[data-modal-open]')?.click(); } },
+        ],
+      });
+      tour.start();
+      try { localStorage.setItem('gnosis_tour_seen', '1'); } catch (_) {}
+    }
+    // Carrega Shepherd lazy só quando o user clica
+    if (typeof Shepherd !== 'undefined') return init();
+    var css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'https://cdn.jsdelivr.net/npm/shepherd.js@14.5.0/dist/css/shepherd.css';
+    document.head.appendChild(css);
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/shepherd.js@14.5.0/dist/js/shepherd.min.js';
+    s.onload = init;
+    s.onerror = function() { alert('Não foi possível carregar o tour. Verifique sua conexão.'); };
+    document.head.appendChild(s);
+  };
 
   // Theme toggle — persiste em localStorage, respeita prefers-color-scheme na primeira visita
   (function () {

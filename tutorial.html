@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
+<head>
+<script>
+  // Aplicar tema antes de pintar pra evitar flash
+  (function () {
+    try {
+      var saved = localStorage.getItem('gnosis_theme');
+      if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      else if (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch (_) {}
+  })();
+</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0A0A0F">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://browser.sentry-cdn.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://*.ingest.sentry.io https://www.google-analytics.com https://*.analytics.google.com https://*.google-analytics.com;">
+<title>Tutorial — Como usar o Sistema Gnosis</title>
+<meta name="description" content="Guia passo a passo pra usar o Sistema Gnosis: criar conta, escolher matriz, fazer teste, ver resultados e criar avaliações remotas.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.sistema-gnosis.com.br/tutorial.html">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.sistema-gnosis.com.br/tutorial.html">
+<meta property="og:title" content="Tutorial — Como usar o Sistema Gnosis">
+<meta property="og:description" content="Guia passo a passo pra usar o Sistema Gnosis.">
+<meta property="og:image" content="https://www.sistema-gnosis.com.br/logo-gnosis-512.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0A0A0F;
+    --surface: #111118;
+    --border: rgba(255,255,255,0.07);
+    --accent: #7C6FF7;
+    --accent2: #4FC9A0;
+    --text: #F0EEF8;
+    --muted: #8B899E;
+    --muted2: #5A5870;
+    --card-bg: rgba(255,255,255,0.02);
+    --card-bg-hover: rgba(124,111,247,0.04);
+    --nav-bg: rgba(10,10,15,0.85);
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'Outfit', system-ui, sans-serif;
+    --mono: 'Space Mono', monospace;
+  }
+  :root[data-theme="light"] {
+    --bg: #FAFAFA;
+    --surface: #F0F0F4;
+    --border: rgba(0,0,0,0.08);
+    --accent: #5C4FE0;
+    --accent2: #2C9B7A;
+    --text: #0F0F1A;
+    --muted: #5A5870;
+    --muted2: #8B899E;
+    --card-bg: rgba(0,0,0,0.025);
+    --card-bg-hover: rgba(92,79,224,0.06);
+    --nav-bg: rgba(250,250,250,0.85);
+  }
+  :root[data-theme="light"] body { color-scheme: light; }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+    transition: background 0.25s, color 0.25s;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 5%;
+    background: var(--nav-bg);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 0.6rem;
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  .nav-logo img { width: 30px; height: 30px; border-radius: 6px; display: block; }
+  .nav-logo span { color: var(--accent); font-style: italic; }
+  .nav-right { display: flex; align-items: center; gap: 0.75rem; }
+  .nav-back {
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-decoration: none;
+    padding: 0.5rem 0.9rem;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+  }
+  .nav-back:hover { color: var(--text); background: var(--card-bg-hover); }
+
+  .theme-toggle {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 36px; height: 36px;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--muted);
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover { color: var(--accent); border-color: var(--accent); background: var(--card-bg-hover); }
+  .theme-toggle svg { width: 18px; height: 18px; display: block; }
+  .theme-toggle .icon-sun { display: none; }
+  :root[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+  :root[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+
+  /* HERO */
+  .hero {
+    padding: 8rem 5% 3rem;
+    text-align: center;
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--accent);
+    margin-bottom: 1.25rem;
+    display: block;
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 5.5vw, 3.6rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.25rem;
+  }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+  .hero p {
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    color: var(--muted);
+    max-width: 620px;
+    margin: 0 auto 2.5rem;
+  }
+
+  /* CONTENT */
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 2rem 5% 5rem;
+  }
+
+  /* STEP CARDS */
+  .step {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 2rem 1.75rem;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .step:hover { border-color: var(--accent); background: var(--card-bg-hover); }
+  .step-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .step-num {
+    font-family: var(--serif);
+    font-size: 2.5rem;
+    line-height: 1;
+    color: var(--accent);
+    font-style: italic;
+    flex-shrink: 0;
+    min-width: 50px;
+  }
+  .step-title {
+    font-family: var(--serif);
+    font-size: clamp(1.3rem, 3vw, 1.7rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin-top: 0.4rem;
+  }
+  .step-body {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+  .step-body p { margin-bottom: 0.75rem; }
+  .step-body strong { color: var(--text); font-weight: 600; }
+  .step-body ul {
+    margin: 0.75rem 0;
+    padding-left: 1.25rem;
+  }
+  .step-body li { margin-bottom: 0.4rem; }
+  .step-body a { color: var(--accent); text-decoration: none; }
+  .step-body a:hover { text-decoration: underline; }
+
+  .step-tip {
+    background: var(--surface);
+    border-left: 3px solid var(--accent2);
+    padding: 0.75rem 1rem;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.88rem;
+    margin-top: 1rem;
+  }
+  .step-tip strong { color: var(--accent2); font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 0.3rem; }
+
+  /* SECTION DIVIDER */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0 1.5rem;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* MATRICES LIST */
+  .matrices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.6rem;
+    margin: 1rem 0;
+  }
+  .matrices-grid a {
+    display: block;
+    text-align: center;
+    padding: 0.65rem 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .matrices-grid a:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  /* CTA FINAL */
+  .cta-final {
+    text-align: center;
+    padding: 3.5rem 1.5rem;
+    margin-top: 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+  .cta-final h2 {
+    font-family: var(--serif);
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    margin-bottom: 0.75rem;
+  }
+  .cta-final p {
+    color: var(--muted);
+    margin-bottom: 1.75rem;
+    max-width: 460px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .btn-primary {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 0.9rem 2rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--sans);
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 5%;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .step { padding: 1.5rem 1.25rem; }
+    .step-header { gap: 0.85rem; }
+    .step-num { font-size: 2rem; min-width: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="logo-gnosis-180.png" alt="Sistema Gnosis" width="30" height="30">
+    Sistema <span>Gnosis</span>
+  </a>
+  <div class="nav-right">
+    <button class="theme-toggle" aria-label="Alternar tema claro/escuro" onclick="window.__toggleTheme && window.__toggleTheme()">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    </button>
+    <a href="/" class="nav-back">← Voltar</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <span class="hero-eyebrow">✦ Tutorial · 5 min de leitura</span>
+  <h1>Como usar o<br><em>Sistema Gnosis</em></h1>
+  <p>Guia passo a passo: do cadastro à geração do seu primeiro relatório comportamental, e como compartilhar avaliações com clientes ou equipe.</p>
+</header>
+
+<main>
+
+  <!-- 01 -->
+  <article class="step">
+    <div class="step-header">
+      <span class="step-num">I.</span>
+      <h2 class="step-title">Crie sua conta gratuita</h2>
+    </div>
+    <div class="step-body">
+      <p>Acesse a home e clique em <strong>"Começar agora"</strong> no canto superior direito (ou <strong>"Iniciar análise"</strong> no hero principal). Um formulário simples vai aparecer pedindo:</p>
+      <ul>
+        <li><strong>Nome</strong> — como você prefere ser chamado</li>
+        <li><strong>E-mail</strong> — usado para login e envio do PDF</li>
+        <li><strong>Senha</strong> — mínimo 6 caracteres</li>
+      </ul>
+      <p>Você também pode <strong>entrar com o Google</strong> em 1 clique. Após confirmar o e-mail, você é redirecionado ao seu dashboard.</p>
+      <div class="step-tip">
+        <strong>Dica</strong>
+        Cadastro é gratuito. Você só paga se quiser baixar PDFs ou criar avaliações remotas (planos a partir de R$ 29,90).
+      </div>
+    </div>
+  </article>
+
+  <!-- 02 -->
+  <article class="step">
+    <div class="step-header">
+      <span class="step-num">II.</span>
+      <h2 class="step-title">Escolha uma matriz</h2>
+    </div>
+    <div class="step-body">
+      <p>O Sistema Gnosis oferece 9 matrizes psicométricas profissionais, cada uma mapeando uma dimensão diferente do comportamento humano:</p>
+      <div class="matrices-grid">
+        <a href="/disc.html">DISC</a>
+        <a href="/bigfive.html">Big Five</a>
+        <a href="/ikigai.html">Ikigai</a>
+        <a href="/johari.html">Johari</a>
+        <a href="/pearson.html">Pearson-Marr</a>
+        <a href="/soar.html">SOAR</a>
+        <a href="/tci.html">TCI</a>
+        <a href="/ancoras.html">Âncoras</a>
+        <a href="/swot.html">SWOT</a>
+      </div>
+      <p>Cada matriz é apresentada com sua origem científica, o que ela mede e quanto tempo leva pra responder. Recomendamos começar pelo <strong>DISC</strong> ou <strong>Big Five</strong> se for sua primeira vez.</p>
+    </div>
+  </article>
+
+  <!-- 03 -->
+  <article class="step">
+    <div class="step-header">
+      <span class="step-num">III.</span>
+      <h2 class="step-title">Responda o teste</h2>
+    </div>
+    <div class="step-body">
+      <p>Cada matriz tem entre 20 e 60 perguntas. Responda <strong>com sinceridade</strong> — não há respostas certas ou erradas. As perguntas são afirmações e você escolhe quanto cada uma se aplica a você (escala de 1 a 5 normalmente).</p>
+      <ul>
+        <li>Tempo médio: <strong>5 a 10 minutos</strong> por matriz</li>
+        <li>Pode pausar e voltar — sua progressão fica salva</li>
+        <li>Funciona no celular, tablet ou computador</li>
+      </ul>
+      <div class="step-tip">
+        <strong>Importante</strong>
+        Responda como você é hoje, não como gostaria de ser. A precisão do diagnóstico depende disso.
+      </div>
+    </div>
+  </article>
+
+  <!-- 04 -->
+  <article class="step">
+    <div class="step-header">
+      <span class="step-num">IV.</span>
+      <h2 class="step-title">Veja seu resultado</h2>
+    </div>
+    <div class="step-body">
+      <p>Ao concluir, você vê <strong>na tela</strong>:</p>
+      <ul>
+        <li>Sua pontuação em cada dimensão (gráficos visuais)</li>
+        <li>Interpretação do perfil dominante</li>
+        <li>Pontos fortes, atenção, ambiente ideal e como se comunicar</li>
+      </ul>
+      <p>O <strong>resultado completo é grátis</strong>. Você pode baixar o <strong>relatório em PDF</strong> (com identidade visual completa) usando créditos:</p>
+      <ul>
+        <li>1 PDF avulso: <strong>R$ 29,90</strong></li>
+        <li>Pacote 3 PDFs: <strong>R$ 69,90</strong></li>
+        <li>Plano Pro (PDFs ilimitados + avaliações remotas): <strong>R$ 149,90/mês</strong></li>
+      </ul>
+    </div>
+  </article>
+
+  <div class="section-divider">Para profissionais (Pro)</div>
+
+  <!-- 05 -->
+  <article class="step">
+    <div class="step-header">
+      <span class="step-num">V.</span>
+      <h2 class="step-title">Crie avaliações remotas</h2>
+    </div>
+    <div class="step-body">
+      <p>Se você é <strong>coach, psicólogo, RH ou consultor</strong>, pode gerar links únicos pra seus clientes responderem sem precisar criar conta:</p>
+      <ul>
+        <li>No <a href="/dashboard.html">dashboard</a>, abra <strong>"Avaliações Remotas"</strong></li>
+        <li>Escolha a matriz e dê uma etiqueta (ex: "João Silva — Processo Seletivo")</li>
+        <li>Copie o link gerado e envie por e-mail/WhatsApp</li>
+        <li>Quando o cliente responde, o resultado aparece na sua aba <strong>"Respondentes"</strong></li>
+      </ul>
+      <p>Cada link aceita até 20 respondentes (Pro) ou ilimitado (Plano Gerencial). Você vê todos no mesmo painel.</p>
+    </div>
+  </article>
+
+  <!-- 06 -->
+  <article class="step">
+    <div class="step-header">
+      <span class="step-num">VI.</span>
+      <h2 class="step-title">DNA Estratégico (combina matrizes)</h2>
+    </div>
+    <div class="step-body">
+      <p>Depois de completar 3 ou mais matrizes, você desbloqueia o <strong>DNA Estratégico</strong> — um dossiê comportamental aprofundado gerado por IA que cruza seus resultados e entrega:</p>
+      <ul>
+        <li>Arquétipo comportamental dominante</li>
+        <li>Pilar de poder e zona de risco</li>
+        <li>Plano de ação de 90 dias</li>
+        <li>Código de convergência (sua essência em uma frase)</li>
+      </ul>
+      <p>Disponível pra usuários do plano Pro ou Gerencial.</p>
+    </div>
+  </article>
+
+  <div class="section-divider">Para líderes (Gerencial)</div>
+
+  <!-- 07 -->
+  <article class="step">
+    <div class="step-header">
+      <span class="step-num">VII.</span>
+      <h2 class="step-title">Gestão de equipes</h2>
+    </div>
+    <div class="step-body">
+      <p>O <strong>Plano Gerencial</strong> (R$ 179,90/mês) adiciona ferramentas pra liderar times:</p>
+      <ul>
+        <li><strong>Equipes</strong> — agrupe respondentes e veja o perfil DISC coletivo</li>
+        <li><strong>DNA Estratégico de Equipe</strong> — IA cruza perfis e revela dinâmicas</li>
+        <li><strong>OKRs, RACI, 5W2H, SWOT de equipe</strong> — matrizes de gestão prontas</li>
+        <li><strong>Acompanhamento semanal</strong> — indicadores com gráficos automáticos</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- CTA Final -->
+  <div class="cta-final">
+    <h2>Pronto pra começar?</h2>
+    <p>Crie sua conta gratuita em menos de 1 minuto. Sem cartão de crédito necessário.</p>
+    <a href="/convite.html" class="btn-primary">Criar conta gratuita →</a>
+  </div>
+
+</main>
+
+<footer>
+  <p>© 2025–2026 Sistema Gnosis · CNPJ 66.690.402/0001-73</p>
+  <p style="margin-top:0.4rem;"><a href="/">Home</a> · <a href="/privacidade.html">Privacidade</a> · <a href="/termos.html">Termos</a> · <a href="mailto:suporte@sistema-gnosis.com.br">Suporte</a></p>
+</footer>
+
+<script>
+  // Theme toggle
+  (function () {
+    var KEY = 'gnosis_theme';
+    function apply(t) {
+      if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      else document.documentElement.removeAttribute('data-theme');
+      try { localStorage.setItem(KEY, t); } catch (_) {}
+    }
+    window.__toggleTheme = function () {
+      var current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      apply(current === 'light' ? 'dark' : 'light');
+    };
+  })();
+</script>
+
+</body>
+</html>
