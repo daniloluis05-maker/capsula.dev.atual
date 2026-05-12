@@ -526,7 +526,13 @@ function _printDNACore() {
   const TEAL   = '#1FA888';
   const ORANGE = '#E8603A';
   const BLUE   = '#5048C8';
-  const nome = document.getElementById('doc-name')?.textContent || 'Usuário';
+  const _rawNome = document.getElementById('doc-name')?.textContent || 'Usuário';
+  // Escape HTML defensivo — embora <title> não interprete tags, evita
+  // entities malformadas em alguns browsers e protege contra futuras
+  // mudanças que possam usar 'nome' em contexto HTML real.
+  const nome = String(_rawNome)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   const meta  = document.getElementById('doc-meta')?.textContent || '';
   const badge = document.getElementById('doc-badge')?.textContent || '';
   const data  = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
