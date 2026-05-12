@@ -111,7 +111,10 @@ async function loadUser(){
   // ── Sincroniza com Supabase em background ──────────────────
   if (u.email) {
     capsulaDB.migrateLocalToSupabase(u.email).then(merged => {
-      if (merged) loadMatrixState(merged);
+      if (merged) {
+        loadMatrixState(merged);
+        renderProgressChart(merged); // ← BUG FIX: donut tava desatualizado após sync
+      }
     }).catch(e => console.warn('[dashboard] sync Supabase:', e));
   }
 }
@@ -394,6 +397,7 @@ document.addEventListener('visibilitychange', function() {
     if (raw) {
       const u = JSON.parse(raw);
       loadMatrixState(u);
+      renderProgressChart(u); // ← BUG FIX: donut também atualiza ao voltar de uma matriz
       // Sincroniza progresso atualizado com o Supabase
       if (u.email) {
         capsulaDB.syncMatrizes(u).catch(e => console.warn('[sync] visibilitychange:', e));
