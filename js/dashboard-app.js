@@ -67,6 +67,7 @@ async function loadUser(){
   }
 
   loadMatrixState((capsulaDB.lsGetUser() || {}));
+  renderProgressChart((capsulaDB.lsGetUser() || {}));
 
   if (u.criado_em) {
     const criado = new Date(u.criado_em);
@@ -112,6 +113,95 @@ async function loadUser(){
     capsulaDB.migrateLocalToSupabase(u.email).then(merged => {
       if (merged) loadMatrixState(merged);
     }).catch(e => console.warn('[dashboard] sync Supabase:', e));
+  }
+}
+
+// ─── PROGRESSO DAS AVALIAÇÕES — donut SVG dinâmico ───────────
+function renderProgressChart(userData) {
+  const matrizes = [
+    { key: 'disc',    name: 'DISC',         color: '#6C5FE6', href: 'disc.html' },
+    { key: 'bigfive', name: 'Big Five',     color: '#1BA8D4', href: 'bigfive.html' },
+    { key: 'ikigai',  name: 'Ikigai',       color: '#F4845F', href: 'ikigai.html' },
+    { key: 'johari',  name: 'Johari',       color: '#2EC4A0', href: 'johari.html' },
+    { key: 'pearson', name: 'Pearson-Marr', color: '#C9A84C', href: 'pearson.html' },
+    { key: 'soar',    name: 'SOAR',         color: '#7C6FF7', href: 'soar.html' },
+    { key: 'tci',     name: 'TCI',          color: '#E8603A', href: 'tci.html' },
+    { key: 'ancoras', name: 'Âncoras',      color: '#1BA8D4', href: 'ancoras.html' },
+    { key: 'swot',    name: 'SWOT',         color: '#2EC4A0', href: 'swot.html' },
+  ];
+
+  const isDone = (m) => !!(userData[m.key] && userData[m.key].completedAt);
+  const doneCount = matrizes.filter(isDone).length;
+  const total = matrizes.length;
+
+  // Donut SVG — 9 arcos
+  const svg = document.getElementById('progress-donut');
+  if (!svg) return;
+  const cx = 100, cy = 100, r = 78, strokeWidth = 14;
+  const angleEach = 360 / total;
+  const gapDeg = 3;
+  const ns = 'http://www.w3.org/2000/svg';
+
+  // limpa
+  svg.innerHTML = '';
+
+  // background track (anel completo)
+  const bg = document.createElementNS(ns, 'circle');
+  bg.setAttribute('cx', cx); bg.setAttribute('cy', cy);
+  bg.setAttribute('r', r);
+  bg.setAttribute('class', 'progress-donut-bg');
+  bg.setAttribute('stroke-width', strokeWidth);
+  svg.appendChild(bg);
+
+  matrizes.forEach((m, i) => {
+    const startDeg = i * angleEach + gapDeg / 2 - 90;
+    const endDeg = (i + 1) * angleEach - gapDeg / 2 - 90;
+    const startRad = startDeg * Math.PI / 180;
+    const endRad = endDeg * Math.PI / 180;
+    const x1 = cx + r * Math.cos(startRad);
+    const y1 = cy + r * Math.sin(startRad);
+    const x2 = cx + r * Math.cos(endRad);
+    const y2 = cy + r * Math.sin(endRad);
+    const largeArc = (endDeg - startDeg) > 180 ? 1 : 0;
+    const d = `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`;
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('stroke', isDone(m) ? m.color : 'transparent');
+    path.setAttribute('stroke-width', strokeWidth);
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('data-matriz', m.key);
+    svg.appendChild(path);
+  });
+
+  // Contador central + subtitle
+  const countEl = document.getElementById('progress-count');
+  if (countEl) countEl.textContent = doneCount + '/' + total;
+
+  const subtitleEl = document.getElementById('progress-subtitle');
+  if (subtitleEl) {
+    if (doneCount === 0) {
+      subtitleEl.textContent = 'Comece sua primeira matriz pra desbloquear o DNA Estratégico.';
+    } else if (doneCount < 3) {
+      subtitleEl.textContent = 'Faça mais ' + (3 - doneCount) + ' matriz' + (3 - doneCount === 1 ? '' : 'es') + ' pra desbloquear o DNA Estratégico.';
+    } else if (doneCount < total) {
+      subtitleEl.textContent = 'Você já pode gerar o DNA Estratégico. Continue pra ter um mapeamento mais completo.';
+    } else {
+      subtitleEl.textContent = 'Mapeamento completo. Gere ou atualize seu DNA Estratégico.';
+    }
+  }
+
+  // Lista de matrizes
+  const list = document.getElementById('progress-list');
+  if (list) {
+    list.innerHTML = matrizes.map(m => {
+      const done = isDone(m);
+      return '<a href="' + m.href + '" class="progress-item' + (done ? ' done' : '') + '" data-matriz="' + m.key + '">' +
+             '<span class="progress-dot" style="' + (done ? 'background:' + m.color : '') + '"></span>' +
+             '<span class="progress-name">' + m.name + '</span>' +
+             (done ? '<span class="progress-check">✓</span>' : '') +
+             '</a>';
+    }).join('');
   }
 }
 

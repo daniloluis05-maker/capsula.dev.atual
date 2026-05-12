@@ -128,6 +128,45 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .stat-sub.action{color:var(--D);cursor:pointer;}
 .stat-sub.action:hover{color:var(--text);}
 
+/* PROGRESSO DAS AVALIAÇÕES — donut + lista */
+.progress-section{margin-bottom:2.25rem;}
+.progress-card{
+  display:grid;grid-template-columns:auto 1fr;gap:2rem;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:1.5rem 1.75rem;align-items:center;
+  transition:background 0.2s,border-color 0.2s;
+}
+.progress-donut-wrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.progress-donut-wrap svg{display:block;}
+.progress-donut-bg{stroke:rgba(255,255,255,0.05);fill:none;}
+:root[data-theme="light"] .progress-donut-bg{stroke:rgba(20,15,35,0.06);}
+.progress-center{position:absolute;text-align:center;pointer-events:none;}
+.progress-center-num{font-family:var(--mono);font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-0.02em;}
+.progress-center-label{font-family:var(--mono);font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:0.2rem;}
+.progress-info{min-width:0;}
+.progress-eyebrow{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:0.2rem;}
+.progress-title{font-size:1.25rem;font-weight:700;letter-spacing:-0.02em;color:var(--text);margin-bottom:0.35rem;}
+.progress-subtitle{font-size:0.78rem;color:var(--muted);line-height:1.5;margin-bottom:1rem;}
+.progress-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.4rem;}
+.progress-item{
+  display:flex;align-items:center;gap:0.55rem;
+  padding:0.45rem 0.7rem;background:var(--bg2);border:1px solid var(--border);
+  border-radius:7px;font-size:0.74rem;font-weight:500;color:var(--muted);
+  cursor:pointer;text-decoration:none;
+  transition:border-color 0.15s,background 0.15s,color 0.15s;
+}
+.progress-item:hover{border-color:var(--accent);color:var(--text);}
+.progress-item.done{color:var(--text);border-color:rgba(108,95,230,0.25);background:rgba(108,95,230,0.06);}
+:root[data-theme="light"] .progress-item.done{background:rgba(108,95,230,0.08);}
+.progress-dot{width:7px;height:7px;border-radius:50%;background:var(--muted2);flex-shrink:0;}
+.progress-item.done .progress-dot{box-shadow:0 0 0 2px rgba(108,95,230,0.18);}
+.progress-check{margin-left:auto;font-size:0.78rem;color:var(--S);}
+@media(max-width:700px){
+  .progress-card{grid-template-columns:1fr;text-align:center;gap:1.25rem;padding:1.5rem 1rem;}
+  .progress-info{text-align:left;}
+  .progress-list{grid-template-columns:1fr 1fr;}
+}
+
 /* SECTION HEADER */
 .section-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1rem;}
 .section-eyebrow{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:0.3rem;display:block;}
@@ -317,6 +356,31 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <div class="stat-sub" id="stat-plano-sub" style="color:var(--D);margin-top:0.25rem;">+ Comprar créditos →</div>
       </div>
     </div>
+
+    <!-- ── PROGRESSO DAS AVALIAÇÕES — donut SVG + lista visual ── -->
+    <section class="progress-section" id="progress-section">
+      <div class="progress-card">
+        <div class="progress-donut-wrap">
+          <svg id="progress-donut" viewBox="0 0 200 200" width="170" height="170" aria-label="Progresso das matrizes">
+            <!-- Fatias geradas dinamicamente por JS -->
+          </svg>
+          <div class="progress-center">
+            <div class="progress-center-num" id="progress-count">0/9</div>
+            <div class="progress-center-label">concluídas</div>
+          </div>
+        </div>
+        <div class="progress-info">
+          <div class="progress-header">
+            <span class="progress-eyebrow">Progresso</span>
+            <h3 class="progress-title">Suas avaliações</h3>
+            <p class="progress-subtitle" id="progress-subtitle">Comece sua primeira matriz pra desbloquear o DNA Estratégico.</p>
+          </div>
+          <div class="progress-list" id="progress-list">
+            <!-- 9 itens gerados por JS -->
+          </div>
+        </div>
+      </div>
+    </section>
 
     <div class="section-header">
       <div>
