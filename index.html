@@ -64,9 +64,31 @@
     --text: #F0EEF8;
     --muted: #8B899E;
     --muted2: #5A5870;
+    --card-bg-overlay: rgba(255,255,255,0.02);
+    --card-bg-hover: rgba(124,111,247,0.04);
+    --nav-bg: rgba(10,10,15,0.85);
     --serif: 'DM Serif Display', Georgia, serif;
     --sans: 'Outfit', system-ui, sans-serif;
   }
+
+  /* ============ MODO CLARO ============ */
+  :root[data-theme="light"] {
+    --bg: #FAFAFA;
+    --surface: #F0F0F4;
+    --surface2: #E8E8EE;
+    --border: rgba(0,0,0,0.08);
+    --border-hover: rgba(0,0,0,0.18);
+    --accent: #5C4FE0;        /* roxo um pouco mais escuro p/ contraste */
+    --accent2: #2C9B7A;       /* verde mais escuro */
+    --accent3: #D55F3A;
+    --text: #0F0F1A;
+    --muted: #5A5870;
+    --muted2: #8B899E;
+    --card-bg-overlay: rgba(0,0,0,0.025);
+    --card-bg-hover: rgba(92,79,224,0.06);
+    --nav-bg: rgba(250,250,250,0.85);
+  }
+  :root[data-theme="light"] body { color-scheme: light; }
 
   html { scroll-behavior: smooth; }
 
@@ -83,10 +105,35 @@
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
     padding: 1.25rem 5%;
-    background: rgba(10,10,15,0.85);
+    background: var(--nav-bg);
     backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border);
   }
+
+  /* THEME TOGGLE — botão sun/moon */
+  .theme-toggle {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 36px; height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--muted);
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--card-bg-hover);
+  }
+  .theme-toggle svg { width: 18px; height: 18px; display: block; }
+  .theme-toggle .icon-sun { display: none; }
+  :root[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+  :root[data-theme="light"] .theme-toggle .icon-moon { display: none; }
   .nav-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 0.05rem; line-height: 1.1; }
   .nav-icon-mobile {
     display: none;
@@ -292,15 +339,15 @@
   .stat {
     text-align: center;
     padding: 1.1rem 0.85rem;
-    background: rgba(255,255,255,0.02);
+    background: var(--card-bg-overlay);
     border: 1px solid var(--border);
     border-radius: 12px;
     transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
   }
   .stat:hover {
-    border-color: rgba(124,111,247,0.35);
+    border-color: var(--accent);
     transform: translateY(-2px);
-    background: rgba(124,111,247,0.04);
+    background: var(--card-bg-hover);
   }
   .stat-num {
     font-family: var(--serif);
@@ -1165,6 +1212,10 @@
     <li><a href="#planos">Planos</a></li>
     <li><a href="#" class="nav-cta-mobile" data-modal-open>Começar agora</a></li>
   </ul>
+  <button class="theme-toggle" aria-label="Alternar tema claro/escuro" onclick="window.__toggleTheme && window.__toggleTheme()">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+  </button>
   <button class="nav-cta" data-modal-open>Começar agora</button>
   <button class="nav-hamburger" aria-label="Abrir menu" aria-expanded="false" onclick="(function(b){const n=b.closest('nav');const o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',!o);n.classList.toggle('nav-open',!o);b.setAttribute('aria-label',!o?'Fechar menu':'Abrir menu');})(this)">
     <span></span><span></span><span></span>
@@ -1685,6 +1736,25 @@ function togglePw(id, btn) {
         el.style.opacity = '1';
       }, 220);
     }, 2500);
+  })();
+
+  // Theme toggle — persiste em localStorage, respeita prefers-color-scheme na primeira visita
+  (function () {
+    var KEY = 'gnosis_theme';
+    function apply(t) {
+      if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      else document.documentElement.removeAttribute('data-theme');
+      try { localStorage.setItem(KEY, t); } catch (_) {}
+    }
+    window.__toggleTheme = function () {
+      var current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      apply(current === 'light' ? 'dark' : 'light');
+    };
+    // Inicialização: localStorage > prefers-color-scheme > dark (default)
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (_) {}
+    if (saved) apply(saved);
+    else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) apply('light');
   })();
 </script>
 </body>
