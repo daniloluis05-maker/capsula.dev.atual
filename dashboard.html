@@ -1,6 +1,18 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-BR" dir="ltr">
 <head>
+<script>
+  // Aplicar tema antes de pintar (evita flash escuro→claro)
+  (function () {
+    try {
+      var saved = localStorage.getItem('gnosis_theme');
+      if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      else if (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch (_) {}
+  })();
+</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -35,8 +47,36 @@
   --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
   --D:#E8603A;--I:#6C5FE6;--S:#2EC4A0;--C:#1BA8D4;
   --accent:#6C5FE6;--text:#E8E6F0;--muted:#6B6980;--muted2:#353448;
+  --nav-bg:rgba(7,8,12,0.85);
   --mono:'Space Mono',monospace;--sans:'Outfit',system-ui,sans-serif;
 }
+/* MODO CLARO — mesma filosofia da home: só inverte fundo/texto.
+   Accents (DISC, roxo, verde) ficam idênticos pra manter identidade. */
+:root[data-theme="light"]{
+  --bg:#F4F2F8;--bg2:#EAE7F0;--surface:#EBE8F0;--surface2:#E0DCEA;
+  --border:rgba(20,15,35,0.10);--border2:rgba(20,15,35,0.18);
+  --text:#1A1525;--muted:#6A6478;--muted2:#8B8298;
+  --nav-bg:rgba(244,242,248,0.88);
+}
+:root[data-theme="light"] body { color-scheme: light; }
+:root[data-theme="light"] .sidebar { background: var(--nav-bg); }
+:root[data-theme="light"] .mobile-topbar { background: var(--nav-bg); }
+:root[data-theme="light"] body::before { background-image: linear-gradient(rgba(108,95,230,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(108,95,230,0.04) 1px,transparent 1px); }
+:root[data-theme="light"] .orb-1 { opacity:0.04; }
+:root[data-theme="light"] .orb-2 { opacity:0.03; }
+
+/* Theme toggle no dashboard */
+.theme-toggle{
+  background:transparent;border:1px solid var(--border);border-radius:50%;
+  width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--muted);
+  transition:color 0.2s,border-color 0.2s,background 0.2s;flex-shrink:0;
+}
+.theme-toggle:hover{color:var(--accent);border-color:var(--accent);background:rgba(108,95,230,0.06);}
+.theme-toggle svg{width:16px;height:16px;display:block;}
+.theme-toggle .icon-sun{display:none;}
+:root[data-theme="light"] .theme-toggle .icon-sun{display:block;}
+:root[data-theme="light"] .theme-toggle .icon-moon{display:none;}
 html{scroll-behavior:smooth;}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(108,95,230,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,95,230,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
@@ -200,10 +240,14 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 <header class="mobile-topbar">
   <a href="index.html" class="mobile-topbar-logo">
-    <div class="logo-mark">G</div>
+    <img src="logo-gnosis-180.png" alt="" width="28" height="28" style="border-radius:6px;display:block;" />
     Sistema <span>Gnosis</span>
   </a>
-  <div class="mobile-user">
+  <div class="mobile-user" style="display:flex;align-items:center;gap:0.5rem;">
+    <button class="theme-toggle" aria-label="Alternar tema" onclick="window.__toggleTheme && window.__toggleTheme()" title="Tema claro/escuro">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    </button>
     <div class="mobile-avatar" id="mob-avatar">—</div>
   </div>
 </header>
@@ -249,26 +293,20 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <div class="topbar-date" id="greeting-date">—</div>
       </div>
       <div class="topbar-actions">
+        <button class="theme-toggle" aria-label="Alternar tema claro/escuro" onclick="window.__toggleTheme && window.__toggleTheme()" title="Tema claro/escuro">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        </button>
         <button class="btn-ghost" onclick="exportarDados()">↓ Exportar dados</button>
         <button class="btn-accent" onclick="novaMatriz()">+ Nova Matriz</button>
       </div>
     </div>
 
-    <div class="stats-row">
+    <div class="stats-row" style="grid-template-columns:repeat(2,1fr);">
       <div class="stat-card" style="--stat-color:var(--I)">
         <span class="stat-tag">Diagnósticos Concluídos</span>
         <div class="stat-val" id="stat-matrizes">0</div>
-        <div class="stat-sub">de 2 disponíveis</div>
-      </div>
-      <div class="stat-card" style="--stat-color:var(--C)">
-        <span class="stat-tag">Insights Gerados</span>
-        <div class="stat-val" id="stat-insights">0</div>
-        <div class="stat-sub" id="stat-insights-sub">inicie uma avaliação</div>
-      </div>
-      <div class="stat-card" style="--stat-color:var(--S)">
-        <span class="stat-tag">Dias Ativo</span>
-        <div class="stat-val" id="stat-dias">1</div>
-        <div class="stat-sub" id="stat-dias-sub">membro desde hoje</div>
+        <div class="stat-sub">de 9 disponíveis</div>
       </div>
       <div class="stat-card" id="card-creditos" style="--stat-color:var(--D);cursor:pointer;transition:background 0.2s;" onclick="abrirModalPlanos()" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
         <span class="stat-tag">Seus Créditos</span>
@@ -1020,6 +1058,22 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     <p style="text-align:center;font-family:var(--mono);font-size:0.6rem;color:var(--muted);margin-top:1rem;padding-bottom:1rem;">Pagamento seguro via Mercado Pago · PIX, cartão e boleto</p>
   </div>
 </div>
+
+<script>
+  // Theme toggle — sincroniza com home/tutorial via localStorage gnosis_theme
+  (function () {
+    var KEY = 'gnosis_theme';
+    function apply(t) {
+      if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      else document.documentElement.removeAttribute('data-theme');
+      try { localStorage.setItem(KEY, t); } catch (_) {}
+    }
+    window.__toggleTheme = function () {
+      var current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      apply(current === 'light' ? 'dark' : 'light');
+    };
+  })();
+</script>
 
 </body>
 </html>
