@@ -494,11 +494,37 @@ async function saveResultToSupabase(userData) {
       return;
     }
 
+    // Verifica se há sessão ativa antes de tentar gravar
+    let hasSession = false;
+    try {
+      const { session } = await capsulaDB.authGetSession();
+      hasSession = !!(session && session.user && session.user.email);
+      if (hasSession && session.user.email.toLowerCase() !== userData.email.toLowerCase()) {
+        console.warn('[Gnosis] Email da sessão (' + session.user.email + ') diverge do localStorage (' + userData.email + '). Salvando localmente.');
+        setSyncStatus('Salvo localmente ✓');
+        return;
+      }
+    } catch (e) {
+      console.warn('[Gnosis] Falha ao checar sessão:', e);
+    }
+
+    if (!hasSession) {
+      console.info('[Gnosis] Sem sessão ativa — resultado salvo apenas localmente. Faça login pra sincronizar com a nuvem.');
+      setSyncStatus('Salvo localmente ✓ (faça login pra sincronizar)');
+      return;
+    }
+
     const { error } = await capsulaDB.saveUser(userData);
 
     if (error && error !== 'offline') {
-      console.error('[Gnosis] Erro ao salvar resultado:', error.message || error);
-      setSyncStatus('Erro ao sincronizar resultado.', true);
+      const msg = error.message || JSON.stringify(error);
+      console.error('[Gnosis] Erro ao salvar resultado:', msg);
+      // Mensagem mais útil pro user dependendo do tipo de erro
+      if (msg.includes('permission') || error.code === '42501' || error.code === 'PGRST301') {
+        setSyncStatus('Salvo localmente ✓ (sessão expirada — faça login)', true);
+      } else {
+        setSyncStatus('Erro ao sincronizar (resultado salvo localmente)', true);
+      }
     } else {
       setSyncStatus('Resultado sincronizado ✓');
     }
@@ -506,7 +532,7 @@ async function saveResultToSupabase(userData) {
   } catch (err) {
     if(window.capsulaUI) window.capsulaUI.toast('Erro ao salvar. Tente novamente.','error');
     console.error('[Gnosis] saveResultToSupabase falhou:', err);
-    setSyncStatus('Erro ao sincronizar resultado.', true);
+    setSyncStatus('Salvo localmente ✓ (erro de conexão)', true);
   }
 }
 
