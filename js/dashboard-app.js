@@ -69,11 +69,14 @@ async function loadUser(){
   loadMatrixState((capsulaDB.lsGetUser() || {}));
   renderProgressChart((capsulaDB.lsGetUser() || {}));
 
+  // stat-dias removido do HTML mas mantém o cálculo defensivo
   if (u.criado_em) {
     const criado = new Date(u.criado_em);
     const dias = Math.max(1, Math.ceil((Date.now() - criado.getTime()) / (1000*60*60*24)));
-    document.getElementById('stat-dias').textContent = dias;
-    document.getElementById('stat-dias-sub').textContent = dias === 1 ? 'membro desde hoje' : 'dias na plataforma';
+    const dEl = document.getElementById('stat-dias');
+    if (dEl) dEl.textContent = dias;
+    const dSubEl = document.getElementById('stat-dias-sub');
+    if (dSubEl) dSubEl.textContent = dias === 1 ? 'membro desde hoje' : 'dias na plataforma';
   }
 
   // ── Créditos & plano ────────────────────────────────────────
@@ -221,11 +224,15 @@ function loadMatrixState(userData){
   const tciDone=!!(userData.tci&&userData.tci.completedAt);
 
   const total=[discDone,soarDone,ikigaiDone,ancorasDone,johariDone,bigfiveDone,pearsonDone,tciDone].filter(Boolean).length;
-  document.getElementById('stat-matrizes').textContent=total;
-  document.getElementById('stat-insights').textContent=total;
-  if(total>0){
-    const sub=total===1?'1 relatório disponível':`${total} relatórios disponíveis`;
-    document.getElementById('stat-insights-sub').textContent=sub;
+  const matrizesEl = document.getElementById('stat-matrizes');
+  if (matrizesEl) matrizesEl.textContent = total;
+  // stat-insights e stat-insights-sub removidos do HTML — guards defensivos:
+  const insightsEl = document.getElementById('stat-insights');
+  if (insightsEl) insightsEl.textContent = total;
+  if (total > 0) {
+    const sub = total === 1 ? '1 relatório disponível' : `${total} relatórios disponíveis`;
+    const insightsSubEl = document.getElementById('stat-insights-sub');
+    if (insightsSubEl) insightsSubEl.textContent = sub;
   }
   // Badge "Comece aqui" no DISC para usuários sem nenhuma matriz
   const startBadge = document.getElementById('disc-start-badge');
