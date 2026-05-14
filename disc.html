@@ -619,6 +619,73 @@ body::before {
   }
 }
 </script>
+<script>
+  (function () {
+    try {
+      var u = JSON.parse(localStorage.getItem('capsula_user') || 'null');
+      var m = (location.pathname.match(/\/(disc|bigfive|ikigai|johari|pearson|soar|tci|ancoras|swot)(?:-share)?\.html/) || [])[1];
+      if (u && m && u[m] && u[m].completedAt) {
+        document.documentElement.classList.add('gnosis-has-result');
+      }
+    } catch (_) {}
+  })();
+</script>
+<style>
+  html.gnosis-has-result #page-intro,
+  html.gnosis-has-result #page-quiz { display: none !important; }
+  html.gnosis-has-result body::before {
+    content: ''; position: fixed; inset: 0;
+    background: var(--bg, #0A0A0F);
+    z-index: 99998;
+    transition: opacity 0.3s ease;
+  }
+  html.gnosis-has-result body::after {
+    content: ''; position: fixed;
+    top: 50%; left: 50%;
+    width: 38px; height: 38px;
+    margin: -19px 0 0 -19px;
+    border: 3px solid rgba(124,111,247,0.18);
+    border-top-color: var(--accent, #7C6FF7);
+    border-radius: 50%;
+    animation: gnosis-spin 0.8s linear infinite;
+    z-index: 99999;
+    transition: opacity 0.3s ease;
+  }
+  @keyframes gnosis-spin { to { transform: rotate(360deg); } }
+  html.gnosis-has-result.gnosis-ready body::before,
+  html.gnosis-has-result.gnosis-ready body::after { opacity: 0; pointer-events: none; }
+</style>
+<script>
+  // Watcher: quando page-result vira .active OU 3s timeout, esconde loader.
+  (function () {
+    function ready() {
+      document.documentElement.classList.add('gnosis-ready');
+      setTimeout(function() {
+        document.documentElement.classList.remove('gnosis-has-result');
+        document.documentElement.classList.remove('gnosis-ready');
+      }, 320);
+    }
+    if (!document.documentElement.classList.contains('gnosis-has-result')) return;
+    var done = false;
+    function check() {
+      if (done) return;
+      var r = document.getElementById('page-result');
+      if (r && r.classList.contains('active') && r.offsetParent !== null) {
+        done = true; ready();
+      }
+    }
+    var startWatch = function() {
+      check();
+      if (done) return;
+      new MutationObserver(check).observe(document.body, {
+        subtree: true, attributes: true, attributeFilter: ['class', 'style']
+      });
+      setTimeout(function() { if (!done) { done = true; ready(); } }, 5000);
+    };
+    if (document.body) startWatch();
+    else document.addEventListener('DOMContentLoaded', startWatch);
+  })();
+</script>
 </head>
 <body>
 
