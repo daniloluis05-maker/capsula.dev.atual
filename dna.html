@@ -1,6 +1,17 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-BR" dir="ltr">
 <head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem('gnosis_theme');
+      if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      else if (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch (_) {}
+  })();
+</script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -33,6 +44,15 @@
   --mono:'Space Mono',monospace;--sans:'Outfit',system-ui,sans-serif;
   --dna-primary:#6C5FE6;--dna-secondary:#1BA8D4;
 }
+
+/* MODO CLARO — override mínimo (accents mantidos) */
+:root[data-theme="light"]{
+  --bg:#F4F2F8;--bg2:#EAE7F0;--surface:#EBE8F0;--surface2:#E0DCEA;
+  --border:rgba(20,15,35,0.10);--border2:rgba(20,15,35,0.18);
+  --text:#1A1525;--muted:#6A6478;--muted2:#8B8298;
+}
+:root[data-theme="light"] body{color-scheme:light;}
+
 html{scroll-behavior:smooth;}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background-image:

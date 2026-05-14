@@ -29,6 +29,17 @@
   --C: #1BA8D4;
 }
 
+/* MODO CLARO — override mínimo, accents mantidos */
+:root[data-theme="light"] {
+  --bg:       #F4F2F8;
+  --surface:  #EBE8F0;
+  --border:   rgba(20,15,35,0.10);
+  --text:     #1A1525;
+  --muted:    rgba(20,15,35,0.55);
+  --shadow:   0 4px 24px rgba(20,15,35,0.10);
+}
+:root[data-theme="light"] body { color-scheme: light; }
+
 /* Tipografia base */
 body {
   font-family: 'Outfit', sans-serif;
