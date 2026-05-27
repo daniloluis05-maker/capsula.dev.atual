@@ -459,31 +459,50 @@
     line-height: 1.45;
   }
 
-  /* HERO QUICK NAV — só aparece em mobile, substitui o menu hambúrguer */
+  /* HERO QUICK NAV — só aparece em mobile, substitui o menu hambúrguer.
+     Layout em chips horizontais para não ocupar viewport vertical.
+     IMPORTANTE: resetar position/background herdados da regra genérica `nav`,
+     senão a quick-nav vira barra fixa no topo bloqueando o hero. */
   .hero-quick-nav {
     display: none;
-    flex-direction: column;
+    position: static;
+    top: auto; left: auto; right: auto; z-index: auto;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: none;
+    padding: 1rem 0 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
     gap: 0.4rem;
     width: 100%;
-    max-width: 360px;
-    margin: 1.25rem auto 0;
-    padding-top: 1.25rem;
+    max-width: 420px;
+    margin: 1rem auto 0;
     border-top: 1px solid var(--border);
   }
   .hero-quick-nav a {
-    display: block;
+    display: inline-block;
     text-align: center;
-    padding: 0.7rem 1rem;
+    padding: 0.38rem 0.7rem;
     color: var(--muted);
     text-decoration: none;
-    font-size: 0.88rem;
+    font-size: 0.74rem;
     font-weight: 500;
-    border-radius: 8px;
-    transition: color 0.2s ease, background 0.2s ease;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
     font-family: var(--sans);
+    white-space: nowrap;
   }
   .hero-quick-nav a:hover,
-  .hero-quick-nav a:active { color: var(--text); background: rgba(255,255,255,0.03); }
+  .hero-quick-nav a:active {
+    color: var(--text);
+    background: rgba(124,111,247,0.08);
+    border-color: rgba(124,111,247,0.4);
+  }
 
   /* SUPPORT FAB — botão flutuante discreto, presente mas não invasivo */
   #support-fab {
@@ -1139,6 +1158,9 @@
     }
     /* E: gaps internos do hero reduzidos */
     .hero-actions { gap: 0.65rem; margin-top: 0.5rem; }
+    /* Stats mais compactos em mobile — menos respiro entre quick-nav e cards */
+    .hero-stats { margin-top: 1.5rem; padding-top: 1.5rem; gap: 0.65rem; }
+    .stat { padding: 0.85rem 0.6rem; }
   }
   @media (max-width: 520px) {
     /* Fix #4 — Hero buttons 100% e empilhados */
