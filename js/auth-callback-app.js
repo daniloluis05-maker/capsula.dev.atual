@@ -59,17 +59,37 @@
     // Carrega ou cria o perfil na tabela usuarios
     const profile = await capsulaDB.authLoadUserProfile(user);
 
+    // CRÍTICO: se o user fez algum teste ANTES do login (anônimo), os dados
+    // estão no localStorage sem email. Precisamos preservá-los — caso contrário
+    // o login "apaga" o teste recém-feito ao sobrescrever capsula_user.
+    // migrateLocalToSupabase faz o merge correto via pickNewest + sobe pro Supabase.
+    let finalProfile = profile;
+    try {
+      const _localRaw = localStorage.getItem('capsula_user');
+      if (_localRaw) {
+        const _local = JSON.parse(_localRaw);
+        // Atribuir o email da sessão ao local antes de migrar — pode estar
+        // vazio (teste anônimo) ou pertencer a outra conta (não migra).
+        if (!_local.email || _local.email.toLowerCase() === profile.email.toLowerCase()) {
+          _local.email = profile.email;
+          _local.uid   = _local.uid || profile.uid;
+          localStorage.setItem('capsula_user', JSON.stringify(_local));
+          const _merged = await capsulaDB.migrateLocalToSupabase(profile.email);
+          if (_merged) finalProfile = _merged;
+        }
+      }
+    } catch(e) { console.warn('[callback] merge local:', e); }
+
     // Persiste no localStorage para compatibilidade com o restante da app
     try {
-      const profileStr = JSON.stringify(profile);
-      localStorage.setItem('capsula_user', profileStr);
+      localStorage.setItem('capsula_user', JSON.stringify(finalProfile));
       let users = [];
       try {
         const raw = localStorage.getItem('capsula_users');
         if (raw) users = JSON.parse(raw);
       } catch(_) {}
-      const idx = users.findIndex(u => u.email === profile.email);
-      if (idx >= 0) users[idx] = profile; else users.push(profile);
+      const idx = users.findIndex(u => u.email === finalProfile.email);
+      if (idx >= 0) users[idx] = finalProfile; else users.push(finalProfile);
       localStorage.setItem('capsula_users', JSON.stringify(users));
     } catch(e) { console.warn('[callback] localStorage:', e); }
 

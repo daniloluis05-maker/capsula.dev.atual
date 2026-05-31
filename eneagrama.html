@@ -1,0 +1,996 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem('gnosis_theme');
+      if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      else if (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch (_) {}
+  })();
+</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Descubra seu tipo no Eneagrama. 9 tipos de personalidade, motivações profundas e padrões inconscientes em 36 questões.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://browser.sentry-cdn.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://*.ingest.sentry.io https://www.google-analytics.com https://*.analytics.google.com https://*.google-analytics.com;">
+<title>Tipologia Eneagrama | Sistema Gnosis</title>
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.sistema-gnosis.com.br/eneagrama.html">
+<meta property="og:title" content="Tipologia Eneagrama — Sistema Gnosis">
+<meta property="og:description" content="Descubra seu tipo no Eneagrama: 9 perfis de personalidade que revelam suas motivações mais profundas, padrões inconscientes e caminhos de crescimento.">
+<meta property="og:image" content="https://www.sistema-gnosis.com.br/logo-gnosis-512.png">
+<link rel="stylesheet" href="css/capsula.css">
+<link rel="canonical" href="https://www.sistema-gnosis.com.br/eneagrama.html">
+<meta name="robots" content="index, follow">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+<link rel="preload" href="https://fonts.gstatic.com/s/outfit/v11/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC0C4G-EiAou6Y.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap&v=2" rel="stylesheet">
+<!-- Supabase JS (Auth + DB) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" integrity="sha384-IiV7lMrgUYFjr7nKnX1XDxweNl9p95vzrLcmfcQ8dMKM5kqqCi6iwxDaRcr+I9Vc" crossorigin="anonymous"></script>
+<script src="js/config.js"></script>
+<script src="js/sentry-init.js"></script>
+<script src="js/analytics.js" defer></script>
+<script src="js/db.js"></script>
+<script src="js/payments.js"></script>
+<script src="js/remote-link.js"></script>
+  <script src="js/ui.js" defer></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:#07080C; --bg2:#0D0F16; --surface:#121520; --surface2:#181C28;
+  --border:rgba(255,255,255,0.06); --border2:rgba(255,255,255,0.11);
+  --D:#E8603A; --I:#6C5FE6; --S:#2EC4A0; --C:#1BA8D4;
+  --accent:#6C5FE6; --text:#E8E6F0; --muted:#6B6980; --muted2:#353448;
+  --mono:'Space Mono',monospace; --sans:'Outfit',system-ui,sans-serif;
+}
+
+/* MODO CLARO — override mínimo (accents mantidos) */
+:root[data-theme="light"]{
+  --bg:#F4F2F8;--bg2:#EAE7F0;--surface:#EBE8F0;--surface2:#E0DCEA;
+  --border:rgba(20,15,35,0.10);--border2:rgba(20,15,35,0.18);
+  --text:#1A1525;--muted:#6A6478;--muted2:#8B8298;
+}
+:root[data-theme="light"] body{color-scheme:light;}
+
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── GRID BG ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(124,111,247,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,111,247,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none; z-index: 0;
+}
+
+/* ── ORB ── */
+.orb {
+  position: fixed; border-radius: 50%;
+  filter: blur(90px); pointer-events: none; z-index: 0; opacity: 0.12;
+}
+.orb-1 { width:500px;height:500px;background:#7C6FF7;top:-200px;left:-100px;animation:drift1 14s ease-in-out infinite alternate;}
+.orb-2 { width:300px;height:300px;background:#FF6B35;bottom:-80px;right:-60px;animation:drift2 17s ease-in-out infinite alternate;}
+@keyframes drift1{from{transform:translate(0,0)}to{transform:translate(40px,50px)}}
+@keyframes drift2{from{transform:translate(0,0)}to{transform:translate(-30px,-40px)}}
+
+/* ── PAGES ── */
+.page { display: none; position: relative; z-index: 1; }
+.page.active { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ══════════════════════════════════════
+   INTRO PAGE
+══════════════════════════════════════ */
+.intro-page {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.intro-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(108,95,230,0.1);
+  border: 1px solid rgba(108,95,230,0.25);
+  color: var(--accent);
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 0.4rem 1rem; border-radius: 100px;
+  margin-bottom: 2.5rem;
+  animation: fadeUp 0.6s ease both;
+}
+
+.intro-page h1 {
+  font-family: var(--sans);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  max-width: 700px;
+  margin: 0 auto 1.5rem;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.intro-page h1 em { font-style: normal; color: var(--accent); }
+
+.intro-sub {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 520px;
+  margin: 0 auto 3rem;
+  line-height: 1.7;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+
+.disc-preview {
+  display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 3rem;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.disc-pill {
+  display: flex; align-items: center; gap: 0.6rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.82rem; font-weight: 600;
+}
+.disc-pill .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.intro-meta {
+  display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 3rem;
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+.meta-item { text-align: center; }
+.meta-num {
+  font-family: var(--sans);
+  font-size: 1.5rem; font-weight: 800; color: var(--text);
+  display: block;
+}
+.meta-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+.btn-start {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  background: var(--accent);
+  color: #fff; border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 7px;
+  font-size: 0.95rem; font-weight: 700;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 0 30px rgba(108,95,230,0.35);
+  animation: fadeUp 0.6s 0.5s ease both;
+  letter-spacing: -0.01em;
+}
+.btn-start:hover { box-shadow: 0 0 50px rgba(108,95,230,0.55); transform: translateY(-2px); opacity: 0.9; }
+
+.intro-note {
+  margin-top: 1.5rem;
+  font-size: 0.78rem; color: var(--muted2);
+  animation: fadeUp 0.6s 0.6s ease both;
+}
+
+/* ══════════════════════════════════════
+   QUIZ PAGE
+══════════════════════════════════════ */
+.quiz-page {
+  flex-direction: column;
+  padding: 0;
+}
+
+/* TOP NAV */
+.quiz-nav {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 5%;
+  background: rgba(6,6,8,0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.quiz-logo {
+  font-family: var(--sans);
+  font-size: 1rem; font-weight: 800;
+  color: var(--text); text-decoration: none;
+}
+.quiz-logo span { color: var(--accent); }
+
+.quiz-progress-wrap { flex: 1; max-width: 400px; margin: 0 2rem; }
+.quiz-progress-track {
+  height: 3px; background: var(--border);
+  border-radius: 100px; overflow: hidden;
+}
+.quiz-progress-fill {
+  height: 100%; border-radius: 100px;
+  background: linear-gradient(90deg, var(--accent), var(--C));
+  transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 0 10px rgba(108,95,230,0.5);
+}
+.quiz-counter {
+  font-family: var(--mono);
+  font-size: 0.62rem; color: var(--muted);
+  text-align: center; margin-top: 0.5rem;
+  letter-spacing: 0.08em;
+}
+
+.btn-back {
+  background: transparent; border: 1px solid var(--border2);
+  color: var(--muted); padding: 0.5rem 1rem;
+  border-radius: 6px; font-size: 0.78rem; font-weight: 500;
+  cursor: pointer; font-family: var(--mono); letter-spacing: 0.04em;
+  transition: all 0.2s;
+}
+.btn-back:hover { border-color: var(--accent); color: var(--text); }
+
+/* QUESTION AREA */
+.quiz-body {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  padding: 4rem 5%;
+  min-height: calc(100vh - 80px);
+}
+
+.question-card {
+  max-width: 680px; width: 100%;
+  text-align: center;
+  animation: questionIn 0.4s ease both;
+}
+@keyframes questionIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.q-category {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--q-color, var(--D));
+  margin-bottom: 1.5rem;
+  background: rgba(108,95,230,0.06);
+  border: 1px solid rgba(108,95,230,0.18);
+  padding: 0.3rem 0.85rem; border-radius: 4px;
+}
+.q-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 6px currentColor; }
+
+.question-text {
+  font-family: var(--sans);
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin-bottom: 3.5rem;
+  color: var(--text);
+}
+
+/* SCALE */
+.scale-wrap { margin-bottom: 2rem; }
+
+.scale-labels {
+  display: flex; justify-content: space-between;
+  margin-bottom: 1.25rem;
+  font-size: 0.75rem; color: rgba(255,255,255,0.55); font-weight: 500;
+}
+
+.scale-buttons {
+  display: flex; gap: 0.75rem; justify-content: center; align-items: center;
+}
+
+.scale-btn {
+  border: 2px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.04);
+  border-radius: 50%; cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  flex-shrink: 0;
+}
+/* Tamanhos crescentes — espelho */
+.scale-btn[data-val="1"] { width: 40px; height: 40px; }
+.scale-btn[data-val="2"] { width: 48px; height: 48px; }
+.scale-btn[data-val="3"] { width: 54px; height: 54px; }
+.scale-btn[data-val="4"] { width: 48px; height: 48px; }
+.scale-btn[data-val="5"] { width: 40px; height: 40px; }
+
+.intro-back-link {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.78rem; font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  margin-bottom: 2rem;
+  transition: all 0.2s;
+  font-family: var(--sans);
+}
+.intro-back-link:hover {
+  color: var(--text);
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.04);
+}
+
+.scale-btn::after {
+  content: '';
+  position: absolute; inset: 50%; transform: translate(-50%,-50%);
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transition: all 0.2s;
+}
+
+.scale-btn:hover {
+  border-color: var(--q-color, var(--D));
+  background: rgba(255,107,53,0.06);
+  transform: scale(1.08);
+}
+.scale-btn:hover::after { background: var(--q-color, var(--D)); }
+
+.scale-btn.selected {
+  border-color: var(--q-color, var(--D));
+  background: rgba(255,107,53,0.12);
+  box-shadow: 0 0 20px rgba(255,107,53,0.25);
+}
+.scale-btn.selected::after {
+  background: var(--q-color, var(--D));
+  box-shadow: 0 0 10px var(--q-color, var(--D));
+  inset: unset; width: 50%; height: 50%;
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+}
+
+.scale-hint {
+  font-size: 0.75rem; color: var(--muted);
+  margin-top: 1rem;
+  min-height: 1.2em;
+  transition: all 0.2s;
+}
+
+/* NAV BUTTONS */
+.quiz-actions {
+  display: flex; gap: 1rem; justify-content: center; margin-top: 2.5rem;
+}
+.btn-next {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--q-color, var(--accent));
+  color: #fff; border: none;
+  padding: 0.85rem 2rem; border-radius: 7px;
+  font-size: 0.9rem; font-weight: 700;
+  font-family: var(--sans);
+  cursor: pointer; transition: all 0.25s;
+  box-shadow: 0 0 20px rgba(108,95,230,0.25);
+  opacity: 0.35; pointer-events: none;
+}
+.btn-next.ready { opacity: 1; pointer-events: all; }
+.btn-next.ready:hover { box-shadow: 0 0 35px rgba(108,95,230,0.45); transform: translateY(-1px); }
+
+/* SECTION TRANSITION */
+.section-transition {
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s;
+  flex-direction: column; gap: 1rem; text-align: center;
+}
+.section-transition.show { opacity: 1; pointer-events: all; }
+.transition-icon { font-size: 3rem; }
+.transition-label {
+  font-family: var(--sans);
+  font-size: 1.5rem; font-weight: 800;
+  color: var(--text);
+}
+.transition-sub { font-size: 0.875rem; color: var(--muted); }
+
+/* ══════════════════════════════════════
+   RESULT PAGE
+══════════════════════════════════════ */
+.result-page {
+  align-items: center;
+  padding: 5rem 5%;
+  flex-direction: column;
+}
+
+.result-eyebrow {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 0.75rem;
+  animation: fadeUp 0.5s ease both;
+}
+
+.result-title {
+  font-family: var(--sans);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 800; letter-spacing: -0.03em;
+  text-align: center; margin-bottom: 0.5rem;
+  animation: fadeUp 0.5s 0.1s ease both;
+}
+
+.result-archetype {
+  font-size: 1rem; color: var(--muted);
+  text-align: center; margin-bottom: 3rem;
+  animation: fadeUp 0.5s 0.15s ease both;
+}
+.result-archetype strong { color: var(--text); }
+
+/* DNA CARD */
+.dna-card {
+  width: 100%; max-width: 600px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  position: relative; overflow: hidden;
+  animation: fadeUp 0.5s 0.2s ease both;
+}
+.dna-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--result-gradient, linear-gradient(90deg, var(--accent), var(--C)));
+}
+.dna-card-label {
+  font-family: var(--mono);
+  font-size: 0.6rem; font-weight: 400; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 1.75rem;
+}
+
+/* RADAR SVG */
+.radar-wrap {
+  display: flex; justify-content: center;
+  margin-bottom: 2rem;
+}
+
+/* BARS */
+.disc-bars { display: flex; flex-direction: column; gap: 1rem; }
+.bar-row { display: flex; align-items: center; gap: 1rem; }
+.bar-letter {
+  font-family: var(--sans);
+  font-size: 1rem; font-weight: 800; width: 20px; text-align: center;
+}
+.bar-track {
+  flex: 1; height: 8px; background: rgba(255,255,255,0.06);
+  border-radius: 100px; overflow: hidden;
+}
+.bar-fill {
+  height: 100%; border-radius: 100px;
+  transition: width 1.2s cubic-bezier(0.34,1.56,0.64,1) 0.3s;
+}
+.bar-pct {
+  font-size: 0.82rem; font-weight: 600; width: 40px; text-align: right;
+  color: var(--muted);
+}
+
+/* TRAITS */
+.traits-wrap {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;
+  margin-top: 1.5rem;
+}
+.trait-tag {
+  font-size: 0.75rem; font-weight: 600;
+  padding: 0.3rem 0.8rem; border-radius: 100px;
+  border: 1px solid var(--tag-color);
+  color: var(--tag-color);
+  background: rgba(255,255,255,0.03);
+}
+
+/* PROFILE BLOCKS */
+.profile-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; width: 100%; max-width: 600px;
+  margin-bottom: 2rem;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+  animation: fadeUp 0.5s 0.3s ease both;
+}
+.profile-block {
+  background: var(--surface); padding: 1.5rem;
+}
+.profile-block h4 {
+  font-family: var(--mono);
+  font-size: 0.58rem; font-weight: 400; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+.profile-block p { font-size: 0.82rem; color: var(--text); line-height: 1.65; }
+.profile-block ul { padding-left: 1rem; }
+.profile-block li { font-size: 0.82rem; color: var(--muted); line-height: 1.8; }
+
+/* ACTIONS */
+.result-actions {
+  display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+  animation: fadeUp 0.5s 0.4s ease both;
+}
+.btn-dashboard {
+  background: var(--accent); color: #fff; border: none;
+  padding: 0.85rem 2rem; border-radius: 7px;
+  font-size: 0.9rem; font-weight: 700;
+  font-family: var(--sans); cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 0 20px rgba(108,95,230,0.3);
+  text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.btn-dashboard:hover { box-shadow: 0 0 35px rgba(108,95,230,0.5); transform: translateY(-1px); opacity: 0.9; }
+
+.btn-share {
+  background: transparent; color: var(--text);
+  border: 1px solid var(--border2);
+  padding: 0.85rem 2rem; border-radius: 7px;
+  font-size: 0.9rem; font-weight: 600;
+  font-family: var(--sans); cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-share:hover { border-color: var(--accent); color: var(--accent); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════
+   MOBILE BOTTOM NAV
+══════════════════════════════════════ */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(6,6,8,0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));
+}
+.mobile-bottom-nav ul {
+  display: flex; list-style: none;
+  justify-content: space-around; align-items: center;
+  margin: 0; padding: 0;
+}
+.mobile-bottom-nav li a, .mobile-bottom-nav li button {
+  display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
+  color: var(--muted); text-decoration: none;
+  font-size: 0.6rem; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 0.4rem 1rem;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--sans);
+  transition: color 0.2s;
+}
+.mobile-bottom-nav li a:hover, .mobile-bottom-nav li button:hover { color: var(--text); }
+.mobile-bottom-nav li a.active { color: var(--accent); }
+.mobile-bottom-nav .nav-icon { font-size: 1.2rem; line-height: 1; }
+
+@media (max-width: 1024px) {
+  .mobile-bottom-nav { display: block; }
+  /* Garante que o conteúdo não fique atrás do bottom nav */
+  .page.active { padding-bottom: 70px; }
+  .quiz-body { padding-bottom: 5rem; }
+  .result-page { padding-bottom: 6rem; }
+  /* Profile grid vira 1 coluna em telas pequenas */
+  .profile-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .intro-page { padding: 3rem 1.5rem 2rem; }
+  .disc-preview { gap: 0.5rem; }
+  .disc-pill { font-size: 0.75rem; padding: 0.4rem 0.8rem; }
+  .intro-meta { gap: 1.5rem; }
+  .quiz-progress-wrap { max-width: 180px; margin: 0 0.75rem; }
+  .dna-card { padding: 1.5rem; }
+}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Tipologia Eneagrama",
+  "description": "Tipologia Eneagrama online: 9 tipos de personalidade, motivações inconscientes e caminhos de crescimento. 36 questões com relatório PDF completo.",
+  "provider": {
+    "@id": "https://www.sistema-gnosis.com.br/#organization"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "BR"
+  },
+  "inLanguage": "pt-BR",
+  "url": "https://www.sistema-gnosis.com.br/eneagrama.html",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "BRL",
+    "availability": "https://schema.org/InStock",
+    "description": "Avaliação gratuita; PDF completo a partir de R$ 29,90"
+  }
+}
+</script>
+<script>
+  (function () {
+    try {
+      var u = JSON.parse(localStorage.getItem('capsula_user') || 'null');
+      var m = (location.pathname.match(/\/(disc|bigfive|ikigai|johari|pearson|soar|tci|ancoras|swot|eneagrama)(?:-share)?\.html/) || [])[1];
+      if (u && m && u[m] && u[m].completedAt) {
+        document.documentElement.classList.add('gnosis-has-result');
+      }
+    } catch (_) {}
+  })();
+</script>
+<style>
+  html.gnosis-has-result #page-intro,
+  html.gnosis-has-result #page-quiz { display: none !important; }
+  html.gnosis-has-result body::before {
+    content: ''; position: fixed; inset: 0;
+    background: var(--bg, #0A0A0F);
+    z-index: 99998;
+    transition: opacity 0.3s ease;
+  }
+  html.gnosis-has-result body::after {
+    content: ''; position: fixed;
+    top: 50%; left: 50%;
+    width: 38px; height: 38px;
+    margin: -19px 0 0 -19px;
+    border: 3px solid rgba(124,111,247,0.18);
+    border-top-color: var(--accent, #7C6FF7);
+    border-radius: 50%;
+    animation: gnosis-spin 0.8s linear infinite;
+    z-index: 99999;
+    transition: opacity 0.3s ease;
+  }
+  @keyframes gnosis-spin { to { transform: rotate(360deg); } }
+  html.gnosis-has-result.gnosis-ready body::before,
+  html.gnosis-has-result.gnosis-ready body::after { opacity: 0; pointer-events: none; }
+</style>
+<script>
+  // Watcher: quando page-result vira .active OU 3s timeout, esconde loader.
+  (function () {
+    function ready() {
+      document.documentElement.classList.add('gnosis-ready');
+      setTimeout(function() {
+        document.documentElement.classList.remove('gnosis-has-result');
+        document.documentElement.classList.remove('gnosis-ready');
+      }, 320);
+    }
+    if (!document.documentElement.classList.contains('gnosis-has-result')) return;
+    var done = false;
+    function check() {
+      if (done) return;
+      var r = document.getElementById('page-result');
+      if (r && r.classList.contains('active') && r.offsetParent !== null) {
+        done = true; ready();
+      }
+    }
+    var startWatch = function() {
+      check();
+      if (done) return;
+      new MutationObserver(check).observe(document.body, {
+        subtree: true, attributes: true, attributeFilter: ['class', 'style']
+      });
+      setTimeout(function() { if (!done) { done = true; ready(); } }, 5000);
+    };
+    if (document.body) startWatch();
+    else document.addEventListener('DOMContentLoaded', startWatch);
+  })();
+</script>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- ══════════════════════════════════════
+     ONBOARDING WIZARD (primeiro acesso)
+══════════════════════════════════════ -->
+<div class="onboarding-overlay" id="onboarding-overlay">
+  <div class="onboarding-modal">
+    <!-- Step 1 -->
+    <div class="onboarding-step active" id="ob-step-1">
+      <div class="ob-icon">⬡</div>
+      <h2>Bem-vindo à<br><em>Sistema Gnosis</em></h2>
+      <p>Uma plataforma de autoconhecimento com 8 matrizes comportamentais. Cada avaliação revela um lado diferente de quem você é.</p>
+      <div class="ob-dots">
+        <span class="ob-dot active"></span>
+        <span class="ob-dot"></span>
+        <span class="ob-dot"></span>
+      </div>
+      <button class="ob-btn-next" onclick="obNext(2)">Continuar →</button>
+    </div>
+    <!-- Step 2 -->
+    <div class="onboarding-step" id="ob-step-2">
+      <div class="ob-icon">⬡</div>
+      <h2>Mergulhe no<br><em>Eneagrama</em></h2>
+      <p>9 tipos de personalidade que revelam suas motivações mais profundas, seus medos básicos e os padrões que guiam suas decisões automáticas.</p>
+      <div class="ob-meta">
+        <div class="ob-meta-item"><span>36</span><small>Afirmações</small></div>
+        <div class="ob-meta-item"><span>~10min</span><small>Duração</small></div>
+        <div class="ob-meta-item"><span>9</span><small>Tipos</small></div>
+      </div>
+      <div class="ob-dots">
+        <span class="ob-dot"></span>
+        <span class="ob-dot active"></span>
+        <span class="ob-dot"></span>
+      </div>
+      <button class="ob-btn-next" onclick="obNext(3)">Próximo →</button>
+    </div>
+    <!-- Step 3 -->
+    <div class="onboarding-step" id="ob-step-3">
+      <div class="ob-icon">📊</div>
+      <h2>Seu progresso<br><em>fica salvo</em></h2>
+      <p>Ao concluir, seu resultado é salvo no seu perfil. Você pode retomar de onde parou e comparar evolução ao longo do tempo.</p>
+      <div class="ob-dots">
+        <span class="ob-dot"></span>
+        <span class="ob-dot"></span>
+        <span class="ob-dot active"></span>
+      </div>
+      <button class="ob-btn-start" onclick="obFinish()">Começar minha jornada →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 1: INTRO
+══════════════════════════════════════ -->
+<div class="page active" id="page-intro">
+  <div class="intro-page">
+
+    <a href="dashboard.html" class="intro-back-link">← Voltar ao Dashboard</a>
+
+    <div class="intro-badge">⬡ Tipologia Eneagrama</div>
+
+    <p class="intro-greeting" id="eneagrama-greeting" style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;display:none;">// avaliação de <span class="js-user-name"></span></p>
+    <h1>Descubra seu<br><em>Tipo no Eneagrama</em></h1>
+
+    <p class="intro-sub">
+      36 afirmações. 10 minutos. 9 tipos.<br>
+      Vá além do comportamento visível — entenda a motivação inconsciente que governa suas decisões automáticas.
+    </p>
+
+    <div class="disc-preview">
+      <div class="disc-pill"><span class="dot" style="color:#E8603A"></span><span style="color:#E8603A">1</span> Perfeccionista</div>
+      <div class="disc-pill"><span class="dot" style="color:#F4845F"></span><span style="color:#F4845F">2</span> Prestativo</div>
+      <div class="disc-pill"><span class="dot" style="color:#F2C14E"></span><span style="color:#F2C14E">3</span> Realizador</div>
+      <div class="disc-pill"><span class="dot" style="color:#9D7FE8"></span><span style="color:#9D7FE8">4</span> Individualista</div>
+      <div class="disc-pill"><span class="dot" style="color:#6C5FE6"></span><span style="color:#6C5FE6">5</span> Investigador</div>
+      <div class="disc-pill"><span class="dot" style="color:#1BA8D4"></span><span style="color:#1BA8D4">6</span> Leal</div>
+      <div class="disc-pill"><span class="dot" style="color:#4FC9A0"></span><span style="color:#4FC9A0">7</span> Entusiasta</div>
+      <div class="disc-pill"><span class="dot" style="color:#2EC4A0"></span><span style="color:#2EC4A0">8</span> Desafiador</div>
+      <div class="disc-pill"><span class="dot" style="color:#8FA88A"></span><span style="color:#8FA88A">9</span> Pacificador</div>
+    </div>
+
+    <div class="intro-meta">
+      <div class="meta-item">
+        <span class="meta-num">36</span>
+        <span class="meta-label">Afirmações</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-num">~10</span>
+        <span class="meta-label">Minutos</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-num">9</span>
+        <span class="meta-label">Tipos</span>
+      </div>
+    </div>
+
+    <button class="btn-start" onclick="startQuiz()">
+      Iniciar avaliação →
+    </button>
+
+    <p class="intro-note">Sem certo ou errado. Responda como você É, não como gostaria de ser.</p>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 2: QUIZ
+══════════════════════════════════════ -->
+<div class="page" id="page-quiz">
+
+  <nav aria-label="Navegação principal" class="quiz-nav">
+    <a href="eneagrama.html" class="quiz-logo">Sistema <span>Gnosis</span></a>
+    <div class="quiz-progress-wrap">
+      <div class="quiz-progress-track">
+        <div class="quiz-progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <div class="quiz-counter" id="q-counter">1 de 36</div>
+    </div>
+    <button class="btn-back" onclick="goBack()">← Voltar</button>
+  </nav>
+
+  <div class="quiz-body">
+    <div class="question-card" id="question-card">
+      <!-- injetado por JS -->
+    </div>
+  </div>
+
+</div>
+
+<!-- TRANSITION OVERLAY -->
+<div class="section-transition" id="section-transition">
+  <div class="transition-icon" id="t-icon">⬡</div>
+  <div class="transition-label" id="t-label">Tipo em análise</div>
+  <div class="transition-sub" id="t-sub">Mapeando suas motivações inconscientes</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 3: RESULTADO
+══════════════════════════════════════ -->
+<div class="page" id="page-result">
+
+  <!-- Nav de retorno — FIX CRÍTICO 2 -->
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(7,8,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);">
+    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;transition:all 0.2s;" onmouseover="this.style.color='var(--text)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border2)'">← Dashboard</a>
+    <span style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);">// resultado · eneagrama</span>
+    <button onclick="generatePDF()" style="font-family:var(--mono);font-size:0.7rem;background:transparent;color:var(--muted);border:1px solid var(--border2);padding:0.4rem 0.9rem;border-radius:5px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='var(--text)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border2)'">↓ PDF</button>
+  </nav>
+
+  <div class="result-page">
+
+    <div class="result-eyebrow">Seu Tipo no Eneagrama</div>
+    <div class="result-title" id="result-title">—</div>
+    <div class="result-archetype" id="result-archetype">—</div>
+
+    <div class="dna-card" id="dna-card">
+      <div class="dna-card-label">⬡ Mapa dos 9 Tipos</div>
+
+      <div class="disc-bars" id="disc-bars"></div>
+
+      <div class="traits-wrap" id="traits-wrap"></div>
+    </div>
+
+    <div class="profile-grid" id="profile-grid">
+      <!-- injetado por JS -->
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-dashboard" onclick="window.location.href='dashboard.html'">
+        Ver meu Dashboard →
+      </button>
+      <button class="btn-share" onclick="generatePDF()" style="background:var(--surface);border:1px solid var(--border2);color:var(--text);">
+        ↓ Baixar PDF
+      </button>
+      <button class="btn-share" onclick="shareResult()">
+        ↗ Compartilhar
+      </button>
+    </div>
+    <div id="sync-status" style="font-family:var(--mono,monospace);font-size:0.6rem;letter-spacing:0.08em;color:var(--muted,#666);text-align:center;margin-top:0.75rem;min-height:1rem;transition:opacity 0.3s;opacity:0;"></div>
+
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+  <ul>
+    <li>
+      <a href="dashboard.html" class="nav-icon-link">
+        <span class="nav-icon">🏠</span>
+        <span>Início</span>
+      </a>
+    </li>
+    <li>
+      <a href="eneagrama.html" class="nav-icon-link active">
+        <span class="nav-icon">⬡</span>
+        <span>Eneagrama</span>
+      </a>
+    </li>
+    <li>
+      <a href="dashboard.html#matrizes" class="nav-icon-link">
+        <span class="nav-icon">📊</span>
+        <span>Matrizes</span>
+      </a>
+    </li>
+    <li>
+      <a href="dashboard.html#perfil" class="nav-icon-link">
+        <span class="nav-icon">👤</span>
+        <span>Perfil</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<script src="js/pdf-helper.js"></script>
+<script src="js/eneagrama-app.js"></script>
+
+<style>
+/* ══════════════════════════════════════
+   ONBOARDING OVERLAY
+══════════════════════════════════════ */
+.onboarding-overlay {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(6,6,8,0.92);
+  backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s;
+}
+.onboarding-overlay.show { opacity: 1; pointer-events: all; }
+
+.onboarding-modal {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 2.5rem;
+  max-width: 420px; width: 100%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(108,95,230,0.12);
+}
+
+.onboarding-step { display: none; flex-direction: column; align-items: center; }
+.onboarding-step.active { display: flex; animation: fadeUp 0.4s ease both; }
+
+.ob-icon {
+  font-size: 2.5rem; margin-bottom: 1.25rem;
+  filter: drop-shadow(0 0 20px rgba(108,95,230,0.4));
+}
+
+.onboarding-modal h2 {
+  font-family: var(--sans);
+  font-size: 1.5rem; font-weight: 800;
+  letter-spacing: -0.025em; line-height: 1.15;
+  margin-bottom: 0.85rem;
+}
+.onboarding-modal h2 em { font-style: normal; color: var(--accent); }
+.onboarding-modal p {
+  color: var(--muted); font-size: 0.85rem; line-height: 1.7;
+  margin-bottom: 1.75rem;
+}
+
+.ob-meta {
+  display: flex; gap: 1rem; justify-content: center;
+  margin-bottom: 1.75rem;
+}
+.ob-meta-item {
+  display: flex; flex-direction: column; align-items: center;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.65rem 1rem;
+}
+.ob-meta-item span {
+  font-family: var(--mono); font-size: 1.2rem; font-weight: 700;
+  color: var(--accent);
+}
+.ob-meta-item small { font-family: var(--mono); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: 0.2rem; }
+
+.ob-dots { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem; }
+.ob-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--muted2); transition: all 0.3s;
+}
+.ob-dot.active { background: var(--accent); width: 20px; border-radius: 100px; box-shadow: 0 0 8px var(--accent); }
+
+.ob-btn-next, .ob-btn-start {
+  width: 100%; padding: 0.8rem;
+  border: none; border-radius: 7px;
+  font-family: var(--sans); font-size: 0.88rem; font-weight: 700;
+  cursor: pointer; transition: all 0.25s;
+}
+.ob-btn-next {
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--border2);
+}
+.ob-btn-next:hover { border-color: var(--accent); color: var(--accent); }
+
+.ob-btn-start {
+  background: var(--accent); color: #fff;
+  box-shadow: 0 0 30px rgba(108,95,230,0.35);
+}
+.ob-btn-start:hover { box-shadow: 0 0 50px rgba(108,95,230,0.55); transform: translateY(-1px); opacity: 0.9; }
+</style>
+
+</body>
+</html>

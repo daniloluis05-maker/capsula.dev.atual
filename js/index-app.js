@@ -121,15 +121,34 @@
     } catch(_) { /* silencioso — não bloqueia o fluxo */ }
   }
 
-  // Persiste dados do usuário no localStorage após auth bem-sucedida
-  function persistUserLocally(userData) {
+  // Persiste dados do usuário no localStorage após auth bem-sucedida.
+  // CRÍTICO: se o user fez algum teste antes do login (anônimo), os dados
+  // estão no LS sem email. Mesclar com pickNewest antes de sobrescrever —
+  // caso contrário o login "apaga" o teste recém-feito.
+  async function persistUserLocally(userData) {
+    let finalData = userData;
     try {
-      const userDataStr = JSON.stringify(userData);
-      capsulaDB.lsSetRaw('capsula_user', userDataStr);
+      const _localRaw = localStorage.getItem('capsula_user');
+      if (_localRaw && userData && userData.email) {
+        const _local = JSON.parse(_localRaw);
+        if (!_local.email || _local.email.toLowerCase() === userData.email.toLowerCase()) {
+          _local.email = userData.email;
+          _local.uid   = _local.uid || userData.uid;
+          localStorage.setItem('capsula_user', JSON.stringify(_local));
+          if (capsulaDB.migrateLocalToSupabase) {
+            const _merged = await capsulaDB.migrateLocalToSupabase(userData.email);
+            if (_merged) finalData = _merged;
+          }
+        }
+      }
+    } catch(e) { console.warn('[persistUser] merge local:', e); }
+
+    try {
+      capsulaDB.lsSetRaw('capsula_user', JSON.stringify(finalData));
       let users = [];
       try { users = capsulaDB.lsGetUsers(); } catch(_) {}
-      const idx = users.findIndex(u => u.email === userData.email);
-      if (idx >= 0) users[idx] = userData; else users.push(userData);
+      const idx = users.findIndex(u => u.email === finalData.email);
+      if (idx >= 0) users[idx] = finalData; else users.push(finalData);
       capsulaDB.lsSetUsers(users);
     } catch(e) { console.warn('[auth] localStorage indisponível:', e); }
   }
@@ -183,7 +202,7 @@
       // Cadastro e login imediatos
       if (data) {
         sessionStorage.setItem('capsula_is_new_user', '1');
-        persistUserLocally(data);
+        await persistUserLocally(data);
         sendWelcomeEmail(nome || email, email);
         showPanel('success');
         setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
@@ -231,7 +250,7 @@
       }
 
       if (data) {
-        persistUserLocally(data);
+        await persistUserLocally(data);
         showPanel('loginSuccess');
         setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
       }

@@ -222,8 +222,9 @@ function loadMatrixState(userData){
   const bigfiveDone=!!(userData.bigfive&&userData.bigfive.completedAt);
   const pearsonDone=!!(userData.pearson&&userData.pearson.completedAt);
   const tciDone=!!(userData.tci&&userData.tci.completedAt);
+  const eneagramaDone=!!(userData.eneagrama&&userData.eneagrama.completedAt);
 
-  const total=[discDone,soarDone,ikigaiDone,ancorasDone,johariDone,bigfiveDone,pearsonDone,tciDone].filter(Boolean).length;
+  const total=[discDone,soarDone,ikigaiDone,ancorasDone,johariDone,bigfiveDone,pearsonDone,tciDone,eneagramaDone].filter(Boolean).length;
   const matrizesEl = document.getElementById('stat-matrizes');
   if (matrizesEl) matrizesEl.textContent = total;
   // stat-insights e stat-insights-sub removidos do HTML — guards defensivos:
@@ -252,10 +253,11 @@ function loadMatrixState(userData){
   setStatus('bigfive-status',bigfiveDone);
   setStatus('pearson-status',pearsonDone);
   setStatus('tci-status',tciDone);
+  setStatus('eneagrama-status',eneagramaDone);
 
   // Progresso
   const discP=discDone?100:0;
-  const totalP=Math.min(Math.round(10+(total/8)*90),100);
+  const totalP=Math.min(Math.round(10+(total/9)*90),100);
   setProgress('disc-pct','disc-fill',discP);
   setProgress('soar-pct','soar-fill',soarPct);
   setProgress('total-pct','total-fill',totalP);
@@ -271,6 +273,7 @@ function loadMatrixState(userData){
     bigfive:'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
     pearson:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
     tci:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+    eneagrama:'<polygon points="12 2 22 8 18 20 6 20 2 8"/><line x1="12" y1="2" x2="12" y2="20"/><line x1="2" y1="8" x2="22" y2="8"/>',
     dna:'<line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
   };
   function _actIcon(key,color){return '<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:'+color+';stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round;">'+(_svg[key]||'')+'</svg>';}
@@ -284,6 +287,7 @@ function loadMatrixState(userData){
   if(bigfiveDone)activities.push({icon:'bigfive',label:'Big Five — OCEAN concluído',date:userData.bigfive.completedAt,color:'var(--I)'});
   if(pearsonDone)activities.push({icon:'pearson',label:'Arquétipos Pearson-Marr concluídos',date:userData.pearson.completedAt,color:'#C9A84C'});
   if(tciDone)activities.push({icon:'tci',label:'Temperamento TCI mapeado',date:userData.tci.completedAt,color:'#7000FF'});
+  if(eneagramaDone)activities.push({icon:'eneagrama',label:'Eneagrama identificado',date:userData.eneagrama.completedAt,color:'#9D7FE8'});
   if(userData.dna&&userData.dna.generatedAt){const dnaEl=document.getElementById('dna-status');if(dnaEl){dnaEl.textContent='DNA gerado · '+new Date(userData.dna.generatedAt).toLocaleDateString('pt-BR');}activities.push({icon:'dna',label:'DNA Estratégico gerado',date:userData.dna.generatedAt,color:'#C9A84C'});}
 
   if(activities.length>0){

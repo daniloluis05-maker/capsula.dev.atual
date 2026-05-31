@@ -17,6 +17,24 @@
 
   let _client = null;
 
+  // ── Lista canônica de chaves de matrizes salvas em usuarios.matrizes (jsonb).
+  // Quando adicionar uma matriz nova ao sistema, INCLUA aqui — caso contrário
+  // ensureUserData e migrateLocalToSupabase não vão preservar o resultado.
+  const MATRIZ_KEYS = [
+    'disc', 'soar', 'ikigai', 'ancoras', 'johari',
+    'bigfive', 'swot', 'pearson', 'tci', 'eneagrama', 'dna'
+  ];
+
+  // Vencedor entre duas versões de uma matriz: a com completedAt mais recente.
+  // Usado tanto em ensureUserData quanto em migrateLocalToSupabase.
+  function pickNewest(a, b) {
+    if (!a) return b;
+    if (!b) return a;
+    const tA = a.completedAt || a.generatedAt || a.criado_em || '';
+    const tB = b.completedAt || b.generatedAt || b.criado_em || '';
+    return tA >= tB ? a : b;
+  }
+
   function getDB() {
     if (_client) return _client;
     if (typeof supabase === 'undefined') {
@@ -56,13 +74,35 @@
       matrizes:  Object.keys(matrizes).length ? matrizes : {},
     };
 
-    const { data, error } = await db
-      .from('usuarios')
-      .upsert(row, { onConflict: 'email' })
-      .select()
-      .single();
+    // Retry com backoff exponencial em falhas transitórias (rede/timeout).
+    // Não tenta de novo em erros lógicos (RLS/permission/validation) — esses
+    // vão falhar igual. O retry só ataca o cenário "matriz salva e some" por
+    // perda intermitente de conectividade.
+    const TRANSIENT_CODES = new Set(['ETIMEDOUT','ECONNRESET','ENETUNREACH','FetchError']);
+    function isTransient(err) {
+      if (!err) return false;
+      const msg = (err.message || JSON.stringify(err)).toLowerCase();
+      if (TRANSIENT_CODES.has(err.code)) return true;
+      return msg.includes('network') || msg.includes('timeout') ||
+             msg.includes('fetch') || msg.includes('failed to fetch') ||
+             msg.includes('load failed');
+    }
 
-    return { data, error };
+    let lastError = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const { data, error } = await db
+        .from('usuarios')
+        .upsert(row, { onConflict: 'email' })
+        .select()
+        .single();
+      if (!error) return { data, error: null };
+      lastError = error;
+      if (!isTransient(error)) break; // erro lógico — sair
+      // backoff: 300ms, 900ms
+      await new Promise(r => setTimeout(r, 300 * Math.pow(3, attempt)));
+    }
+    console.warn('[db] saveUser falhou após retries:', lastError);
+    return { data: null, error: lastError };
   }
 
   /**
@@ -135,29 +175,20 @@
       await saveUser(local);
       console.debug('[db] Migração localStorage → Supabase concluída para', email);
     } else {
-      // Já existe → mescla: Supabase ganha nos campos de perfil; para matrizes, ganha a versão mais recente (por completedAt)
-      function pickNewest(a, b) {
-        if (!a) return b;
-        if (!b) return a;
-        const tA = a.completedAt || a.criado_em || '';
-        const tB = b.completedAt || b.criado_em || '';
-        return tA >= tB ? a : b;
-      }
+      // Já existe → mescla: Supabase ganha nos campos de perfil;
+      // para matrizes, ganha a versão com completedAt mais recente (pickNewest).
       const merged = {
         ...existing,
         nome:      existing.nome      || local.nome,
         objetivo:  existing.objetivo  || local.objetivo,
         criado_em: existing.criado_em || local.criado_em,
         uid:       existing.uid       || local.uid,
-        // Matrizes: vence a versão com completedAt mais recente
-        disc:    pickNewest(local.disc,    existing.disc),
-        soar:    pickNewest(local.soar,    existing.soar),
-        ikigai:  pickNewest(local.ikigai,  existing.ikigai),
-        ancoras: pickNewest(local.ancoras, existing.ancoras),
-        johari:  pickNewest(local.johari,  existing.johari),
-        bigfive: pickNewest(local.bigfive, existing.bigfive),
-        swot:    pickNewest(local.swot,    existing.swot),
       };
+      // Matrizes: vence a versão com completedAt mais recente, iterando MATRIZ_KEYS
+      // pra garantir que nada seja esquecido quando adicionarmos teste novo.
+      for (const k of MATRIZ_KEYS) {
+        merged[k] = pickNewest(local[k], existing[k]);
+      }
       // Remove chaves undefined
       Object.keys(merged).forEach(k => merged[k] === undefined && delete merged[k]);
 
@@ -344,18 +375,33 @@
         if (session && session.user) {
           const profile = await authLoadUserProfile(session.user);
           if (profile) {
-            // Mescla dados de matrizes locais apenas se pertencerem ao mesmo usuário
+            // Mescla dados de matrizes locais e remotas.
+            // CRÍTICO: usar pickNewest pra cada matriz — versão mais recente vence.
+            // Bug histórico: o código anterior fazia `if (!_merged[_k] && _local[_k])`
+            // o que SOBRESCREVIA dados locais novos com versão velha do servidor.
             const _local = lsGetUser() || {};
-            const _matrixKeys = ['disc','johari','bigfive','ancoras','soar','ikigai','tci','pearson'];
             const _merged = { ...profile };
             const _sameUser = _local.email && profile.email &&
               _local.email.toLowerCase() === profile.email.toLowerCase();
-            if (_sameUser) {
-              for (const _k of _matrixKeys) {
-                if (!_merged[_k] && _local[_k]) _merged[_k] = _local[_k];
+            // Se o local não tem email (teste feito antes do login), também é
+            // considerado "do mesmo usuário" — não devemos descartar o resultado.
+            const _claimLocal = _sameUser || (!_local.email && _local.uid);
+            let _localWasNewer = false;
+            if (_claimLocal) {
+              for (const _k of MATRIZ_KEYS) {
+                const winner = pickNewest(_local[_k], _merged[_k]);
+                if (winner && winner === _local[_k] && winner !== _merged[_k]) {
+                  _localWasNewer = true;
+                }
+                if (winner) _merged[_k] = winner;
               }
             }
             lsSetUser(_merged);
+            // Se a versão local era mais nova, sincroniza de volta pro Supabase
+            // (impede que dados feitos offline/em outra aba se percam ao recarregar).
+            if (_localWasNewer && _merged.email) {
+              saveUser(_merged).catch(e => console.warn('[db] ensureUserData reverse-sync:', e));
+            }
             return _merged;
           }
         }
