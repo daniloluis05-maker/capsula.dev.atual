@@ -336,38 +336,8 @@ function getInsight(scores, topArch){
   return text;
 }
 
-// Cruzamento com DISC
-function getDiscCombo(topArch){
-  const u = (capsulaDB.lsGetUser() || {});
-  if(!u.disc || !u.disc.dominant) return null;
-  const disc = u.disc.dominant;
-  const arch = ARCHETYPES[topArch];
-
-  const map = {
-    D: `Seu perfil DISC de <strong>Dominância (D)</strong> + arquétipo ${arch.name}: você age com força e tem a essência arquetípica que dá direção a essa força. ${
-      ['guerreiro','governante'].includes(topArch) ? 'Combinação de alta potência — canalize para causas maiores que você mesmo.' :
-      topArch === 'destruidor' ? 'Atenção: D + Destruidor pode gerar ruptura sem reconstrução. Construa antes de demolir.' :
-      'O arquétipo confere uma camada de profundidade que impede o D puro de se tornar apenas agressividade.'
-    }`,
-    I: `Seu perfil DISC de <strong>Influência (I)</strong> + arquétipo ${arch.name}: você conecta pessoas com autenticidade. ${
-      ['amante','prestativo','bobo'].includes(topArch) ? 'Combinação natural — sua influência vem de genuinidade, não de performance social.' :
-      topArch === 'criador' ? 'Você inspira porque cria — as pessoas seguem sua visão, não sua posição.' :
-      'O arquétipo adiciona substância à sua capacidade de influência, tornando-a mais duradoura.'
-    }`,
-    S: `Seu perfil DISC de <strong>Estabilidade (S)</strong> + arquétipo ${arch.name}: você é a âncora de qualquer grupo. ${
-      ['prestativo','orfao','innocente'].includes(topArch) ? 'S + esse arquétipo é o perfil do cuidador de confiança — pessoas constroem sobre você.' :
-      topArch === 'destruidor' ? 'Tensão interessante: S quer estabilidade, Destruidor quer ruptura. Você transforma devagar e bem.' :
-      'Sua consistência comportamental dá ao arquétipo um poder de influência silencioso e duradouro.'
-    }`,
-    C: `Seu perfil DISC de <strong>Conformidade (C)</strong> + arquétipo ${arch.name}: você tem rigor e profundidade. ${
-      ['sabio','mago'].includes(topArch) ? 'C + Sábio/Mago é o perfil do especialista de elite — seu rigor analítico é amplificado por visão sistêmica.' :
-      topArch === 'criador' ? 'C + Criador é incomum e precioso: você cria com qualidade técnica, não apenas com inspiração.' :
-      'O arquétipo adiciona um norte emocional ao seu rigor analítico, impedindo que vire paralisia.'
-    }`,
-  };
-
-  return map[disc] || null;
-}
+// Cruzamento com outros testes removido — Pearson-Marr é analisado de
+// forma isolada. Integração entre matrizes só acontece no DNA Estratégico.
 
 // ══════════════════════════════════════
 // EXIBIÇÃO DO RESULTADO
@@ -442,16 +412,8 @@ function showResult(){
     <p style="margin-top:1rem;font-size:0.82rem;color:var(--muted);border-top:1px solid var(--border);padding-top:1rem;">${topArch.career}</p>
   `;
 
-  // Combo DISC
-  const combo = getDiscCombo(topKey);
-  if(combo){
-    const comboBox = document.getElementById('combo-box');
-    comboBox.style.display = 'block';
-    comboBox.innerHTML = `
-      <span class="combo-label">✦ CRUZAMENTO COM SEU PERFIL DISC</span>
-      <div class="combo-content">${combo}</div>
-    `;
-  }
+  // Cruzamento removido — resultado mostra apenas o arquétipo isolado.
+  // Integração entre matrizes acontece no DNA Estratégico.
 
   // ── SALVAR ───────────────────────────────────────────────────
   const u = (capsulaDB.lsGetUser() || {});

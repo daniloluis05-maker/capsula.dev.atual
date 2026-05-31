@@ -291,48 +291,9 @@ function getInsight(scores){
   return text;
 }
 
-// Cruzamento com DISC (se o usuário já fez)
-function getDiscCombo(scores){
-  const u = (capsulaDB.lsGetUser() || {});
-  if(!u.disc || !u.disc.dominant) return null;
-  const disc = u.disc.dominant; // D, I, S ou C
-
-  const combos = {
-    D: {
-      label: 'DISC Dominância + Big Five',
-      text: `Seu perfil DISC de <strong>Dominância (D)</strong> combinado com Big Five sugere uma personalidade orientada a resultados. ${
-        scores.C >= 60 ? 'Sua alta Conscienciosidade reforça a orientação a metas — você não só lidera, como executa.' :
-        scores.O >= 60 ? 'Sua abertura à experiência adiciona criatividade à liderança direta — você tem perfil de líder inovador.' :
-        'Atenção ao equilíbrio: dominância alta com amabilidade mais baixa pode gerar fricção em contextos colaborativos.'
-      }`
-    },
-    I: {
-      label: 'DISC Influência + Big Five',
-      text: `Seu perfil DISC de <strong>Influência (I)</strong> combinado com Big Five confirma uma orientação natural para pessoas. ${
-        scores.E >= 60 ? 'Alta Extroversão + Influência = presença marcante e capacidade real de inspirar grupos.' :
-        scores.A >= 60 ? 'Sua Amabilidade reforça o charme interpessoal e gera relações de confiança duradouras.' :
-        'O Big Five revela camadas adicionais além da aparência social — use esse autoconhecimento para liderar com autenticidade.'
-      }`
-    },
-    S: {
-      label: 'DISC Estabilidade + Big Five',
-      text: `Seu perfil DISC de <strong>Estabilidade (S)</strong> combinado com Big Five evidencia consistência e confiabilidade. ${
-        scores.A >= 60 ? 'Alta Amabilidade confirma que você é o "cimento" de equipes — mantém harmonia e coesão.' :
-        scores.C >= 60 ? 'Conscienciosidade + Estabilidade = execução confiável e qualidade acima da média.' :
-        'O Big Five mostra que sua estabilidade tem fundamento em traços de personalidade sólidos, não apenas comportamentais.'
-      }`
-    },
-    C: {
-      label: 'DISC Conformidade + Big Five',
-      text: `Seu perfil DISC de <strong>Conformidade (C)</strong> combinado com Big Five reforça o perfil analítico. ${
-        scores.C >= 60 ? 'Alta Conscienciosidade + Conformidade = rigor técnico e atenção ao detalhe acima da média. Ideal para funções que exigem precisão.' :
-        scores.O >= 60 ? 'Abertura + Conformidade é uma combinação curiosa — você é detalhista, mas também criativo. Perfil forte para P&D e design de sistemas.' :
-        'Atenção para não cair em paralisia por análise: use o perfeccionismo como qualidade, não como bloqueio.'
-      }`
-    }
-  };
-  return combos[disc] || null;
-}
+// Cruzamento com outros testes removido — o Big Five (OCEAN) deve ser
+// analisado isoladamente. O cruzamento entre matrizes só acontece no
+// DNA Estratégico, que é o único módulo dedicado a integrar resultados.
 
 // ══════════════════════════════════════
 // EXIBIÇÃO DO RESULTADO
@@ -391,16 +352,8 @@ function showResult(){
     <p>${getInsight(scores)}</p>
   `;
 
-  // Combo com DISC
-  const combo = getDiscCombo(scores);
-  if(combo){
-    const comboBox = document.getElementById('combo-box');
-    comboBox.style.display = 'block';
-    comboBox.innerHTML = `
-      <span class="combo-label">✦ CRUZAMENTO COM SEU PERFIL DISC</span>
-      <div class="combo-content">${combo.text}</div>
-    `;
-  }
+  // Cruzamento removido — resultado mostra apenas o perfil OCEAN isolado.
+  // Integração entre matrizes acontece no DNA Estratégico.
 
   // Salva no localStorage
   if (!_isLoadingExisting) {

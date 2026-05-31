@@ -30,8 +30,11 @@ window.addEventListener('DOMContentLoaded', function() {
   const nome = userData.apelido || (userData.nome||'').split(' ')[0] || 'Usuário';
   document.getElementById('user-greeting').textContent = '// ' + (userData.nome || nome);
 
-  // Badge de testes realizados
-  renderTestsBadges();
+  // Badges de outros testes removidos — SWOT é ferramenta independente.
+  // Não exibimos status de DISC/OCEAN/SOAR/etc dentro da página do SWOT
+  // para não sugerir cruzamento de resultados (regra: só DNA Estratégico cruza).
+  const _legacyBadges = document.getElementById('tests-context');
+  if (_legacyBadges) _legacyBadges.style.display = 'none';
 
   // Auto-skip intro se já tem SWOT salva
   const s = userData.swot && userData.swot.items;
@@ -39,21 +42,6 @@ window.addEventListener('DOMContentLoaded', function() {
     startSWOT();
   }
 });
-
-function renderTestsBadges() {
-  const ctx = document.getElementById('tests-context');
-  const tests = [
-    { key:'disc',    label:'DISC',       check: d => d&&d.dominant },
-    { key:'bigfive', label:'OCEAN',      check: d => d&&d.scores },
-    { key:'soar',    label:'SOAR',       check: d => d&&d.completionPct >= 80 },
-    { key:'ikigai',  label:'Ikigai',     check: d => d&&d.completedAt },
-    { key:'ancoras', label:'Âncoras',    check: d => d&&d.completedAt },
-  ];
-  ctx.innerHTML = tests.map(t => {
-    const done = t.check(userData[t.key]);
-    return `<div class="test-badge ${done?'done':'pending'}">${done?'✓':'○'} ${t.label}</div>`;
-  }).join('');
-}
 
 // ══════════════════════════════════════
 // PÁGINA
@@ -314,51 +302,42 @@ function renderConfrontoPreview() {
 }
 
 // ══════════════════════════════════════
-// SUGESTÕES INTELIGENTES
+// SUGESTÕES GENÉRICAS — pra ajudar quem trava no preenchimento.
+// IMPORTANTE: sugestões NÃO podem puxar resultado de outros testes
+// (DISC, Big Five, SOAR, etc). Cruzamento entre matrizes só no DNA
+// Estratégico. Lista abaixo é genérica e contextual ao mercado.
 // ══════════════════════════════════════
 function buildSuggestions() {
-  const disc   = userData.disc   || {};
-  const ocean  = userData.bigfive ? userData.bigfive.scores : {};
-  const soar   = userData.soar   || {};
-  const anc    = userData.ancoras|| {};
-  const sug = { f: [], fk: [], o: [], a: [] };
-
-  // DISC → Forças
-  const dom = disc.dominant;
-  if (dom === 'D') { sug.f.push('Tomada de decisão rápida'); sug.f.push('Liderança em situações de pressão'); sug.fk.push('Impaciência com processos lentos'); }
-  if (dom === 'I') { sug.f.push('Comunicação e influência interpessoal'); sug.f.push('Capacidade de inspirar e engajar'); sug.fk.push('Dificuldade de foco em tarefas analíticas'); }
-  if (dom === 'S') { sug.f.push('Consistência e confiabilidade'); sug.f.push('Capacidade de manter harmonia em equipes'); sug.fk.push('Resistência a mudanças rápidas'); }
-  if (dom === 'C') { sug.f.push('Atenção a detalhes e precisão'); sug.f.push('Pensamento analítico e metódico'); sug.fk.push('Paralisia por análise excessiva'); }
-
-  // OCEAN → camadas profundas
-  if (ocean.O >= 65) sug.f.push('Criatividade e abertura a novas ideias');
-  if (ocean.C >= 65) sug.f.push('Disciplina e organização para entregar resultados');
-  if (ocean.E >= 65) sug.f.push('Energia e proatividade em ambientes dinâmicos');
-  if (ocean.A >= 65) sug.f.push('Empatia e habilidade de construir relações de confiança');
-  if (ocean.N >= 60) sug.fk.push('Sensibilidade emocional em ambientes de alta pressão');
-  if (ocean.E < 35)  sug.fk.push('Dificuldade em redes de relacionamento intensas');
-
-  // SOAR → Oportunidades (dados do usuário — sanitizar para uso como texto puro)
-  if (soar.aspiracoes && soar.aspiracoes.length) {
-    soar.aspiracoes.slice(0,2).forEach(a => {
-      const safe = String(a).trim().slice(0, 200);
-      if (safe) sug.o.push(safe);
-    });
-  }
-  if (ocean.A >= 65) sug.o.push('Papéis de liderança de pessoas (RH, gestão)');
-  if (dom === 'I')   sug.o.push('Mercado de vendas consultivas e marketing');
-  if (ocean.O >= 65) sug.o.push('Empreendedorismo e inovação de produtos');
-
-  // Oportunidades de mercado genéricas
-  sug.o.push('Crescimento do mercado de dados e IA');
-  sug.o.push('Trabalho remoto expandindo acesso global a vagas');
-
-  // Ameaças
-  sug.a.push('Automação de tarefas operacionais do setor');
-  sug.a.push('Mercado competitivo exigindo atualização constante');
-  if (ocean.N >= 60) sug.a.push('Burnout em ambientes de alta demanda');
-
-  return sug;
+  return {
+    f: [
+      'Comunicação clara e assertiva',
+      'Capacidade de aprendizado rápido',
+      'Visão estratégica de longo prazo',
+      'Resiliência sob pressão',
+      'Trabalho colaborativo em equipe',
+    ],
+    fk: [
+      'Tendência a procrastinar tarefas pesadas',
+      'Dificuldade em delegar',
+      'Excesso de autocrítica',
+      'Aversão a conflito direto',
+      'Dispersão em projetos paralelos',
+    ],
+    o: [
+      'Crescimento do mercado de dados e IA',
+      'Trabalho remoto expandindo acesso global a vagas',
+      'Demanda por especialistas em transformação digital',
+      'Profissionais que dominam soft skills + tech',
+      'Mercado de educação continuada e mentoria',
+    ],
+    a: [
+      'Automação de tarefas operacionais do setor',
+      'Mercado competitivo exigindo atualização constante',
+      'Volatilidade econômica afetando contratações',
+      'Burnout em ambientes de alta demanda',
+      'Obsolescência de habilidades por velocidade tecnológica',
+    ],
+  };
 }
 
 function renderSuggestions() {
@@ -371,7 +350,7 @@ function renderSuggestionsFor(type) {
   const all = buildSuggestions()[type];
   const available = all.filter(s => !SWOT[type].includes(s)).slice(0, 3);
   if (!available.length) { el.innerHTML=''; return; }
-  el.innerHTML = `<div class="sug-label">💡 sugestões dos seus testes</div>` +
+  el.innerHTML = `<div class="sug-label">💡 sugestões para te ajudar</div>` +
     available.map(s => `<button class="sug-chip" data-sug-type="${escHtml(type)}" data-sug-text="${escHtml(s)}" title="Adicionar">${escHtml(s)}</button>`).join('');
 }
 
@@ -455,33 +434,14 @@ async function generateAI() {
   const panel = document.getElementById('ai-panel');
   switchTab('analise');
 
-  panel.innerHTML = `<div class="ai-loading"><div class="ai-spinner"></div><p>Analisando seu perfil completo...</p></div>`;
+  panel.innerHTML = `<div class="ai-loading"><div class="ai-spinner"></div><p>Analisando sua SWOT...</p></div>`;
 
-  const disc  = userData.disc  || {};
-  const ocean = (userData.bigfive||{}).scores || {};
   const nome  = userData.apelido || (userData.nome||'').split(' ')[0] || 'Usuário';
 
-  // Contexto enriquecido: SOAR, Ikigai, Âncoras
-  const soar   = userData.soar   || {};
-  const ikigai = userData.ikigai || {};
-  const anc    = userData.ancoras|| {};
-
-  const soarCtx = soar.completionPct >= 50 ? [
-    soar.forcas  ? `• Forças (SOAR): ${Array.isArray(soar.forcas)  ? soar.forcas.join(', ')  : soar.forcas}`  : '',
-    soar.aspiracoes ? `• Aspirações (SOAR): ${Array.isArray(soar.aspiracoes) ? soar.aspiracoes.join(', ') : soar.aspiracoes}` : '',
-    soar.resultados ? `• Resultados desejados (SOAR): ${Array.isArray(soar.resultados) ? soar.resultados.join(', ') : soar.resultados}` : '',
-  ].filter(Boolean).join('\n') : '';
-
-  const ikigaiCtx = ikigai.completedAt ? [
-    ikigai.amaBem   ? `• Ama & faz bem: ${ikigai.amaBem}`   : '',
-    ikigai.mundoPaga ? `• Mundo paga por: ${ikigai.mundoPaga}` : '',
-    ikigai.missao   ? `• Missão percebida: ${ikigai.missao}` : '',
-  ].filter(Boolean).join('\n') : '';
-
-  const ancCtx = anc.completedAt && anc.top ? `• Âncoras de carreira dominantes: ${Array.isArray(anc.top) ? anc.top.join(', ') : anc.top}` : '';
-
-  const extraCtx = [soarCtx, ikigaiCtx, ancCtx].filter(Boolean).join('\n');
-
+  // ANÁLISE ISOLADA — o prompt da IA NÃO recebe dados de DISC, OCEAN, SOAR,
+  // Ikigai ou Âncoras. A SWOT é analisada apenas com base no que o próprio
+  // usuário preencheu nos 4 quadrantes. Integração entre matrizes só
+  // acontece no DNA Estratégico.
   const prompt = `Você é um especialista em desenvolvimento de carreira e psicologia organizacional.
 Analise a SWOT pessoal de ${nome} e produza uma análise profissional estruturada em português brasileiro.
 
@@ -491,17 +451,14 @@ SWOT:
 • Oportunidades: ${SWOT.o.join(', ') || 'não informado'}
 • Ameaças: ${SWOT.a.join(', ') || 'não informado'}
 
-Perfil DISC: Dominância ${disc.D||'—'}% | Influência ${disc.I||'—'}% | Estabilidade ${disc.S||'—'}% | Conformidade ${disc.C||'—'}%
-Perfil OCEAN: Abertura ${ocean.O||'—'} | Conscienciosidade ${ocean.C||'—'} | Extroversão ${ocean.E||'—'} | Amabilidade ${ocean.A||'—'} | Neuroticismo ${ocean.N||'—'}
-${extraCtx ? '\nContexto adicional dos demais instrumentos:\n' + extraCtx : ''}
-
 Estruture a resposta em 4 seções:
-1. 🔎 DIAGNÓSTICO DO PERFIL — 2 parágrafos sobre quem é esse profissional, integrando todos os instrumentos disponíveis
-2. 🚀 3 CAMINHOS DE CARREIRA — caminhos específicos baseados na SWOT + perfis comportamentais + aspirações
-3. 📋 PLANO DE AÇÃO 90 DIAS — 5 a 7 passos práticos e concretos
-4. ⚠️ ALERTAS IMPORTANTES — riscos que precisam de atenção imediata
+1. 🔎 DIAGNÓSTICO — 2 parágrafos sobre o perfil que emerge da SWOT
+2. 💪 FORTALEZAS APLICÁVEIS — como capitalizar as forças listadas
+3. ⚠️ FRAQUEZAS / ATENÇÃO — riscos e pontos a desenvolver com base na SWOT
+4. 🎯 O QUE PODE SER FEITO — plano prático com 5-7 passos concretos para os próximos 90 dias
 
-Tom: direto, motivador, sem floreios. Use emojis como marcadores de tópico. Foque no concreto.`;
+Tom: direto, motivador, sem floreios. Use emojis como marcadores de tópico. Foque no concreto.
+Importante: NÃO mencione outros testes (DISC, Big Five, Eneagrama, SOAR, Ikigai, Âncoras) — analise APENAS o conteúdo da SWOT acima.`;
 
   try {
     const cfg = window.CAPSULA_CONFIG || {};

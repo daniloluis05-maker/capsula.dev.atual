@@ -244,11 +244,11 @@ function showResult(scores) {
 
 async function generateAI(scores, u) {
   const block = document.getElementById('ai-content');
-  const disc = (u.disc?.scores) || {};
-  const bf = (u.bigfive?.scores) || {};
-  const anc = u.ancoras || {};
 
-  const prompt = `Você é um especialista em psicologia do temperamento. Analise o perfil TCI abaixo e gere uma interpretação integrada em português do Brasil.
+  // Cruzamento com outros testes (DISC, Big Five, Âncoras) REMOVIDO do
+  // prompt. O TCI deve ser analisado isoladamente — integração entre
+  // matrizes acontece somente no DNA Estratégico.
+  const prompt = `Você é um especialista em psicologia do temperamento. Analise o perfil TCI abaixo e gere uma interpretação em português do Brasil.
 
 PERFIL TCI:
 - Busca de Novidade (dopamina): ${scores.BN}% — ${scoreLabel(scores.BN)}
@@ -256,17 +256,13 @@ PERFIL TCI:
 - Dep. de Recompensa (noradrenalina): ${scores.DR}% — ${scoreLabel(scores.DR)}
 - Persistência (glutamato): ${scores.PE}% — ${scoreLabel(scores.PE)}
 
-${Object.keys(disc).length ? `DISC disponível: D=${disc.D||0}% I=${disc.I||0}% S=${disc.S||0}% C=${disc.C||0}%` : ''}
-${Object.keys(bf).length ? `Big Five: O=${bf.O||0}% C=${bf.C||0}% E=${bf.E||0}% A=${bf.A||0}% N=${bf.N||0}%` : ''}
-${anc.topAnchor ? `Âncora principal: ${anc.topAnchor}` : ''}
-
 INSTRUÇÕES:
 1. Explique o que a combinação específica dessas 4 dimensões revela sobre o funcionamento neurobiológico desta pessoa
 2. Identifique o padrão mais marcante (ex: BN alto + ED alto = explorador ansioso)
-3. Se houver dados de DISC ou Big Five, mostre 1-2 cruzamentos relevantes
+3. Aponte: (a) Fortalezas naturais desse perfil, (b) Pontos de atenção / vieses do temperamento, (c) Caminhos práticos de desenvolvimento
 4. Termine com uma frase de impacto de 1 linha que define a assinatura temperamental
 
-Tom: científico mas acessível. Sem listas ou tópicos — use parágrafos corridos. Máximo 200 palavras. Use <strong> para destacar termos-chave.`;
+Tom: científico mas acessível. Sem listas ou tópicos — use parágrafos corridos. Máximo 240 palavras. Use <strong> para destacar termos-chave. Importante: NÃO mencione outros testes (DISC, Big Five, Eneagrama, SOAR, etc) — analise APENAS o TCI.`;
 
   try {
     const cfg = window.CAPSULA_CONFIG || {};
