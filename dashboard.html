@@ -196,6 +196,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .mobile-nav-icon svg{width:20px;height:20px;stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round;}
 .lock-badge{font-family:var(--mono);font-size:0.52rem;letter-spacing:0.1em;background:var(--surface2);border:1px solid var(--border2);color:var(--muted);padding:0.18rem 0.5rem;border-radius:3px;}
 .card-category{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.35rem;display:block;}
+.card-time-badge{font-family:var(--sans);font-size:0.62rem;font-weight:600;letter-spacing:0.02em;color:var(--muted);background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:100px;padding:0.22rem 0.55rem;white-space:nowrap;}
 .matrix-card h3{font-size:0.9rem;font-weight:700;margin-bottom:0.3rem;letter-spacing:-0.01em;}
 .matrix-card p{font-size:0.76rem;color:var(--muted);line-height:1.6;margin-bottom:0.9rem;}
 .card-foot{display:flex;align-items:center;justify-content:space-between;padding-top:0.75rem;border-top:1px solid var(--border);}
@@ -396,6 +397,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="matrix-card" id="card-disc" style="--card-accent:var(--D)" onclick="window.location.href='disc.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(232,96,58,0.1);border:1px solid rgba(232,96,58,0.18);"><svg viewBox="0 0 24 24" style="stroke:#E8603A"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></div>
+          <span class="card-time-badge">⏱ 8 min</span>
           <span id="disc-start-badge" style="display:none;font-size:0.62rem;font-weight:800;padding:0.2rem 0.55rem;background:rgba(232,96,58,0.15);border:1px solid rgba(232,96,58,0.4);border-radius:20px;color:#E8603A;letter-spacing:0.04em;text-transform:uppercase;font-family:var(--mono);">Comece aqui</span>
         </div>
         <span class="card-category">Personalidade</span>
@@ -410,6 +412,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="matrix-card" style="--card-accent:var(--I)" onclick="window.location.href='soar.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(108,95,230,0.1);border:1px solid rgba(108,95,230,0.18);"><svg viewBox="0 0 24 24" style="stroke:#6C5FE6"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
+          <span class="card-time-badge">⏱ 10 min</span>
         </div>
         <span class="card-category">Estratégia Pessoal</span>
         <h3>Análise SOAR</h3>
@@ -423,6 +426,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="matrix-card" style="--card-accent:var(--D)" onclick="window.location.href='ikigai.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(232,96,58,0.1);border:1px solid rgba(232,96,58,0.18);"><svg viewBox="0 0 24 24" style="stroke:#E8603A"><circle cx="9" cy="9" r="6"/><circle cx="15" cy="9" r="6"/><circle cx="12" cy="15" r="6"/></svg></div>
+          <span class="card-time-badge">⏱ 12 min</span>
         </div>
         <span class="card-category">Propósito de Vida</span>
         <h3>Ikigai</h3>
@@ -436,6 +440,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="matrix-card" style="--card-accent:var(--S)" onclick="window.location.href='ancoras.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(46,196,160,0.1);border:1px solid rgba(46,196,160,0.18);"><svg viewBox="0 0 24 24" style="stroke:#2EC4A0"><circle cx="12" cy="5" r="3"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg></div>
+          <span class="card-time-badge">⏱ 7 min</span>
         </div>
         <span class="card-category">Carreira</span>
         <h3>Âncoras de Carreira</h3>
@@ -449,6 +454,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="matrix-card" style="--card-accent:var(--C)" onclick="window.location.href='johari.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(27,168,212,0.1);border:1px solid rgba(27,168,212,0.18);"><svg viewBox="0 0 24 24" style="stroke:#1BA8D4"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg></div>
+          <span class="card-time-badge">⏱ 8 min</span>
         </div>
         <span class="card-category">Autopercepção</span>
         <h3>Janela de Johari</h3>
@@ -462,6 +468,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="matrix-card" style="--card-accent:var(--I)" onclick="window.location.href='bigfive.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(108,95,230,0.1);border:1px solid rgba(108,95,230,0.18);"><svg viewBox="0 0 24 24" style="stroke:#6C5FE6"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
+          <span class="card-time-badge">⏱ 10 min</span>
         </div>
         <span class="card-category">Psicometria Científica</span>
         <h3>Big Five — OCEAN</h3>
@@ -475,6 +482,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="matrix-card" style="--card-accent:#C9A84C" onclick="window.location.href='pearson.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);"><svg viewBox="0 0 24 24" style="stroke:#C9A84C"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <span class="card-time-badge">⏱ 10 min</span>
         </div>
         <span class="card-category">Psicologia Junguiana</span>
         <h3>Arquétipos — Pearson-Marr</h3>
@@ -488,6 +496,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="matrix-card" style="--card-accent:#7000FF" onclick="window.location.href='tci.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(112,0,255,0.1);border:1px solid rgba(112,0,255,0.18);"><svg viewBox="0 0 24 24" style="stroke:#7000FF"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <span class="card-time-badge">⏱ 10 min</span>
         </div>
         <span class="card-category">Neurociência do Temperamento</span>
         <h3>Temperamento TCI</h3>
@@ -500,10 +509,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="matrix-card" id="card-eneagrama" style="--card-accent:#9D7FE8" onclick="window.location.href='eneagrama.html'">
         <div class="card-top">
           <div class="card-glyph" style="background:rgba(157,127,232,0.1);border:1px solid rgba(157,127,232,0.18);"><svg viewBox="0 0 24 24" style="stroke:#9D7FE8;fill:none;stroke-width:1.8"><polygon points="12 2 22 8 18 20 6 20 2 8"/><line x1="12" y1="2" x2="12" y2="20"/><line x1="2" y1="8" x2="22" y2="8"/></svg></div>
-          <span style="font-family:var(--mono);font-size:0.52rem;letter-spacing:0.1em;background:rgba(157,127,232,0.08);border:1px solid rgba(157,127,232,0.25);color:#9D7FE8;padding:0.18rem 0.5rem;border-radius:3px;">NOVO</span>
+          <span class="card-time-badge">⏱ 10 min</span>
         </div>
         <span class="card-category">Tipologia Eneagrama</span>
-        <h3>Eneagrama — 9 Tipos</h3>
+        <h3>Eneagrama</h3>
         <p>Vá além do comportamento visível. Descubra a motivação inconsciente que governa suas decisões automáticas — entre 9 tipos arquetípicos.</p>
         <div class="card-foot">
           <span class="card-status" id="eneagrama-status">Não iniciado</span>

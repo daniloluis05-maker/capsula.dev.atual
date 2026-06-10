@@ -599,6 +599,40 @@
     overflow: hidden;
     box-shadow: 0 2px 12px rgba(0,0,0,0.35), 0 1px 3px rgba(0,0,0,0.2);
   }
+  /* Cards-link (matriz que leva direto pra página) — herda tudo de .matrix-card
+     mas remove text-decoration e cor herdada de <a>. Mantém comportamento clicável
+     do card inteiro (hover + tap em mobile). */
+  .matrix-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .matrix-card-link:visited { color: inherit; }
+  /* Badge de tempo no canto superior direito do card */
+  .card-time {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    font-family: var(--sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 0.25rem 0.6rem;
+    white-space: nowrap;
+  }
+  /* "Comece aqui" recebe destaque visual */
+  .card-time:not(:only-child)[class*="Comece"],
+  .matrix-card-link[href="disc.html"] .card-time {
+    color: var(--accent);
+    background: rgba(124,111,247,0.10);
+    border-color: rgba(124,111,247,0.3);
+  }
+  @media (max-width: 480px) {
+    .card-time { font-size: 0.62rem; padding: 0.2rem 0.5rem; }
+  }
   .matrix-card::before {
     content: '';
     position: absolute;
@@ -1332,9 +1366,10 @@
   <h1 data-tour="hero-title">Sistema <em>Gnosis</em></h1>
   <div class="hero-rotator-line"><span class="verb-rotator" id="hero-verb-rotator" data-verbs="Descubra seu potencial.|Domine suas habilidades.|Impulsione seus resultados.">Descubra seu potencial.</span></div>
   <div class="hero-actions" data-tour="cta">
-    <button class="btn-primary" data-modal-open>Iniciar análise</button>
-    <a href="#matrizes" class="btn-secondary">Ver as matrizes →</a>
+    <a href="disc.html" class="btn-primary">Fazer DISC grátis · 8 min</a>
+    <a href="#matrizes" class="btn-secondary">Ver todas as matrizes →</a>
   </div>
+  <p style="margin-top:0.85rem;font-size:0.78rem;color:var(--muted);font-family:var(--sans);">Sem cadastro pra testar. Resultado imediato.</p>
   <nav class="hero-quick-nav" aria-label="Navegação rápida">
     <a href="#matrizes">Matrizes</a>
     <a href="#como-funciona">Como funciona</a>
@@ -1371,54 +1406,87 @@
     </div>
 
     <div class="tab-panel active" id="tab-individual">
-      <div class="matrix-card animate-in" style="--card-accent: #7C6FF7;">
+      <a href="disc.html" class="matrix-card matrix-card-link animate-in" style="--card-accent: #7C6FF7;">
+        <span class="card-time">⏱ 8 min · Comece aqui</span>
         <div class="card-icon" style="--card-icon-color:#7C6FF7; background:rgba(124,111,247,0.10); border-color:rgba(124,111,247,0.22);">
           <svg viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
         </div>
         <h3>DISC</h3>
         <p>Mapeie seu perfil comportamental em 4 dimensões: Dominância, Influência, Estabilidade e Conformidade.</p>
         <span class="card-tag">Personalidade</span>
-      </div>
-      <div class="matrix-card animate-in" style="--card-accent: #4FC9A0;">
-        <div class="card-icon" style="--card-icon-color:#4FC9A0; background:rgba(79,201,160,0.10); border-color:rgba(79,201,160,0.22);">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-        </div>
-        <h3>SOAR</h3>
-        <p>Identifique suas Forças, Oportunidades, Aspirações e Resultados para uma visão estratégica pessoal.</p>
-        <span class="card-tag">Estratégia pessoal</span>
-      </div>
-      <div class="matrix-card animate-in" style="--card-accent: #F4845F;">
+      </a>
+      <a href="eneagrama.html" class="matrix-card matrix-card-link animate-in" style="--card-accent: #F4845F;">
+        <span class="card-time">⏱ 10 min</span>
         <div class="card-icon" style="--card-icon-color:#F4845F; background:rgba(244,132,95,0.10); border-color:rgba(244,132,95,0.22);">
           <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
         </div>
         <h3>Eneagrama</h3>
         <p>Explore os 9 tipos de personalidade e compreenda suas motivações mais profundas, padrões inconscientes e caminhos de crescimento.</p>
         <span class="card-tag">Motivação</span>
-      </div>
-      <div class="matrix-card animate-in" style="--card-accent: #7C6FF7;">
-        <div class="card-icon" style="--card-icon-color:#7C6FF7; background:rgba(124,111,247,0.10); border-color:rgba(124,111,247,0.22);">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+      </a>
+      <a href="bigfive.html" class="matrix-card matrix-card-link animate-in" style="--card-accent: #6C5FE6;">
+        <span class="card-time">⏱ 10 min</span>
+        <div class="card-icon" style="--card-icon-color:#6C5FE6; background:rgba(108,95,230,0.10); border-color:rgba(108,95,230,0.22);">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18"/></svg>
         </div>
-        <h3>Janela de Johari</h3>
-        <p>Entenda a diferença entre como você se vê e como os outros te percebem. Poderoso para líderes.</p>
-        <span class="card-tag">Autopercepção</span>
-      </div>
-      <div class="matrix-card animate-in" style="--card-accent: #4FC9A0;">
+        <h3>Big Five · OCEAN</h3>
+        <p>5 grandes traços de personalidade validados cientificamente: Abertura, Conscienciosidade, Extroversão, Amabilidade e Neuroticismo.</p>
+        <span class="card-tag">Traços de personalidade</span>
+      </a>
+      <a href="soar.html" class="matrix-card matrix-card-link animate-in" style="--card-accent: #4FC9A0;">
+        <span class="card-time">⏱ 10 min</span>
         <div class="card-icon" style="--card-icon-color:#4FC9A0; background:rgba(79,201,160,0.10); border-color:rgba(79,201,160,0.22);">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
         </div>
-        <h3>Âncoras de Carreira</h3>
-        <p>Descubra o que você realmente não abre mão na sua vida profissional — o seu núcleo de carreira.</p>
-        <span class="card-tag">Propósito</span>
-      </div>
-      <div class="matrix-card animate-in" style="--card-accent: #F4845F;">
+        <h3>SOAR</h3>
+        <p>Identifique suas Forças, Oportunidades, Aspirações e Resultados para uma visão estratégica pessoal.</p>
+        <span class="card-tag">Estratégia pessoal</span>
+      </a>
+      <a href="ikigai.html" class="matrix-card matrix-card-link animate-in" style="--card-accent: #F4845F;">
+        <span class="card-time">⏱ 12 min</span>
         <div class="card-icon" style="--card-icon-color:#F4845F; background:rgba(244,132,95,0.10); border-color:rgba(244,132,95,0.22);">
           <svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="6"/><circle cx="15" cy="9" r="6"/><circle cx="12" cy="15" r="6"/></svg>
         </div>
         <h3>Ikigai</h3>
         <p>Encontre a intersecção entre o que você ama, o que sabe fazer, o que o mundo precisa e o que te paga.</p>
         <span class="card-tag">Propósito de vida</span>
-      </div>
+      </a>
+      <a href="johari.html" class="matrix-card matrix-card-link animate-in" style="--card-accent: #7C6FF7;">
+        <span class="card-time">⏱ 8 min</span>
+        <div class="card-icon" style="--card-icon-color:#7C6FF7; background:rgba(124,111,247,0.10); border-color:rgba(124,111,247,0.22);">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+        </div>
+        <h3>Janela de Johari</h3>
+        <p>Entenda a diferença entre como você se vê e como os outros te percebem. Poderoso para líderes.</p>
+        <span class="card-tag">Autopercepção</span>
+      </a>
+      <a href="ancoras.html" class="matrix-card matrix-card-link animate-in" style="--card-accent: #4FC9A0;">
+        <span class="card-time">⏱ 7 min</span>
+        <div class="card-icon" style="--card-icon-color:#4FC9A0; background:rgba(79,201,160,0.10); border-color:rgba(79,201,160,0.22);">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>
+        </div>
+        <h3>Âncoras de Carreira</h3>
+        <p>Descubra o que você realmente não abre mão na sua vida profissional — o seu núcleo de carreira.</p>
+        <span class="card-tag">Propósito</span>
+      </a>
+      <a href="pearson.html" class="matrix-card matrix-card-link animate-in" style="--card-accent: #C9A84C;">
+        <span class="card-time">⏱ 10 min</span>
+        <div class="card-icon" style="--card-icon-color:#C9A84C; background:rgba(201,168,76,0.10); border-color:rgba(201,168,76,0.22);">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3>Pearson-Marr</h3>
+        <p>Descubra qual dos 12 arquétipos clássicos governa sua narrativa de vida e como você se posiciona no mundo.</p>
+        <span class="card-tag">Arquétipos</span>
+      </a>
+      <a href="tci.html" class="matrix-card matrix-card-link animate-in" style="--card-accent: #7000FF;">
+        <span class="card-time">⏱ 10 min</span>
+        <div class="card-icon" style="--card-icon-color:#7000FF; background:rgba(112,0,255,0.10); border-color:rgba(112,0,255,0.22);">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h3>Temperamento TCI</h3>
+        <p>Sua assinatura neuroquímica inata: Busca de Novidade, Esquiva de Danos, Dependência de Recompensa e Persistência.</p>
+        <span class="card-tag">Neurociência</span>
+      </a>
     </div>
 
     <div class="tab-panel" id="tab-equipe">
