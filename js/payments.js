@@ -7,7 +7,14 @@
 (function () {
   'use strict';
 
-  const MATRIX_KEYS = ['disc','soar','ikigai','ancoras','johari','bigfive','pearson','tci'];
+  // ── BYPASS GLOBAL DE PAGAMENTO ─────────────────────────────────
+  // Quando true, todas as funções de paywall (hasAccess, isPro,
+  // serverDebitCredit, deductCredit) retornam liberado. Use durante
+  // fase de aquisição/free trial. Para reativar cobrança: BYPASS_PAYWALL = false.
+  // Snapshot dos preços anteriores em memory/project_pricing_snapshot.md.
+  const BYPASS_PAYWALL = true;
+
+  const MATRIX_KEYS = ['disc','soar','ikigai','ancoras','johari','bigfive','pearson','tci','eneagrama'];
 
   // ── Helpers internos ─────────────────────────────────────────
 
@@ -32,6 +39,7 @@
   }
 
   function isGerencial() {
+    if (BYPASS_PAYWALL) return true;
     const u = getUser();
     if (!u) return false;
     if (u.is_admin) return true;
@@ -42,6 +50,7 @@
 
   // isPro retorna true também para Gerencial (Gerencial inclui tudo do Pro)
   function isPro() {
+    if (BYPASS_PAYWALL) return true;
     const u = getUser();
     if (!u) return false;
     if (u.is_admin) return true;
@@ -180,6 +189,11 @@
   // ── Modal de paywall (exibido quando PDF está bloqueado) ─────
 
   function showPaywall(matrixKey) {
+    // Durante BYPASS_PAYWALL não exibe modal — isPro() já retorna true,
+    // então serverDebitCredit/_payments.serverDebitCredit nunca devem
+    // chamar isto. Guarda defensiva caso algum caller esqueça do bypass.
+    if (BYPASS_PAYWALL) return;
+
     // Remove modal existente se houver
     const existing = document.getElementById('_paywall-modal');
     if (existing) existing.remove();
@@ -268,6 +282,12 @@
   function renderPlanBadge(containerId) {
     const el = document.getElementById(containerId);
     if (!el) return;
+    // Durante BYPASS_PAYWALL, exibe badge neutra (acesso liberado).
+    // Não mostra "Pro/Gerencial" pra não sugerir tier pago.
+    if (BYPASS_PAYWALL) {
+      el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.4rem;background:rgba(46,196,160,0.08);border:1px solid rgba(46,196,160,0.2);border-radius:6px;padding:0.25rem 0.7rem;font-size:0.75rem;color:#2EC4A0;font-weight:600;">✓ Acesso completo</span>';
+      return;
+    }
     if (isGerencial()) {
       el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.4rem;background:rgba(46,196,160,0.1);border:1px solid rgba(46,196,160,0.25);border-radius:6px;padding:0.25rem 0.7rem;font-size:0.75rem;color:#2EC4A0;font-weight:600;">◈ Gerencial</span>';
     } else if (isPro()) {

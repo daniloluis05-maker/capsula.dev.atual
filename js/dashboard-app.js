@@ -80,17 +80,23 @@ async function loadUser(){
   }
 
   // ── Créditos & plano ────────────────────────────────────────
+  // Durante BYPASS_PAYWALL, esconde o card de créditos inteiro — não faz
+  // sentido mostrar "ilimitado / plano X" quando ninguém está pagando.
   if (window._payments) {
     const elCred  = document.getElementById('stat-creditos');
     const elLabel = document.getElementById('stat-creditos-label');
     const elSub   = document.getElementById('stat-plano-sub');
     const elCard  = document.getElementById('card-creditos');
-    if (_payments.isAdmin() || _payments.isPro()) {
+    if (_payments.isPro()) {
+      // BYPASS ou plano real ativo — mensagem neutra
       if (elCred)  elCred.textContent = '∞';
-      if (elLabel) elLabel.textContent = _payments.isAdmin() ? 'admin' : 'ilimitado';
-      const _sub = _payments.isAdmin() ? 'Acesso total' : (_payments.isGerencial() ? 'Plano Gerencial ativo' : 'Plano Profissional ativo');
-      if (elSub)   { elSub.textContent = _sub; elSub.style.color = _payments.isGerencial() ? '#2EC4A0' : 'var(--S)'; }
-      if (elCard)  elCard.style.setProperty('--stat-color', _payments.isGerencial() ? '#2EC4A0' : 'var(--S)');
+      if (elLabel) elLabel.textContent = 'acesso';
+      if (elSub)   { elSub.textContent = 'Acesso liberado'; elSub.style.color = '#2EC4A0'; }
+      if (elCard)  {
+        elCard.style.setProperty('--stat-color', '#2EC4A0');
+        elCard.style.cursor = 'default';
+        elCard.onclick = null;
+      }
     } else {
       const c = _payments.getCredits();
       const total = (c.avulsos || 0) + Object.entries(c).filter(([k]) => k !== 'avulsos').reduce((s,[,v]) => s + (typeof v === 'number' ? v : 0), 0);

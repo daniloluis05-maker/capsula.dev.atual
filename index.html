@@ -1242,7 +1242,7 @@
           "name": "O Sistema Gnosis é gratuito?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Sim. Você responde qualquer matriz (DISC, Big Five, Ikigai, Johari, Pearson-Marr, SOAR, TCI, Âncoras de Carreira, SWOT) e vê seu resultado interpretado na tela sem pagar nada. O PDF completo do relatório é opcional, a partir de R$ 29,90."
+            "text": "Sim. Você responde qualquer matriz (DISC, Big Five, Ikigai, Johari, Pearson-Marr, SOAR, TCI, Âncoras de Carreira, SWOT, Eneagrama) e vê seu resultado interpretado na tela sem pagar nada. O PDF completo do relatório também está liberado durante esta fase."
           }
         },
         {
@@ -1266,23 +1266,7 @@
           "name": "Como funciona o link de convite para terceiros?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Usuários do Plano Profissional ou Gerencial geram links únicos para enviar avaliações. O respondente abre o link, faz o teste gratuitamente e o resultado vai automaticamente para o avaliador."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Qual a diferença entre os planos Profissional e Gerencial?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "O Profissional (R$ 149,90/mês) inclui PDFs ilimitados e até 20 respondentes por link. O Gerencial (R$ 179,90/mês) adiciona equipes, indicadores semanais, OKRs, RACI, 5W2H e DNA Estratégico — ideal para gestores e RH."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Os pagamentos são seguros?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Sim. Os pagamentos são processados via Mercado Pago (Pix, cartão, boleto) ou Stripe. Não armazenamos dados de cartão — toda transação acontece nos gateways oficiais."
+            "text": "Você gera um link único e envia para a pessoa avaliada. O respondente abre o link, faz o teste e o resultado vai automaticamente para o seu dashboard."
           }
         }
       ]
@@ -1321,7 +1305,6 @@
   <ul class="nav-links">
     <li><a href="#matrizes">Matrizes</a></li>
     <li><a href="#como-funciona">Como funciona</a></li>
-    <li><a href="#planos">Planos</a></li>
     <li><a href="tutorial.html">Tutorial</a></li>
     <li><a href="#" class="nav-cta-mobile" data-modal-open>Começar agora</a></li>
   </ul>
@@ -1355,7 +1338,6 @@
   <nav class="hero-quick-nav" aria-label="Navegação rápida">
     <a href="#matrizes">Matrizes</a>
     <a href="#como-funciona">Como funciona</a>
-    <a href="#planos">Planos</a>
     <a href="tutorial.html">Tutorial</a>
   </nav>
   <div class="hero-stats">
@@ -1567,8 +1549,13 @@
 </section>
 
 
-<!-- PLANOS -->
-<section class="planos" id="planos">
+<!-- ────────────────────────────────────────────────────────────────
+     SEÇÃO PLANOS — TEMPORARIAMENTE OCULTA
+     Snapshot completo em memory/project_pricing_snapshot.md
+     Para reativar: tirar `style="display:none;"` daqui e setar
+     BYPASS_PAYWALL=false em js/payments.js
+─────────────────────────────────────────────────────────────────── -->
+<section class="planos" id="planos" style="display:none;" aria-hidden="true">
   <div class="planos-inner">
     <div class="section-header section-header--centered">
       <span class="section-label">Preços</span>
@@ -1902,12 +1889,6 @@ function togglePw(id, btn) {
         id: 'matrizes', title: 'Escolha sua matriz',
         text: 'DISC, Big Five, Ikigai, e mais 6. Cada matriz mapeia uma dimensão diferente do comportamento.',
         attachTo: { element: '#matrizes', on: 'top' },
-        buttons: btns('Próximo'),
-      });
-      tour.addStep({
-        id: 'planos', title: 'Planos flexíveis',
-        text: 'Cadastro grátis. PDFs a partir de R$ 29,90 ou planos com tudo incluído.',
-        attachTo: { element: '#planos', on: 'top' },
         buttons: btns('Próximo'),
       });
       tour.addStep({
