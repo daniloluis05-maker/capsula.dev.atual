@@ -146,6 +146,15 @@ function showResult(){
   try{const perfis=capsulaDB.lsGetUsers();const idx=perfis.findIndex(p=>p.uid===u.uid);if(idx>=0){perfis[idx].ancoras=u.ancoras;capsulaDB.lsSetUsers(perfis);}}catch(e){}
   // Sync Supabase
   if(window.capsulaDB && u.email){ capsulaDB.saveUser(u).catch(function(e){ console.warn('[ancoras] sync:', e); }); }
+
+  // Bloco "E agora?"
+  if (window.gnosisPostResult) {
+    window.gnosisPostResult.render({
+      fromKey: 'ancoras',
+      resultLabel: 'Âncora principal: ' + top.name,
+      containerId: 'page-result',
+    });
+  }
 }
 
 // Proteção de rota

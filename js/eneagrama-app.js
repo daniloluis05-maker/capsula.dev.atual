@@ -414,6 +414,16 @@ async function showResult() {
       }
     } catch(e) { /* silencioso */ }
   }
+
+  // Bloco "E agora?" — compartilhar + próximo teste recomendado
+  if (window.gnosisPostResult) {
+    window.gnosisPostResult.render({
+      fromKey: 'eneagrama',
+      resultLabel: profile.title + ' (Tipo ' + dominant + ')',
+      resultDetail: scores[dominant] + '%',
+      containerId: 'page-result',
+    });
+  }
 }
 
 // ══════════════════════════════════════

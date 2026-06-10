@@ -291,6 +291,15 @@ function showResult() {
   } catch(e) { /* silencioso */ }
   // Sync Supabase
   if(window.capsulaDB && userData.email){ capsulaDB.saveUser(userData).catch(e => console.warn('[soar] sync:', e)); }
+
+  // Bloco "E agora?"
+  if (window.gnosisPostResult) {
+    window.gnosisPostResult.render({
+      fromKey: 'soar',
+      resultLabel: 'SOAR ' + completionPct + '% completo',
+      containerId: 'page-result',
+    });
+  }
 }
 
 // ══════════════════════════════════════

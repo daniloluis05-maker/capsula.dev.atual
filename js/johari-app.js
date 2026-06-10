@@ -155,6 +155,15 @@ function showResult(){
   try{const perfis=capsulaDB.lsGetUsers();const idx=perfis.findIndex(p=>p.uid===u.uid);if(idx>=0){perfis[idx].johari=u.johari;capsulaDB.lsSetUsers(perfis);}}catch(e){}
   // Sync Supabase
   if(window.capsulaDB && u.email){ capsulaDB.saveUser(u).catch(function(e){ console.warn('[johari] sync:', e); }); }
+
+  // Bloco "E agora?"
+  if (window.gnosisPostResult) {
+    window.gnosisPostResult.render({
+      fromKey: 'johari',
+      resultLabel: 'Área predominante: ' + areaGrande,
+      containerId: 'page-result',
+    });
+  }
 }
 
 // Proteção de rota

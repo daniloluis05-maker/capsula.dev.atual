@@ -186,6 +186,15 @@ function showResult(){
   }catch(e){}
   // Sync Supabase
   if(window.capsulaDB && u.email){ capsulaDB.saveUser(u).catch(function(e){ console.warn('[ikigai] sync:', e); }); }
+
+  // Bloco "E agora?"
+  if (window.gnosisPostResult) {
+    window.gnosisPostResult.render({
+      fromKey: 'ikigai',
+      resultLabel: 'Seu Ikigai mapeado',
+      containerId: 'page-result',
+    });
+  }
 }
 
 // Restaura rascunho e proteção de rota

@@ -469,6 +469,16 @@ async function showResult() {
     }
   } catch(e) { /* silencioso */ }
   } // end !_isLoadingExisting
+
+  // Bloco "E agora?" — compartilhar + próximo teste recomendado
+  if (window.gnosisPostResult) {
+    window.gnosisPostResult.render({
+      fromKey: 'disc',
+      resultLabel: profile.title,
+      resultDetail: profile.code + ' · ' + (scores[dominant] || 0) + '%',
+      containerId: 'page-result',
+    });
+  }
 }
 
 // ══════════════════════════════════════

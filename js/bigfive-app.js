@@ -370,6 +370,16 @@ function showResult(){
   // Sync Supabase
   if(window.capsulaDB && u.email){ capsulaDB.saveUser(u).catch(e => console.warn('[bigfive] sync:', e)); }
   } // end !_isLoadingExisting
+
+  // Bloco "E agora?" — compartilhar + próximo teste
+  if (window.gnosisPostResult) {
+    const top = sorted[0] || { name: 'OCEAN', score: 0 };
+    window.gnosisPostResult.render({
+      fromKey: 'bigfive',
+      resultLabel: top.name + ' ' + top.score + '%',
+      containerId: 'page-result',
+    });
+  }
 }
 
 // ══════════════════════════════════════

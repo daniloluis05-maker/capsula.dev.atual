@@ -432,6 +432,15 @@ function showResult(){
     if(idx >= 0){ perfis[idx].pearson = u.pearson; capsulaDB.lsSetUsers(perfis); }
   } catch(e) {}
   if(window.capsulaDB && u.email){ capsulaDB.saveUser(u).catch(e => console.warn('[pearson] sync:', e)); }
+
+  // Bloco "E agora?"
+  if (window.gnosisPostResult) {
+    window.gnosisPostResult.render({
+      fromKey: 'pearson',
+      resultLabel: 'Arquétipo: ' + topArch.name,
+      containerId: 'page-result',
+    });
+  }
 }
 
 // ══════════════════════════════════════

@@ -533,6 +533,17 @@ function saveSWOT() {
   saveToLS(userData.swot?.aiAnalysis || null);
   toast('SWOT salva!', 'Você pode editar a qualquer momento.');
   showPage('page-result');
+
+  // Bloco "E agora?" — note: SWOT individual não está em SEQUENCE
+  // (não é teste de personalidade), mas mesmo assim sugerimos próximo passo.
+  if (window.gnosisPostResult) {
+    const total = SWOT.f.length + SWOT.fk.length + SWOT.o.length + SWOT.a.length;
+    window.gnosisPostResult.render({
+      fromKey: 'swot',
+      resultLabel: 'SWOT com ' + total + ' itens',
+      containerId: 'page-result',
+    });
+  }
 }
 
 // ══════════════════════════════════════

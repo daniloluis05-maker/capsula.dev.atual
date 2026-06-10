@@ -240,6 +240,16 @@ function showResult(scores) {
 
   // AI interpretation
   generateAI(scores, u);
+
+  // Bloco "E agora?"
+  if (window.gnosisPostResult) {
+    const topDim = ['BN','ED','DR','PE'].reduce((a,b)=> (scores[a]||0) > (scores[b]||0) ? a : b);
+    window.gnosisPostResult.render({
+      fromKey: 'tci',
+      resultLabel: DIMS[topDim].name + ' ' + (scores[topDim] || 0) + '%',
+      containerId: 'page-result',
+    });
+  }
 }
 
 async function generateAI(scores, u) {
