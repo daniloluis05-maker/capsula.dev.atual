@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem('gnosis_theme');
+      if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      else if (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch (_) {}
+  })();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';">
+<title>Sobre — Sistema Gnosis</title>
+<meta name="description" content="Sobre o Sistema Gnosis: as bases teóricas das 9 matrizes (DISC, Big Five, Eneagrama, Pearson-Marr, TCI, Ikigai, SOAR, Johari, Âncoras) e quem está por trás.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Sobre o Sistema Gnosis">
+<meta property="og:description" content="As bases científicas e teóricas das matrizes do Sistema Gnosis.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.sistema-gnosis.com.br/sobre.html">
+<meta property="og:image" content="https://www.sistema-gnosis.com.br/logo-gnosis-512.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://www.sistema-gnosis.com.br/sobre.html">
+<link rel="stylesheet" href="css/capsula.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0A0A0F; --surface: #111118; --surface2: #16161F;
+    --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.15);
+    --accent: #7C6FF7; --accent2: #4FC9A0;
+    --text: #F0EEF8; --muted: #8B899E; --muted2: #5A5870;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'Outfit', system-ui, sans-serif;
+    --mono: 'Space Mono', monospace;
+  }
+  :root[data-theme="light"] {
+    --bg: #F4F2F8; --surface: #EBE8F0; --surface2: #E2DEE9;
+    --border: rgba(20,15,35,0.10); --border2: rgba(20,15,35,0.20);
+    --text: #1A1525; --muted: #6A6478; --muted2: #8B8298;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; }
+
+  .container { max-width: 880px; margin: 0 auto; padding: 4rem 1.5rem 6rem; }
+
+  .top-link {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: var(--mono); font-size: 0.75rem; color: var(--muted);
+    text-decoration: none; padding: 0.4rem 0.85rem;
+    border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.2s; margin-bottom: 2.5rem;
+  }
+  .top-link:hover { color: var(--accent); border-color: var(--accent); }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1.1rem;
+  }
+  h1 {
+    font-family: var(--serif); font-size: clamp(2rem, 4.5vw, 3.2rem);
+    line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 1.5rem;
+  }
+  h1 em { font-style: italic; color: var(--accent); }
+
+  .lead {
+    font-size: 1.1rem; color: var(--muted); line-height: 1.7;
+    max-width: 680px; margin-bottom: 3rem;
+  }
+
+  .section { margin-top: 4rem; }
+  .section-label {
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 0.6rem;
+  }
+  h2 {
+    font-family: var(--serif); font-size: 1.75rem; line-height: 1.25;
+    letter-spacing: -0.01em; margin-bottom: 1.2rem;
+  }
+  p { font-size: 1rem; color: var(--text); margin-bottom: 1rem; }
+  p.dim { color: var(--muted); }
+
+  /* Cartão do fundador */
+  .founder-card {
+    margin-top: 2rem;
+    display: grid; grid-template-columns: auto 1fr; gap: 1.5rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.75rem;
+  }
+  .founder-avatar {
+    width: 96px; height: 96px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #4FC9A0);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-size: 2.5rem; color: #fff;
+    flex-shrink: 0;
+  }
+  .founder-name { font-family: var(--serif); font-size: 1.4rem; margin-bottom: 0.25rem; }
+  .founder-role { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.85rem; }
+  .founder-bio { font-size: 0.92rem; line-height: 1.65; color: var(--muted); }
+
+  /* Tabela de matrizes */
+  .matrix-table {
+    margin-top: 1.5rem; border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; background: var(--surface);
+  }
+  .matrix-row {
+    display: grid; grid-template-columns: 200px 1fr;
+    padding: 1.15rem 1.5rem; border-bottom: 1px solid var(--border);
+    gap: 1.5rem;
+  }
+  .matrix-row:last-child { border-bottom: none; }
+  .matrix-name {
+    font-family: var(--sans); font-weight: 700; color: var(--text);
+    font-size: 0.98rem;
+  }
+  .matrix-name em {
+    display: block; font-family: var(--mono); font-size: 0.66rem;
+    color: var(--muted); font-style: normal; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-top: 0.25rem;
+  }
+  .matrix-source { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+  .matrix-source strong { color: var(--text); font-weight: 600; }
+
+  /* CTA final */
+  .cta-card {
+    margin-top: 4rem; text-align: center;
+    background: linear-gradient(135deg, rgba(124,111,247,0.08), rgba(79,201,160,0.04));
+    border: 1px solid rgba(124,111,247,0.2);
+    border-radius: 14px; padding: 3rem 2rem;
+  }
+  .cta-card h3 {
+    font-family: var(--serif); font-size: 1.85rem;
+    line-height: 1.25; margin-bottom: 0.85rem;
+  }
+  .cta-card p { color: var(--muted); margin-bottom: 1.75rem; max-width: 540px; margin-left: auto; margin-right: auto; }
+  .cta-card a {
+    display: inline-block; padding: 0.95rem 2rem;
+    background: var(--accent); color: #fff;
+    border-radius: 8px; text-decoration: none;
+    font-weight: 700; font-size: 0.95rem;
+    transition: all 0.2s; box-shadow: 0 0 24px rgba(124,111,247,0.3);
+  }
+  .cta-card a:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(124,111,247,0.5); }
+
+  @media (max-width: 640px) {
+    .container { padding: 2.5rem 1.25rem 4rem; }
+    .founder-card { grid-template-columns: 1fr; text-align: center; }
+    .founder-avatar { margin: 0 auto; }
+    .matrix-row { grid-template-columns: 1fr; gap: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <a href="index.html" class="top-link">← Voltar ao início</a>
+
+  <div class="eyebrow">// quem está por trás</div>
+  <h1>Sobre o<br>Sistema <em>Gnosis</em></h1>
+  <p class="lead">
+    O Sistema Gnosis foi criado a partir de uma pergunta simples: por que ferramentas sérias
+    de autoconhecimento — DISC, Eneagrama, Big Five, Jung — só ficavam acessíveis em consultas
+    caras ou em sites com interface dos anos 2000? A proposta aqui é colocar metodologias
+    validadas cientificamente em uma experiência moderna, acessível e gratuita.
+  </p>
+
+  <!-- ── Founder ──────────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">Quem desenvolve</div>
+    <h2>Um projeto solo, com seriedade técnica</h2>
+    <div class="founder-card">
+      <div class="founder-avatar">D</div>
+      <div>
+        <div class="founder-name">Danilo Oliveira</div>
+        <div class="founder-role">Fundador · Desenvolvimento e curadoria de conteúdo</div>
+        <p class="founder-bio">
+          Cada matriz do Sistema Gnosis foi implementada a partir das fontes originais —
+          os artigos científicos, livros e instrumentos que dão base teórica a cada modelo.
+          O objetivo não é simplificar a ponto de virar entretenimento, mas tornar
+          ferramentas sérias acessíveis sem perder rigor.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Filosofia ────────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">// princípios</div>
+    <h2>Como pensamos as matrizes</h2>
+    <p>
+      <strong>Cada avaliação fica isolada.</strong> Você responde o DISC, recebe seu perfil DISC.
+      Responde o Eneagrama, recebe seu tipo do Eneagrama. Os testes não se contaminam — porque
+      misturar metodologias diferentes na hora da interpretação cria ruído.
+    </p>
+    <p>
+      <strong>A integração acontece em um lugar só:</strong> o DNA Estratégico, que é uma síntese
+      por IA cruzando todas as matrizes que você fez. Ele só faz sentido depois que você tem
+      pelo menos 3 testes — antes disso, não há dados suficientes pra uma análise honesta.
+    </p>
+    <p>
+      <strong>Cada resultado precisa apontar três coisas:</strong> suas fortalezas, suas fraquezas
+      ou pontos de atenção, e o que pode ser feito a partir daqui. Sem isso, o teste vira
+      diagnóstico vazio — informação que não move ação.
+    </p>
+  </div>
+
+  <!-- ── Base teórica ────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">// base científica</div>
+    <h2>De onde vêm as matrizes</h2>
+    <p class="dim">Cada matriz do Sistema Gnosis tem origem em um instrumento validado academicamente. Esta é a lista das fontes principais utilizadas como referência:</p>
+    <div class="matrix-table">
+      <div class="matrix-row">
+        <div class="matrix-name">DISC<em>Comportamento</em></div>
+        <div class="matrix-source"><strong>William Moulton Marston</strong>, <em>Emotions of Normal People</em> (1928). Modelo clássico de 4 dimensões comportamentais — Dominância, Influência, Estabilidade e Conformidade.</div>
+      </div>
+      <div class="matrix-row">
+        <div class="matrix-name">Big Five · OCEAN<em>Psicometria científica</em></div>
+        <div class="matrix-source"><strong>Costa & McCrae</strong>, NEO-PI-R. Modelo de 5 traços (Abertura, Conscienciosidade, Extroversão, Amabilidade, Neuroticismo) considerado o padrão-ouro em psicologia da personalidade. Implementação baseada no BFI-44 de John & Srivastava (1999).</div>
+      </div>
+      <div class="matrix-row">
+        <div class="matrix-name">Eneagrama<em>Tipologia profunda</em></div>
+        <div class="matrix-source"><strong>Don Richard Riso & Russ Hudson</strong>, <em>The Wisdom of the Enneagram</em>. 9 tipos arquetípicos centrados nas motivações inconscientes e medos básicos que governam o comportamento automático.</div>
+      </div>
+      <div class="matrix-row">
+        <div class="matrix-name">Temperamento TCI<em>Neurociência</em></div>
+        <div class="matrix-source"><strong>C. Robert Cloninger</strong>, <em>Temperament and Character Inventory</em>. Modelo neuroquímico com base biológica — Busca de Novidade (dopamina), Esquiva de Danos (serotonina), Dependência de Recompensa (noradrenalina) e Persistência (glutamato).</div>
+      </div>
+      <div class="matrix-row">
+        <div class="matrix-name">Pearson-Marr<em>Psicologia junguiana</em></div>
+        <div class="matrix-source"><strong>Carol S. Pearson</strong>, <em>Awakening the Heroes Within</em>. Sistema de 12 arquétipos derivados da teoria junguiana, organizados em 4 grupos: Ego, Alma, Self e Liberdade.</div>
+      </div>
+      <div class="matrix-row">
+        <div class="matrix-name">Janela de Johari<em>Autopercepção relacional</em></div>
+        <div class="matrix-source"><strong>Joseph Luft & Harrington Ingham</strong> (1955). Ferramenta clássica em treinamento de líderes, mapeia a discrepância entre como você se vê e como os outros te percebem.</div>
+      </div>
+      <div class="matrix-row">
+        <div class="matrix-name">Âncoras de Carreira<em>Motivadores profissionais</em></div>
+        <div class="matrix-source"><strong>Edgar H. Schein</strong> (MIT). Identifica o que cada profissional não abre mão na vida profissional — o "núcleo" da identidade de carreira.</div>
+      </div>
+      <div class="matrix-row">
+        <div class="matrix-name">Ikigai<em>Propósito de vida</em></div>
+        <div class="matrix-source"><strong>Marc Winn</strong> (adaptação ocidental do conceito japonês). A intersecção entre o que você ama, o que sabe fazer, o que o mundo precisa e o que te remunera.</div>
+      </div>
+      <div class="matrix-row">
+        <div class="matrix-name">SOAR<em>Estratégia positiva</em></div>
+        <div class="matrix-source"><strong>Stavros, Cooperrider & Kelley</strong>. Reformulação da SWOT em chave apreciativa — Forças, Oportunidades, Aspirações e Resultados — focada em construção de futuro em vez de defesa contra ameaças.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Compromisso ─────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">// compromisso</div>
+    <h2>O que prometemos</h2>
+    <p><strong>Privacidade.</strong> Seus resultados são seus. Nada é vendido nem compartilhado com terceiros. Consulte a <a href="privacidade.html" style="color:var(--accent)">política de privacidade</a> para detalhes técnicos.</p>
+    <p><strong>Honestidade.</strong> Quando uma matriz tem limitações conhecidas — e elas existem em todo instrumento psicométrico — preferimos sinalizar o limite a inflar a precisão.</p>
+    <p><strong>Acesso aberto.</strong> Durante esta fase, todas as 9 matrizes + DNA Estratégico estão liberadas sem cobrança. O foco agora é colocar a ferramenta na mão de quem precisa.</p>
+  </div>
+
+  <!-- ── CTA ─────────────────────────────────────────────────── -->
+  <div class="cta-card">
+    <h3>Pronto para começar?</h3>
+    <p>O DISC leva 8 minutos. Não pede cadastro pra testar. Resultado imediato.</p>
+    <a href="disc.html">Fazer DISC grátis →</a>
+  </div>
+
+</div>
+
+</body>
+</html>
