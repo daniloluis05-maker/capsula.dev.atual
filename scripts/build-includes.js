@@ -29,7 +29,7 @@ const MANIFEST = [
   {
     name: 'theme-init',
     files: ['404', '5w2h', 'ancoras', 'auth-callback', 'bigfive', 'convite', 'dashboard',
-      'disc', 'disc-share', 'dna', 'eneagrama', 'equipe', 'gnosis-identity', 'ikigai',
+      'disc', 'disc-share', 'dna', 'eneagrama', 'equipe', 'gnosis-identity', 'index', 'ikigai',
       'johari', 'okrs', 'pagamento-sucesso', 'pearson', 'privacidade', 'raci',
       'reset-password', 'soar', 'sobre', 'swot', 'swot-equipe', 'tci', 'termos',
       'tutorial', 'wizard'],
@@ -38,7 +38,7 @@ const MANIFEST = [
   {
     name: 'csp-app',
     files: ['5w2h', 'ancoras', 'bigfive', 'dashboard', 'disc', 'dna', 'eneagrama', 'equipe',
-      'ikigai', 'johari', 'okrs', 'pearson', 'raci', 'soar', 'swot-equipe', 'tci',
+      'ikigai', 'johari', 'okrs', 'pearson', 'raci', 'soar', 'swot', 'swot-equipe', 'tci',
       'tutorial', 'wizard'],
     detect: /<meta http-equiv="Content-Security-Policy"[^>]*>/,
   },
