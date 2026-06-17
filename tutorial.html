@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR" dir="ltr">
 <head>
+<!-- @include theme-init -->
 <script>
-  // Aplicar tema antes de pintar pra evitar flash
   (function () {
     try {
       var saved = localStorage.getItem('gnosis_theme');
@@ -13,13 +13,16 @@
     } catch (_) {}
   })();
 </script>
+<!-- @endinclude theme-init -->
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0A0A0F">
+<!-- @include csp-app -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://browser.sentry-cdn.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://*.ingest.sentry.io https://www.google-analytics.com https://*.analytics.google.com https://*.google-analytics.com;">
+<!-- @endinclude csp-app -->
 <title>Tutorial — Como usar o Sistema Gnosis</title>
 <meta name="description" content="Guia passo a passo pra usar o Sistema Gnosis: criar conta, escolher matriz, fazer teste, ver resultados e criar avaliações remotas.">
 <meta name="robots" content="index, follow">

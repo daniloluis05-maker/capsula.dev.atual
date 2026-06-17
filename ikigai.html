@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-BR" dir="ltr">
 <head>
+<!-- @include theme-init -->
 <script>
   (function () {
     try {
@@ -12,13 +13,16 @@
     } catch (_) {}
   })();
 </script>
+<!-- @endinclude theme-init -->
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Encontre sua razão de ser. Mapeie a interseção entre o que você ama, sabe fazer, o que o mundo precisa e o que pode gerar renda.">
+<!-- @include csp-app -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://browser.sentry-cdn.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https: data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://*.ingest.sentry.io https://www.google-analytics.com https://*.analytics.google.com https://*.google-analytics.com;">
+<!-- @endinclude csp-app -->
 <meta name="twitter:card" content="summary_large_image">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.sistema-gnosis.com.br/ikigai.html">
@@ -152,14 +156,17 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .prog-wrap{max-width:160px;margin:0 0.75rem;}
 }
 </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" integrity="sha384-IiV7lMrgUYFjr7nKnX1XDxweNl9p95vzrLcmfcQ8dMKM5kqqCi6iwxDaRcr+I9Vc" crossorigin="anonymous"></script>
-  <script src="js/config.js"></script>
-  <script src="js/sentry-init.js"></script>
+  <!-- @include head-scripts -->
+<!-- Supabase JS (Auth + DB) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.103.1/dist/umd/supabase.js" integrity="sha384-IiV7lMrgUYFjr7nKnX1XDxweNl9p95vzrLcmfcQ8dMKM5kqqCi6iwxDaRcr+I9Vc" crossorigin="anonymous"></script>
+<script src="js/config.js"></script>
+<script src="js/sentry-init.js"></script>
 <script src="js/analytics.js" defer></script>
-  <script src="js/db.js"></script>
-  <script src="js/payments.js"></script>
-  <script src="js/remote-link.js"></script>
-  <script src="js/ui.js" defer></script>
+<script src="js/db.js"></script>
+<script src="js/payments.js"></script>
+<script src="js/remote-link.js"></script>
+<script src="js/ui.js" defer></script>
+<!-- @endinclude head-scripts -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",

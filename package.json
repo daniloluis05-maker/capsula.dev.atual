@@ -14,7 +14,9 @@
     "format": "prettier --write \"js/**/*.js\" \"api/**/*.js\"",
     "format:check": "prettier --check \"js/**/*.js\" \"api/**/*.js\"",
     "syntax": "node -e \"const fs=require('fs'),cp=require('child_process');let fail=0;for(const d of ['js','api']){for(const f of fs.readdirSync(d)){if(f.endsWith('.js')){try{cp.execSync('node --check '+d+'/'+f,{stdio:'pipe'})}catch(e){console.error('FAIL',d+'/'+f);fail++}}}}process.exit(fail);\"",
-    "check": "npm run syntax && npm run lint"
+    "build:includes": "node scripts/build-includes.js",
+    "build:check": "node scripts/build-includes.js --check",
+    "check": "npm run syntax && npm run lint && npm run build:check"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
