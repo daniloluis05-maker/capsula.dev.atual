@@ -57,9 +57,15 @@
   document.getElementById('tab-signup').addEventListener('click', () => switchModalTab('signup'));
   document.getElementById('tab-login').addEventListener('click', () => switchModalTab('login'));
 
-  // Delegação: qualquer botão com [data-modal-open] abre o modal
+  // Delegação: botões com [data-modal-open] abrem o modal.
+  // Aceita valor "login" para abrir direto na tab de login (botão "Entrar"
+  // no topo do nav). Sem valor → fallback para 'signup' (default).
   document.addEventListener('click', (e) => {
-    if (e.target.closest('[data-modal-open]')) openModal('signup');
+    const trigger = e.target.closest('[data-modal-open]');
+    if (!trigger) return;
+    e.preventDefault();
+    const tab = trigger.getAttribute('data-modal-open') === 'login' ? 'login' : 'signup';
+    openModal(tab);
   });
 
   document.getElementById('modal-close-btn').addEventListener('click', closeModal);

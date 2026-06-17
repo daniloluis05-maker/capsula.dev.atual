@@ -305,6 +305,30 @@
     text-decoration: none;
   }
   .nav-cta:hover { opacity: 0.85; }
+  /* Botão "Entrar" — secundário, à esquerda do "Começar agora".
+     Mesmo tamanho e tipografia, mas em outline pra não competir visualmente. */
+  .nav-login {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border-hover, rgba(255,255,255,0.15));
+    padding: 0.55rem 1.2rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--sans);
+    margin-right: 0.6rem;
+    text-decoration: none;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+  .nav-login:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--card-bg-hover, rgba(124,111,247,0.06));
+  }
+  /* Versão curta do texto "Começar agora" só aparece no mobile pequeno
+     pra evitar overflow do nav. Desktop e mobile largo mostram "Começar agora". */
+  .nav-cta-short { display: none; }
 
   /* HERO */
   .hero {
@@ -1129,44 +1153,37 @@
   }
 
   @media (max-width: 768px) {
-    nav { display: none; } /* mobile usa o hero-quick-nav (abaixo dos CTAs) — sem hambúrguer */
-    .hero-quick-nav { display: flex; } /* aparece só em mobile */
+    /* Nav mobile simplificado: usa grid com 2 colunas explícitas pra garantir
+       que o botão "Entrar" sempre apareça à direita sem overflow, independente
+       de quantos filhos estão display:none. Logo à esquerda, Entrar à direita. */
+    nav {
+      padding: 0.6rem 4%;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-brand { display: none; }
+    .nav-links { display: none; }
+    .nav-tour-btn { display: none; }
+    .theme-toggle { display: none; }
+    .nav-hamburger { display: none; }
+    .nav-icon-mobile {
+      display: inline-flex;
+      grid-column: 1;
+    }
+    .nav-login {
+      padding: 0.45rem 1rem;
+      font-size: 0.82rem;
+      margin-right: 0;
+      grid-column: 3;
+      justify-self: end;
+    }
+    /* Mobile: esconde o botão "Cadastrar" no topo — o CTA primário de
+       conversão fica no botão "Fazer DISC grátis" do hero. Mantém só
+       o botão "Entrar" (recorrente) no topo. */
     .nav-cta { display: none; }
-    .nav-links {
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 64px;
-      left: 0; right: 0;
-      background: rgba(10,10,15,0.97);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      padding: 1.5rem 5%;
-      gap: 1rem;
-      transform: translateY(-110%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 99;
-    }
-    nav.nav-open .nav-links { transform: translateY(0); }
-    .nav-links li { width: 100%; }
-    .nav-links a {
-      display: block;
-      padding: 0.65rem 0;
-      font-size: 1rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-links li:last-child a { border-bottom: none; }
-    .nav-links .nav-cta-mobile {
-      display: block;
-      margin-top: 0.5rem;
-      padding: 0.85rem 1rem;
-      background: var(--accent);
-      color: #fff;
-      text-align: center;
-      border-radius: 8px;
-      font-weight: 600;
-      border-bottom: none;
-    }
+    .hero-quick-nav { display: flex; } /* mantém quick-nav abaixo dos CTAs do hero */
     .eixos-grid { grid-template-columns: 1fr; }
     .steps::before { display: none; }
     .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
@@ -1341,7 +1358,6 @@
     <li><a href="#como-funciona">Como funciona</a></li>
     <li><a href="sobre.html">Sobre</a></li>
     <li><a href="tutorial.html">Tutorial</a></li>
-    <li><a href="#" class="nav-cta-mobile" data-modal-open>Começar agora</a></li>
   </ul>
   <button class="nav-tour-btn" aria-label="Iniciar tour guiado" onclick="window.__startTour && window.__startTour()" title="Tour guiado">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1355,7 +1371,8 @@
     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
   </button>
-  <button class="nav-cta" data-modal-open>Começar agora</button>
+  <button class="nav-login" data-modal-open="login">Entrar</button>
+  <button class="nav-cta" data-modal-open="signup"><span class="nav-cta-full">Começar agora</span><span class="nav-cta-short">Cadastrar</span></button>
   <button class="nav-hamburger" aria-label="Abrir menu" aria-expanded="false" onclick="(function(b){const n=b.closest('nav');const o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',!o);n.classList.toggle('nav-open',!o);b.setAttribute('aria-label',!o?'Fechar menu':'Abrir menu');})(this)">
     <span></span><span></span><span></span>
   </button>
