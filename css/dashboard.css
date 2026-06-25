@@ -228,3 +228,27 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .matrix-card.card-featured::after{display:none;}
 @media(max-width:860px){.matrix-card.card-wide,.matrix-card.card-featured{grid-column:1/-1;}.matrix-card.card-tall{grid-row:auto;}}
 @media(max-width:600px){.stats-row{grid-template-columns:1fr 1fr;}.matrices-grid{grid-template-columns:1fr;}}
+
+/* ── SKELETON / LOADING ──────────────────────────────────────
+   Aplicado enquanto body[data-loading="true"]. dashboard-core.js
+   remove o atributo no início de applyUser(). Cobre os elementos
+   visíveis acima da dobra que dependem de dados do user:
+   greeting, créditos, contagem de matrizes, progresso do donut. */
+@keyframes _gnSkel { 0%{background-position:-200% 0;} 100%{background-position:200% 0;} }
+body[data-loading="true"] #greeting-nome,
+body[data-loading="true"] #stat-matrizes,
+body[data-loading="true"] #stat-creditos,
+body[data-loading="true"] #progress-count,
+body[data-loading="true"] #greeting-date {
+  display:inline-block; color:transparent !important;
+  background:linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+  background-size:200% 100%;
+  animation:_gnSkel 1.4s ease-in-out infinite;
+  border-radius:4px; min-width:3.2em;
+}
+body[data-loading="true"] #greeting-nome { min-width:6em; }
+body[data-loading="true"] #greeting-date { min-width:12em; }
+body[data-loading="true"] #progress-count { min-width:2.6em; }
+/* Esconde sublabels que mostrariam "0 de 9" prematuramente */
+body[data-loading="true"] .stat-sub,
+body[data-loading="true"] #stat-creditos-label { visibility:hidden; }

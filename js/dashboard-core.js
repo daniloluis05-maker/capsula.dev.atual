@@ -329,6 +329,10 @@ function getNomeExibido(userData) {
 }
 
 function applyUser(nome,apelido){
+  // Remove o skeleton shimmer assim que houver nome — sinal de que loadUser
+  // resolveu (auth+localStorage) e os placeholders 0/— vão ser substituídos
+  // nas próximas linhas.
+  document.body.removeAttribute('data-loading');
   const ex=getNomeExibido({nome,apelido});
   document.getElementById('greeting-nome').textContent=ex;
   document.getElementById('sb-nome').textContent=nome||ex;
@@ -405,7 +409,14 @@ async function logout(){
   window.location.href = 'index.html';
 }
 
-document.addEventListener("DOMContentLoaded", function() { if(typeof capsulaDB !== "undefined") { db = capsulaDB.getDB(); } initDate(); loadUser(); });
+document.addEventListener("DOMContentLoaded", function() {
+  if(typeof capsulaDB !== "undefined") { db = capsulaDB.getDB(); }
+  initDate(); loadUser();
+  // Safety net: se loadUser travar ou jogar exceção antes de applyUser, o
+  // shimmer fica eterno. 6s cobre o pior caso do retry de auth (3.4s) com
+  // folga. Não conflita com applyUser que remove logo no caminho feliz.
+  setTimeout(() => document.body.removeAttribute('data-loading'), 6000);
+});
 
 // ── FIX CRÍTICO 2: Recarrega estado ao voltar do DISC/SOAR ────
 document.addEventListener('visibilitychange', function() {

@@ -31,6 +31,18 @@
     loginError.style.display = 'block';
   }
 
+  // Considera o user "retornante" se já houver capsula_user com email
+  // gravado (significa cadastro feito) — apenas uid não basta (pode ser
+  // tester anônimo que fez um quiz sem cadastrar).
+  function getReturningEmail() {
+    try {
+      const raw = localStorage.getItem('capsula_user') || sessionStorage.getItem('capsula_user');
+      if (!raw) return '';
+      const u = JSON.parse(raw);
+      return (u && typeof u.email === 'string' && u.email.includes('@')) ? u.email : '';
+    } catch (_) { return ''; }
+  }
+
   function openModal(tab) {
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -60,12 +72,22 @@
   // Delegação: botões com [data-modal-open] abrem o modal.
   // Aceita valor "login" para abrir direto na tab de login (botão "Entrar"
   // no topo do nav). Sem valor → fallback para 'signup' (default).
+  // Exceção: se o user é retornante (já tem email salvo), até botões de
+  // signup abrem em login — evita ele tentar cadastrar de novo com mesmo
+  // email e tomar erro. Pré-preenche o campo de email pra reduzir fricção.
   document.addEventListener('click', (e) => {
     const trigger = e.target.closest('[data-modal-open]');
     if (!trigger) return;
     e.preventDefault();
-    const tab = trigger.getAttribute('data-modal-open') === 'login' ? 'login' : 'signup';
+    const requested = trigger.getAttribute('data-modal-open');
+    let tab = requested === 'login' ? 'login' : 'signup';
+    const returningEmail = getReturningEmail();
+    if (tab === 'signup' && returningEmail) tab = 'login';
     openModal(tab);
+    if (tab === 'login' && returningEmail) {
+      const emailEl = document.getElementById('login-email');
+      if (emailEl && !emailEl.value) emailEl.value = returningEmail;
+    }
   });
 
   document.getElementById('modal-close-btn').addEventListener('click', closeModal);
