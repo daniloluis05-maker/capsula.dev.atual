@@ -265,3 +265,29 @@ body.gn-quiosque { padding-top: 52px; }
 #_gn-pres-dlg #_gn-pres-ok {
   background: #2EC4A0; color: #fff;
 }
+
+/* Fullscreen gate (opt-in via ?fs=1 no modo presencial) */
+#_gn-fs-gate {
+  position: fixed; inset: 0; z-index: 9998;
+  background: rgba(7,8,12,0.97);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem; font-family: var(--sans, 'Outfit', system-ui, sans-serif);
+  color: #e8e8f0;
+}
+#_gn-fs-gate ._gn-fs-card {
+  max-width: 360px; text-align: center;
+  background: #13131a; border: 1px solid rgba(46,196,160,0.25);
+  border-radius: 14px; padding: 2rem 1.75rem;
+}
+#_gn-fs-gate ._gn-fs-icon {
+  font-size: 2.5rem; color: #2EC4A0; margin-bottom: 0.75rem; line-height: 1;
+}
+#_gn-fs-gate h3 { margin: 0 0 0.5rem; font-size: 1.1rem; color: #fff; }
+#_gn-fs-gate p { font-size: 0.85rem; color: rgba(232,232,240,0.55); margin: 0 0 1.5rem; line-height: 1.55; }
+#_gn-fs-gate #_gn-fs-go {
+  width: 100%; padding: 0.85rem; background: #2EC4A0;
+  border: none; border-radius: 8px; color: #fff;
+  font-weight: 700; font-size: 0.92rem; cursor: pointer;
+  font-family: inherit; transition: opacity 0.15s;
+}
+#_gn-fs-gate #_gn-fs-go:hover { opacity: 0.9; }

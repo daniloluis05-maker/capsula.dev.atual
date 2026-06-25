@@ -20,6 +20,7 @@
   const PRESENCIAL_PIN = (PARAMS.get('pin') || '').replace(/\D/g,'').slice(0,4);
   const PRESENCIAL_NOME  = PARAMS.get('nome')  || '';
   const PRESENCIAL_EMAIL = PARAMS.get('email') || '';
+  const PRESENCIAL_FS    = PARAMS.get('fs') === '1';
 
   const MATRIX_NAMES = {
     disc: 'DISC', soar: 'SOAR', ikigai: 'Ikigai',
@@ -584,6 +585,49 @@
 
     _overlay.remove();
     watchForResult();
+
+    // Fullscreen opt-in: requestFullscreen exige user gesture, então
+    // mostramos um overlay inicial com botão "Iniciar avaliação". Se
+    // sair do fullscreen acidentalmente, reaparece com "Continuar".
+    if (PRESENCIAL_FS) _setupFullscreenGuard();
+  }
+
+  function _setupFullscreenGuard() {
+    function requestFs() {
+      const el = document.documentElement;
+      const fn = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+      if (fn) try { return fn.call(el); } catch (_) {}
+    }
+    function inFs() {
+      return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+    }
+    function showGate(label) {
+      const old = document.getElementById('_gn-fs-gate');
+      if (old) old.remove();
+      const gate = document.createElement('div');
+      gate.id = '_gn-fs-gate';
+      gate.innerHTML = [
+        '<div class="_gn-fs-card">',
+        '<div class="_gn-fs-icon">⛶</div>',
+        '<h3>Modo presencial</h3>',
+        '<p>A avaliação rodará em tela cheia. Não saia da tela durante o teste.</p>',
+        '<button type="button" id="_gn-fs-go">' + label + '</button>',
+        '</div>',
+      ].join('');
+      document.body.appendChild(gate);
+      gate.querySelector('#_gn-fs-go').addEventListener('click', function () {
+        const p = requestFs();
+        if (p && p.then) p.then(() => gate.remove()).catch(() => gate.remove());
+        else gate.remove();
+      });
+    }
+    // Listener: se sair do fs (esc, tab switch agressivo), reexibe gate
+    function onChange() {
+      if (!inFs()) showGate('Continuar avaliação');
+    }
+    document.addEventListener('fullscreenchange', onChange);
+    document.addEventListener('webkitfullscreenchange', onChange);
+    showGate('Iniciar avaliação');
   }
 
   function endPresencialSession() {

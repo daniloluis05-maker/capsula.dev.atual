@@ -431,6 +431,9 @@
         <button onclick="presencialAbrirModal()" class="pr-btn-primary">+ Iniciar sessão presencial</button>
       </div>
       <p class="pr-section-hint">Para ambientes onde o respondente não pode usar o próprio celular. A avaliação roda no seu computador, em modo quiosque, sob sua supervisão.</p>
+      <div class="pr-toolbar">
+        <input id="pr-search" type="search" placeholder="Buscar por nome ou matriz..." autocomplete="off">
+      </div>
       <div id="pr-lista">
         <div class="pr-empty">Carregando...</div>
       </div>
@@ -608,6 +611,14 @@
           <input id="pr-f-pin" type="tel" inputmode="numeric" maxlength="4" autocomplete="off">
         </div>
       </div>
+      <div class="pr-field">
+        <label>Vincular à equipe <span class="pr-opt">(opcional)</span></label>
+        <select id="pr-f-equipe"><option value="">— Sem equipes ativas —</option></select>
+      </div>
+      <label class="pr-checkbox">
+        <input type="checkbox" id="pr-f-fs">
+        <span>Tela cheia (mais imersivo, mais difícil de sair)</span>
+      </label>
     </div>
     <p id="pr-f-err" class="pr-form-err"></p>
     <button id="pr-f-ok" class="pr-btn-confirm" onclick="presencialConfirmar()">Iniciar avaliação →</button>
