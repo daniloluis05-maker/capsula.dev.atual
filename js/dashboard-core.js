@@ -409,6 +409,8 @@ async function logout(){
   try { await capsulaDB.authSignOut(); } catch(e) { console.warn('[logout] signOut:', e); }
   sessionStorage.removeItem('capsula_user');
   localStorage.removeItem('capsula_user');
+  // Notifica outras abas pra também redirecionarem (caso user tenha 2+ abas abertas)
+  if (window.gnosisSyncTabs) gnosisSyncTabs.broadcast('user-logout', {});
   window.location.href = 'index.html';
 }
 
@@ -437,12 +439,44 @@ document.addEventListener('visibilitychange', function() {
   }
 });
 
-// Também ouve mudanças no localStorage (caso abra em outra aba)
+// Sync entre abas: storage event (nativo) + BroadcastChannel (sync-tabs.js).
+// Quando o user faz um teste em outra aba, esta aba (dashboard aberto)
+// re-renderiza progresso/donut/avatar sem precisar refresh.
+function _gnRerenderFrom(userData) {
+  if (!userData) return;
+  loadMatrixState(userData);
+  renderProgressChart(userData);
+  // Avatar/nome no greeting (se mudou apelido em outra aba)
+  if (userData.nome || userData.apelido) {
+    const ex = getNomeExibido(userData);
+    const g = document.getElementById('greeting-nome'); if (g) g.textContent = ex;
+    const a = document.getElementById('sb-avatar'); if (a) a.textContent = ex.charAt(0).toUpperCase();
+    const m = document.getElementById('mob-avatar'); if (m) m.textContent = ex.charAt(0).toUpperCase();
+  }
+}
+
 window.addEventListener('storage', function(e) {
   if (e.key === 'capsula_user' && e.newValue) {
-    loadMatrixState(JSON.parse(e.newValue));
+    try { _gnRerenderFrom(JSON.parse(e.newValue)); } catch (_) {}
   }
 });
+
+// BroadcastChannel: capta eventos explícitos (logout, conclusão) que não
+// disparam storage event ou que requerem tratamento especial.
+if (window.gnosisSyncTabs) {
+  window.gnosisSyncTabs.on('user-logout', function () {
+    // Outra aba fez logout — limpa esta também e volta pra landing
+    try { localStorage.removeItem('capsula_user'); } catch (_) {}
+    window.location.href = 'index.html';
+  });
+  window.gnosisSyncTabs.on('quiz-done', function () {
+    // Outra aba terminou um teste — re-lê localStorage e re-renderiza
+    try {
+      const raw = localStorage.getItem('capsula_user');
+      if (raw) _gnRerenderFrom(JSON.parse(raw));
+    } catch (_) {}
+  });
+}
 
 // ── FIX CRÍTICO 3: Botão Nova Matriz ─────────────────────────
 function novaMatriz() {

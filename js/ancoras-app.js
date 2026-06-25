@@ -56,7 +56,34 @@ let _isLoadingExisting = false;
 
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 
-function startQuiz(){currentA=0;scores={};showPage('page-quiz');renderAnchor(0);}
+function startQuiz(){
+  if (window.gnosisQuizSave) {
+    const saved = gnosisQuizSave.restore('ancoras');
+    if (saved && saved.state && saved.state.scores && typeof saved.state.scores === 'object') {
+      const answered = Object.keys(saved.state.scores).length;
+      if (answered > 0 && answered < ANCHORS.length) {
+        gnosisQuizSave.promptResume({
+          matriz: 'ancoras', label: 'Âncoras de Carreira',
+          summary: answered + ' de ' + ANCHORS.length + ' âncoras avaliadas',
+          onResume: function () {
+            scores = Object.assign({}, saved.state.scores);
+            currentA = typeof saved.state.currentA === 'number' ? saved.state.currentA : answered;
+            if (currentA >= ANCHORS.length) currentA = ANCHORS.length - 1;
+            showPage('page-quiz'); renderAnchor(currentA);
+          },
+          onRestart: function () {
+            currentA = 0; scores = {};
+            showPage('page-quiz'); renderAnchor(0);
+          },
+        });
+        return;
+      }
+    }
+  }
+  currentA = 0; scores = {};
+  showPage('page-quiz');
+  renderAnchor(0);
+}
 
 function goBack(){if(currentA===0)showPage('page-intro');else{currentA--;renderAnchor(currentA);}}
 
@@ -93,6 +120,7 @@ function renderAnchor(idx){
 
 function selectScore(id,val,idx){
   scores[id]=val;
+  if (window.gnosisQuizSave) gnosisQuizSave.save('ancoras', { scores: scores, currentA: idx });
   document.querySelectorAll('.scale-btn').forEach(b=>b.classList.remove('selected'));
   document.querySelector(`.scale-btn[data-val="${val}"]`).classList.add('selected');
   document.getElementById('scale-hint').textContent=HINTS[val-1];
@@ -109,6 +137,7 @@ function nextAnchor(){
 }
 
 function showResult(){
+  if (window.gnosisQuizSave) gnosisQuizSave.clear('ancoras');
   showPage('page-result');
   // Ordena âncoras por score
   const ranked=[...ANCHORS].map(a=>({...a,score:scores[a.id]||0})).sort((a,b)=>b.score-a.score);

@@ -291,3 +291,44 @@ body.gn-quiosque { padding-top: 52px; }
   font-family: inherit; transition: opacity 0.15s;
 }
 #_gn-fs-gate #_gn-fs-go:hover { opacity: 0.9; }
+
+/* Quiz autosave — overlay "Continuar de onde parou?" */
+#_gn-resume {
+  position: fixed; inset: 0; z-index: 9997;
+  background: rgba(7,8,12,0.85); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem; font-family: var(--sans, 'Outfit', system-ui, sans-serif);
+  animation: _gn-resume-in 0.25s ease-out;
+}
+@keyframes _gn-resume-in { from { opacity: 0; } to { opacity: 1; } }
+#_gn-resume ._gn-resume-card {
+  background: #13131a; border: 1px solid rgba(124,111,247,0.25);
+  border-radius: 14px; padding: 1.75rem; max-width: 380px;
+  width: 100%; text-align: center; color: #e8e8f0;
+}
+#_gn-resume ._gn-resume-icon {
+  font-size: 2.2rem; color: #7C6FF7;
+  margin-bottom: 0.75rem; line-height: 1;
+}
+#_gn-resume h3 { margin: 0 0 0.5rem; font-size: 1.1rem; color: #fff; }
+#_gn-resume p {
+  font-size: 0.88rem; color: rgba(232,232,240,0.65);
+  margin: 0 0 1.4rem; line-height: 1.55;
+}
+#_gn-resume p strong { color: #fff; display: block; margin-top: 0.4rem; font-weight: 600; }
+#_gn-resume ._gn-resume-actions {
+  display: flex; gap: 0.6rem;
+}
+#_gn-resume ._gn-resume-actions button {
+  flex: 1; padding: 0.75rem; border-radius: 8px;
+  font-weight: 700; font-size: 0.88rem; cursor: pointer;
+  font-family: inherit; border: none; transition: opacity 0.15s, background 0.15s;
+}
+#_gn-resume #_gn-resume-restart {
+  background: rgba(255,255,255,0.06); color: rgba(232,232,240,0.7);
+}
+#_gn-resume #_gn-resume-restart:hover { background: rgba(255,255,255,0.1); color: #fff; }
+#_gn-resume #_gn-resume-go {
+  background: #7C6FF7; color: #fff;
+}
+#_gn-resume #_gn-resume-go:hover { opacity: 0.9; }

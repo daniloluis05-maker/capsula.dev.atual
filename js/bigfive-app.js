@@ -99,6 +99,29 @@ function showPage(id){
 
 // ── Iniciar quiz
 function startQuiz(){
+  if (window.gnosisQuizSave) {
+    const saved = gnosisQuizSave.restore('bigfive');
+    if (saved && saved.state && Array.isArray(saved.state.answers)) {
+      const answered = saved.state.answers.filter(a => a !== null).length;
+      if (answered > 0 && answered < QUESTIONS.length) {
+        gnosisQuizSave.promptResume({
+          matriz: 'bigfive', label: 'Big Five',
+          summary: answered + ' de ' + QUESTIONS.length + ' perguntas respondidas',
+          onResume: function () {
+            answers = saved.state.answers.slice();
+            currentQ = typeof saved.state.currentQ === 'number' ? saved.state.currentQ : answered;
+            if (currentQ >= QUESTIONS.length) currentQ = QUESTIONS.length - 1;
+            showPage('page-quiz'); renderQuestion(currentQ);
+          },
+          onRestart: function () {
+            currentQ = 0; answers = new Array(QUESTIONS.length).fill(null);
+            showPage('page-quiz'); renderQuestion(0);
+          },
+        });
+        return;
+      }
+    }
+  }
   currentQ = 0;
   answers = new Array(44).fill(null);
   showPage('page-quiz');
@@ -151,6 +174,7 @@ function renderQuestion(idx){
 
 function selectAnswer(idx, val){
   answers[idx] = val;
+  if (window.gnosisQuizSave) gnosisQuizSave.save('bigfive', { answers: answers, currentQ: idx });
   document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
   const selBtn = document.querySelector(`.scale-btn[data-val="${val}"]`);
   const dim = DIMS[QUESTIONS[idx].dim];
@@ -174,6 +198,7 @@ function nextQuestion(){
 // CÁLCULO DOS SCORES
 // ══════════════════════════════════════
 function calcScores(){
+  if (window.gnosisQuizSave) gnosisQuizSave.clear('bigfive');
   const raw = {O:[], C:[], E:[], A:[], N:[]};
   QUESTIONS.forEach((q, i) => {
     let val = answers[i] || 3;

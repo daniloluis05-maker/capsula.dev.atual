@@ -224,6 +224,34 @@ function showPage(id) {
 }
 
 function startQuiz() {
+  // Tenta restaurar progresso salvo (gnosisQuizSave). Se houver pelo menos
+  // 1 resposta e o quiz não está completo, oferece retomar de onde parou.
+  if (window.gnosisQuizSave) {
+    const saved = gnosisQuizSave.restore('disc');
+    if (saved && saved.state && Array.isArray(saved.state.answers)) {
+      const answered = saved.state.answers.filter(a => a !== null).length;
+      if (answered > 0 && answered < QUESTIONS.length) {
+        gnosisQuizSave.promptResume({
+          matriz: 'disc', label: 'DISC',
+          summary: answered + ' de ' + QUESTIONS.length + ' perguntas respondidas',
+          onResume: function () {
+            answers = saved.state.answers.slice();
+            currentQ = typeof saved.state.currentQ === 'number' ? saved.state.currentQ : answered;
+            if (currentQ >= QUESTIONS.length) currentQ = QUESTIONS.length - 1;
+            showPage('page-quiz');
+            renderQuestion(currentQ);
+          },
+          onRestart: function () {
+            currentQ = 0;
+            answers = new Array(QUESTIONS.length).fill(null);
+            showPage('page-quiz');
+            renderQuestion(0);
+          },
+        });
+        return;
+      }
+    }
+  }
   currentQ = 0;
   answers  = new Array(QUESTIONS.length).fill(null);
   showPage('page-quiz');
@@ -301,6 +329,9 @@ function renderQuestion(idx) {
 function selectAnswer(idx, val) {
   answers[idx] = val;
 
+  // Autosave progresso a cada resposta (key: 'disc')
+  if (window.gnosisQuizSave) gnosisQuizSave.save('disc', { answers: answers, currentQ: idx });
+
   // Update visual
   document.querySelectorAll('.scale-btn').forEach(btn => btn.classList.remove('selected'));
   document.querySelector(`.scale-btn[data-val="${val}"]`).classList.add('selected');
@@ -359,6 +390,9 @@ function showSectionTransition(section, callback) {
 // CALCULATE RESULTS
 // ══════════════════════════════════════
 function calculateResults() {
+  // Limpa autosave — quiz finalizado, não precisa mais perguntar "continuar?"
+  if (window.gnosisQuizSave) gnosisQuizSave.clear('disc');
+
   scores = { D: 0, I: 0, S: 0, C: 0 };
 
   QUESTIONS.forEach((q, i) => {
