@@ -192,7 +192,9 @@
     const nome     = document.getElementById('nome').value.trim();
     const email    = document.getElementById('email').value.trim();
     const senha    = document.getElementById('senha').value;
-    const objetivo = document.getElementById('objetivo').value;
+    // objetivo: opcional no signup (reduz fricção). Pode ser perguntado
+    // depois no dashboard ou na 1ª matriz. Mantém '' se o campo não existe.
+    const objetivo = document.getElementById('objetivo')?.value || '';
     let valid = true;
 
     if (!nome)                     { showFieldError('nome',    'Informe seu nome.');                       valid = false; }

@@ -1206,3 +1206,53 @@
     color: var(--muted);
     margin-bottom: 1.5rem;
   }
+
+/* ── FAIXA DE CREDIBILIDADE (abaixo do hero) ────────────────
+   Substitui o "98% precisão" sem fonte: lista os autores reais
+   das matrizes. Senior diria: prova social cientifica > número
+   inventado. */
+.credibilidade {
+  text-align: center;
+  padding: 1.5rem 5% 2.5rem;
+  border-top: 1px solid var(--border, rgba(255,255,255,0.07));
+  border-bottom: 1px solid var(--border, rgba(255,255,255,0.07));
+  background: linear-gradient(180deg, transparent 0%, rgba(124,111,247,0.025) 50%, transparent 100%);
+}
+.credibilidade .cred-label {
+  display: block;
+  font-family: var(--mono, 'Space Mono', monospace);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent, #7C6FF7);
+  margin-bottom: 0.65rem;
+  opacity: 0.85;
+}
+.credibilidade .cred-text {
+  font-family: var(--sans, 'Outfit', system-ui, sans-serif);
+  font-size: 0.92rem;
+  color: var(--muted, #8B899E);
+  margin: 0 auto 0.65rem;
+  max-width: 920px;
+  line-height: 1.6;
+}
+.credibilidade .cred-text strong {
+  color: var(--text, #F0EEF8);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.credibilidade .cred-link {
+  display: inline-block;
+  font-family: var(--mono, 'Space Mono', monospace);
+  font-size: 0.7rem;
+  color: var(--accent, #7C6FF7);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+.credibilidade .cred-link:hover { opacity: 1; }
+@media (max-width: 640px) {
+  .credibilidade { padding: 1.25rem 5% 1.75rem; }
+  .credibilidade .cred-text { font-size: 0.82rem; }
+}

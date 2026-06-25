@@ -46,14 +46,16 @@
 <meta property="og:url" content="https://www.sistema-gnosis.com.br/">
 <meta property="og:title" content="Sistema Gnosis | Matrizes de Alta Performance">
 <meta property="og:description" content="Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes. Comece grátis.">
-<meta property="og:image" content="https://www.sistema-gnosis.com.br/logo-gnosis-512.png">
+<meta property="og:image" content="https://www.sistema-gnosis.com.br/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:locale" content="pt_BR">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Sistema Gnosis | Matrizes de Alta Performance">
 <meta name="twitter:description" content="Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes. Comece grátis.">
-<meta name="twitter:image" content="https://www.sistema-gnosis.com.br/logo-gnosis-512.png">
+<meta name="twitter:image" content="https://www.sistema-gnosis.com.br/og-image.png">
 
 <!-- Fonte otimizada (não bloqueante) -->
 <link rel="dns-prefetch" href="https://fonts.gstatic.com">
@@ -119,9 +121,29 @@
       "@type": "Organization",
       "@id": "https://www.sistema-gnosis.com.br/#organization",
       "name": "Sistema Gnosis",
+      "alternateName": "Gnosis",
       "url": "https://www.sistema-gnosis.com.br",
-      "logo": "https://www.sistema-gnosis.com.br/og-image.png",
-      "description": "Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes."
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.sistema-gnosis.com.br/logo-gnosis-512.png",
+        "width": 512,
+        "height": 512
+      },
+      "image": "https://www.sistema-gnosis.com.br/og-image.png",
+      "description": "Matrizes de autoconhecimento e performance coletiva para indivíduos e equipes.",
+      "foundingDate": "2025",
+      "founder": {
+        "@type": "Person",
+        "name": "Danilo Oliveira",
+        "jobTitle": "Fundador"
+      },
+      "taxID": "66.690.402/0001-73",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "suporte@sistema-gnosis.com.br",
+        "contactType": "customer support",
+        "availableLanguage": "Portuguese"
+      }
     },
     {
       "@type": "WebSite",
@@ -173,8 +195,8 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge" data-tour="badge"><span class="badge-full">✦ Análise de Alta Precisão Comportamental</span></div>
-  <h1 data-tour="hero-title">Sistema <em>Gnosis</em></h1>
+  <div class="hero-badge" data-tour="badge"><span class="badge-full">✦ Sistema Gnosis · Autoconhecimento estratégico</span></div>
+  <h1 data-tour="hero-title">Descubra seu perfil comportamental<br><em>em 8 minutos.</em></h1>
   <div class="hero-rotator-line"><span class="verb-rotator" id="hero-verb-rotator" data-verbs="Descubra seu perfil DISC em 8 min.|Mapeie 9 dimensões da sua personalidade.|Receba seu DNA Estratégico por IA.">Descubra seu perfil DISC em 8 min.</span></div>
   <div class="hero-actions" data-tour="cta">
     <a href="disc.html" class="btn-primary">Fazer DISC grátis · 8 min</a>
@@ -200,6 +222,13 @@
       <span class="stat-label">Cadastro pra fazer o 1º teste</span>
     </div>
   </div>
+</section>
+
+<!-- CREDIBILIDADE — fontes científicas que sustentam as matrizes -->
+<section class="credibilidade" aria-label="Base científica das matrizes">
+  <span class="cred-label">// base científica</span>
+  <p class="cred-text">Instrumentos consagrados: <strong>Marston</strong> · <strong>Costa &amp; McCrae</strong> · <strong>Cloninger</strong> · <strong>Riso &amp; Hudson</strong> · <strong>Pearson</strong> · <strong>Luft &amp; Ingham</strong> · <strong>Schein</strong></p>
+  <a class="cred-link" href="sobre.html#base-cientifica">Ver fontes completas →</a>
 </section>
 
 <!-- MATRIZES -->
@@ -620,16 +649,6 @@ function togglePw(id, btn) {
       <div class="form-group">
         <label for="senha">Senha</label>
         <div class="pw-wrap"><input type="password" id="senha" placeholder="Mínimo 6 caracteres" autocomplete="new-password" /><button type="button" class="pw-toggle" onclick="togglePw('senha',this)" tabindex="-1" aria-label="Mostrar senha">👁</button></div>
-      </div>
-      <div class="form-group">
-        <label for="objetivo">Seu objetivo principal</label>
-        <select id="objetivo">
-          <option value="">Selecione...</option>
-          <option value="individual">Autoconhecimento e carreira</option>
-          <option value="lider">Desenvolver minha equipe</option>
-          <option value="empresa">Gestão de múltiplas equipes</option>
-          <option value="outro">Outro</option>
-        </select>
       </div>
       <button class="form-submit" id="form-submit-btn" type="button">Criar conta grátis →</button>
       <p class="form-terms">Ao criar sua conta, você concorda com os <a href="termos.html" target="_blank" style="color:var(--accent)">Termos de Uso</a> e <a href="privacidade.html" target="_blank" style="color:var(--accent)">Política de Privacidade</a>.</p>
