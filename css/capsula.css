@@ -177,3 +177,91 @@ textarea:focus, select:focus {
   /* SVGs nítidos na impressão */
   svg { shape-rendering: geometricPrecision; }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   MODO PRESENCIAL (KIOSK)
+   Aplicado quando body.gn-quiosque (ativado por remote-link.js
+   ao detectar ?presencial=1). Esconde navegação e oferece um
+   header fixo com botão de encerrar protegido por PIN.
+   ───────────────────────────────────────────────────────────── */
+body.gn-quiosque > nav,
+body.gn-quiosque .nav-hamburger,
+body.gn-quiosque .hero-quick-nav,
+body.gn-quiosque .nav-tour-btn,
+body.gn-quiosque .top-link,
+body.gn-quiosque #support-fab,
+body.gn-quiosque footer { display: none !important; }
+body.gn-quiosque { padding-top: 52px; }
+
+#_gn-presencial-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9500;
+  background: linear-gradient(180deg, #0d0f16 0%, rgba(13,15,22,0.96) 100%);
+  border-bottom: 1px solid rgba(46,196,160,0.25);
+  padding: 0.55rem 1.2rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  font-family: var(--sans, 'Outfit', system-ui, sans-serif);
+  color: #E8E6F0;
+  backdrop-filter: blur(8px);
+}
+#_gn-presencial-bar ._gn-pres-info {
+  display: flex; align-items: center; gap: 0.6rem; min-width: 0; flex: 1;
+}
+#_gn-presencial-bar ._gn-pres-tag {
+  font-family: 'Space Mono', monospace; font-size: 0.62rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: #2EC4A0; background: rgba(46,196,160,0.1);
+  border: 1px solid rgba(46,196,160,0.3);
+  padding: 0.18rem 0.55rem; border-radius: 12px;
+  white-space: nowrap;
+}
+#_gn-presencial-bar ._gn-pres-nome {
+  font-size: 0.85rem; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#_gn-presencial-bar #_gn-pres-end {
+  background: transparent; color: rgba(232,232,240,0.7);
+  border: 1px solid rgba(232,232,240,0.18); border-radius: 6px;
+  padding: 0.4rem 0.9rem; font-size: 0.75rem; font-weight: 600;
+  cursor: pointer; font-family: inherit; white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+#_gn-presencial-bar #_gn-pres-end:hover {
+  color: #fff; border-color: #E8603A; background: rgba(232,96,58,0.1);
+}
+
+/* Diálogo de PIN */
+#_gn-pres-dlg {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.78);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+}
+#_gn-pres-dlg ._gn-pres-dlg-card {
+  background: #13131a; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px; padding: 1.75rem;
+  max-width: 340px; width: 100%; text-align: center;
+  color: #e8e8f0; font-family: var(--sans, 'Outfit', system-ui, sans-serif);
+}
+#_gn-pres-dlg h3 { margin: 0 0 0.5rem; font-size: 1.05rem; }
+#_gn-pres-dlg p { font-size: 0.85rem; color: rgba(232,232,240,0.55); margin: 0 0 1.1rem; }
+#_gn-pres-dlg #_gn-pres-pin {
+  width: 100%; padding: 0.9rem; text-align: center;
+  font-size: 1.4rem; letter-spacing: 0.4em;
+  background: rgba(255,255,255,0.04); color: #fff;
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+  font-family: 'Space Mono', monospace; box-sizing: border-box;
+  outline: none;
+}
+#_gn-pres-dlg #_gn-pres-pin:focus { border-color: rgba(46,196,160,0.55); }
+#_gn-pres-dlg ._gn-pres-err { color: #ff6b6b; font-size: 0.78rem; min-height: 1.1em; margin: 0.5rem 0 0.75rem; }
+#_gn-pres-dlg ._gn-pres-dlg-actions { display: flex; gap: 0.5rem; margin-top: 0.25rem; }
+#_gn-pres-dlg ._gn-pres-dlg-actions button {
+  flex: 1; padding: 0.7rem; border-radius: 7px; font-weight: 700;
+  font-size: 0.85rem; cursor: pointer; font-family: inherit; border: none;
+}
+#_gn-pres-dlg #_gn-pres-cancel {
+  background: rgba(255,255,255,0.06); color: rgba(232,232,240,0.7);
+}
+#_gn-pres-dlg #_gn-pres-ok {
+  background: #2EC4A0; color: #fff;
+}

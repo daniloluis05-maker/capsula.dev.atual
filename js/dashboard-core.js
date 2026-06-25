@@ -110,6 +110,9 @@ async function loadUser(){
   // ── Seção Pro (Avaliações Remotas) ──────────────────────────
   if (window._payments && (_payments.isPro() || _payments.isAdmin())) {
     rlInitSection(u.email);
+    // Modo presencial — kiosk pra avaliação no local. Mesma audiência
+    // do remote-link (Pro/Gerencial/Admin), pois reusa remote_links.
+    if (typeof presencialInit === 'function') presencialInit(u.email);
   }
   // ── Seção Gerencial (Acompanhamento Semanal + Equipes) ───────
   if (window._payments && (_payments.isGerencial() || _payments.isAdmin())) {

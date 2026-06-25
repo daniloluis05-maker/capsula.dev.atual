@@ -420,6 +420,22 @@
       </div>
     </div>
 
+    <!-- AVALIAÇÃO PRESENCIAL — visível apenas para Pro/Gerencial/Admin -->
+    <!-- Modo quiosque: respondente faz no computador do admin, sob supervisão. -->
+    <div id="presencial-section" style="display:none;margin-top:2.5rem;">
+      <div class="section-header">
+        <div>
+          <span class="section-eyebrow" style="color:#2EC4A0;">Avaliação Presencial</span>
+          <h2>Aplicar avaliação no local</h2>
+        </div>
+        <button onclick="presencialAbrirModal()" class="pr-btn-primary">+ Iniciar sessão presencial</button>
+      </div>
+      <p class="pr-section-hint">Para ambientes onde o respondente não pode usar o próprio celular. A avaliação roda no seu computador, em modo quiosque, sob sua supervisão.</p>
+      <div id="pr-lista">
+        <div class="pr-empty">Carregando...</div>
+      </div>
+    </div>
+
     <!-- AVALIAÇÕES REMOTAS — visível apenas para Pro/Admin -->
     <div id="pro-remote-section" style="display:none;margin-top:2.5rem;">
       <div class="section-header">
@@ -557,6 +573,48 @@
 </div>
 
 <!-- MODAL: Novo Indicador -->
+<!-- MODAL: Iniciar Sessão Presencial -->
+<div id="pr-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:9400;align-items:center;justify-content:center;padding:1rem;" onclick="if(event.target===this)presencialFecharModal()">
+  <div class="pr-modal-card">
+    <button onclick="presencialFecharModal()" class="pr-modal-close" aria-label="Fechar">×</button>
+    <h3 class="pr-modal-title">Iniciar avaliação presencial</h3>
+    <p class="pr-modal-sub">O respondente fará a avaliação neste computador. Você verá o resultado no painel ao terminar.</p>
+    <div class="pr-form">
+      <div class="pr-field">
+        <label>Nome do respondente *</label>
+        <input id="pr-f-nome" type="text" placeholder="Ex: João Silva — Setor X" autocomplete="off">
+      </div>
+      <div class="pr-field">
+        <label>E-mail <span class="pr-opt">(opcional — vincula ao perfil se ele criar conta)</span></label>
+        <input id="pr-f-email" type="email" placeholder="joao@empresa.com.br" autocomplete="off">
+      </div>
+      <div class="pr-field-row">
+        <div class="pr-field">
+          <label>Matriz</label>
+          <select id="pr-f-matriz">
+            <option value="disc">DISC</option>
+            <option value="soar">SOAR</option>
+            <option value="ikigai">Ikigai</option>
+            <option value="ancoras">Âncoras de Carreira</option>
+            <option value="johari">Janela de Johari</option>
+            <option value="bigfive">Big Five</option>
+            <option value="pearson">Pearson-Marr</option>
+            <option value="tci">TCI</option>
+            <option value="eneagrama">Eneagrama</option>
+          </select>
+        </div>
+        <div class="pr-field">
+          <label>PIN do admin <span class="pr-opt">(pra encerrar)</span></label>
+          <input id="pr-f-pin" type="tel" inputmode="numeric" maxlength="4" autocomplete="off">
+        </div>
+      </div>
+    </div>
+    <p id="pr-f-err" class="pr-form-err"></p>
+    <button id="pr-f-ok" class="pr-btn-confirm" onclick="presencialConfirmar()">Iniciar avaliação →</button>
+    <p class="pr-modal-foot">A sessão abre em nova aba. O respondente não consegue sair sem o PIN.</p>
+  </div>
+</div>
+
 <div id="acomp-novo-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:9300;align-items:center;justify-content:center;padding:1rem;" onclick="if(event.target===this)acompFecharNovo()">
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:420px;width:100%;position:relative;">
     <button onclick="acompFecharNovo()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;">×</button>
@@ -791,10 +849,11 @@
   </div>
 </div>
 
-<script src="js/dashboard-core.js"></script>
-<script src="js/dashboard-remote-links.js"></script>
-<script src="js/dashboard-indicadores.js"></script>
-<script src="js/dashboard-equipes.js"></script>
+<script src="js/dashboard-core.js" defer></script>
+<script src="js/dashboard-remote-links.js" defer></script>
+<script src="js/dashboard-indicadores.js" defer></script>
+<script src="js/dashboard-equipes.js" defer></script>
+<script src="js/dashboard-presencial.js" defer></script>
 
 <!-- ── Modal de Planos ──────────────────────────────────────── -->
 <div id="modal-planos" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:9000;overflow-y:auto;padding:2rem 1rem;">

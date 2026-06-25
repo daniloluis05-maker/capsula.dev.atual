@@ -12,6 +12,15 @@
   const TOKEN  = PARAMS.get('token');
   if (!TOKEN) return; // sessão normal, sem token
 
+  // ── Modo presencial (kiosk) ──────────────────────────────────
+  // Acionado por link que o admin gera no dashboard. Pré-preenche
+  // nome/email do respondente vindos da URL, esconde navegação e
+  // exige PIN do admin para encerrar a sessão.
+  const IS_PRESENCIAL  = PARAMS.get('presencial') === '1';
+  const PRESENCIAL_PIN = (PARAMS.get('pin') || '').replace(/\D/g,'').slice(0,4);
+  const PRESENCIAL_NOME  = PARAMS.get('nome')  || '';
+  const PRESENCIAL_EMAIL = PARAMS.get('email') || '';
+
   const MATRIX_NAMES = {
     disc: 'DISC', soar: 'SOAR', ikigai: 'Ikigai',
     ancoras: 'Âncoras de Carreira', johari: 'Janela de Johari',
@@ -523,6 +532,104 @@
     else document.getElementById('page-result')?.appendChild(ok);
   }
 
+  // ── 6b. Modo presencial (kiosk) ──────────────────────────────
+  // Injeta header fixo "Sessão Presencial • Nome • [Encerrar]",
+  // esconde nav/sidebar via classe .gn-quiosque no body, e ativa
+  // o quiz sem mostrar overlay de identificação.
+
+  function startPresencialSession() {
+    if (!PRESENCIAL_NOME) {
+      showError('Sessão presencial inválida (sem identificação do respondente).');
+      return;
+    }
+
+    _respondente = { nome: PRESENCIAL_NOME, email: PRESENCIAL_EMAIL || '' };
+
+    // Mesma persistência do onStart() do caminho convidado: garante que
+    // ensureUserData sirva o nome/email corretos pro app de matriz.
+    try {
+      const existing = JSON.parse(localStorage.getItem('capsula_user') || '{}');
+      const merged = Object.assign({}, existing, {
+        email: (PRESENCIAL_EMAIL || '').toLowerCase(),
+        nome: PRESENCIAL_NOME,
+        criado_em: existing.criado_em || new Date().toISOString(),
+      });
+      localStorage.setItem('capsula_user', JSON.stringify(merged));
+    } catch (_) {}
+
+    // Modo quiosque visual — esconde nav/sidebar/menus via CSS .gn-quiosque
+    document.body.classList.add('gn-quiosque');
+
+    // Cabeçalho fixo informando sessão e oferecendo o botão Encerrar
+    const bar = document.createElement('div');
+    bar.id = '_gn-presencial-bar';
+    bar.innerHTML = [
+      '<div class="_gn-pres-info">',
+      '<span class="_gn-pres-tag">Sessão Presencial</span>',
+      '<span class="_gn-pres-nome"></span>',
+      '</div>',
+      '<button id="_gn-pres-end" type="button">Encerrar sessão</button>',
+    ].join('');
+    // textContent pra evitar XSS via nome
+    bar.querySelector('._gn-pres-nome').textContent = '• ' + PRESENCIAL_NOME;
+    document.body.appendChild(bar);
+    bar.querySelector('#_gn-pres-end').addEventListener('click', endPresencialSession);
+
+    // Intercepta geração de PDF igual ao fluxo convidado — não bloqueamos
+    // o resultado em si (admin escolheu "respondente vê na hora"), mas o
+    // PDF requer conta, então mantém a CTA de criação.
+    window.generatePDF      = showPdfCta;
+    window._generatePDF     = showPdfCta;
+    window._generatePDFDisc = showPdfCta;
+
+    _overlay.remove();
+    watchForResult();
+  }
+
+  function endPresencialSession() {
+    // Pede PIN do admin antes de liberar. Se não há PIN configurado, sai
+    // direto (admin escolheu sessão sem trava). PIN é só fricção — não é
+    // segurança forte (URL fica visível). Suficiente pra evitar "saí sem
+    // querer" do respondente.
+    if (!PRESENCIAL_PIN) {
+      window.location.href = 'dashboard.html';
+      return;
+    }
+    const dlg = document.createElement('div');
+    dlg.id = '_gn-pres-dlg';
+    dlg.innerHTML = [
+      '<div class="_gn-pres-dlg-card">',
+      '<h3>PIN do administrador</h3>',
+      '<p>Digite o PIN para encerrar a sessão e voltar ao painel.</p>',
+      '<input id="_gn-pres-pin" type="tel" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="• • • •">',
+      '<p id="_gn-pres-err" class="_gn-pres-err"></p>',
+      '<div class="_gn-pres-dlg-actions">',
+      '<button type="button" id="_gn-pres-cancel">Cancelar</button>',
+      '<button type="button" id="_gn-pres-ok">Encerrar</button>',
+      '</div></div>',
+    ].join('');
+    document.body.appendChild(dlg);
+    const inp = dlg.querySelector('#_gn-pres-pin');
+    const err = dlg.querySelector('#_gn-pres-err');
+    setTimeout(() => inp.focus(), 50);
+
+    function close() { dlg.remove(); }
+    function submit() {
+      const v = (inp.value || '').replace(/\D/g,'').slice(0,4);
+      if (v === PRESENCIAL_PIN) {
+        window.location.href = 'dashboard.html';
+      } else {
+        err.textContent = 'PIN incorreto.';
+        inp.value = '';
+        inp.focus();
+      }
+    }
+    dlg.querySelector('#_gn-pres-cancel').addEventListener('click', close);
+    dlg.querySelector('#_gn-pres-ok').addEventListener('click', submit);
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+    dlg.addEventListener('click', e => { if (e.target === dlg) close(); });
+  }
+
   // ── 7. Bootstrap ──────────────────────────────────────────────
 
   async function init() {
@@ -577,7 +684,12 @@
 
       _linkData = linkData;
 
-      if (_isAuthed) {
+      if (IS_PRESENCIAL) {
+        // Modo presencial: nome/email vêm da URL (admin já preencheu no
+        // dashboard). Pula overlay e form de identificação. Aplica modo
+        // quiosque e injeta header com botão Encerrar (protegido por PIN).
+        startPresencialSession();
+      } else if (_isAuthed) {
         // Pula overlay — o user real faz o teste como ele mesmo. O resultado
         // vai pro remote_results do avaliador (saveRemoteResult continua) E
         // pro perfil próprio dele (saveUser passa a fluir pelo wrapper).
