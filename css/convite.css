@@ -1,0 +1,51 @@
+  body { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; }
+  .invite-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 2.5rem 2rem; max-width: 440px; width: 100%;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4); text-align: center;
+  }
+  .brand { font-size: 1.1rem; color: var(--muted); margin-bottom: 1.5rem; }
+  .brand span { color: var(--accent); font-weight: 700; }
+  .invite-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: rgba(124,106,247,0.12); display: flex; align-items: center;
+    justify-content: center; margin: 0 auto 1.25rem;
+  }
+  h1 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+  .invite-sub { font-size: 0.9rem; color: var(--muted); margin-bottom: 0.35rem; }
+  .invited-by {
+    display: inline-block; background: rgba(124,106,247,0.1);
+    border: 1px solid rgba(124,106,247,0.2); border-radius: 6px;
+    padding: 0.3rem 0.8rem; font-size: 0.82rem; color: var(--accent);
+    margin-bottom: 1.75rem; font-family: monospace;
+  }
+  .form-group { text-align: left; margin-bottom: 1rem; }
+  .form-group label { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 0.3rem; }
+  .form-group input {
+    width: 100%; padding: 0.7rem 0.9rem; background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+    font-size: 0.9rem; font-family: inherit; outline: none; transition: border-color 0.2s;
+  }
+  .form-group input:focus { border-color: var(--accent); }
+  .btn-submit {
+    width: 100%; padding: 0.85rem; background: var(--accent); color: #fff;
+    border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; transition: opacity 0.2s; margin-top: 0.5rem;
+  }
+  .btn-submit:hover { opacity: 0.88; }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+  .form-terms { font-size: 0.75rem; color: var(--muted); margin-top: 0.75rem; }
+  .form-terms a { color: var(--accent); }
+  .error-msg {
+    color: #e05252; font-size: 0.85rem; margin-top: 0.6rem;
+    background: rgba(224,82,82,0.08); border: 1px solid rgba(224,82,82,0.2);
+    border-radius: 6px; padding: 0.5rem 0.75rem; display: none;
+  }
+  .success-state { display: none; }
+  .success-state .check { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  .login-link { font-size: 0.85rem; color: var(--muted); margin-top: 1.25rem; }
+  .login-link a { color: var(--accent); }
+  .pw-wrap { position: relative; }
+  .pw-wrap input { padding-right: 2.75rem !important; }
+  .pw-toggle { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted); padding: 0; line-height: 1; }
+  .pw-toggle:hover { color: var(--text); }
