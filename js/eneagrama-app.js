@@ -609,79 +609,52 @@ function generatePDF() {
 function _generatePDFEneagrama() {
   const dominant = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
   const profile  = PROFILES[dominant];
-  const ACCENT   = profile.color;
   const user     = (capsulaDB.lsGetUser() || {});
   const nome     = getNomeExibido(user);
-  const data     = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
+  const data     = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
   const sortedTypes = Object.keys(scores).sort((a,b) => (scores[b]||0) - (scores[a]||0));
 
-  const css = `*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-.page{width:794px;min-height:1123px;margin:0 auto;padding:30px 38px;background:#f8fafc;}
-.hd{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:2px solid #000;margin-bottom:18px;}
-.brand-name{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:${ACCENT};font-style:italic;font-weight:300;}
-.hd-meta{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;text-align:right;line-height:1.85;}
-.dom-hero{padding:18px;border:1px solid #000;background:#fff;margin-bottom:16px;}
-.dom-eyebrow{font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:${ACCENT};margin-bottom:5px;}
-.dom-title{font-size:28px;font-weight:900;letter-spacing:-0.03em;color:${ACCENT};margin-bottom:4px;}
-.dom-sub{font-size:11px;color:#444;line-height:1.55;}
-.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
-.chip{font-family:'Space Mono',monospace;font-size:7.5px;padding:3px 8px;border:1px solid ${ACCENT}40;color:${ACCENT};background:${ACCENT}08;text-transform:uppercase;letter-spacing:0.07em;}
-.block{padding:14px 16px;border:1px solid #000;background:#fff;margin-bottom:11px;}
-.bl-lbl{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:${ACCENT};margin-bottom:6px;}
-.bl-txt{font-size:9.5px;color:#222;line-height:1.7;}
-.ranking{padding:14px 16px;border:1px solid #000;background:#fafafa;margin-bottom:11px;}
-.rk{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid #f0f0f0;}
-.rk:last-child{border-bottom:none;}
-.rk-pos{font-family:'Space Mono',monospace;font-size:8px;color:#888;min-width:14px;}
-.rk-num{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:9px;font-weight:900;color:#fff;}
-.rk-name{flex:1;font-size:9px;font-weight:700;}
-.rk-track{flex:1;max-width:120px;height:5px;background:#e8e8e8;border-radius:3px;overflow:hidden;}
-.rk-fill{height:100%;border-radius:3px;}
-.rk-pct{font-family:'Space Mono',monospace;font-size:8px;min-width:30px;text-align:right;}
-.ft{padding-top:10px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;font-family:'Space Mono',monospace;font-size:7px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}
-@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}}`;
+  // Ranking dos 9 tipos como bloco custom (não cabe no dim-card padrão)
+  const rankingHTML = '<div style="display:grid;gap:6px;">'
+    + sortedTypes.map((t, i) => {
+        const p = PROFILES[t];
+        const pct = scores[t] || 0;
+        const name = (p.title || '').replace(/^[OA] /, '');
+        return '<div style="display:grid;grid-template-columns:24px 32px 1fr 100px 36px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid #f4f4f5;">'
+          + '<span style="font-family:IBM Plex Mono,monospace;font-size:10px;color:#a1a1aa;">'+String(i+1).padStart(2,'0')+'</span>'
+          + '<div style="width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#f4f4f5;border:1px solid #e4e4e7;font-family:IBM Plex Mono,monospace;font-size:11px;font-weight:600;color:#52525b;">'+t+'</div>'
+          + '<span style="font-size:12px;font-weight:600;color:#18181b;">'+name+'</span>'
+          + '<div style="height:5px;background:#f4f4f5;border-radius:3px;overflow:hidden;"><div style="width:'+pct+'%;height:100%;background:#a1a1aa;border-radius:3px;"></div></div>'
+          + '<span style="font-family:IBM Plex Mono,monospace;font-size:11px;color:#52525b;text-align:right;">'+pct+'%</span>'
+          + '</div>';
+      }).join('')
+    + '</div>';
 
-  const chipsHTML = profile.traits.map(t => `<span class="chip">${t}</span>`).join('');
+  const customSection = '<div style="font-family:IBM Plex Mono,monospace;font-size:10px;letter-spacing:0.12em;color:#7C6FF7;text-transform:uppercase;font-weight:500;margin-bottom:12px;">Ranking dos 9 tipos</div>' + rankingHTML;
 
-  const rankingHTML = sortedTypes.map((t, i) => {
-    const p = PROFILES[t];
-    const pct = scores[t] || 0;
-    return `<div class="rk">
-      <span class="rk-pos">${String(i+1).padStart(2,'0')}</span>
-      <div class="rk-num" style="background:${p.color};">${t}</div>
-      <span class="rk-name" style="color:${p.color};">${p.title.replace('O ', '').replace('A ', '')}</span>
-      <div class="rk-track"><div class="rk-fill" style="width:${pct}%;background:${p.color};"></div></div>
-      <span class="rk-pct" style="color:${p.color};">${pct}%</span>
-    </div>`;
-  }).join('');
-
-  Gnosis.pdf.printOrDownload(`<!DOCTYPE html><html lang="pt-BR"><head>
-  <meta charset="UTF-8"><title>Eneagrama — ${nome} · Sistema Gnosis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>${css}</style></head><body><div class="page">
-  <div class="hd">
-    <span class="brand-name">SISTEMA <em>Gnosis</em></span>
-    <div class="hd-meta">Módulo: Eneagrama · Tipologia<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
-  </div>
-  <div class="dom-hero">
-    <div class="dom-eyebrow">Tipo Dominante · Eneagrama</div>
-    <div class="dom-title">${profile.title} · Tipo ${dominant}</div>
-    <div class="dom-sub">${profile.archetype.replace(/<\/?strong>/g,'')}</div>
-    <div class="chips">${chipsHTML}</div>
-  </div>
-  <div class="block"><div class="bl-lbl">💪 Fortalezas</div><div class="bl-txt">${profile.strengths}</div></div>
-  <div class="block"><div class="bl-lbl">⚡ Fraquezas / Pontos de Atenção</div><div class="bl-txt">${profile.challenges}</div></div>
-  <div class="block"><div class="bl-lbl">🎯 O que pode ser feito · Caminho de Crescimento</div><div class="bl-txt">${profile.recommendations}</div></div>
-  <div class="block"><div class="bl-lbl">🏗️ Ambiente Ideal</div><div class="bl-txt">${profile.environment}</div></div>
-  <div class="block"><div class="bl-lbl">💬 Como se Comunicar com este Tipo</div><div class="bl-txt">${profile.communication}</div></div>
-  <div class="ranking">
-    <div class="bl-lbl">⬡ Ranking dos 9 Tipos</div>
-    ${rankingHTML}
-  </div>
-  <div class="ft"><span>Sistema Gnosis // Eneagrama // Tipologia // Confidencial</span><span>www.sistema-gnosis.com.br</span></div>
-  </div>
-  <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
-  </body></html>`, "eneagrama-resultado.html");
+  Gnosis.pdf.render({
+    matrizName: 'Eneagrama',
+    matrizSubname: 'Tipologia profunda',
+    userName: nome,
+    date: data,
+    hero: {
+      letter: dominant,
+      eyebrow: 'Tipo Dominante',
+      title: profile.title,
+      subtitle: (profile.archetype || '').replace(/<\/?strong>/g,''),
+    },
+    analysisLabel: 'Análise do tipo dominante',
+    analysisBlocks: [
+      { eyebrow: 'Fortalezas',                title: 'O que te coloca em vantagem',  text: profile.strengths },
+      { eyebrow: 'Pontos de atenção',         title: 'O que pode atrapalhar',        text: profile.challenges },
+      { eyebrow: 'Caminho de crescimento',    title: 'O que pode ser feito',         text: profile.recommendations || '—' },
+      { eyebrow: 'Ambiente ideal',            title: 'Onde você floresce',           text: profile.environment },
+      { eyebrow: 'Como se comunicar',         title: 'Falar com este tipo',          text: profile.communication },
+    ],
+    customSection: customSection,
+    citation: 'Riso, D. R., &amp; Hudson, R. (1999). <em>The Wisdom of the Enneagram.</em>',
+    filename: 'eneagrama-resultado.html',
+  });
 }
 
 // ══════════════════════════════════════

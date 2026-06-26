@@ -382,114 +382,66 @@ function generatePDF() {
 function _generatePDF() {
   const user = (capsulaDB.lsGetUser() || {});
   const nome = getNomeExibido(user);
-  const data = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
-  const ACCENT = '#6C5FE6';
-  // ── PDF v2: 2-col uniform layout ──
+  const data = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
   const insights2 = generateInsights();
   const totalItems2 = QUADRANTS.reduce((sum,q)=>sum+Object.values(answers[q.key]||{}).filter(v=>v&&v.trim()).length,0);
 
-  const _gnCss_so = `*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-.page{width:794px;height:1123px;overflow:hidden;margin:0 auto;padding:24px 34px;background:#f8fafc;display:flex;flex-direction:column;}
-.hd{display:flex;justify-content:space-between;align-items:center;padding-bottom:11px;border-bottom:2px solid #000;margin-bottom:13px;flex-shrink:0;}
-.brand{display:flex;align-items:center;gap:7px;}.brand-name{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:ACC;font-style:italic;font-weight:300;}
-.hd-meta{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;text-align:right;line-height:1.85;}
-.grid{display:grid;grid-template-columns:1fr 1.3fr;gap:11px;flex:1;min-height:0;}.col{display:flex;flex-direction:column;gap:9px;min-height:0;overflow:hidden;}
-.pn{background:#fafafa;border:1px solid #000;padding:13px 15px;position:relative;flex-shrink:0;}
-.pn-grow{background:#fff;border:1px solid #000;padding:13px 15px;position:relative;flex:1;min-height:0;display:flex;flex-direction:column;}
-.lbl{position:absolute;top:-8px;left:12px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:6.5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.15em;}
-.dom-ew{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:ACC;margin-bottom:2px;}
-.dom-name{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;line-height:1;}
-.arch-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:6.5px;padding:2px 7px;border:1px solid;text-transform:uppercase;letter-spacing:0.07em;margin-top:7px;}
-.ins-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:ACC;margin-bottom:7px;display:flex;align-items:center;gap:5px;flex-shrink:0;}
-.ins-lbl::before{content:'';width:14px;height:2px;background:ACC;border-radius:2px;display:inline-block;}
-.ins-txt{font-size:8.5px;color:#444;line-height:1.75;flex-shrink:0;}
-.bp-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px;flex-shrink:0;}
-.bp{border:1px solid #e4e4e7;padding:7px 9px;background:#fff;}
-.bp-tag{font-family:'Space Mono',monospace;font-size:6px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:3px;color:ACC;}
-.bp-txt{font-size:7.5px;line-height:1.6;color:#333;}
-.quad-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0;}
-.quad{background:#fafafa;border:1px solid #e4e4e7;padding:10px 12px;display:flex;flex-direction:column;overflow:hidden;}
-.quad-hd{display:flex;align-items:center;gap:7px;margin-bottom:7px;padding-bottom:6px;border-bottom:1px solid #f1f5f9;flex-shrink:0;}
-.quad-ico{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;}
-.quad-title{font-size:8.5px;font-weight:700;}
-.quad-sub{font-family:'Space Mono',monospace;font-size:6px;color:#71717a;text-transform:uppercase;letter-spacing:0.07em;}
-.q-item{display:flex;gap:6px;align-items:flex-start;margin-bottom:5px;}
-.q-dot{width:4px;height:4px;border-radius:50%;margin-top:5px;flex-shrink:0;}
-.q-txt{font-size:7.5px;line-height:1.55;color:#333;}
-.ft{padding-top:9px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:9px;flex-shrink:0;}
-.ft-l{font-family:'Space Mono',monospace;font-size:6px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}
-.ft-r{font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;color:#000;}
-@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;}}`.split('ACC').join(ACCENT);
-
-  const insightsHTML2 = insights2.map(ins=>`<div class="bp"><span class="bp-tag">${ins.label}</span><p class="bp-txt">${ins.text}</p></div>`).join('');
-
   const _qCounts = {S:0,O:0,A:0,R:0};
-  QUADRANTS.forEach(q=>{ _qCounts[q.key]=Object.values(answers[q.key]||{}).filter(v=>v&&v.trim()).length; });
-  const completionPct2 = Math.round((totalItems2/16)*100);
+  QUADRANTS.forEach(q => { _qCounts[q.key] = Object.values(answers[q.key]||{}).filter(v=>v&&v.trim()).length; });
 
-  const quadHTML2 = QUADRANTS.map(q=>{
-    const filled=Object.values(answers[q.key]||{}).filter(v=>v&&v.trim().length>0);
-    const items=filled.length>0
-      ? filled.slice(0,4).map(v=>`<div class="q-item"><span class="q-dot" style="background:${q.color};"></span><span class="q-txt">${v}</span></div>`).join('')
-      : '<span style="font-family:monospace;font-size:9px;color:#a1a1aa;">// não respondido</span>';
-    return `<div class="quad" style="border-top:2px solid ${q.color};">
-      <div class="quad-hd">
-        <div class="quad-ico" style="background:${q.color}15;border:1px solid ${q.color}35;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:${q.color};">${q.icon}</div>
-        <div style="flex:1;"><div class="quad-title" style="color:${q.color};">${q.name}</div><div class="quad-sub">${q.label||''}</div></div>
-        <span style="font-family:'Space Mono',monospace;font-size:6.5px;color:${q.color};background:${q.color}10;border:1px solid ${q.color}30;padding:1px 5px;border-radius:2px;">${filled.length}/4</span>
-      </div>
-      ${items}
-    </div>`;
-  }).join('');
+  const quadGrid = '<div style="font-family:IBM Plex Mono,monospace;font-size:10px;letter-spacing:0.12em;color:#7C6FF7;text-transform:uppercase;font-weight:500;margin-bottom:12px;">Seus 4 quadrantes SOAR</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+    + QUADRANTS.map(q => {
+        const filled = Object.values(answers[q.key]||{}).filter(v => v && v.trim().length > 0);
+        const items = filled.length > 0
+          ? filled.slice(0,5).map(v => '<li style="font-size:11.5px;line-height:1.55;color:#3f3f46;margin-bottom:4px;">'+v+'</li>').join('')
+          : '<li style="font-size:11px;color:#a1a1aa;font-style:italic;list-style:none;">— não respondido</li>';
+        return '<div style="background:#fff;border:1px solid #e4e4e7;border-radius:8px;padding:14px 16px;border-top:3px solid #7C6FF7;">'
+          + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
+          + '<div style="font-family:IBM Plex Mono,monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#7C6FF7;font-weight:500;">'+q.name+'</div>'
+          + '<span style="font-family:IBM Plex Mono,monospace;font-size:9px;color:#71717a;">'+filled.length+'/4</span>'
+          + '</div>'
+          + '<ul style="padding-left:18px;margin:0;">'+items+'</ul>'
+          + '</div>';
+      }).join('') + '</div>';
 
-  const _sArr2=Object.values(answers.S||{}).filter(v=>v&&v.trim());
-  const _oArr2=Object.values(answers.O||{}).filter(v=>v&&v.trim());
-  const _aArr2=Object.values(answers.A||{}).filter(v=>v&&v.trim());
-  const _rArr2=Object.values(answers.R||{}).filter(v=>v&&v.trim());
-  const _synthDesc = totalItems2>0
-    ? `${nome} mapeou ${totalItems2} elemento${totalItems2!==1?'s':''} estratégicos: ${_sArr2.length} força${_sArr2.length!==1?'s':''}, ${_oArr2.length} oportunidade${_oArr2.length!==1?'s':''}, ${_aArr2.length} aspiração/aspirações e ${_rArr2.length} resultado${_rArr2.length!==1?'s':''} esperados. A análise SOAR foca no positivo para construir uma visão estratégica acionável.`
+  const _sArr2 = Object.values(answers.S||{}).filter(v => v && v.trim());
+  const _oArr2 = Object.values(answers.O||{}).filter(v => v && v.trim());
+  const _aArr2 = Object.values(answers.A||{}).filter(v => v && v.trim());
+  const _rArr2 = Object.values(answers.R||{}).filter(v => v && v.trim());
+  const synthDesc = totalItems2 > 0
+    ? nome + ' mapeou ' + totalItems2 + ' elemento' + (totalItems2!==1?'s':'') + ' estratégicos: ' + _sArr2.length + ' força' + (_sArr2.length!==1?'s':'') + ', ' + _oArr2.length + ' oportunidade' + (_oArr2.length!==1?'s':'') + ', ' + _aArr2.length + ' aspiração/aspirações e ' + _rArr2.length + ' resultado' + (_rArr2.length!==1?'s':'') + ' esperados. A análise SOAR foca no positivo para construir uma visão estratégica acionável.'
     : 'A análise SOAR mapeia seu posicionamento estratégico a partir de quatro dimensões positivas: forças, oportunidades, aspirações e resultados concretos.';
 
-  Gnosis.pdf.printOrDownload(`<!DOCTYPE html><html lang="pt-BR"><head>
-  <meta charset="UTF-8"><title>Análise SOAR — ${nome} · Sistema Gnosis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>${_gnCss_so}</style></head><body><div class="page">
-  <div class="hd">
-    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="26" height="26"><path d="M 50 22 A 28 28 0 1 0 78 50" stroke="${ACCENT}" stroke-width="9" stroke-linecap="round"/><rect x="58" y="46" width="20" height="8" rx="1" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
-    <div class="hd-meta">Módulo: Análise SOAR · Planejamento Estratégico<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
-  </div>
-  <div class="grid">
-    <div class="col">
-      <div class="pn">
-        <div class="lbl">Resultado_SOAR</div>
-        <div class="dom-ew">Resultado · Análise SOAR</div>
-        <div class="dom-name" style="color:${ACCENT};">ANÁLISE SOAR</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
-          <div class="arch-badge" style="color:${ACCENT};border-color:${ACCENT}40;background:${ACCENT}08;">${totalItems2} de 16 elementos · ${completionPct2}% completo</div>
-        </div>
-        <div style="display:flex;gap:5px;margin-top:8px;">
-          ${QUADRANTS.map(q=>`<div style="flex:1;background:${q.color}10;border:1px solid ${q.color}30;border-radius:3px;padding:4px 6px;text-align:center;"><div style="font-family:'Space Mono',monospace;font-size:8px;font-weight:700;color:${q.color};">${q.icon}</div><div style="font-family:'Space Mono',monospace;font-size:6px;color:${q.color};margin-top:1px;">${_qCounts[q.key]}/4</div></div>`).join('')}
-        </div>
-      </div>
-      <div class="pn-grow">
-        <div class="lbl">Síntese_Estratégica</div>
-        <div class="ins-lbl">Análise Integrada</div>
-        <p class="ins-txt">${_synthDesc}</p>
-        <div class="bp-grid">${insightsHTML2}</div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="pn-grow" style="flex:1;">
-        <div class="lbl">Mapa_SOAR</div>
-        <div class="quad-grid" style="margin-top:8px;">${quadHTML2}</div>
-      </div>
-    </div>
-  </div>
-  <div class="ft"><span class="ft-l">Sistema Gnosis // Análise SOAR // Planejamento Estratégico // Confidencial</span><span class="ft-r">www.sistema-gnosis.com.br</span></div>
-  </div>
-  <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
-  </body></html>`, "soar-resultado.html");
-  return;
+  // Insights gerados pela lógica do SOAR como blocos de análise
+  const insightBlocks = insights2.slice(0, 4).map(ins => ({
+    eyebrow: ins.label, title: ins.label, text: ins.text,
+  }));
+
+  Gnosis.pdf.render({
+    matrizName: 'Análise SOAR',
+    matrizSubname: 'Planejamento estratégico positivo',
+    userName: nome,
+    date: data,
+    hero: {
+      letter: '◆',
+      eyebrow: 'Visão Estratégica',
+      title: 'SOAR · ' + Math.round((totalItems2/16)*100) + '% completo',
+      subtitle: synthDesc,
+    },
+    dimensionsLabel: 'Distribuição dos elementos',
+    dimensions: QUADRANTS.map(q => ({
+      letter: q.key,
+      name: q.name,
+      pct: Math.round((_qCounts[q.key]/4)*100),
+      isDominant: false,
+    })),
+    analysisLabel: insightBlocks.length ? 'Insights estratégicos' : '',
+    analysisBlocks: insightBlocks,
+    customSection: quadGrid,
+    citation: 'Stavros, J., &amp; Hinrichs, G. (2009). <em>The Thin Book of SOAR.</em>',
+    filename: 'soar.html',
+  });
 }
 
 // ══════════════════════════════════════

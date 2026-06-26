@@ -429,151 +429,70 @@ function _generatePDF(){
   const u = (capsulaDB.lsGetUser() || {});
   if(!u.bigfive) return;
   const nome = u.apelido || u.nome || 'Usuário';
-  const data = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  const data = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
   const scores = u.bigfive.scores;
-  const ACCENT = '#6C5FE6';
+  const ACCENT = '#7C6FF7';
   const sorted = Object.keys(DIMS).map(k=>({...DIMS[k],score:scores[k]||0,key:k})).sort((a,b)=>b.score-a.score);
   const dominant = sorted[0];
   const weakest = sorted[sorted.length-1];
 
   // Radar 5-axis (pentagon): O=top, C=top-right, E=bottom-right, A=bottom-left, N=top-left
-  const AXIS5 = {O:[130,42],C:[214,103],E:[182,201],A:[78,201],N:[46,103]};
-  const radarPts5 = ['O','C','E','A','N'].map(k=>{const s=(scores[k]||0)/100;const[ox,oy]=AXIS5[k];return`${(130+(ox-130)*s).toFixed(1)},${(130+(oy-130)*s).toFixed(1)}`;}).join(' ');
-  const radarDots5 = ['O','C','E','A','N'].map(k=>{const s=(scores[k]||0)/100;const[ox,oy]=AXIS5[k];const cx=(130+(ox-130)*s).toFixed(1),cy=(130+(oy-130)*s).toFixed(1);return`<circle cx="${cx}" cy="${cy}" r="3" fill="${DIMS[k].color}" stroke="#f8fafc" stroke-width="1.5"/>`;}).join('');
-
+  const AXIS5 = {O:[110,38],C:[182,87],E:[155,172],A:[65,172],N:[38,87]};
+  const radarPts5 = ['O','C','E','A','N'].map(k=>{const s=(scores[k]||0)/100;const[ox,oy]=AXIS5[k];return`${(110+(ox-110)*s).toFixed(1)},${(110+(oy-110)*s).toFixed(1)}`;}).join(' ');
   const insightText = getInsight(scores).replace(/<[^>]+>/g,'').slice(0,400);
-  const chipLabels = {O:'Abertura',C:'Conscienciosidade',E:'Extroversão',A:'Amabilidade',N:'Neuroticismo'};
 
-  const _gnCss = `*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-.page{width:794px;height:1123px;overflow:hidden;margin:0 auto;padding:24px 34px;background:#f8fafc;display:flex;flex-direction:column;}
-.hd{display:flex;justify-content:space-between;align-items:center;padding-bottom:11px;border-bottom:2px solid #000;margin-bottom:13px;flex-shrink:0;}
-.brand{display:flex;align-items:center;gap:7px;}.brand-name{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:ACC;font-style:italic;font-weight:300;}
-.hd-meta{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;text-align:right;line-height:1.85;}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;flex:1;min-height:0;}.col{display:flex;flex-direction:column;gap:9px;min-height:0;overflow:hidden;}
-.pn{background:#fafafa;border:1px solid #000;padding:13px 15px;position:relative;flex-shrink:0;}
-.pn-grow{background:#fff;border:1px solid #000;padding:13px 15px;position:relative;flex:1;min-height:0;display:flex;flex-direction:column;}
-.lbl{position:absolute;top:-8px;left:12px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:6.5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.15em;}
-.dom-hero{display:flex;align-items:center;gap:11px;margin-bottom:9px;}
-.dom-letter{width:48px;height:48px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Space Mono',monospace;font-size:20px;font-weight:900;}
-.dom-ew{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:ACC;margin-bottom:2px;}
-.dom-name{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;line-height:1;}
-.arch-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:6.5px;padding:2px 7px;border:1px solid;text-transform:uppercase;letter-spacing:0.07em;margin-top:7px;}
-.arch-desc{font-size:8.5px;line-height:1.7;color:#333;margin-top:9px;}
-.ins-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:ACC;margin-bottom:7px;display:flex;align-items:center;gap:5px;flex-shrink:0;}
-.ins-lbl::before{content:'';width:14px;height:2px;background:ACC;border-radius:2px;display:inline-block;}
-.ins-txt{font-size:8.5px;color:#444;line-height:1.75;flex-shrink:0;}
-.chips-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:9px;flex-shrink:0;}
-.chip{font-family:'Space Mono',monospace;font-size:6.5px;padding:2px 7px;border:1px solid;text-transform:uppercase;letter-spacing:0.07em;}
-.tension-box{margin-top:10px;padding-top:9px;border-top:1px solid #e4e4e7;flex:1;display:flex;flex-direction:column;justify-content:center;}
-.tension-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#71717a;margin-bottom:7px;text-align:center;}
-.tension-row{display:flex;align-items:center;gap:8px;}.t-arch{display:flex;align-items:center;gap:6px;flex:1;padding:6px 8px;border:1px solid;border-radius:2px;}
-.t-letter{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Space Mono',monospace;font-size:9px;font-weight:900;}
-.t-name{font-size:8.5px;font-weight:700;}.t-pct{font-family:'Space Mono',monospace;font-size:7.5px;}
-.t-arrow{font-family:'Space Mono',monospace;font-size:9px;color:#a1a1aa;flex-shrink:0;}
-.tension-note{font-size:7.5px;color:#71717a;line-height:1.65;margin-top:6px;text-align:center;}
-.sr{display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid #f1f5f9;}
-.sr-rank{font-family:'Space Mono',monospace;font-size:7px;color:#a1a1aa;min-width:14px;}
-.sr-ico{width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Space Mono',monospace;font-size:9px;font-weight:900;}
-.sr-name{font-size:9px;font-weight:700;flex:1;}.sr-track{flex:1;height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;max-width:110px;}
-.sr-fill{height:100%;border-radius:3px;}.sr-pct{font-family:'Space Mono',monospace;font-size:7.5px;min-width:28px;text-align:right;}
-.ft{padding-top:9px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:9px;flex-shrink:0;}
-.ft-l{font-family:'Space Mono',monospace;font-size:6px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}
-.ft-r{font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;color:#000;}
-@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;}}`.split('ACC').join(ACCENT);
+  const radarSvg = `
+    <svg viewBox="0 0 220 220" width="180" height="180" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="110,38 182,87 155,172 65,172 38,87" fill="none" stroke="#e4e4e7" stroke-width="1"/>
+      <polygon points="110,62 158,99 138,156 82,156 62,99" fill="none" stroke="#e4e4e7" stroke-width="1"/>
+      ${['O','C','E','A','N'].map(k=>{const[ox,oy]=AXIS5[k];return `<line x1="110" y1="110" x2="${ox}" y2="${oy}" stroke="#e4e4e7" stroke-width="1"/>`;}).join('')}
+      <polygon points="${radarPts5}" fill="${ACCENT}26" stroke="${ACCENT}" stroke-width="1.5"/>
+      ${['O','C','E','A','N'].map(k=>{const s=(scores[k]||0)/100;const[ox,oy]=AXIS5[k];const cx=(110+(ox-110)*s).toFixed(1),cy=(110+(oy-110)*s).toFixed(1);const isDom=k===dominant.key;return `<circle cx="${cx}" cy="${cy}" r="${isDom?4:3}" fill="${isDom?ACCENT:'#a1a1aa'}" stroke="#fff" stroke-width="1.5"/>`;}).join('')}
+      <text x="110" y="30" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" font-weight="${dominant.key==='O'?'600':'400'}" fill="${dominant.key==='O'?ACCENT:'#71717a'}">O · ${scores.O||0}%</text>
+      <text x="190" y="86" text-anchor="start" font-family="IBM Plex Mono" font-size="9" font-weight="${dominant.key==='C'?'600':'400'}" fill="${dominant.key==='C'?ACCENT:'#71717a'}">C · ${scores.C||0}%</text>
+      <text x="160" y="185" text-anchor="start" font-family="IBM Plex Mono" font-size="9" font-weight="${dominant.key==='E'?'600':'400'}" fill="${dominant.key==='E'?ACCENT:'#71717a'}">E · ${scores.E||0}%</text>
+      <text x="60" y="185" text-anchor="end" font-family="IBM Plex Mono" font-size="9" font-weight="${dominant.key==='A'?'600':'400'}" fill="${dominant.key==='A'?ACCENT:'#71717a'}">A · ${scores.A||0}%</text>
+      <text x="30" y="86" text-anchor="end" font-family="IBM Plex Mono" font-size="9" font-weight="${dominant.key==='N'?'600':'400'}" fill="${dominant.key==='N'?ACCENT:'#71717a'}">N · ${scores.N||0}%</text>
+    </svg>`;
 
-  const barsHTML = ['O','C','E','A','N'].map(k=>{
-    const d=DIMS[k],pct=scores[k]||0,isDom=k===dominant.key;
-    return `<div style="border:1px solid ${isDom?d.color+'50':'#e4e4e7'};padding:7px 9px;background:${isDom?d.color+'08':'#fff'};${isDom?'':'opacity:0.5;'}">
-      <div style="font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;color:${d.color};text-transform:uppercase;letter-spacing:0.1em;margin-bottom:3px;">${k}</div>
-      <div style="font-size:17px;font-weight:900;color:${d.color};">${pct}%</div>
-      <div style="height:3px;background:#f1f5f9;border-radius:2px;margin-top:3px;overflow:hidden;"><div style="width:${pct}%;height:100%;background:${d.color};border-radius:2px;"></div></div>
-    </div>`;
-  }).join('');
+  const dominantBlurb = (dominant.score >= 50 ? dominant.hi : dominant.lo).split('.')[0] + '.';
+  const weakestBlurb  = (weakest.score >= 50 ? weakest.hi : weakest.lo).split('.')[0] + '.';
 
-  const rankingHTML = sorted.map((d,i)=>{
-    const last=i===4?'border-bottom:none;':'';
-    return `<div class="sr" style="${last}"><span class="sr-rank">${String(i+1).padStart(2,'0')}</span><div class="sr-ico" style="background:${d.color}15;border:1px solid ${d.color}30;color:${d.color};">${d.key}</div><span class="sr-name">${d.name}</span><div class="sr-track"><div class="sr-fill" style="width:${d.score}%;background:${d.color};"></div></div><span class="sr-pct" style="color:${d.color};">${d.score}%</span></div>`;
-  }).join('');
-
-  const chipsHTML = sorted.slice(0,3).map(d=>`<span class="chip" style="color:${d.color};border-color:${d.color}40;background:${d.color}08;">${chipLabels[d.key]}</span>`).join('');
-
-  Gnosis.pdf.printOrDownload(`<!DOCTYPE html><html lang="pt-BR"><head>
-  <meta charset="UTF-8"><title>Big Five OCEAN — ${nome} · Sistema Gnosis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>${_gnCss}</style></head><body><div class="page">
-  <div class="hd">
-    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="26" height="26"><path d="M 50 22 A 28 28 0 1 0 78 50" stroke="${ACCENT}" stroke-width="9" stroke-linecap="round"/><rect x="58" y="46" width="20" height="8" rx="1" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
-    <div class="hd-meta">Módulo: Big Five OCEAN · Personalidade<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
-  </div>
-  <div class="grid">
-    <div class="col">
-      <div class="pn">
-        <div class="lbl">Dimensão_Dominante</div>
-        <div class="dom-hero">
-          <div class="dom-letter" style="background:${dominant.color}12;border:1px solid ${dominant.color}35;color:${dominant.color};">${dominant.key}</div>
-          <div>
-            <div class="dom-ew">Resultado · Big Five OCEAN</div>
-            <div class="dom-name" style="color:${dominant.color};">${dominant.name}</div>
-          </div>
+  Gnosis.pdf.render({
+    matrizName: 'Big Five OCEAN',
+    matrizSubname: 'Personalidade científica',
+    userName: nome,
+    date: data,
+    hero: {
+      letter: dominant.key,
+      eyebrow: 'Dimensão Dominante',
+      title: dominant.name,
+      subtitle: dominantBlurb,
+    },
+    dimensionsLabel: 'Distribuição OCEAN',
+    dimensions: ['O','C','E','A','N'].map(k => ({
+      letter: k,
+      name: DIMS[k].name,
+      pct: scores[k] || 0,
+      isDominant: k === dominant.key,
+    })),
+    analysisLabel: 'Análise integrada',
+    analysisBlocks: [
+      { eyebrow: 'Síntese OCEAN',     title: 'Visão geral',     text: insightText },
+      { eyebrow: 'Dimensão de tensão', title: weakest.name + ' (' + weakest.score + '%)', text: weakestBlurb + ' Esta polaridade com sua dimensão dominante define seu eixo central de autoconhecimento.' },
+    ],
+    customSection: `
+      <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:24px;align-items:center;">
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;color:${ACCENT};text-transform:uppercase;font-weight:500;margin-bottom:8px;">Mapa visual OCEAN</div>
+          <h4 style="font-size:16px;font-weight:700;color:#18181b;letter-spacing:-0.015em;margin-bottom:10px;">5 traços, 1 perfil</h4>
+          <p style="font-size:12.5px;line-height:1.65;color:#52525b;">Quanto mais próximo da borda do pentágono, mais expressivo o traço. Os 5 eixos do Big Five formam sua assinatura de personalidade.</p>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;">${barsHTML}</div>
-        <p class="arch-desc">${(dominant.score>=50?dominant.hi:dominant.lo).split('.')[0]}.</p>
-      </div>
-      <div class="pn-grow">
-        <div class="lbl">Análise_do_Perfil</div>
-        <div class="ins-lbl">Síntese OCEAN</div>
-        <p class="ins-txt">${insightText}</p>
-        <div class="chips-row">${chipsHTML}</div>
-        <div class="tension-box">
-          <div class="tension-lbl">// Zona de Tensão · Polaridade de Personalidade</div>
-          <div class="tension-row">
-            <div class="t-arch" style="border-color:${dominant.color}35;background:${dominant.color}08;">
-              <div class="t-letter" style="background:${dominant.color}15;border:1px solid ${dominant.color}30;color:${dominant.color};">${dominant.key}</div>
-              <div><div class="t-name" style="color:${dominant.color};">${dominant.name}</div><div class="t-pct" style="color:${dominant.color};">${dominant.score}% · dominante</div></div>
-            </div>
-            <div class="t-arrow">⟷</div>
-            <div class="t-arch" style="border-color:${weakest.color}35;background:${weakest.color}06;">
-              <div class="t-letter" style="background:${weakest.color}15;border:1px solid ${weakest.color}30;color:${weakest.color};">${weakest.key}</div>
-              <div><div class="t-name" style="color:${weakest.color};">${weakest.name}</div><div class="t-pct" style="color:${weakest.color};">${weakest.score}% · moderado</div></div>
-            </div>
-          </div>
-          <p class="tension-note">Alta ${dominant.name.toLowerCase()} (${dominant.score}%) e baixa ${weakest.name.toLowerCase()} (${weakest.score}%) definem um perfil com tendências opostas nessas dimensões — eixo central de autoconhecimento.</p>
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="pn" style="flex-shrink:0;">
-        <div class="lbl">Ranking_OCEAN</div>
-        <div style="padding-top:5px;">${rankingHTML}</div>
-      </div>
-      <div class="pn-grow">
-        <div class="lbl">Mapa_Visual_OCEAN</div>
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding-top:4px;">
-          <svg viewBox="0 0 260 260" width="210" height="210" xmlns="http://www.w3.org/2000/svg">
-            <defs><radialGradient id="rg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="${ACCENT}" stop-opacity="0.18"/><stop offset="100%" stop-color="${ACCENT}" stop-opacity="0.04"/></radialGradient></defs>
-            <polygon points="130,66 186,103 165,177 95,177 74,103" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
-            <polygon points="130,88 173,114 157,169 103,169 87,114" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
-            <line x1="130" y1="130" x2="130" y2="42" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-            <line x1="130" y1="130" x2="214" y2="103" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-            <line x1="130" y1="130" x2="182" y2="201" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-            <line x1="130" y1="130" x2="78" y2="201" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-            <line x1="130" y1="130" x2="46" y2="103" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-            <polygon points="${radarPts5}" fill="url(#rg)" stroke="${ACCENT}" stroke-width="1.5" stroke-opacity="0.7"/>
-            ${radarDots5}
-            <text x="130" y="36" text-anchor="middle" font-family="Space Mono,monospace" font-size="7" fill="${DIMS.O.color}" font-weight="700">O ${scores.O||0}%</text>
-            <text x="220" y="101" text-anchor="start" font-family="Space Mono,monospace" font-size="7" fill="${DIMS.C.color}">C ${scores.C||0}%</text>
-            <text x="186" y="214" text-anchor="start" font-family="Space Mono,monospace" font-size="7" fill="${DIMS.E.color}">E ${scores.E||0}%</text>
-            <text x="74" y="214" text-anchor="end" font-family="Space Mono,monospace" font-size="7" fill="${DIMS.A.color}">A ${scores.A||0}%</text>
-            <text x="40" y="101" text-anchor="end" font-family="Space Mono,monospace" font-size="7" fill="${DIMS.N.color}">N ${scores.N||0}%</text>
-          </svg>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="ft"><span class="ft-l">Sistema Gnosis // Big Five OCEAN // Personalidade // Confidencial</span><span class="ft-r">www.sistema-gnosis.com.br</span></div>
-  </div>
-  <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
-  </body></html>`, "bigfive-ocean.html");
+        <div style="display:flex;justify-content:center;">${radarSvg}</div>
+      </div>`,
+    citation: 'John, O. P., &amp; Srivastava, S. (1999). <em>Big Five Inventory (BFI-44).</em>',
+    filename: 'bigfive-ocean.html',
+  });
 }
 
 // ── Proteção de rota

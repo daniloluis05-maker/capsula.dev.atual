@@ -706,163 +706,75 @@ function generatePDF() {
 function _generatePDFDisc() {
   const dominant    = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
   const profile     = PROFILES[dominant];
-  const ACCENT      = profile.color;
   const user        = (capsulaDB.lsGetUser() || {});
   const nome        = getNomeExibido(user);
-  const data        = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
+  const data        = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
   const dimNames    = {D:'Dominância',I:'Influência',S:'Estabilidade',C:'Conformidade'};
   const dimColors   = {D:'#E8603A',I:'#6C5FE6',S:'#2EC4A0',C:'#1BA8D4'};
-  const motivMap    = {D:'Desafio e Autonomia',I:'Reconhecimento Social',S:'Segurança e Lealdade',C:'Precisão e Qualidade'};
-  const focoMap     = {D:'Resultados e Velocidade',I:'Pessoas e Entusiasmo',S:'Ritmo e Harmonia',C:'Dados e Processos'};
   const dimOrder    = ['D','I','S','C'];
   const sortedDims  = [...dimOrder].sort((a,b)=>(scores[b]||0)-(scores[a]||0));
   const weakest     = sortedDims[sortedDims.length-1];
 
   // Radar 4-axis: D=top, I=right, S=bottom, C=left
-  const AXIS4 = {D:[130,42],I:[218,130],S:[130,218],C:[42,130]};
-  const radarPts = dimOrder.map(d=>{const s=(scores[d]||0)/100;const[ox,oy]=AXIS4[d];return`${(130+(ox-130)*s).toFixed(1)},${(130+(oy-130)*s).toFixed(1)}`;}).join(' ');
-  const radarDots = dimOrder.map(d=>{const s=(scores[d]||0)/100;const[ox,oy]=AXIS4[d];const cx=(130+(ox-130)*s).toFixed(1),cy=(130+(oy-130)*s).toFixed(1);return`<circle cx="${cx}" cy="${cy}" r="3.5" fill="${dimColors[d]}" stroke="#f8fafc" stroke-width="1.5"/>`;}).join('');
+  const ACCENT = '#7C6FF7'; // Paleta unificada do template (proposta B)
+  const AXIS4 = {D:[110,38],I:[182,110],S:[110,182],C:[38,110]};
+  const radarPts = dimOrder.map(d=>{const s=(scores[d]||0)/100;const[ox,oy]=AXIS4[d];return`${(110+(ox-110)*s).toFixed(1)},${(110+(oy-110)*s).toFixed(1)}`;}).join(' ');
+  const radarSvg = `
+    <svg viewBox="0 0 220 220" width="180" height="180" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="110,38 182,110 110,182 38,110" fill="none" stroke="#e4e4e7" stroke-width="1"/>
+      <polygon points="110,62 158,110 110,158 62,110" fill="none" stroke="#e4e4e7" stroke-width="1"/>
+      <line x1="110" y1="110" x2="110" y2="38" stroke="#e4e4e7" stroke-width="1"/>
+      <line x1="110" y1="110" x2="182" y2="110" stroke="#e4e4e7" stroke-width="1"/>
+      <line x1="110" y1="110" x2="110" y2="182" stroke="#e4e4e7" stroke-width="1"/>
+      <line x1="110" y1="110" x2="38" y2="110" stroke="#e4e4e7" stroke-width="1"/>
+      <polygon points="${radarPts}" fill="${ACCENT}26" stroke="${ACCENT}" stroke-width="1.5"/>
+      ${dimOrder.map(d=>{const s=(scores[d]||0)/100;const[ox,oy]=AXIS4[d];const cx=(110+(ox-110)*s).toFixed(1),cy=(110+(oy-110)*s).toFixed(1);const isDom=d===dominant;return `<circle cx="${cx}" cy="${cy}" r="${isDom?4:3}" fill="${isDom?ACCENT:'#a1a1aa'}" stroke="#fff" stroke-width="1.5"/>`;}).join('')}
+      <text x="110" y="30" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" font-weight="600" fill="${dominant==='D'?ACCENT:'#71717a'}">D · ${scores.D||0}%</text>
+      <text x="195" y="113" text-anchor="start" font-family="IBM Plex Mono" font-size="9" font-weight="${dominant==='I'?'600':'400'}" fill="${dominant==='I'?ACCENT:'#71717a'}">I · ${scores.I||0}%</text>
+      <text x="110" y="200" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" font-weight="${dominant==='S'?'600':'400'}" fill="${dominant==='S'?ACCENT:'#71717a'}">S · ${scores.S||0}%</text>
+      <text x="25" y="113" text-anchor="end" font-family="IBM Plex Mono" font-size="9" font-weight="${dominant==='C'?'600':'400'}" fill="${dominant==='C'?ACCENT:'#71717a'}">C · ${scores.C||0}%</text>
+    </svg>`;
 
-  const _gnCss = `*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-.page{width:794px;height:1123px;overflow:hidden;margin:0 auto;padding:24px 34px;background:#f8fafc;display:flex;flex-direction:column;}
-.hd{display:flex;justify-content:space-between;align-items:center;padding-bottom:11px;border-bottom:2px solid #000;margin-bottom:13px;flex-shrink:0;}
-.brand{display:flex;align-items:center;gap:7px;}.brand-name{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:ACC;font-style:italic;font-weight:300;}
-.hd-meta{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;text-align:right;line-height:1.85;}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;flex:1;min-height:0;}.col{display:flex;flex-direction:column;gap:9px;min-height:0;overflow:hidden;}
-.pn{background:#fafafa;border:1px solid #000;padding:13px 15px;position:relative;flex-shrink:0;}
-.pn-grow{background:#fff;border:1px solid #000;padding:13px 15px;position:relative;flex:1;min-height:0;display:flex;flex-direction:column;}
-.lbl{position:absolute;top:-8px;left:12px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:6.5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.15em;}
-.dom-hero{display:flex;align-items:center;gap:11px;margin-bottom:9px;}
-.dom-letter{width:48px;height:48px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Space Mono',monospace;font-size:24px;font-weight:900;}
-.dom-ew{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:ACC;margin-bottom:2px;}
-.dom-name{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;line-height:1;}
-.arch-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:6.5px;padding:2px 7px;border:1px solid;text-transform:uppercase;letter-spacing:0.07em;margin-top:7px;}
-.ins-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:ACC;margin-bottom:7px;display:flex;align-items:center;gap:5px;flex-shrink:0;}
-.ins-lbl::before{content:'';width:14px;height:2px;background:ACC;border-radius:2px;display:inline-block;}
-.ins-txt{font-size:8.5px;color:#444;line-height:1.75;flex-shrink:0;}
-.chips-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:9px;flex-shrink:0;}
-.chip{font-family:'Space Mono',monospace;font-size:6.5px;padding:2px 7px;border:1px solid;text-transform:uppercase;letter-spacing:0.07em;}
-.tension-box{margin-top:10px;padding-top:9px;border-top:1px solid #e4e4e7;flex:1;display:flex;flex-direction:column;justify-content:center;}
-.tension-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#71717a;margin-bottom:7px;text-align:center;}
-.tension-row{display:flex;align-items:center;gap:8px;}.t-arch{display:flex;align-items:center;gap:6px;flex:1;padding:6px 8px;border:1px solid;border-radius:2px;}
-.t-letter{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Space Mono',monospace;font-size:10px;font-weight:900;}
-.t-name{font-size:8.5px;font-weight:700;}.t-pct{font-family:'Space Mono',monospace;font-size:7.5px;}
-.t-arrow{font-family:'Space Mono',monospace;font-size:9px;color:#a1a1aa;flex-shrink:0;}
-.tension-note{font-size:7.5px;color:#71717a;line-height:1.65;margin-top:6px;text-align:center;}
-.sr{display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid #f1f5f9;}
-.sr-rank{font-family:'Space Mono',monospace;font-size:7px;color:#a1a1aa;min-width:14px;}
-.sr-ico{width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Space Mono',monospace;font-size:9px;font-weight:900;}
-.sr-name{font-size:9px;font-weight:700;flex:1;}
-.sr-track{flex:1;height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;max-width:110px;}
-.sr-fill{height:100%;border-radius:3px;}.sr-pct{font-family:'Space Mono',monospace;font-size:7.5px;min-width:28px;text-align:right;}
-.guide-item{flex-shrink:0;padding-top:7px;border-top:1px solid #f1f5f9;}
-.guide-item:first-child{padding-top:0;border-top:none;}
-.guide-tag{font-family:'Space Mono',monospace;font-size:6px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:ACC;margin-bottom:3px;}
-.guide-txt{font-size:7.5px;line-height:1.65;color:#333;}
-.ft{padding-top:9px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:9px;flex-shrink:0;}
-.ft-l{font-family:'Space Mono',monospace;font-size:6px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}
-.ft-r{font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;color:#000;}
-@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;}}`.split('ACC').join(ACCENT);
+  const subtitle = `A alta ${dimNames[dominant].toLowerCase()} contrasta com a menor expressão de ${dimNames[weakest].toLowerCase()}. Essa polaridade define como você prioriza e reage sob pressão.`;
 
-  const barsHTML = dimOrder.map(d=>{
-    const c=dimColors[d],pct=scores[d]||0,isDom=d===dominant;
-    return `<div style="border:1px solid ${isDom?c+'50':'#e4e4e7'};padding:8px 10px;background:${isDom?c+'08':'#fff'};${isDom?'':'opacity:0.5;'}">
-      <div style="font-family:'Space Mono',monospace;font-size:7px;font-weight:700;color:${c};text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">${d}</div>
-      <div style="font-size:18px;font-weight:900;color:${c};">${pct}%</div>
-      <div style="height:3px;background:#f1f5f9;border-radius:2px;margin-top:4px;overflow:hidden;"><div style="width:${pct}%;height:100%;background:${c};border-radius:2px;"></div></div>
-    </div>`;
-  }).join('');
-
-  const rankingHTML = sortedDims.map((d,i)=>{
-    const c=dimColors[d],pct=scores[d]||0,last=i===3?'border-bottom:none;':'';
-    return `<div class="sr" style="${last}"><span class="sr-rank">${String(i+1).padStart(2,'0')}</span><div class="sr-ico" style="background:${c}15;border:1px solid ${c}30;color:${c};">${d}</div><span class="sr-name">${dimNames[d]}</span><div class="sr-track"><div class="sr-fill" style="width:${pct}%;background:${c};"></div></div><span class="sr-pct" style="color:${c};">${pct}%</span></div>`;
-  }).join('');
-
-  const chipsHTML = profile.traits.map(t=>`<span class="chip" style="color:${ACCENT};border-color:${ACCENT}40;background:${ACCENT}08;">${t}</span>`).join('');
-
-  Gnosis.pdf.printOrDownload(`<!DOCTYPE html><html lang="pt-BR"><head>
-  <meta charset="UTF-8"><title>Perfil DISC — ${nome} · Sistema Gnosis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>${_gnCss}</style></head><body><div class="page">
-  <div class="hd">
-    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="26" height="26"><path d="M 50 22 A 28 28 0 1 0 78 50" stroke="${ACCENT}" stroke-width="9" stroke-linecap="round"/><rect x="58" y="46" width="20" height="8" rx="1" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
-    <div class="hd-meta">Módulo: Perfil DISC · Comportamento<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
-  </div>
-  <div class="grid">
-    <div class="col">
-      <div class="pn">
-        <div class="lbl">Perfil_Dominante</div>
-        <div class="dom-hero">
-          <div class="dom-letter" style="background:${ACCENT}12;border:1px solid ${ACCENT}35;color:${ACCENT};">${dominant}</div>
-          <div>
-            <div class="dom-ew">Resultado · Perfil DISC</div>
-            <div class="dom-name" style="color:${ACCENT};">${profile.title}</div>
-          </div>
+  Gnosis.pdf.render({
+    matrizName: 'Perfil DISC',
+    matrizSubname: 'Comportamento',
+    userName: nome,
+    date: data,
+    accent: ACCENT,
+    hero: {
+      letter: dominant,
+      eyebrow: 'Resultado · Perfil Dominante',
+      title: profile.title,
+      subtitle: profile.strengths,
+    },
+    dimensionsLabel: 'Distribuição DISC',
+    dimensions: dimOrder.map(d => ({
+      letter: d,
+      name: dimNames[d],
+      pct: scores[d] || 0,
+      isDominant: d === dominant,
+    })),
+    analysisLabel: 'Análise comportamental',
+    analysisBlocks: [
+      { eyebrow: 'Fortalezas',        title: 'O que te coloca em vantagem', text: profile.strengths },
+      { eyebrow: 'Pontos de atenção', title: 'O que pode atrapalhar',       text: profile.challenges },
+      { eyebrow: 'Ambiente ideal',    title: 'Onde você floresce',          text: profile.environment },
+      { eyebrow: 'Comunicação',       title: 'Como falar com você',         text: profile.communication },
+    ],
+    customSection: `
+      <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:24px;align-items:center;">
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;color:${ACCENT};text-transform:uppercase;font-weight:500;margin-bottom:8px;">Polaridade comportamental</div>
+          <h4 style="font-size:18px;font-weight:700;color:#18181b;letter-spacing:-0.015em;margin-bottom:10px;">${dominant} × ${weakest} — tensão estrutural</h4>
+          <p style="font-size:12.5px;line-height:1.65;color:#52525b;">${subtitle}</p>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;">${barsHTML}</div>
-        <div class="arch-badge" style="color:${ACCENT};border-color:${ACCENT}40;background:${ACCENT}08;">${focoMap[dominant]} · ${motivMap[dominant]}</div>
-      </div>
-      <div class="pn-grow">
-        <div class="lbl">Análise_do_Perfil</div>
-        <div class="ins-lbl">Arquitetura Comportamental</div>
-        <p class="ins-txt">${profile.strengths}</p>
-        <div class="chips-row">${chipsHTML}</div>
-        <div class="tension-box">
-          <div class="tension-lbl">// Zona de Tensão · Polaridade Comportamental</div>
-          <div class="tension-row">
-            <div class="t-arch" style="border-color:${ACCENT}35;background:${ACCENT}08;">
-              <div class="t-letter" style="background:${ACCENT}15;border:1px solid ${ACCENT}30;color:${ACCENT};">${dominant}</div>
-              <div><div class="t-name" style="color:${ACCENT};">${dimNames[dominant]}</div><div class="t-pct" style="color:${ACCENT};">${scores[dominant]||0}% · dominante</div></div>
-            </div>
-            <div class="t-arrow">⟷</div>
-            <div class="t-arch" style="border-color:${dimColors[weakest]}35;background:${dimColors[weakest]}06;">
-              <div class="t-letter" style="background:${dimColors[weakest]}15;border:1px solid ${dimColors[weakest]}30;color:${dimColors[weakest]};">${weakest}</div>
-              <div><div class="t-name" style="color:${dimColors[weakest]};">${dimNames[weakest]}</div><div class="t-pct" style="color:${dimColors[weakest]};">${scores[weakest]||0}% · moderado</div></div>
-            </div>
-          </div>
-          <p class="tension-note">A alta ${dimNames[dominant].toLowerCase()} contrasta com a menor expressão de ${dimNames[weakest].toLowerCase()}. Essa polaridade define como você prioriza e reage sob pressão.</p>
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="pn" style="flex-shrink:0;">
-        <div class="lbl">Ranking_DISC</div>
-        <div style="padding-top:5px;">${rankingHTML}</div>
-      </div>
-      <div class="pn-grow">
-        <div class="lbl">Guia_de_Interação</div>
-        <div style="display:flex;flex-direction:column;gap:0;padding-top:4px;flex:1;justify-content:space-between;">
-          <div class="guide-item" style="border-top:none;padding-top:0;"><div class="guide-tag">Pontos_de_Atenção</div><p class="guide-txt">${profile.challenges}</p></div>
-          <div class="guide-item"><div class="guide-tag">Ambiente_Ideal</div><p class="guide-txt">${profile.environment}</p></div>
-          <div class="guide-item" style="flex:1;"><div class="guide-tag">Como_se_Comunicar</div><p class="guide-txt">${profile.communication}</p></div>
-          <div class="guide-item">
-            <div class="guide-tag" style="margin-bottom:5px;">Mapa_Visual_DISC</div>
-            <div style="display:flex;justify-content:center;">
-              <svg viewBox="0 0 260 260" width="160" height="160" xmlns="http://www.w3.org/2000/svg">
-                <defs><radialGradient id="rg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="${ACCENT}" stop-opacity="0.18"/><stop offset="100%" stop-color="${ACCENT}" stop-opacity="0.04"/></radialGradient></defs>
-                <polygon points="130,74 186,130 130,186 74,130" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
-                <polygon points="130,96 164,130 130,164 96,130" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
-                <line x1="130" y1="130" x2="130" y2="42" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-                <line x1="130" y1="130" x2="218" y2="130" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-                <line x1="130" y1="130" x2="130" y2="218" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-                <line x1="130" y1="130" x2="42" y2="130" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-                <polygon points="${radarPts}" fill="url(#rg)" stroke="${ACCENT}" stroke-width="1.5" stroke-opacity="0.7"/>
-                ${radarDots}
-                <text x="130" y="36" text-anchor="middle" font-family="Space Mono,monospace" font-size="7" fill="${dimColors.D}" font-weight="700">D ${scores.D||0}%</text>
-                <text x="224" y="133" text-anchor="start" font-family="Space Mono,monospace" font-size="7" fill="${dimColors.I}">I ${scores.I||0}%</text>
-                <text x="130" y="230" text-anchor="middle" font-family="Space Mono,monospace" font-size="7" fill="${dimColors.S}">S ${scores.S||0}%</text>
-                <text x="36" y="133" text-anchor="end" font-family="Space Mono,monospace" font-size="7" fill="${dimColors.C}">C ${scores.C||0}%</text>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="ft"><span class="ft-l">Sistema Gnosis // Perfil DISC // Comportamento // Confidencial</span><span class="ft-r">www.sistema-gnosis.com.br</span></div>
-  </div>
-  <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
-  </body></html>`, "disc-resultado.html");
+        <div style="display:flex;justify-content:center;">${radarSvg}</div>
+      </div>`,
+    citation: 'Marston, W. M. (1928). <em>Emotions of Normal People.</em>',
+    filename: 'disc-resultado.html',
+  });
 }
 
 

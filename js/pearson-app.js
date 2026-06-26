@@ -495,28 +495,16 @@ function _generatePDF(){
   const topArch = ARCHETYPES[topKey];
   const bottomKey = sorted[sorted.length-1][0];
   const bottomArch = ARCHETYPES[bottomKey];
-  const data = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
-  const ACCENT = '#C9A84C';
+  const data = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
+  const ACCENT = '#7C6FF7';
 
   // Group averages
   const groupScores = {ego:[],soul:[],self:[],drive:[]};
   sorted.forEach(([k,s])=>{ const g=ARCHETYPES[k].group; if(groupScores[g])groupScores[g].push(s); });
   const groupAvg = k => Math.round(groupScores[k].reduce((a,b)=>a+b,0)/groupScores[k].length);
   const GROUP_NAMES = {ego:'Ego',soul:'Alma',self:'Self',drive:'Liberdade'};
-  const GROUP_C = {ego:'#E8603A',soul:'#2EC4A0',self:'#9B59B6',drive:'#1BA8D4'};
-  const GROUP_SUB = {ego:'Inocente · Guerreiro · Governante',soul:'Órfão · Prestativo · Amante',self:'Destruidor · Criador · Mago',drive:'Buscador · Sábio · Bobo'};
 
-  // Behavioral chips from top 3
-  const chipLabels = {
-    innocente:'Fé Espontânea',orfao:'Empatia Profunda',guerreiro:'Alta Execução',
-    prestativo:'Cuidado Ativo',buscador:'Autonomia Criativa',destruidor:'Ruptura Estratégica',
-    amante:'Conexão Intensa',criador:'Expressão Original',governante:'Liderança Estrutural',
-    mago:'Visão Sistêmica',sabio:'Rigor Analítico',bobo:'Disrupção Lúdica'
-  };
-  const chipsHTML = sorted.slice(0,5).map(([k])=>{
-    const a=ARCHETYPES[k];
-    return `<span style="font-family:'Space Mono',monospace;font-size:6.5px;padding:2px 7px;border:1px solid ${a.color}40;background:${a.color}08;color:${a.color};text-transform:uppercase;letter-spacing:0.07em;">${chipLabels[k]||a.name}</span>`;
-  }).join('');
+  // (chips e radar do PDF antigo removidos — substituídos pelo custom section abaixo)
 
   // Radar SVG — 12 axes, center 130,130, rMax 88
   const AXIS_OUTER = [
@@ -542,165 +530,66 @@ function _generatePDF(){
     return `<text x="${lx}" y="${ly}" text-anchor="${ta}" font-family="Space Mono,monospace" font-size="6" fill="${ARCHETYPES[k].color}">${RADAR_LABELS[i]}</text>`;
   }).join('');
 
-  const _gnCss = `*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-.page{width:794px;height:1123px;overflow:hidden;margin:0 auto;padding:24px 34px;background:#f8fafc;display:flex;flex-direction:column;}
-.hd{display:flex;justify-content:space-between;align-items:center;padding-bottom:11px;border-bottom:2px solid #000;margin-bottom:13px;flex-shrink:0;}
-.brand{display:flex;align-items:center;gap:7px;}
-.brand-name{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}
-.brand-name em{color:ACCENT;font-style:italic;font-weight:300;}
-.hd-meta{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;text-align:right;line-height:1.85;}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;flex:1;min-height:0;}
-.col{display:flex;flex-direction:column;gap:9px;min-height:0;overflow:hidden;}
-.pn{background:#fafafa;border:1px solid #000;padding:13px 15px;position:relative;flex-shrink:0;}
-.pn-grow{background:#fff;border:1px solid #000;padding:13px 15px;position:relative;flex:1;min-height:0;display:flex;flex-direction:column;}
-.lbl{position:absolute;top:-8px;left:12px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:6.5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.15em;}
-.dom-hero{display:flex;align-items:center;gap:11px;margin-bottom:9px;}
-.dom-icon{width:48px;height:48px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.dom-icon svg{width:26px;height:26px;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
-.dom-ew{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:ACCENT;margin-bottom:2px;}
-.dom-name{font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;line-height:1;}
-.arch-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:6.5px;padding:2px 7px;border:1px solid;text-transform:uppercase;letter-spacing:0.07em;margin-top:7px;}
-.arch-desc{font-size:9px;line-height:1.7;color:#333;margin-top:9px;}
-.arch-career{font-size:8px;line-height:1.6;color:#71717a;margin-top:7px;padding-top:7px;border-top:1px solid #e4e4e7;}
-.ins-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:ACCENT;margin-bottom:7px;display:flex;align-items:center;gap:5px;flex-shrink:0;}
-.ins-lbl::before{content:'';width:14px;height:2px;background:ACCENT;border-radius:2px;display:inline-block;}
-.ins-txt{font-size:8.5px;color:#444;line-height:1.75;flex-shrink:0;}
-.chips-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:9px;flex-shrink:0;}
-.tension-box{margin-top:10px;padding-top:9px;border-top:1px solid #e4e4e7;flex:1;display:flex;flex-direction:column;justify-content:center;}
-.tension-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#71717a;margin-bottom:7px;text-align:center;}
-.tension-row{display:flex;align-items:center;gap:8px;}
-.t-arch{display:flex;align-items:center;gap:6px;flex:1;padding:6px 8px;border:1px solid;border-radius:2px;}
-.t-ico{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.t-ico svg{width:11px;height:11px;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
-.t-name{font-size:8.5px;font-weight:700;}
-.t-pct{font-family:'Space Mono',monospace;font-size:7.5px;}
-.t-arrow{font-family:'Space Mono',monospace;font-size:9px;color:#a1a1aa;flex-shrink:0;}
-.tension-note{font-size:7.5px;color:#71717a;line-height:1.65;margin-top:6px;text-align:center;}
-.gc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;}
-.gc{border:1px solid;padding:7px 9px;border-radius:2px;}
-.gc-lbl{font-family:'Space Mono',monospace;font-size:6px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:3px;}
-.gc-score{font-size:17px;font-weight:900;line-height:1;}
-.gc-sub{font-family:'Space Mono',monospace;font-size:5.5px;color:#71717a;margin-top:2px;}
-.sr{display:flex;align-items:center;gap:7px;padding:3.5px 0;border-bottom:1px solid #f1f5f9;}
-.sr-rank{font-family:'Space Mono',monospace;font-size:7px;color:#a1a1aa;min-width:14px;}
-.sr-ico{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.sr-ico svg{width:12px;height:12px;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
-.sr-name{font-size:9px;font-weight:700;flex:1;}
-.sr-track{flex:1;height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;max-width:110px;}
-.sr-fill{height:100%;border-radius:3px;}
-.sr-pct{font-family:'Space Mono',monospace;font-size:7.5px;min-width:28px;text-align:right;}
-.ft{padding-top:9px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:9px;flex-shrink:0;}
-.ft-l{font-family:'Space Mono',monospace;font-size:6px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}
-.ft-r{font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;color:#000;}
-@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;}}`.split('ACCENT').join(ACCENT);
-
-  const rankingHTML = sorted.map(([k,score],i) => {
-    const a = ARCHETYPES[k];
-    const last = i === sorted.length - 1 ? 'border-bottom:none;' : '';
-    return `<div class="sr" style="${last}"><span class="sr-rank">${String(i+1).padStart(2,'0')}</span><div class="sr-ico" style="background:${a.color}12;border:1px solid ${a.color}30;"><svg viewBox="0 0 24 24" style="stroke:${a.color};">${ARCH_ICONS[k]||''}</svg></div><span class="sr-name">${a.name}</span><div class="sr-track"><div class="sr-fill" style="width:${score}%;background:${a.color};"></div></div><span class="sr-pct" style="color:${a.color};">${score}%</span></div>`;
-  }).join('');
-
+  const topS = sorted[0][1], botS = sorted[sorted.length-1][1];
   const insightRaw = getInsight(scores, topKey).replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
   const insightShort = insightRaw.length > 420 ? insightRaw.slice(0, 420).replace(/\s\S+$/, '') + '…' : insightRaw;
 
-  const groupGridHTML = Object.keys(groupScores).map(g=>{
-    const avg=groupAvg(g), c=GROUP_C[g];
-    return `<div class="gc" style="border-color:${c}30;background:${c}07;"><div class="gc-lbl" style="color:${c};">${GROUP_NAMES[g]}</div><div class="gc-score" style="color:${c};">${avg}%</div><div class="gc-sub">${GROUP_SUB[g]}</div></div>`;
-  }).join('');
+  // Top 6 arquétipos como "dimensões" no template (12 não cabe esteticamente).
+  // Restante vai pra ranking no customSection.
+  const top6 = sorted.slice(0, 6).map(([k, score]) => ({
+    letter: ARCHETYPES[k].icon || k.charAt(0).toUpperCase(),
+    name: ARCHETYPES[k].name,
+    pct: score,
+    isDominant: k === topKey,
+  }));
 
-  // Tension zone: dominant vs weakest
-  const topS = sorted[0][1], botS = sorted[sorted.length-1][1];
+  // Médias por grupo + ranking 7-12 no custom section
+  const groupGridHTML = '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;">'
+    + Object.keys(groupScores).map(g => {
+        const avg = groupAvg(g);
+        return '<div style="background:#fff;border:1px solid #e4e4e7;border-radius:8px;padding:14px;text-align:center;">'
+          + '<div style="font-family:IBM Plex Mono,monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#71717a;margin-bottom:6px;">'+GROUP_NAMES[g]+'</div>'
+          + '<div style="font-size:22px;font-weight:300;color:#18181b;">'+avg+'<sub style="font-size:11px;color:#a1a1aa;vertical-align:baseline;">%</sub></div>'
+          + '</div>';
+      }).join('') + '</div>';
 
-  Gnosis.pdf.printOrDownload(`<!DOCTYPE html><html lang="pt-BR" style="color-scheme:light;"><head>
-  <meta charset="UTF-8"><meta name="color-scheme" content="light"><title>Pearson-Marr — ${nome} · Sistema Gnosis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>${_gnCss}</style></head><body style="background:#f8fafc!important;"><div class="page">
-  <div class="hd">
-    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="26" height="26"><path d="M 50 22 A 28 28 0 1 0 78 50" stroke="${ACCENT}" stroke-width="9" stroke-linecap="round"/><rect x="58" y="46" width="20" height="8" rx="1" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
-    <div class="hd-meta">Módulo: Pearson-Marr · Arquétipos de Jung<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
-  </div>
-  <div class="grid">
-    <div class="col">
-      <div class="pn">
-        <div class="lbl">Arquétipo_Dominante</div>
-        <div class="dom-hero">
-          <div class="dom-icon" style="background:${topArch.color}12;border:1px solid ${topArch.color}35;">
-            <svg viewBox="0 0 24 24" style="stroke:${topArch.color};">${ARCH_ICONS[topKey]||''}</svg>
-          </div>
-          <div>
-            <div class="dom-ew">Resultado · Pearson-Marr</div>
-            <div class="dom-name" style="color:${topArch.color};">${topArch.name}</div>
-          </div>
-        </div>
-        <div class="arch-badge" style="color:${topArch.color};border-color:${topArch.color}40;background:${topArch.color}08;">
-          <svg viewBox="0 0 24 24" width="8" height="8" style="stroke:${topArch.color};fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">${ARCH_ICONS[topKey]||''}</svg>
-          ${topArch.groupName} · ${topArch.theme} · ${topS}%
-        </div>
-        <p class="arch-desc">${topArch.hi}</p>
-        <p class="arch-career">${topArch.career}</p>
-      </div>
-      <div class="pn-grow">
-        <div class="lbl">Análise_do_Perfil</div>
-        <div class="ins-lbl">Síntese Arquetípica</div>
-        <p class="ins-txt">${insightShort}</p>
-        <div class="chips-row">${chipsHTML}</div>
-        <div class="tension-box">
-          <div class="tension-lbl">// Zona de Tensão · Polaridade Arquetípica</div>
-          <div class="tension-row">
-            <div class="t-arch" style="border-color:${topArch.color}35;background:${topArch.color}08;">
-              <div class="t-ico" style="background:${topArch.color}15;border:1px solid ${topArch.color}30;">
-                <svg viewBox="0 0 24 24" style="stroke:${topArch.color};">${ARCH_ICONS[topKey]||''}</svg>
-              </div>
-              <div>
-                <div class="t-name" style="color:${topArch.color};">${topArch.name}</div>
-                <div class="t-pct" style="color:${topArch.color};">${topS}% · dominante</div>
-              </div>
-            </div>
-            <div class="t-arrow">⟷</div>
-            <div class="t-arch" style="border-color:${bottomArch.color}35;background:${bottomArch.color}06;">
-              <div class="t-ico" style="background:${bottomArch.color}15;border:1px solid ${bottomArch.color}30;">
-                <svg viewBox="0 0 24 24" style="stroke:${bottomArch.color};">${ARCH_ICONS[bottomKey]||''}</svg>
-              </div>
-              <div>
-                <div class="t-name" style="color:${bottomArch.color};">${bottomArch.name}</div>
-                <div class="t-pct" style="color:${bottomArch.color};">${botS}% · sombra</div>
-              </div>
-            </div>
-          </div>
-          <p class="tension-note">A dominância do ${topArch.name} (${topS}%) contrasta com a baixíssima expressão do ${bottomArch.name} (${botS}%). Essa polaridade revela a tensão entre ${topArch.theme.toLowerCase()} e ${bottomArch.theme.toLowerCase()} — um eixo de crescimento potencial.</p>
-        </div>
-      </div>
-      <div class="pn" style="flex-shrink:0;">
-        <div class="lbl">Média_por_Grupo</div>
-        <div class="gc-grid" style="margin-top:5px;">${groupGridHTML}</div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="pn" style="flex-shrink:0;">
-        <div class="lbl">Ranking_12_Arquétipos</div>
-        <div style="padding-top:5px;">${rankingHTML}</div>
-      </div>
-      <div class="pn-grow">
-        <div class="lbl">Mapa_Visual_Arquetípico</div>
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding-top:4px;">
-          <svg viewBox="0 0 260 260" width="220" height="220" xmlns="http://www.w3.org/2000/svg">
-            <defs><radialGradient id="rg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="${topArch.color}" stop-opacity="0.18"/><stop offset="100%" stop-color="#8E44AD" stop-opacity="0.06"/></radialGradient></defs>
-            <polygon points="130,50 168,62 194,95 194,135 168,168 130,180 92,168 66,135 66,95 92,62" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
-            <polygon points="130,66 161,76 183,103 183,127 161,154 130,164 99,154 77,127 77,103 99,76" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
-            <polygon points="130,82 154,90 172,111 172,119 154,140 130,148 106,140 88,119 88,111 106,90" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
-            ${AXIS_OUTER.map(([ox,oy])=>`<line x1="130" y1="130" x2="${ox}" y2="${oy}" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>`).join('')}
-            <polygon points="${radarPoints}" fill="url(#rg)" stroke="${topArch.color}" stroke-width="1.5" stroke-opacity="0.7"/>
-            ${radarDots}
-            ${radarLabels}
-          </svg>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="ft"><span class="ft-l">Sistema Gnosis // Psicologia Junguiana // Pearson-Marr // Confidencial</span><span class="ft-r">www.sistema-gnosis.com.br</span></div>
-  </div>
-  <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
-  </body></html>`, "pearson-resultado.html");
+  const restRankingHTML = sorted.slice(6).length ? (
+    '<div style="font-family:IBM Plex Mono,monospace;font-size:10px;letter-spacing:0.12em;color:#7C6FF7;text-transform:uppercase;font-weight:500;margin-bottom:10px;">Demais arquétipos</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;">'
+    + sorted.slice(6).map(([k,score],i) => {
+        const a = ARCHETYPES[k];
+        return '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;">'
+          + '<span style="font-family:IBM Plex Mono,monospace;font-size:10px;color:#a1a1aa;min-width:18px;">'+(i+7).toString().padStart(2,'0')+'</span>'
+          + '<span style="flex:1;font-size:12px;font-weight:600;color:#18181b;">'+a.name+'</span>'
+          + '<span style="font-family:IBM Plex Mono,monospace;font-size:11px;color:#52525b;">'+score+'%</span>'
+          + '</div>';
+      }).join('') + '</div>'
+  ) : '';
+
+  Gnosis.pdf.render({
+    matrizName: 'Pearson-Marr',
+    matrizSubname: 'Arquétipos junguianos',
+    userName: nome,
+    date: data,
+    hero: {
+      letter: topArch.icon || topKey.charAt(0).toUpperCase(),
+      eyebrow: 'Arquétipo Dominante · ' + topArch.groupName,
+      title: topArch.name,
+      subtitle: topArch.hi,
+    },
+    dimensionsLabel: 'Top 6 arquétipos',
+    dimensions: top6,
+    analysisLabel: 'Análise arquetípica',
+    analysisBlocks: [
+      { eyebrow: 'Síntese',           title: 'Sua composição',          text: insightShort },
+      { eyebrow: 'Vocação',           title: 'Onde se manifesta',       text: topArch.career },
+      { eyebrow: 'Tensão estrutural', title: topArch.name + ' × ' + bottomArch.name, text: 'A dominância do ' + topArch.name + ' (' + topS + '%) contrasta com a baixa expressão do ' + bottomArch.name + ' (' + botS + '%). Esta polaridade revela a tensão entre ' + topArch.theme.toLowerCase() + ' e ' + bottomArch.theme.toLowerCase() + ' — eixo de crescimento.' },
+      { eyebrow: 'Grupos junguianos', title: 'Médias por grupo',        text: 'Ego, Alma, Self e Liberdade — os 4 grandes blocos de arquétipos que compõem sua identidade junguiana.' },
+    ],
+    customSection: groupGridHTML + restRankingHTML,
+    citation: 'Pearson, C. S. (1991). <em>Awakening the Heroes Within.</em>',
+    filename: 'pearson-resultado.html',
+  });
 }
 
 document.addEventListener('DOMContentLoaded', async function(){

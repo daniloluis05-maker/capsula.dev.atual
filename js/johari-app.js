@@ -231,108 +231,57 @@ function generatePDF(){
 function _generatePDF(){
   const u=(capsulaDB.lsGetUser() || {});
   const nome=u.apelido||u.nome||'Usuário';
-  const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
-  const ACCENT='#1BA8D4';
+  const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
   const aberto=[...selfSelected].filter(a=>othersSelected.has(a));
   const cego=[...othersSelected].filter(a=>!selfSelected.has(a));
   const oculto=[...selfSelected].filter(a=>!othersSelected.has(a));
-  // ── PDF v2: 2-col uniform layout ──
-  const mainRec = cego.length>oculto.length
-    ? `Sua Área Cega (${cego.length} traços) é maior que a Oculta (${oculto.length}), sugerindo que os outros percebem qualidades ou padrões que você ainda não reconhece em si. Peça feedback regular e esteja aberto a perspectivas externas.`
-    : `Sua Área Oculta (${oculto.length} traços) é maior que a Cega (${cego.length}), indicando que você guarda mais do que compartilha. Ampliar a Área Aberta através de mais vulnerabilidade seletiva fortalece seus vínculos profissionais e pessoais.`;
 
-  const panes=[
-    {title:'Área Aberta',desc:'você sabe · outros sabem',color:'#1BA8D4',items:aberto},
-    {title:'Área Cega',desc:'você não vê · outros veem',color:'#E8603A',items:cego},
-    {title:'Área Oculta',desc:'você sabe · outros não veem',color:'#6C5FE6',items:oculto},
-    {title:'Área Desconhecida',desc:'potencial a explorar',color:'#71717a',items:[],empty:'Traços a descobrir com o tempo.'},
-  ];
+  const mainRec = cego.length > oculto.length
+    ? 'Sua Área Cega (' + cego.length + ' traços) é maior que a Oculta (' + oculto.length + '), sugerindo que os outros percebem qualidades ou padrões que você ainda não reconhece em si. Peça feedback regular e esteja aberto a perspectivas externas.'
+    : 'Sua Área Oculta (' + oculto.length + ' traços) é maior que a Cega (' + cego.length + '), indicando que você guarda mais do que compartilha. Ampliar a Área Aberta através de mais vulnerabilidade seletiva fortalece seus vínculos profissionais e pessoais.';
 
-  const _gnCss_jh = `*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-.page{width:794px;height:1123px;overflow:hidden;margin:0 auto;padding:24px 34px;background:#f8fafc;display:flex;flex-direction:column;}
-.hd{display:flex;justify-content:space-between;align-items:center;padding-bottom:11px;border-bottom:2px solid #000;margin-bottom:13px;flex-shrink:0;}
-.brand{display:flex;align-items:center;gap:7px;}.brand-name{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:ACC;font-style:italic;font-weight:300;}
-.hd-meta{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;text-align:right;line-height:1.85;}
-.grid{display:grid;grid-template-columns:1fr 1.2fr;gap:11px;flex:1;min-height:0;}.col{display:flex;flex-direction:column;gap:9px;min-height:0;overflow:hidden;}
-.pn{background:#fafafa;border:1px solid #000;padding:13px 15px;position:relative;flex-shrink:0;}
-.pn-grow{background:#fff;border:1px solid #000;padding:13px 15px;position:relative;flex:1;min-height:0;display:flex;flex-direction:column;}
-.lbl{position:absolute;top:-8px;left:12px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:6.5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.15em;}
-.dom-hero{display:flex;align-items:center;gap:11px;margin-bottom:9px;}
-.dom-ew{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:ACC;margin-bottom:2px;}
-.dom-name{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;line-height:1.1;}
-.ins-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:ACC;margin-bottom:7px;display:flex;align-items:center;gap:5px;flex-shrink:0;}
-.ins-lbl::before{content:'';width:14px;height:2px;background:ACC;border-radius:2px;display:inline-block;}
-.ins-txt{font-size:8.5px;color:#444;line-height:1.75;flex-shrink:0;}
-.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;flex-shrink:0;}
-.stat{border:1px solid;padding:8px 10px;border-radius:2px;}
-.stat-n{font-size:22px;font-weight:900;line-height:1;}.stat-lbl{font-family:'Space Mono',monospace;font-size:6px;text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;}
-.rec-box{margin-top:9px;padding-top:9px;border-top:1px solid #e4e4e7;flex:1;display:flex;flex-direction:column;justify-content:center;}
-.rec-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#71717a;margin-bottom:7px;}
-.rec-txt{font-size:8px;color:#444;line-height:1.7;}
-.pane-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0;}
-.pane{background:#fafafa;border:1px solid #e4e4e7;padding:10px 12px;display:flex;flex-direction:column;overflow:hidden;}
-.pane-title{font-size:9px;font-weight:700;margin-bottom:2px;}
-.pane-desc{font-family:'Space Mono',monospace;font-size:6px;color:#71717a;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #f1f5f9;}
-.chips-wrap{display:flex;flex-wrap:wrap;gap:3px;overflow:hidden;}
-.chip{font-family:'Space Mono',monospace;font-size:6px;padding:2px 5px;border:1px solid;text-transform:uppercase;letter-spacing:0.06em;}
-.ft{padding-top:9px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:9px;flex-shrink:0;}
-.ft-l{font-family:'Space Mono',monospace;font-size:6px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}
-.ft-r{font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;color:#000;}
-@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;}}`.split('ACC').join(ACCENT);
+  // Tabela 2x2 das áreas no customSection
+  const renderArea = (title, desc, traits, emptyMsg) => {
+    const chips = traits.length > 0
+      ? '<div style="display:flex;flex-wrap:wrap;gap:5px;">' + traits.map(t => '<span style="font-family:IBM Plex Mono,monospace;font-size:9px;padding:3px 8px;border:1px solid #7C6FF740;color:#7C6FF7;background:#7C6FF708;border-radius:3px;text-transform:uppercase;letter-spacing:0.04em;">'+t+'</span>').join('') + '</div>'
+      : '<span style="font-size:11px;color:#a1a1aa;font-style:italic;">'+(emptyMsg||'— nenhum traço aqui')+'</span>';
+    return '<div style="background:#fff;border:1px solid #e4e4e7;border-radius:8px;padding:14px 16px;border-top:3px solid #7C6FF7;">'
+      + '<div style="font-family:IBM Plex Mono,monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#7C6FF7;font-weight:500;margin-bottom:2px;">'+title+'</div>'
+      + '<div style="font-family:IBM Plex Mono,monospace;font-size:9px;color:#71717a;margin-bottom:10px;">'+desc+'</div>'
+      + chips + '</div>';
+  };
+  const areasGrid = '<div style="font-family:IBM Plex Mono,monospace;font-size:10px;letter-spacing:0.12em;color:#7C6FF7;text-transform:uppercase;font-weight:500;margin-bottom:12px;">Suas 4 áreas</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+    + renderArea('Área Aberta', 'você sabe · outros sabem', aberto)
+    + renderArea('Área Cega', 'você não vê · outros veem', cego)
+    + renderArea('Área Oculta', 'você sabe · outros não veem', oculto)
+    + renderArea('Área Desconhecida', 'potencial a explorar', [], 'Traços a descobrir com o tempo.')
+    + '</div>';
 
-  const panesHTML = panes.map(p=>{
-    const chips = p.items.length>0
-      ? `<div class="chips-wrap">${p.items.map(a=>`<span class="chip" style="border-color:${p.color}40;color:${p.color};background:${p.color}07;">${a}</span>`).join('')}</div>`
-      : `<span style="font-family:'Space Mono',monospace;font-size:8px;color:#a1a1aa;">${p.empty||'// nenhum traço'}</span>`;
-    return `<div class="pane" style="border-left:3px solid ${p.color};">
-      <div class="pane-title" style="color:${p.color};">${p.title}</div>
-      <div class="pane-desc">${p.desc}</div>
-      ${chips}
-    </div>`;
-  }).join('');
-
-  Gnosis.pdf.printOrDownload(`<!DOCTYPE html><html lang="pt-BR"><head>
-  <meta charset="UTF-8"><title>Janela de Johari — ${nome} · Sistema Gnosis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>${_gnCss_jh}</style></head><body><div class="page">
-  <div class="hd">
-    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="26" height="26"><path d="M 50 22 A 28 28 0 1 0 78 50" stroke="${ACCENT}" stroke-width="9" stroke-linecap="round"/><rect x="58" y="46" width="20" height="8" rx="1" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
-    <div class="hd-meta">Módulo: Janela de Johari · Autopercepção<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
-  </div>
-  <div class="grid">
-    <div class="col">
-      <div class="pn">
-        <div class="lbl">Resultado_Johari</div>
-        <div>
-          <div class="dom-ew">Resultado · Janela de Johari</div>
-          <div class="dom-name" style="color:${ACCENT};">Janela de Johari</div>
-        </div>
-        <div class="stat-grid">
-          <div class="stat" style="border-color:#1BA8D430;background:#1BA8D407;"><div class="stat-n" style="color:#1BA8D4;">${aberto.length}</div><div class="stat-lbl" style="color:#1BA8D4;">Área Aberta</div></div>
-          <div class="stat" style="border-color:#E8603A30;background:#E8603A07;"><div class="stat-n" style="color:#E8603A;">${cego.length}</div><div class="stat-lbl" style="color:#E8603A;">Área Cega</div></div>
-          <div class="stat" style="border-color:#6C5FE630;background:#6C5FE607;"><div class="stat-n" style="color:#6C5FE6;">${oculto.length}</div><div class="stat-lbl" style="color:#6C5FE6;">Área Oculta</div></div>
-        </div>
-      </div>
-      <div class="pn-grow">
-        <div class="lbl">Análise_do_Perfil</div>
-        <div class="ins-lbl">Síntese Johari</div>
-        <p class="ins-txt">A Janela de Johari mapeia quatro quadrantes de autopercepção em relação a como os outros te enxergam. A área aberta (${aberto.length} traços) reflete alinhamento entre sua autopercepção e a percepção externa. É o terreno de maior confiança e efetividade relacional.</p>
-        <div class="rec-box">
-          <div class="rec-lbl">// Recomendação Principal</div>
-          <p class="rec-txt">${mainRec}</p>
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="pn-grow" style="flex:1;">
-        <div class="lbl">Mapa_das_Quatro_Áreas</div>
-        <div class="pane-grid" style="margin-top:8px;">${panesHTML}</div>
-      </div>
-    </div>
-  </div>
-  <div class="ft"><span class="ft-l">Sistema Gnosis // Janela de Johari // Autopercepção // Confidencial</span><span class="ft-r">www.sistema-gnosis.com.br</span></div>
-  </div>
-  <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
-  </body></html>`, "johari.html");
+  Gnosis.pdf.render({
+    matrizName: 'Janela de Johari',
+    matrizSubname: 'Autopercepção relacional',
+    userName: nome,
+    date: data,
+    hero: {
+      letter: '▦',
+      eyebrow: 'Mapa de Autopercepção',
+      title: 'Quatro Áreas',
+      subtitle: 'A Janela de Johari mapeia o que você sabe sobre si × o que os outros enxergam. A área aberta reflete confiança e efetividade relacional; as outras três indicam onde há espaço de crescimento.',
+    },
+    dimensionsLabel: 'Distribuição dos traços',
+    dimensions: [
+      { letter: aberto.length.toString(), name: 'Área Aberta',  pct: Math.min(100, aberto.length * 10), isDominant: aberto.length >= cego.length && aberto.length >= oculto.length },
+      { letter: cego.length.toString(),   name: 'Área Cega',    pct: Math.min(100, cego.length * 10),   isDominant: false },
+      { letter: oculto.length.toString(), name: 'Área Oculta',  pct: Math.min(100, oculto.length * 10), isDominant: false },
+    ],
+    analysisLabel: 'Análise relacional',
+    analysisBlocks: [
+      { eyebrow: 'Síntese',         title: 'Sua janela',                text: 'A área aberta (' + aberto.length + ' traços) reflete alinhamento entre sua autopercepção e como os outros te veem. É o terreno de maior confiança e produtividade nas suas relações.' },
+      { eyebrow: 'Recomendação',    title: 'Próximo passo',             text: mainRec },
+    ],
+    customSection: areasGrid,
+    citation: 'Luft, J., &amp; Ingham, H. (1955). <em>The Johari Window.</em>',
+    filename: 'johari.html',
+  });
 }
-

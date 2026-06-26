@@ -240,139 +240,44 @@ function generatePDF(){
 function _generatePDF(){
   const u=(capsulaDB.lsGetUser()||{});
   const nome=u.apelido||u.nome||'Usuário';
-  const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
-  const ACCENT='#2EC4A0';
+  const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
   const ranked=[...ANCHORS].map(a=>({...a,score:scores[a.id]||0})).sort((a,b)=>b.score-a.score);
   const top=ranked[0], bot=ranked[ranked.length-1];
 
-  // Radar 5-axis (pentagon) with scores normalized 0-5 → 0-100
-  const AXIS5=[{k:0,ox:130,oy:42},{k:1,ox:214,oy:103},{k:2,ox:182,oy:201},{k:3,ox:78,oy:201},{k:4,ox:46,oy:103}];
-  const radarPts5=AXIS5.map(({k,ox,oy})=>{const s=(ranked[k]?.score||0)/5;return`${(130+(ox-130)*s).toFixed(1)},${(130+(oy-130)*s).toFixed(1)}`;}).join(' ');
-  const radarDots5=AXIS5.map(({k,ox,oy})=>{const s=(ranked[k]?.score||0)/5;const cx=(130+(ox-130)*s).toFixed(1),cy=(130+(oy-130)*s).toFixed(1);return`<circle cx="${cx}" cy="${cy}" r="3" fill="${ranked[k]?.color||ACCENT}" stroke="#f8fafc" stroke-width="1.5"/>`;}).join('');
-  const radarLabels5=[
-    `<text x="130" y="36" text-anchor="middle" font-family="Space Mono,monospace" font-size="6.5" fill="${ranked[0]?.color||ACCENT}" font-weight="700">${ranked[0]?.name?.toUpperCase().slice(0,10)||''}</text>`,
-    `<text x="220" y="101" text-anchor="start" font-family="Space Mono,monospace" font-size="6" fill="${ranked[1]?.color||ACCENT}">${ranked[1]?.name?.toUpperCase().slice(0,10)||''}</text>`,
-    `<text x="186" y="214" text-anchor="start" font-family="Space Mono,monospace" font-size="6" fill="${ranked[2]?.color||ACCENT}">${ranked[2]?.name?.toUpperCase().slice(0,10)||''}</text>`,
-    `<text x="74" y="214" text-anchor="end" font-family="Space Mono,monospace" font-size="6" fill="${ranked[3]?.color||ACCENT}">${ranked[3]?.name?.toUpperCase().slice(0,10)||''}</text>`,
-    `<text x="40" y="101" text-anchor="end" font-family="Space Mono,monospace" font-size="6" fill="${ranked[4]?.color||ACCENT}">${ranked[4]?.name?.toUpperCase().slice(0,10)||''}</text>`,
-  ].join('');
+  // Ranking completo no customSection
+  const rankingHTML = '<div style="font-family:IBM Plex Mono,monospace;font-size:10px;letter-spacing:0.12em;color:#7C6FF7;text-transform:uppercase;font-weight:500;margin-bottom:12px;">Ranking das 8 âncoras</div>'
+    + '<div style="display:grid;gap:6px;">'
+    + ranked.map((a,i) => {
+        const dots = Array.from({length:5}, (_,d) => `<span style="width:8px;height:8px;border-radius:50%;background:${d<a.score?'#7C6FF7':'#e4e4e7'};display:inline-block;margin-right:2px;"></span>`).join('');
+        return '<div style="display:grid;grid-template-columns:24px 1fr auto auto;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid #f4f4f5;">'
+          + '<span style="font-family:IBM Plex Mono,monospace;font-size:10px;color:#a1a1aa;">'+String(i+1).padStart(2,'0')+'</span>'
+          + '<span style="font-size:12px;font-weight:'+(i===0?'700':'500')+';color:#18181b;">'+a.name+'</span>'
+          + '<div>'+dots+'</div>'
+          + '<span style="font-family:IBM Plex Mono,monospace;font-size:11px;color:#52525b;min-width:24px;text-align:right;">'+a.score+'/5</span>'
+          + '</div>';
+      }).join('') + '</div>';
 
-  const _gnCss = `*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Inter',sans-serif;background:#f8fafc;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-.page{width:794px;height:1123px;overflow:hidden;margin:0 auto;padding:24px 34px;background:#f8fafc;display:flex;flex-direction:column;}
-.hd{display:flex;justify-content:space-between;align-items:center;padding-bottom:11px;border-bottom:2px solid #000;margin-bottom:13px;flex-shrink:0;}
-.brand{display:flex;align-items:center;gap:7px;}.brand-name{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;}.brand-name em{color:ACC;font-style:italic;font-weight:300;}
-.hd-meta{font-family:'Space Mono',monospace;font-size:7px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;text-align:right;line-height:1.85;}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;flex:1;min-height:0;}.col{display:flex;flex-direction:column;gap:9px;min-height:0;overflow:hidden;}
-.pn{background:#fafafa;border:1px solid #000;padding:13px 15px;position:relative;flex-shrink:0;}
-.pn-grow{background:#fff;border:1px solid #000;padding:13px 15px;position:relative;flex:1;min-height:0;display:flex;flex-direction:column;}
-.lbl{position:absolute;top:-8px;left:12px;background:#000;color:#fff;font-family:'Space Mono',monospace;font-size:6.5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.15em;}
-.dom-hero{display:flex;align-items:center;gap:11px;margin-bottom:9px;}
-.dom-icon-box{width:48px;height:48px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;}
-.dom-ew{font-family:'Space Mono',monospace;font-size:7px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:ACC;margin-bottom:2px;}
-.dom-name{font-size:20px;font-weight:900;text-transform:uppercase;letter-spacing:-0.04em;line-height:1.1;}
-.arch-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:6.5px;padding:2px 7px;border:1px solid;text-transform:uppercase;letter-spacing:0.07em;margin-top:7px;}
-.arch-desc{font-size:8.5px;line-height:1.7;color:#333;margin-top:9px;}
-.ins-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:ACC;margin-bottom:7px;display:flex;align-items:center;gap:5px;flex-shrink:0;}
-.ins-lbl::before{content:'';width:14px;height:2px;background:ACC;border-radius:2px;display:inline-block;}
-.ins-txt{font-size:8.5px;color:#444;line-height:1.75;flex-shrink:0;}
-.chips-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:9px;flex-shrink:0;}
-.chip{font-family:'Space Mono',monospace;font-size:6.5px;padding:2px 7px;border:1px solid;text-transform:uppercase;letter-spacing:0.07em;}
-.tension-box{margin-top:10px;padding-top:9px;border-top:1px solid #e4e4e7;flex:1;display:flex;flex-direction:column;justify-content:center;}
-.tension-lbl{font-family:'Space Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#71717a;margin-bottom:7px;text-align:center;}
-.tension-row{display:flex;align-items:center;gap:8px;}.t-arch{display:flex;align-items:center;gap:6px;flex:1;padding:6px 8px;border:1px solid;border-radius:2px;}
-.t-ico{font-size:14px;flex-shrink:0;}.t-name{font-size:8.5px;font-weight:700;}.t-pct{font-family:'Space Mono',monospace;font-size:7.5px;}
-.t-arrow{font-family:'Space Mono',monospace;font-size:9px;color:#a1a1aa;flex-shrink:0;}
-.tension-note{font-size:7.5px;color:#71717a;line-height:1.65;margin-top:6px;text-align:center;}
-.sr{display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid #f1f5f9;}
-.sr-rank{font-family:'Space Mono',monospace;font-size:7px;color:#a1a1aa;min-width:14px;}
-.sr-ico{font-size:13px;width:20px;text-align:center;flex-shrink:0;}
-.sr-name{font-size:9px;font-weight:700;flex:1;}.sr-dots{display:flex;gap:3px;align-items:center;}
-.sr-score{font-family:'Space Mono',monospace;font-size:7.5px;min-width:28px;text-align:right;}
-.ft{padding-top:9px;border-top:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-top:9px;flex-shrink:0;}
-.ft-l{font-family:'Space Mono',monospace;font-size:6px;color:#71717a;letter-spacing:0.08em;text-transform:uppercase;}
-.ft-r{font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;color:#000;}
-@media print{@page{margin:0;size:A4;}body{background:#f8fafc!important;}.page{width:100%;}}`.split('ACC').join(ACCENT);
-
-  const rankingHTML = ranked.map((a,i)=>{
-    const last=i===ranked.length-1?'border-bottom:none;':'';
-    const dots=Array.from({length:5},(_,d)=>`<span style="width:7px;height:7px;border-radius:50%;background:${d<a.score?a.color:'#e4e4e7'};display:inline-block;"></span>`).join('');
-    return `<div class="sr" style="${last}"><span class="sr-rank">${String(i+1).padStart(2,'0')}</span><span class="sr-ico">${_ancIco(a,14)}</span><span class="sr-name" style="color:${i===0?a.color:'#000'};">${a.name}</span><div class="sr-dots">${dots}</div><span class="sr-score" style="color:${a.color};">${a.score}/5</span></div>`;
-  }).join('');
-
-  const chipsHTML = ranked.slice(0,3).map(a=>`<span class="chip" style="color:${a.color};border-color:${a.color}40;background:${a.color}08;">${a.name}</span>`).join('');
-
-  Gnosis.pdf.printOrDownload(`<!DOCTYPE html><html lang="pt-BR"><head>
-  <meta charset="UTF-8"><title>Âncoras de Carreira — ${nome} · Sistema Gnosis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>${_gnCss}</style></head><body><div class="page">
-  <div class="hd">
-    <div class="brand"><svg viewBox="0 0 100 100" fill="none" width="26" height="26"><path d="M 50 22 A 28 28 0 1 0 78 50" stroke="${ACCENT}" stroke-width="9" stroke-linecap="round"/><rect x="58" y="46" width="20" height="8" rx="1" fill="${ACCENT}"/></svg><span class="brand-name">SISTEMA <em>Gnosis</em></span></div>
-    <div class="hd-meta">Módulo: Âncoras de Carreira · Edgar Schein<br>${data.toUpperCase()}<br>${nome.toUpperCase()}</div>
-  </div>
-  <div class="grid">
-    <div class="col">
-      <div class="pn">
-        <div class="lbl">Âncora_Dominante</div>
-        <div class="dom-hero">
-          <div class="dom-icon-box" style="background:${top.color}12;border:1px solid ${top.color}35;">${_ancIco(top,28)}</div>
-          <div>
-            <div class="dom-ew">Resultado · Âncoras de Carreira</div>
-            <div class="dom-name" style="color:${top.color};">${top.name}</div>
-          </div>
-        </div>
-        <div class="arch-badge" style="color:${top.color};border-color:${top.color}40;background:${top.color}08;">${top.score}/5 pontos · âncora principal</div>
-        <p class="arch-desc">${top.desc}</p>
-      </div>
-      <div class="pn-grow">
-        <div class="lbl">Análise_do_Perfil</div>
-        <div class="ins-lbl">Síntese Vocacional</div>
-        <p class="ins-txt">${top.insight}</p>
-        <div class="chips-row">${chipsHTML}</div>
-        <div class="tension-box">
-          <div class="tension-lbl">// Zona de Tensão · Âncoras Opostas</div>
-          <div class="tension-row">
-            <div class="t-arch" style="border-color:${top.color}35;background:${top.color}08;">
-              <span class="t-ico">${_ancIco(top,16)}</span>
-              <div><div class="t-name" style="color:${top.color};">${top.name}</div><div class="t-pct" style="color:${top.color};">${top.score}/5 · dominante</div></div>
-            </div>
-            <div class="t-arrow">⟷</div>
-            <div class="t-arch" style="border-color:${bot.color}35;background:${bot.color}06;">
-              <span class="t-ico">${_ancIco(bot,16)}</span>
-              <div><div class="t-name" style="color:${bot.color};">${bot.name}</div><div class="t-pct" style="color:${bot.color};">${bot.score}/5 · menor ênfase</div></div>
-            </div>
-          </div>
-          <p class="tension-note">A forte orientação para ${top.name.toLowerCase()} (${top.score}/5) contrasta com a menor prioridade dada a ${bot.name.toLowerCase()} (${bot.score}/5). Esse eixo revela o que você não abriria mão em sua carreira.</p>
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="pn" style="flex-shrink:0;">
-        <div class="lbl">Ranking_Âncoras</div>
-        <div style="padding-top:5px;">${rankingHTML}</div>
-      </div>
-      <div class="pn-grow">
-        <div class="lbl">Mapa_Visual_Âncoras</div>
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding-top:4px;">
-          <svg viewBox="0 0 260 260" width="210" height="210" xmlns="http://www.w3.org/2000/svg">
-            <defs><radialGradient id="rg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="${ACCENT}" stop-opacity="0.18"/><stop offset="100%" stop-color="${ACCENT}" stop-opacity="0.04"/></radialGradient></defs>
-            <polygon points="130,66 186,103 165,177 95,177 74,103" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
-            <polygon points="130,88 173,114 157,169 103,169 87,114" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
-            <line x1="130" y1="130" x2="130" y2="42" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-            <line x1="130" y1="130" x2="214" y2="103" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-            <line x1="130" y1="130" x2="182" y2="201" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-            <line x1="130" y1="130" x2="78" y2="201" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-            <line x1="130" y1="130" x2="46" y2="103" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-            <polygon points="${radarPts5}" fill="url(#rg)" stroke="${ACCENT}" stroke-width="1.5" stroke-opacity="0.7"/>
-            ${radarDots5}
-            ${radarLabels5}
-          </svg>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="ft"><span class="ft-l">Sistema Gnosis // Âncoras de Carreira // Edgar Schein // Confidencial</span><span class="ft-r">www.sistema-gnosis.com.br</span></div>
-  </div>
-  <script>window.onload=function(){setTimeout(function(){window.print();},600);};<\/script>
-  </body></html>`, "ancoras-carreira.html");
+  Gnosis.pdf.render({
+    matrizName: 'Âncoras de Carreira',
+    matrizSubname: 'Edgar Schein · MIT',
+    userName: nome,
+    date: data,
+    hero: {
+      letter: '⚓',
+      eyebrow: 'Âncora Dominante',
+      title: top.name,
+      subtitle: top.desc,
+    },
+    analysisLabel: 'Análise vocacional',
+    analysisBlocks: [
+      { eyebrow: 'Síntese',          title: 'O que te move',                  text: top.insight },
+      { eyebrow: 'Pontuação',        title: top.score + ' / 5 pontos',         text: 'Você marcou ' + top.score + ' de 5 pontos nesta âncora, indicando alta prioridade. Essa é a âncora que você não abriria mão em decisões de carreira.' },
+      { eyebrow: 'Âncora oposta',    title: bot.name + ' (' + bot.score + '/5)', text: 'Sua menor pontuação foi em ' + bot.name + ' (' + bot.score + '/5). Não significa que você não a valoriza — apenas que ela não é decisiva nas suas escolhas profissionais.' },
+      { eyebrow: 'Aplicação prática', title: 'Use isto pra decidir',           text: 'Quando avaliar uma nova oportunidade, pergunte: ela respeita minha âncora principal (' + top.name + ')? Se sim, vale considerar. Se não, provavelmente vai gerar atrito ao longo do tempo.' },
+    ],
+    customSection: rankingHTML,
+    citation: 'Schein, E. H. (1990). <em>Career Anchors: Discovering Your Real Values.</em>',
+    filename: 'ancoras-carreira.html',
+  });
 }
 
