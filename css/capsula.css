@@ -332,3 +332,48 @@ body.gn-quiosque { padding-top: 52px; }
   background: #7C6FF7; color: #fff;
 }
 #_gn-resume #_gn-resume-go:hover { opacity: 0.9; }
+
+/* PDF low-memory warning dialog */
+#_gn-pdf-warn {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(7,8,12,0.85); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem; font-family: var(--sans, 'Outfit', system-ui, sans-serif);
+}
+#_gn-pdf-warn ._gn-pdf-card {
+  background: #13131a; border: 1px solid rgba(232,96,58,0.3);
+  border-radius: 14px; padding: 1.75rem;
+  max-width: 360px; width: 100%; text-align: center; color: #e8e8f0;
+}
+#_gn-pdf-warn ._gn-pdf-icon { font-size: 2rem; margin-bottom: 0.6rem; line-height: 1; }
+#_gn-pdf-warn h3 { margin: 0 0 0.6rem; font-size: 1.05rem; color: #fff; }
+#_gn-pdf-warn p { font-size: 0.85rem; color: rgba(232,232,240,0.65); margin: 0; line-height: 1.55; }
+#_gn-pdf-warn p strong { color: #fff; }
+#_gn-pdf-warn ._gn-pdf-actions {
+  display: flex; gap: 0.55rem; margin-top: 1.25rem;
+}
+#_gn-pdf-warn ._gn-pdf-actions button {
+  flex: 1; padding: 0.7rem; border-radius: 7px;
+  font-weight: 700; font-size: 0.85rem; cursor: pointer;
+  font-family: inherit; border: none;
+}
+#_gn-pdf-warn #_gn-pdf-cancel {
+  background: rgba(255,255,255,0.06); color: rgba(232,232,240,0.7);
+}
+#_gn-pdf-warn #_gn-pdf-go {
+  background: #E8603A; color: #fff;
+}
+
+/* A11y: foco visível nos scale buttons (Tab navigation).
+   Aplica a todas as matrizes (DISC, Eneagrama, Big Five, Pearson,
+   TCI, Ancoras). Cor do outline herda --q-color/--ac do botão. */
+.scale-btn:focus-visible,
+.scale-btn:focus {
+  outline: 3px solid var(--q-color, var(--ac, #7C6FF7));
+  outline-offset: 3px;
+  z-index: 1;
+}
+/* Botões selecionados em modo selecionado também ganham anel reforçado */
+.scale-btn[aria-checked="true"] {
+  position: relative;
+}

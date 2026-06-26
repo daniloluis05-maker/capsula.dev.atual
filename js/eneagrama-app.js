@@ -277,7 +277,7 @@ function renderQuestion(idx) {
         <span>Não me descreve</span>
         <span>Me descreve muito</span>
       </div>
-      <div class="scale-buttons" style="--q-color:${color}">
+      <div class="scale-buttons" style="--q-color:${color}" role="radiogroup" aria-label="Avalie de 1 (não me descreve) a 5 (me descreve muito)">
         ${[1,2,3,4,5].map(v => `
           <button
             class="scale-btn ${selected === v ? 'selected' : ''}"
@@ -285,10 +285,13 @@ function renderQuestion(idx) {
             style="--q-color:${color}"
             onclick="selectAnswer(${idx}, ${v})"
             title="${SCALE_HINTS[v-1]}"
+            role="radio"
+            aria-checked="${selected === v ? 'true' : 'false'}"
+            aria-label="Nota ${v} de 5"
           ></button>
         `).join('')}
       </div>
-      <div class="scale-hint" id="scale-hint">
+      <div class="scale-hint" id="scale-hint" aria-live="polite">
         ${selected ? SCALE_HINTS[selected - 1] : 'Selecione uma opção para continuar'}
       </div>
     </div>

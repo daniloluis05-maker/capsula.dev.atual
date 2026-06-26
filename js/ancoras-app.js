@@ -103,14 +103,17 @@ function renderAnchor(idx){
     <div class="anchor-desc">${a.desc}</div>
     <div class="anchor-example" style="color:${a.color}88">${a.example}</div>
     <div class="scale-label-row"><span>Não me representa</span><span>Me representa muito</span></div>
-    <div class="scale-btns">
+    <div class="scale-btns" role="radiogroup" aria-label="Avalie de 1 (não me representa) a 5 (me representa muito)">
       ${[1,2,3,4,5].map(v=>`
         <button class="scale-btn ${sel===v?'selected':''}" data-val="${v}"
           style="--ac:${a.color}" onclick="selectScore('${a.id}',${v},${idx})"
-          title="${HINTS[v-1]}"></button>
+          title="${HINTS[v-1]}"
+          role="radio"
+          aria-checked="${sel===v?'true':'false'}"
+          aria-label="Nota ${v} de 5"></button>
       `).join('')}
     </div>
-    <div class="scale-hint" id="scale-hint">${sel?HINTS[sel-1]:'// toque para avaliar'}</div>
+    <div class="scale-hint" id="scale-hint" aria-live="polite">${sel?HINTS[sel-1]:'// toque para avaliar'}</div>
     <div class="quiz-actions">
       <button class="btn-next ${sel?'ready':''}" id="btn-next" style="background:${a.color}" onclick="nextAnchor()">
         ${idx===ANCHORS.length-1?'Ver meu resultado →':'Próxima âncora →'}

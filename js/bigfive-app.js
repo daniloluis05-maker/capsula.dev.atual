@@ -154,15 +154,18 @@ function renderQuestion(idx){
     <span class="question-num">// pergunta ${idx + 1} de ${QUESTIONS.length}</span>
     <div class="question-text">${q.text}</div>
     <div class="scale-label-row"><span>Discordo totalmente</span><span>Concordo totalmente</span></div>
-    <div class="scale-btns">
+    <div class="scale-btns" role="radiogroup" aria-label="Avalie de 1 (discordo totalmente) a 5 (concordo totalmente)">
       ${[1,2,3,4,5].map(v=>`
         <button class="scale-btn ${sel===v?'selected':''}" data-val="${v}"
           style="--q-color:${dim.color};${sel===v?`border-color:${dim.color};background:${dim.color}15;`:''}"
           onclick="selectAnswer(${idx},${v})"
-          title="${HINTS[v-1]}"></button>
+          title="${HINTS[v-1]}"
+          role="radio"
+          aria-checked="${sel===v?'true':'false'}"
+          aria-label="Nota ${v} de 5"></button>
       `).join('')}
     </div>
-    <div class="scale-hint" id="scale-hint">${sel ? HINTS[sel-1] : '// toque para avaliar'}</div>
+    <div class="scale-hint" id="scale-hint" aria-live="polite">${sel ? HINTS[sel-1] : '// toque para avaliar'}</div>
     <div class="quiz-actions">
       <button class="btn-next ${sel!==null?'ready':''}" id="btn-next"
         style="background:${dim.color}"
