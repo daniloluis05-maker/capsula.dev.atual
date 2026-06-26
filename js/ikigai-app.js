@@ -137,6 +137,7 @@ function nextQuadrant(){
 }
 
 function showResult(){
+  if (window.gnosisTrack) gnosisTrack('quiz_completed', { matriz: 'ikigai' });
   showPage('page-result');
   // Grid
   document.getElementById('ikigai-grid').innerHTML = QUADRANTS.map(q=>{

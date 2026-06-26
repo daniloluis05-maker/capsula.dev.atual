@@ -494,6 +494,7 @@ function renderDNA(rawText, payload, palette, isRestore) {
       capsulaDB.lsSetUser(userData);
       if (window.capsulaDB && userData.email) capsulaDB.syncMatrizes(userData).catch(() => {});
     } catch(_) {}
+    if (window.gnosisTrack) gnosisTrack('dna_generated', { profile: parsed?.profile_type || 'unknown' });
   }
 }
 

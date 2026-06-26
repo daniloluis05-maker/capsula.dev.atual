@@ -531,6 +531,7 @@ function saveToLS(aiText) {
 
 function saveSWOT() {
   saveToLS(userData.swot?.aiAnalysis || null);
+  if (window.gnosisTrack) gnosisTrack('quiz_completed', { matriz: 'swot' });
   toast('SWOT salva!', 'Você pode editar a qualquer momento.');
   showPage('page-result');
 

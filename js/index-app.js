@@ -48,7 +48,18 @@
     document.body.style.overflow = 'hidden';
     switchModalTab(tab || 'signup');
     document.getElementById('modal-close-btn').focus();
+    if (window.gnosisTrack) gnosisTrack('modal_opened', { tab: tab || 'signup' });
   }
+
+  // Abre modal automaticamente se URL tem #login ou #signup
+  // Usado pelo botão "Trocar de usuário" no dashboard → redirect pra
+  // index.html#login. UX fluida: user já cai no modal certo.
+  (function () {
+    const h = (window.location.hash || '').replace('#','').toLowerCase();
+    if (h === 'login' || h === 'signup') {
+      setTimeout(() => openModal(h), 100);
+    }
+  })();
 
   function closeModal() {
     modal.classList.remove('open');
@@ -210,6 +221,7 @@
     const btn = document.getElementById('form-submit-btn');
     btn.disabled = true;
     btn.textContent = 'Criando conta...';
+    if (window.gnosisTrack) gnosisTrack('signup_started', { method: 'email' });
 
     try {
       const { data, session, confirmEmail, error } = await capsulaDB.authSignUp(email, senha, nome, objetivo);
@@ -225,12 +237,14 @@
 
       if (confirmEmail) {
         // Supabase exige confirmação de e-mail
+        if (window.gnosisTrack) gnosisTrack('signup_completed', { method: 'email', confirm_required: true });
         showPanel('confirmEmail');
         return;
       }
 
       // Cadastro e login imediatos
       if (data) {
+        if (window.gnosisTrack) gnosisTrack('signup_completed', { method: 'email', confirm_required: false });
         sessionStorage.setItem('capsula_is_new_user', '1');
         await persistUserLocally(data);
         sendWelcomeEmail(nome || email, email);
@@ -280,6 +294,7 @@
       }
 
       if (data) {
+        if (window.gnosisTrack) gnosisTrack('login_completed', { method: 'email' });
         await persistUserLocally(data);
         showPanel('loginSuccess');
         setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);

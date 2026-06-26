@@ -99,6 +99,7 @@ function showPage(id){
 
 // ── Iniciar quiz
 function startQuiz(){
+  if (window.gnosisTrack) gnosisTrack('quiz_started', { matriz: 'bigfive' });
   if (window.gnosisQuizSave) {
     const saved = gnosisQuizSave.restore('bigfive');
     if (saved && saved.state && Array.isArray(saved.state.answers)) {
@@ -199,6 +200,7 @@ function nextQuestion(){
 // ══════════════════════════════════════
 function calcScores(){
   if (window.gnosisQuizSave) gnosisQuizSave.clear('bigfive');
+  if (window.gnosisTrack) gnosisTrack('quiz_completed', { matriz: 'bigfive' });
   const raw = {O:[], C:[], E:[], A:[], N:[]};
   QUESTIONS.forEach((q, i) => {
     let val = answers[i] || 3;

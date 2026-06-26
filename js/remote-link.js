@@ -544,6 +544,80 @@
       return;
     }
 
+    // Termo LGPD obrigatório: respondente precisa aceitar antes que o quiz
+    // comece. Sem isso, dados psicométricos seriam coletados sem base legal
+    // explícita. Aceite fica em sessionStorage (não persiste — exige aceite
+    // a cada nova sessão presencial, que é o desejável legalmente).
+    if (!sessionStorage.getItem('gn_presencial_lgpd_ok')) {
+      _showPresencialLgpdGate();
+      return;
+    }
+
+    _continuePresencialSession();
+  }
+
+  function _showPresencialLgpdGate() {
+    _overlay.innerHTML = [
+      '<div style="background:#13131a;border:1px solid rgba(46,196,160,0.25);border-radius:14px;',
+      'padding:1.75rem;max-width:480px;width:100%;color:#e8e8f0;',
+      'font-family:system-ui,-apple-system,sans-serif;">',
+      '<div style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:#2EC4A0;',
+      'margin-bottom:0.5rem;font-family:monospace;">// Consentimento LGPD</div>',
+      '<h2 style="margin:0 0 1rem;font-size:1.15rem;line-height:1.3;">',
+      'Antes de começar, ', _escHtml(PRESENCIAL_NOME),
+      '</h2>',
+      '<p style="font-size:0.88rem;color:rgba(232,232,240,0.7);line-height:1.6;margin:0 0 1rem;">',
+      'Você está prestes a fazer uma avaliação <strong>presencial supervisionada</strong> ',
+      'no Sistema Gnosis. Seus dados — nome, e-mail e respostas — serão coletados ',
+      'pelo administrador desta sessão para fins de mapeamento comportamental.',
+      '</p>',
+      '<ul style="font-size:0.82rem;color:rgba(232,232,240,0.6);line-height:1.7;',
+      'margin:0 0 1.25rem;padding-left:1.2rem;">',
+      '<li>O administrador é o <strong>controlador</strong> dos seus dados (LGPD Art. 5º, VI).</li>',
+      '<li>Você pode solicitar acesso, correção ou exclusão dos seus dados a qualquer momento.</li>',
+      '<li>A avaliação não substitui orientação profissional psicológica.</li>',
+      '<li>Consulte a <a href="privacidade.html" target="_blank" style="color:#7c6af7;">',
+      'Política de Privacidade</a> completa.</li>',
+      '</ul>',
+      '<div style="display:flex;flex-direction:column;gap:0.5rem;">',
+      '<button id="_rl-lgpd-accept" type="button" style="',
+      'width:100%;padding:0.85rem;background:#2EC4A0;border:none;border-radius:8px;',
+      'color:#fff;font-weight:700;font-size:0.92rem;cursor:pointer;',
+      'font-family:inherit;transition:opacity 0.15s;">',
+      'Li e concordo — iniciar avaliação',
+      '</button>',
+      '<button id="_rl-lgpd-decline" type="button" style="',
+      'width:100%;padding:0.65rem;background:transparent;',
+      'border:1px solid rgba(255,255,255,0.12);border-radius:8px;',
+      'color:rgba(232,232,240,0.6);font-size:0.82rem;cursor:pointer;',
+      'font-family:inherit;">',
+      'Não concordo',
+      '</button>',
+      '</div>',
+      '</div>',
+    ].join('');
+
+    document.getElementById('_rl-lgpd-accept').addEventListener('click', function () {
+      try { sessionStorage.setItem('gn_presencial_lgpd_ok', '1'); } catch (_) {}
+      _continuePresencialSession();
+    });
+    document.getElementById('_rl-lgpd-decline').addEventListener('click', function () {
+      _overlay.innerHTML = [
+        '<div style="text-align:center;color:#e8e8f0;max-width:340px;font-family:system-ui,sans-serif;">',
+        '<div style="font-size:2.5rem;margin-bottom:1rem;">🚪</div>',
+        '<h3 style="margin:0 0 0.5rem;">Sessão encerrada</h3>',
+        '<p style="color:rgba(232,232,240,0.5);font-size:0.85rem;">',
+        'Sem o consentimento, não podemos coletar os dados da avaliação.<br>',
+        'Avise o administrador.</p></div>',
+      ].join('');
+    });
+  }
+
+  function _escHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function _continuePresencialSession() {
     _respondente = { nome: PRESENCIAL_NOME, email: PRESENCIAL_EMAIL || '' };
 
     // Mesma persistência do onStart() do caminho convidado: garante que

@@ -232,6 +232,7 @@ async function presencialConfirmar() {
       + '&nome=' + encodeURIComponent(nome)
       + (email ? '&email=' + encodeURIComponent(email) : '');
 
+    if (window.gnosisTrack) gnosisTrack('presencial_started', { matriz: matriz, has_equipe: !!equipeId, fs: fs });
     presencialFecharModal();
     window.open(url, '_blank');
     setTimeout(() => presencialCarregarLista(true), 600);

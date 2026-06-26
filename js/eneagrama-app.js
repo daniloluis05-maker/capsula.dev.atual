@@ -208,6 +208,7 @@ function showPage(id) {
 }
 
 function startQuiz() {
+  if (window.gnosisTrack) gnosisTrack('quiz_started', { matriz: 'eneagrama' });
   if (window.gnosisQuizSave) {
     const saved = gnosisQuizSave.restore('eneagrama');
     if (saved && saved.state && Array.isArray(saved.state.answers)) {
@@ -337,6 +338,7 @@ function nextQuestion() {
 // ══════════════════════════════════════
 function calculateResults() {
   if (window.gnosisQuizSave) gnosisQuizSave.clear('eneagrama');
+  if (window.gnosisTrack) gnosisTrack('quiz_completed', { matriz: 'eneagrama' });
   scores = { 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0 };
   QUESTIONS.forEach((q, i) => {
     const val = answers[i] || 3;

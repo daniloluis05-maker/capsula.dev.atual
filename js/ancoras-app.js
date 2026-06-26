@@ -57,6 +57,7 @@ let _isLoadingExisting = false;
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 
 function startQuiz(){
+  if (window.gnosisTrack) gnosisTrack('quiz_started', { matriz: 'ancoras' });
   if (window.gnosisQuizSave) {
     const saved = gnosisQuizSave.restore('ancoras');
     if (saved && saved.state && saved.state.scores && typeof saved.state.scores === 'object') {
@@ -138,6 +139,7 @@ function nextAnchor(){
 
 function showResult(){
   if (window.gnosisQuizSave) gnosisQuizSave.clear('ancoras');
+  if (window.gnosisTrack) gnosisTrack('quiz_completed', { matriz: 'ancoras' });
   showPage('page-result');
   // Ordena âncoras por score
   const ranked=[...ANCHORS].map(a=>({...a,score:scores[a.id]||0})).sort((a,b)=>b.score-a.score);

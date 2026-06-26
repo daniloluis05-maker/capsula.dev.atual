@@ -156,6 +156,7 @@ function showPage(id){
 }
 
 function startQuiz(){
+  if (window.gnosisTrack) gnosisTrack('quiz_started', { matriz: 'pearson' });
   if (window.gnosisQuizSave) {
     const saved = gnosisQuizSave.restore('pearson');
     if (saved && saved.state && Array.isArray(saved.state.answers)) {
@@ -255,6 +256,7 @@ function nextQuestion(){
 // ══════════════════════════════════════
 function calcScores(){
   if (window.gnosisQuizSave) gnosisQuizSave.clear('pearson');
+  if (window.gnosisTrack) gnosisTrack('quiz_completed', { matriz: 'pearson' });
   const raw = {};
   Object.keys(ARCHETYPES).forEach(k => raw[k] = []);
   QUESTIONS.forEach((q, i) => {

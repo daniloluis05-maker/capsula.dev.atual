@@ -22,8 +22,34 @@
   const STORAGE_KEY = 'capsula_cookie_consent';
   // Valores: 'accepted' | 'rejected' | undefined (ainda não decidiu)
 
-  // Sem ID configurado → no-op total
-  if (!GA_ID) return;
+  // Fila de eventos custom — buffer até gtag carregar (ou drop se rejeitado)
+  const _eventQueue = [];
+  let _gtagReady = false;
+
+  // API pública: window.gnosisTrack(name, params)
+  // Funciona mesmo antes do gtag carregar (enfileira) ou se user recusou (no-op).
+  // Eventos custom medidos: signup_started, signup_completed, login_completed,
+  //   quiz_started, quiz_completed, dna_generated, presencial_started,
+  //   presencial_completed, modal_opened, error_caught.
+  window.gnosisTrack = function (eventName, params) {
+    if (!eventName) return;
+    const payload = Object.assign({
+      // Defaults úteis pra segmentação no painel GA
+      send_to: GA_ID,
+    }, params || {});
+    if (_gtagReady && window.gtag) {
+      try { window.gtag('event', eventName, payload); } catch (_) {}
+    } else {
+      _eventQueue.push({ name: eventName, params: payload });
+    }
+  };
+
+  // Sem ID configurado → mantém gnosisTrack como no-op silencioso
+  if (!GA_ID) {
+    // Override: sem GA, vira no-op total
+    window.gnosisTrack = function () {};
+    return;
+  }
 
   function getConsent() {
     try { return localStorage.getItem(STORAGE_KEY) || ''; } catch (_) { return ''; }
@@ -49,6 +75,12 @@
       anonymize_ip: true,
       cookie_flags: 'SameSite=Strict;Secure',
     });
+    _gtagReady = true;
+    // Drena a fila de eventos custom que foram chamados antes do carregamento
+    while (_eventQueue.length) {
+      const ev = _eventQueue.shift();
+      try { window.gtag('event', ev.name, ev.params); } catch (_) {}
+    }
   }
 
   function showBanner() {

@@ -83,6 +83,7 @@ function nextStep(){
 }
 
 function showResult(){
+  if (window.gnosisTrack) gnosisTrack('quiz_completed', { matriz: 'johari' });
   showPage('page-result');
 
   // Calcula quadrantes

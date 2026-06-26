@@ -393,6 +393,21 @@ function eqToast(titulo, sub, isError, delay) {
   }, delay || 50);
 }
 
+// Trocar de usuário: encerra sessão Supabase + limpa ls/ss, mas preserva
+// `capsula_users[]` (lista de perfis no localStorage). Útil em computador
+// compartilhado (família, kiosk parcial) — outro user pode logar sem que
+// perfis antigos sumam. Logout normal limpa só o user atual também, mas
+// sinaliza intenção diferente (admin saindo vs. switch user).
+async function trocarUsuario(){
+  if (window.gnosisTrack) gnosisTrack('user_switch', {});
+  try { await capsulaDB.authSignOut(); } catch(_) {}
+  sessionStorage.removeItem('capsula_user');
+  localStorage.removeItem('capsula_user');
+  if (window.gnosisSyncTabs) gnosisSyncTabs.broadcast('user-logout', {});
+  // Vai pra index com hash que sinaliza pro modal abrir em login
+  window.location.href = 'index.html#login';
+}
+
 async function logout(){
   try {
     const raw = localStorage.getItem('capsula_user');

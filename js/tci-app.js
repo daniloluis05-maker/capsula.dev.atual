@@ -101,6 +101,42 @@ function showPage(id) {
 }
 
 function startQuiz() {
+  if (window.gnosisTrack) gnosisTrack('quiz_started', { matriz: 'tci' });
+  // Autosave: tenta restaurar progresso. TCI embaralha QUESTIONS no início,
+  // então salvamos também a ordem (questionIds) pra reconstruir o quiz na
+  // mesma sequência que o user já estava respondendo.
+  if (window.gnosisQuizSave) {
+    const saved = gnosisQuizSave.restore('tci');
+    if (saved && saved.state && Array.isArray(saved.state.questionIds) && saved.state.answers) {
+      const answered = Object.keys(saved.state.answers).length;
+      const total = saved.state.questionIds.length;
+      if (answered > 0 && answered < total) {
+        // Reconstrói questions na ordem salva (lookup por id em QUESTIONS source)
+        const byId = {};
+        QUESTIONS.forEach(q => { byId[q.id] = q; });
+        const restored = saved.state.questionIds.map(id => byId[id]).filter(Boolean);
+        if (restored.length === total) {
+          gnosisQuizSave.promptResume({
+            matriz: 'tci', label: 'TCI',
+            summary: answered + ' de ' + total + ' perguntas respondidas',
+            onResume: function () {
+              questions = restored;
+              answers = Object.assign({}, saved.state.answers);
+              current = typeof saved.state.current === 'number' ? saved.state.current : answered;
+              if (current >= total) current = total - 1;
+              showPage('page-quiz'); renderQuestion(current);
+            },
+            onRestart: function () {
+              questions = shuffleQuestions();
+              current = 0; answers = {};
+              showPage('page-quiz'); renderQuestion(0);
+            },
+          });
+          return;
+        }
+      }
+    }
+  }
   questions = shuffleQuestions();
   current = 0;
   answers = {};
@@ -151,6 +187,13 @@ function renderQuestion(idx) {
 
 function selectAnswer(id, val, idx) {
   answers[id] = val;
+  // Salva ordem das questions junto pra reconstruir na mesma sequência
+  if (window.gnosisQuizSave) {
+    gnosisQuizSave.save('tci', {
+      answers: answers, current: idx,
+      questionIds: questions.map(q => q.id),
+    });
+  }
   document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
   document.querySelector(`.scale-btn[data-val="${val}"]`).classList.add('selected');
   document.getElementById('scale-hint').textContent = HINTS[val - 1];
@@ -167,6 +210,8 @@ function nextQuestion() {
 }
 
 function calcResult() {
+  if (window.gnosisQuizSave) gnosisQuizSave.clear('tci');
+  if (window.gnosisTrack) gnosisTrack('quiz_completed', { matriz: 'tci' });
   showPage('page-loading');
   // Score: 1-5, reversed items invert the scale (score = 6 - raw)
   const raw = {BN:0,ED:0,DR:0,PE:0};

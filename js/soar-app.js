@@ -216,6 +216,7 @@ function nextQuadrant() {
 // SHOW RESULT
 // ══════════════════════════════════════
 function showResult() {
+  if (window.gnosisTrack) gnosisTrack('quiz_completed', { matriz: 'soar' });
   showPage('page-result');
 
   // Build soar grid

@@ -224,6 +224,7 @@ function showPage(id) {
 }
 
 function startQuiz() {
+  if (window.gnosisTrack) gnosisTrack('quiz_started', { matriz: 'disc' });
   // Tenta restaurar progresso salvo (gnosisQuizSave). Se houver pelo menos
   // 1 resposta e o quiz não está completo, oferece retomar de onde parou.
   if (window.gnosisQuizSave) {
@@ -392,6 +393,7 @@ function showSectionTransition(section, callback) {
 function calculateResults() {
   // Limpa autosave — quiz finalizado, não precisa mais perguntar "continuar?"
   if (window.gnosisQuizSave) gnosisQuizSave.clear('disc');
+  if (window.gnosisTrack) gnosisTrack('quiz_completed', { matriz: 'disc' });
 
   scores = { D: 0, I: 0, S: 0, C: 0 };
 
